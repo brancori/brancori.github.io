@@ -1,0 +1,60 @@
+body{
+    font-family: century gothic;
+    background: rgb(48, 48, 48);
+    color: white;
+}
+.main-title {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: justify;
+    color: white;
+    text-align: center;
+}
+.main-title h1{
+    font-size: 40px;
+}
+.main-title p {
+    margin-bottom: 50px;
+}
+.container {
+    display: flex;
+    flex-wrap: wrap ;
+    justify-content: center;
+    justify-items: center;
+}
+.container img {
+    width: 100px;
+    border-radius: 12px;
+    background: white;
+    position: relative;
+}
+.container img:hover {
+    cursor: pointer;
+    width: 150px;
+}
+.container p:hover {
+    text-align: unset;
+}
+
+.container p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.cursos {
+    justify-content: center;
+    position: relative;
+    padding: 0 24px;
+    text-align: center;
+}
+.curso-icon {
+    justify-content: center;
+    position: relative;
+}
+footer{
+    background-color: grey;
+    text-align: center;
+}
+
