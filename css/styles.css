@@ -1,25 +1,24 @@
 html{
     font-family: monospace;
+    font-size: 65.5%;
 }
 body{
     background: rgb(48, 48, 48);
     color: white;
 }
 .main-title {
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    text-align: justify;
-    color: white;
-    text-align: center;
+    text-align: center
 }
 .main-title h1{
-    font-size: 40px;
-    font-family: helvetica;
+    font-size: 4rem;
     font-weight: 100;
+    background: orangered;
+    display: inline-block;
+    padding: 0 2rem;
 }
 .main-title p {
     margin-bottom: 50px;
+    font-size: 2rem;
 }
 .container {
     display: flex;
