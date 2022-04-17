@@ -1,5 +1,7 @@
+html{
+    font-family: monospace;
+}
 body{
-    font-family: century gothic;
     background: rgb(48, 48, 48);
     color: white;
 }
@@ -13,6 +15,8 @@ body{
 }
 .main-title h1{
     font-size: 40px;
+    font-family: helvetica;
+    font-weight: 100;
 }
 .main-title p {
     margin-bottom: 50px;
