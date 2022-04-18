@@ -11,6 +11,8 @@ body{
     background: rgb(48, 48, 48);
     color: white;
     font-size: 1.8rem;
+    margin: 0;
+    padding: 0;
 }
 .main-title {
     text-align: center;
@@ -21,6 +23,10 @@ body{
 .main-title img {
     width: 150px;
     border-radius: 100px;
+    margin-top: 25px;
+}
+.main-title img:hover {
+    border: 3px solid orangered;
 }
 .main-title h1{
     font-size: 4rem;
@@ -69,7 +75,7 @@ body{
     justify-content: center;
     position: relative;
 }
-footer{
+footer p{
     display: flex;
     background-color: grey;
     text-align: center;
@@ -77,6 +83,8 @@ footer{
     bottom: 0;
     width: 100%;
     justify-content: center;
-    height: .5fr;
+    height: 3rem;
+    margin: 0;
+    padding: 0;
 }
 
