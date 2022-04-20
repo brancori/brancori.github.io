@@ -14,11 +14,42 @@ body{
     margin: 0;
     padding: 0;
 }
-.main-title {
+nav {
+    display: flex;
+    position: absolute;
+    height: 100%;
+    left: 0;
+    padding:0 10px;
     text-align: center;
+    align-items: center;
+    background-color: rgb(185, 185, 185);
+}
+nav ul{
+    padding: 0 15px;
+}
+nav li a{
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    list-style: none;
+    font-weight: bold;
+}
+nav li a:hover {
+    color: orangered; 
+}
+
+nav li {
     display: flex;
     flex-direction: column;
+    list-style: none;
+    margin: 25px 0 auto auto;
+}
+.main-title {
+    text-align: center;
+    flex-direction: column;
     align-items: center;
+    width: 320px;
+    height: auto;
+    margin: 0 auto;
 }
 .main-title img {
     width: 150px;
