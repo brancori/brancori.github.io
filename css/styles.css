@@ -69,7 +69,7 @@ nav li {
     font-size: 2rem;
 }
 .container {
-    display: flex;
+    display: grid;
     flex-wrap: wrap ;
     justify-content: center;
     justify-items: center;
