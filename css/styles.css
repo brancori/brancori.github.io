@@ -42,8 +42,7 @@ li{
 .main-title{
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 70%;
-    background-color: #374547;
+    width: 60%;
     margin: 35px auto;
     min-width: 320px;
     height: auto;
@@ -55,13 +54,12 @@ li{
     justify-items: center;
 }
 .main-description p{
-    background-color: #374547;
     padding: 6px 5px;
     border-radius: 8px;
     margin: 0 25px;
 }
 .firts-info p:nth-child(1){
-    background-color: #1b2426;
+    background-color: #374547;
     margin-bottom: 25px;
 }
 .main-title img{
@@ -134,22 +132,26 @@ li{
     background-repeat: no-repeat;
 }
 .blog{
-    margin: 35px 0;
-    width: 100%;
-    height: 300px;
+    margin: 35px auto;
+    width: 60%;
+    border-radius: 16px;
+    height: auto;
     background-color: #374547;
 }
 .blog-container{
     display: grid;
-    width: 70%;
+    width: 80%;
     gap: 15px;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     font-size: 1.8rem;
     margin: 0 auto;
-    justify-content: start;
+    height: 250px;
+}
+.blog-info-container{
+    margin-top: 5%;
 }
 .avatar-container{
-    width: 40%;
+    width: 50%;
     height: auto;
     transform-style: preserve-3d;
     position: relative;
@@ -159,8 +161,8 @@ li{
 }
 .avatar{
     border-radius: 20px;
-    width: 250px;
-    min-width: 150px;
+    width: 200px;
+    align-self: center;
     position:absolute;
     padding: 0 auto;
     margin-right: 20%;
@@ -187,9 +189,7 @@ li{
     margin-right: 15%;
 
 }
-    
-
-@media (max-width: 550px){
+@media (max-width: 780px){
     .nav-bar ul li{
         font-size: 1.8rem;
         margin: 0 10px;
@@ -203,21 +203,21 @@ li{
     }
     .blog-container {
         display: flex;
-        flex-direction: column;
         gap: 6px;
         margin:0 auto;
+        font-size: 16px;
+        width: 100%;
+        align-items: center;
     }
     .blog{
-        width: 90%;
         margin: 0 auto;
-        height: auto;
         background-color: #374547;
         margin-bottom: 35px;
         border-radius: 16px;
         text-align: center;
+        width: 90%;
         }
     .blog-info-container{
-        width: 90%;
         margin: 0 auto;
         height: auto;
         background-color: #374547;
@@ -228,6 +228,7 @@ li{
     .avatar{
         position: relative;
         margin: 0;
+        width: 150px;
     }
     .avatar.two{
         visibility: hidden;
