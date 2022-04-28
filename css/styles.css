@@ -24,8 +24,7 @@ li{
 }
 .nav-bar ul{
     text-align: center;
-    width: 100%;
-    min-width: 320px;
+    width: 90%;
 }
 .nav-bar ul li{
     display: inline-block;
@@ -41,43 +40,39 @@ li{
     font-weight: bold;
 }
 .main-title{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 70%;
+    background-color: #374547;
     margin: 35px auto;
-    width: 100%;
     min-width: 320px;
     height: auto;
     text-align: center;
     font-size: 1.8rem;
     padding: 0;
+    border-radius: 8px;
+    align-items: center;
+    justify-items: center;
 }
 .main-description p{
     background-color: #374547;
     padding: 6px 5px;
     border-radius: 8px;
-    width: 90%;
-    margin: 0 auto;
+    margin: 0 25px;
+}
+.firts-info p:nth-child(1){
+    background-color: #1b2426;
+    margin-bottom: 25px;
 }
 .main-title img{
-    border-radius: 100%;
-    justify-content: center;
+    border-radius: 50%;
     width: 180px;
-    max-width: 300px;
+    max-width: 200px;
 }
-.main-description h1{
-    display: inline-block;
+.main-title h1{
     background-color: var(--orange);
     padding: 0 5px;
-}
-.main-title--details {
-    width: 95%;
-    padding: 5px;
-    align-items: center;
-}
-.main-title--details ul{
-    width: 95%;
-    padding: 5px;
+    border-radius: 8px;
 }
 .container{
     display: flex;
@@ -87,9 +82,16 @@ li{
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
     padding: 0 16px;
+    justify-content: center;
 }
 .container::-webkit-scrollbar {
     display: none;
+}
+.profile__picture__container{
+    margin: 0 0 0 0;
+    justify-content: center;
+    text-align: center;
+
 }
 .container img{
     width: 150px;
@@ -97,7 +99,6 @@ li{
     border-radius: 10px;
     align-items: center;
     scroll-snap-align: center;
-    align-items: center;
 }
 .cursos{
     font-size: 1.8rem;
@@ -132,17 +133,118 @@ li{
     background-position: center;
     background-repeat: no-repeat;
 }
-@media (min-width: 450px){
+.blog{
+    margin: 35px 0;
+    width: 100%;
+    height: 300px;
+    background-color: #374547;
+}
+.blog-container{
+    display: grid;
+    width: 70%;
+    gap: 15px;
+    grid-template-columns: 2fr 1fr;
+    font-size: 1.8rem;
+    margin: 0 auto;
+    justify-content: start;
+}
+.avatar-container{
+    width: 40%;
+    height: auto;
+    transform-style: preserve-3d;
+    position: relative;
+    margin: 0 auto;
+    transform: rotatey(180deg);
+    justify-self: center;
+}
+.avatar{
+    border-radius: 20px;
+    width: 250px;
+    min-width: 150px;
+    position:absolute;
+    padding: 0 auto;
+    margin-right: 20%;
+    justify-content: center;
+    
+}
+.avatar.one:hover{
+    opacity: 0 ;
+}
+.button-no-buton{
+    padding: 5px;
+    background-color: #1b2426;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    grid-row: 2;
+}
+.button-no-buton:hover{
+    background-color: #d96a1b;
+    font-weight: bold;
+}
+.blog-info-container{
+    text-align: center;
+    margin-right: 15%;
+
+}
+    
+
+@media (max-width: 550px){
     .nav-bar ul li{
         font-size: 1.8rem;
         margin: 0 10px;
     }
     .container{
         justify-content: center;
-        display: ;
     }
-    .main-description p{
-        width: auto;
+    .main-title {
+        display: flex;
+        flex-direction: column;
     }
+    .blog-container {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin:0 auto;
+    }
+    .blog{
+        width: 90%;
+        margin: 0 auto;
+        height: auto;
+        background-color: #374547;
+        margin-bottom: 35px;
+        border-radius: 16px;
+        text-align: center;
+        }
+    .blog-info-container{
+        width: 90%;
+        margin: 0 auto;
+        height: auto;
+        background-color: #374547;
+        margin-bottom: 35px;
+        border-radius: 16px;
+        text-align: center;
+        }
+    .avatar{
+        position: relative;
+        margin: 0;
+    }
+    .avatar.two{
+        visibility: hidden;
+        position: absolute;
+    }
+
+    .avatar.one:hover{
+        opacity: 1 ;
+    }
+    .avatar-container{
+        width: 100%;
+        height: auto;
+        transform-style: flat;
+        position: relative;
+        transform: none;
+        gap: 1;
+    }
+    
 }
 
