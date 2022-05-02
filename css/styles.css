@@ -28,7 +28,7 @@ li{
 }
 .nav-bar ul li{
     display: inline-block;
-    font-size: 1.2rem;
+    font-size: 1.8rem;
     margin: 4px 5px;
 }
 .nav-bar ul li a:hover{
@@ -41,7 +41,7 @@ li{
 }
 .main-title{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     width: 60%;
     margin: 35px auto;
     min-width: 320px;
@@ -52,6 +52,11 @@ li{
     border-radius: 8px;
     align-items: center;
     justify-items: center;
+    gap:5%;
+
+}
+.main-description{
+    border-left: 3px solid #374547;
 }
 .main-description p{
     padding: 6px 5px;
@@ -76,15 +81,10 @@ li{
     display: flex;
     width: auto;
     text-align: center;
-    overflow-x: scroll;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
     padding: 0 16px;
     justify-content: center;
 }
-.container::-webkit-scrollbar {
-    display: none;
-}
+
 .profile__picture__container{
     margin: 0 0 0 0;
     justify-content: center;
@@ -100,7 +100,7 @@ li{
 }
 .cursos{
     font-size: 1.8rem;
-    width: 230px;
+    width: auto;
     height: 250px;
     text-align: center;
     align-items: center;
@@ -140,9 +140,9 @@ li{
 }
 .blog-container{
     display: grid;
-    width: 80%;
+    width: 100%;
     gap: 15px;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     font-size: 1.8rem;
     margin: 0 auto;
     height: 250px;
@@ -165,9 +165,8 @@ li{
     align-self: center;
     position:absolute;
     padding: 0 auto;
-    margin-right: 20%;
     justify-content: center;
-    
+    margin: 0 -40% auto;
 }
 .avatar.one:hover{
     opacity: 0 ;
@@ -181,13 +180,16 @@ li{
     grid-row: 2;
 }
 .button-no-buton:hover{
-    background-color: #d96a1b;
+    background-color: var(--orange);
     font-weight: bold;
 }
 .blog-info-container{
     text-align: center;
-    margin-right: 15%;
-
+    margin: 0 auto;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
 }
 @media (max-width: 780px){
     .nav-bar ul li{
@@ -195,7 +197,13 @@ li{
         margin: 0 10px;
     }
     .container{
-        justify-content: center;
+        overflow-x: scroll;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        justify-content: start;
+    }
+    .container::-webkit-scrollbar {
+        display: none;
     }
     .main-title {
         display: flex;
@@ -218,17 +226,20 @@ li{
         width: 90%;
         }
     .blog-info-container{
+        display: flex;
+        flex-direction: column;
         margin: 0 auto;
         height: auto;
         background-color: #374547;
-        margin-bottom: 35px;
         border-radius: 16px;
         text-align: center;
+        padding: 5px;
         }
     .avatar{
         position: relative;
         margin: 0;
-        width: 150px;
+        width: 200px;
+        min-width: 150px;
     }
     .avatar.two{
         visibility: hidden;
@@ -247,5 +258,10 @@ li{
         gap: 1;
     }
     
+}
+@media (max-width: 1100px){
+    .avatar{
+        margin: 0 -80% auto;
+    }
 }
 
