@@ -15,6 +15,26 @@ body{
     background-color: var(--dark);
     margin: 0;
 }
+.icons {
+    display: flex;
+    justify-content: space-evenly;
+    height: 80px;
+    align-items: center;
+}
+.icons a{
+    color: white;
+    font-size: 5.5rem;
+    text-decoration: none;
+    color: #374547;
+    font-size: 2.8rem;
+}
+.icons a img{
+    width: 35px;
+    border-radius: 0;
+}
+.icons a img:hover{
+    width: 50px;
+}
 title #name {
     width: 360px;
     display: inline-block;
@@ -53,7 +73,6 @@ li{
     align-items: center;
     justify-items: center;
     gap:5%;
-
 }
 .main-description{
     border-left: 3px solid #374547;
@@ -66,6 +85,7 @@ li{
 .firts-info p:nth-child(1){
     background-color: #374547;
     margin-bottom: 25px;
+    margin-top: 25px;
 }
 .main-title img{
     border-radius: 50%;
@@ -229,11 +249,11 @@ li{
         display: flex;
         flex-direction: column;
         margin: 0 auto;
-        height: auto;
         background-color: #374547;
         border-radius: 16px;
         text-align: center;
         padding: 5px;
+        font-size: small;
         }
     .avatar{
         position: relative;
