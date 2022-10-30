@@ -23,4 +23,5 @@ body{font-size: 1.5rem;}
 
 .buttons_containers button, a{ margin-top: 15px; text-decoration: none; border: none; background: #000f3f; color: #fff;
     border-radius: 15px;}
-.buttons_containers button:hover, a:hover{ background: rgb(184, 184, 184);color: #000f3f;}
+.buttons_containers button:hover, a:hover{ background: rgb(184, 184, 184);color: #000f3f;} 
+
