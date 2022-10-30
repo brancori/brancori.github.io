@@ -1,5 +1,11 @@
-
-@font-face {font-family: "HelveticaNeueW02-47LtCn"; src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot"); src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.svg#HelveticaNeueW02-47LtCn") format("svg"); }
+@font-face {
+    font-family: Helvetica;
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Heavy.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Regular.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.eot);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
+}
 body{
     font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 18px;

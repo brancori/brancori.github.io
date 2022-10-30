@@ -1,8 +1,12 @@
-@import url(//db.onlinewebfonts.com/c/0c96daa6c25910a00efd1f0ea3c5c02d?family=HelveticaNeueW02-75Bold);
-@import url(//db.onlinewebfonts.com/c/396a25718aa788c4df0b49b11e6a248d?family=HelveticaNeueW02-47LtCn);
-@font-face {font-family: "HelveticaNeueW02-47LtCn"; src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot"); src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.woff") format("woff"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.svg#HelveticaNeueW02-47LtCn") format("svg"); };
-*  
-
+*
+@font-face {
+    font-family: Helvetica;
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Heavy.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Regular.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.eot);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
+}
 :root{
     --azul-trox: #00375F;
         padding: 0;

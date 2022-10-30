@@ -1,14 +1,17 @@
 @font-face {
-    font-family:  Helvetica;
-    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue\ LT\ 67\ MdCn\ Heavy.ttf,); 
-    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue\ LT\ 67\ MdCn\ HeavyOblique.ttf);
-    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue\ LT\ 67\ MdCn\ Regular.ttf);
+    font-family: Helvetica;
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Heavy.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Regular.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.eot);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
 }
 body{
-    font-weight: 800;
-    color: #003C9B;
     font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
-}
+    font-size: 18px;
+    color: #00375F;
+    font-weight: 900;
+}  
 #vigencia{
     display: flex;
     position: relative;
@@ -21,6 +24,9 @@ body{
     flex-direction: column;
     width: 85%;
     margin: auto;
+}
+#Congrats h1{
+    text-align: center;
 }
 #Congrats p{
     margin: 0;
@@ -72,14 +78,14 @@ margin: 35px;
 }
 #credential_container #front_credential{
     border: 2px solid #003C9B;
-    width: 390px;
-    height: 585px;
+    width: 300px;
+    height: 470px;
     border-radius: 7px;
 }
 #credential_container #backcredential{
     border: 2px solid #003C9B;
-    width: 390px;
-    height: 585px;
+    width: 300px;
+    height: 470px;
     border-radius: 7px;
     display: none;
 }
@@ -206,7 +212,23 @@ margin: 35px;
 .credential{
     width: 90%;
 }
+#description_dc3:nth-child(11){
+    font-size: 13px;
+}
+#backcredential p:nth-child(1){
+    margin-top: 18px;
+}
+#backcredential p{
+    margin: 7px auto;
+}
+#backcredential div{
+    display: flex;
+    margin: auto;
+    border-bottom: 2px solid #00375F;
+    width: 180px;
+    height: 110px;
 
+}
  @media (max-width:600px){
     #logo{
         max-width: 300px;
