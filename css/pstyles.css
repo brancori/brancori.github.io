@@ -1,84 +1,26 @@
-:root {
-    font-size: 62.5%;
-    font-family: monospace;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+:root { font-size: 62.5%; font-family: monospace; margin: 0; padding: 0; box-sizing: border-box;}
 
-body{
-    font-size: 1.5rem;
-}
-#proyects_container{
-    display: flex;
-}
-.nav-bar{
-    display: flex;
-    justify-content: end;
-}
-.nav-bar a{
-    margin-right: 15px;
-    text-decoration: none;
-    font-weight: bold;
-}
-.proyect_containers{
-    display: inline-block;
-    justify-content: center;
-    width: 360px;
-    text-align: center;
-}
-.img_proyects{
-    display: flex;
-    justify-content: center;
-    width: 300px;
-    height: 150px;
-    object-fit: fill;
-    place-content: center;
-    align-content: center;
-    margin-top: auto;
-}
-.img_only{
-    width: 300px;
-    border-radius: 7px 15px;
-    margin-bottom: 15px;
-    place-content: center;
-    align-items: center;
-}
-.main img:hover{
-    width: 350px;
-}
-.main button{
-    width: 120px;
-    border-radius: 10px;
-}
-.main a{
-    text-decoration: none;
+body{font-size: 1.5rem;}
 
-}
-.main p{
-    align-items: center;
-    font-family: monospace;
-    font-size: 2rem;
-}
-.container{
-    margin: 25xp;
-}
-.button {
-    display: flex;
-    display: inline-block;
-    justify-content: center;
-    margin:25px;
-}
-.div_container {
-    margin: 35px;
-}
-.TROX_Induction_page{
-    width: 300px;
-    border-radius: 15px;
-    margin-bottom: 15px;
-    background: #000;
-}
-.img_container{
-    width: 300px;
-    height: 150px;
-}
+#section_proyect{display: flex;gap:35px;}
+
+.nav_bar a{font-size: 30px; width: 250px;background: none; color: #000f3f; border-radius: 0;
+    border-top: 2px solid #000f3f; border-bottom: 2px solid #000f3f; }
+
+.nav_bar a:hover{color:rgb(184, 184, 184); border-top: 2px solid rgb(184, 184, 184); border-bottom: 2px solid rgb(184, 184, 184); 
+    background: none;}
+
+#main_container h1, h2{ text-align: center;}
+
+.img_container img{width: 280px;border-radius: 12px;object-fit: contain;}
+
+.img_container img:hover{width: 320px;height: 160px;}
+
+.img_container{display: flex; width: 300px; height: 220px; place-content: center;}
+
+.proyect_container{ display: flex; flex-direction: column; justify-content: center; align-items: center;
+    width: 500px; height: 250px; margin: 0;}
+
+.buttons_containers button, a{ margin-top: 15px; text-decoration: none; border: none; background: #000f3f; color: #fff;
+    border-radius: 15px;}
+.buttons_containers button:hover, a:hover{ background: rgb(184, 184, 184);color: #000f3f;}
