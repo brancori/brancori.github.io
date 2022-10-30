@@ -1,0 +1,218 @@
+@font-face {
+    font-family:  Helvetica;
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue\ LT\ 67\ MdCn\ Heavy.ttf,); 
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue\ LT\ 67\ MdCn\ HeavyOblique.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue\ LT\ 67\ MdCn\ Regular.ttf);
+}
+body{
+    font-weight: 800;
+    color: #003C9B;
+    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+#vigencia{
+    display: flex;
+    position: relative;
+    top: 7px;
+    left: 10px;
+}
+#Congrats{
+    text-align: justify;
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    margin: auto;
+}
+#Congrats p{
+    margin: 0;
+    font-size: small;
+    display: inline-block;
+    min-width: 350px; 
+}
+#logo{
+    max-width: 600px;
+    place-self: center;
+    margin-top: 45px;
+    min-width: 150px;
+}
+#Congrats a{
+    font-size: small;
+}
+#main{
+    position: relative;
+    display: flex;
+    flex-basis: 45%;
+    flex-basis: 45%;
+    gap:25px;
+    flex-wrap: nowrap;
+    place-content: center;
+    margin: auto;
+    margin-top: 35px;
+    align-items: center;
+}
+#main h2, h3 {
+text-align: center;
+width: 90%;
+margin: 35px;
+}
+#main #info h2{
+    width: 300px;
+}
+#rectangule{
+    background: #003C9B;
+    border-radius: 10px 10px 0px 0px;
+    width: 100%;
+    height: 25px;
+}
+#credential_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    height: 100%;
+}
+#credential_container #front_credential{
+    border: 2px solid #003C9B;
+    width: 390px;
+    height: 585px;
+    border-radius: 7px;
+}
+#credential_container #backcredential{
+    border: 2px solid #003C9B;
+    width: 390px;
+    height: 585px;
+    border-radius: 7px;
+    display: none;
+}
+#header_container input{
+    width: 60%;
+    border-radius: 2px;
+    border:none;
+    background: rgb(214, 214, 214);
+    text-align: center;
+}
+#form_container {
+    width:600px;
+    background: #fff;
+    border-radius: 15px;
+    border: 2px solid #003C9B;
+    column-gap: 20px;
+    /* display: none; */
+}
+#header_container{
+    text-align: center;
+}
+#header_container p{
+    text-align: center;
+    margin-bottom: 0;
+}
+#licencias{
+    display: flex;
+    justify-content: center;
+    
+}
+
+/* Credencial */
+.datos_{
+    background: rgb(223, 223, 223);
+    border-radius: 10px;
+    width: 200px;
+    height: 23px;
+    margin: auto;
+}
+#foto_credencial{
+    display:block;
+    width: 120px;
+    height: 140px;
+    background: #003C9B;
+    position: relative;
+    top: 10px;
+    margin: auto;
+}
+#logo_empresa{
+    display: block;
+    width: 200px;
+    height: 50px;
+    background: #003C9B;
+    position: relative;
+    margin: auto;
+    margin-top: 15px;
+}
+
+
+#front_credential p{
+    margin: 5px auto;
+    font-size: 15px;
+}
+.toggle{
+    margin-bottom: 15px;
+    place-self: end;
+    margin-right: 15px;
+    width: 100px;
+    font-size: 12px;
+    line-height: 25px;
+    text-align: center;
+    border-top: 2px solid #00375F;
+    border-bottom: 2px solid #00375F;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+#credential_container .toggle h2{
+    margin: 0;
+}
+#credential_container .toggle:hover{
+    border-top: 2px solid #6e7883;
+    border-bottom: 2px solid #6e7883;
+}
+#credential_container .toggle h2:hover{
+    color: #5f5f5f;
+}
+#faltas_Seguridad {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+    place-items: center;
+}
+#faltas_Seguridad .nfaltas{
+    background: #003C9B;
+    border-radius: 50px;
+    width: 27px;
+    height: 27px;
+}
+#faltas_Seguridad .nfaltas{
+    position: relative;
+    background: #003C9B;
+    border-radius: 50px;
+    color: #fff;
+}
+#faltas_Seguridad span{
+    top: 5px;
+    position: inherit;
+    margin-top: 0;
+}
+#faltas_Seguridad p{
+    display: inline;
+}
+#skills{
+    display: flex;
+    gap: 5px;
+    place-items: center;
+    justify-content: center;
+}
+#skills .skills_box{
+    width: 12px;
+    height: 12px;
+    border: 1px solid #00375F;
+}
+.credential{
+    width: 90%;
+}
+
+ @media (max-width:600px){
+    #logo{
+        max-width: 300px;
+    }
+    #main{
+        flex-direction: column;
+        
+    }
+ }

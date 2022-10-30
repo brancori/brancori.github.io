@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./estiloscred.css">
+    <title>CREDENCIALES</title>
+</head>
+<body>
+    <section id="Congrats">
+       <img src="/trox logo.gif" alt="Logo de Trox" id="logo">
+        <h1>FELICIDADES</h1>
+        <h2 id="info">Has concluido satisfactoriamente tu curso de inducción y acreditado el examen de evaluación, por lo que te solitamos algunas datos que nos serviran para realizar tu credencial de acceso temporal.
+            esta credencial tendrá una vigencia de 6 meses y durante toda tu estancia en TROX México, deberas portarla  en todo momento como método de identificación.
+            <p>Para más información sobre tus datos personales consulta nuestro </p><a href=""> Aviso de Privasidad</a>
+        </h2>
+    </section>
+
+    <section id="main">
+        <div id="form_container" class="form_container">
+            <div id="header_container">
+                <div id="rectangule"></div>
+                <p>INGRESA UNA FOTOGRAFIA</p> <input type="file">
+                <p>INGRESA EL LOGO DE TU EMPRESA</p> <input type="file">
+                <P>NOMBRE DE LA EMPRESA CONTRATISTA    </P><input type="text" placeholder="Nombre empresa" class="nombre" id="NEC" >
+                <p>NOMBRE DEL TRABAJADOR   </p> <input type="text" placeholder="Juan Hernández Hernández" class="nombre">
+                <p>PUESTO DEL TRABAJADOR    </p> <input type="text" placeholder="Soldador">
+                <p>NÚMERO DE SEGURIDAD SOCIAL    </p> <input type="number" placeholder="222 222 555" >
+                <p>CONTACTO DE EMERGENCIA   </p> <input type="text" placeholder="Juan Hernández Hernández" class="nombre">
+                <p>NÚMERO DE CONTACTO   </p> <input type="number" placeholder="222 222 2222" >
+                <p>CONTACTO TROX    </p> <input type="text" placeholder="Nombre del Contacto" class="nombre">
+            </div>
+            <h2>Licencias de habilidades</h2>
+            <h3>Recuerda que tendrás que evidencia de tener estas certificaciones vigentes en el formato DC3</h3>
+            <div id="licencias">
+                <div>
+                    <p><input type="checkbox" name="TA" value="1"> Trabajos en alturas</p>
+                    <p><input type="checkbox" name="EP" value="2"> Espacios Confinados</p>
+                    <p><input type="checkbox" name="TE" value="3"> Trabajos Eléctricos</p>
+                </div>
+                <div>
+                    <p><input type="checkbox" name="OM" value="4"> Operador de montacargas</p>
+                    <p><input type="checkbox" name="CI" value="5"> Combate contra incendios</p>
+                    <p><input type="checkbox" name="MSP" value="5"> Manejo de Sustancias Peligrosas</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="credential_container" class="credential_container">
+            <div class="toggle">
+                <h2>Girar</h2>
+            </div>
+            <div id="front_credential" class="credential">
+                <Label id="vigencia">Vigencia<label></Label></label>
+                <img src="" alt="foto_credencial" id="foto_credencial">
+                <img src="" alt="logo_empresa" id="logo_empresa">
+                <p id="main_p">EMPRESA CONTRATISTA</p>
+                <p class="datos_"></p>
+                <p>NOMBRE DEL TRABAJADOR</p>
+                <p class="datos_"></p>
+                <p>PUESTO DEL TRABAJADOR</p>
+                <p class="datos_"></p>
+                <p>LICENCIA DE HABILIDADES</p>
+                <div id="skills">
+                <label>TA</label><label class="skills_box"></label><label>EC</label><label class="skills_box"></label>
+                <label>TE</label><labe class="skills_box"></labe><label>OM</label><label class="skills_box"></label>
+                <label>CI</label><label class="skills_box"></label>
+                </div>
+                <div id="faltas_Seguridad"><p>Faltas a la Seguridad </p><div class="nfaltas"><span>1ra</span></div><div class="nfaltas"><span>2da</span></div></div>
+                
+            </div>
+
+            <div id="backcredential" class="credential">
+                <p>NÚMERO DE SEGURIDAD SOCIAL</p>
+                <P class="datos_"></P>
+                <p>CONTACTO DE EMERGENCIA</p>
+                <P class="datos_"></P>
+                <p>NÚMERO DE CONTACTO</p>
+                <P class="datos_"></P>
+                <p>CONTACTO TROX</p>
+                <P class="datos_"></P>
+
+                <P>FIRMA DE AUTORIZACIÓN</P>
+                <P>TA:Trabajos en Alturas, EC: Espacios Confinados, TE: Trabajos Eléctricos, <br>
+                OM: Operador de Montacargas, CI: Combate Contra Incencios </P>
+            </div>
+
+        </div>
+    </section>
+
+    <button>Enviar</button>
+
+    <script src="/quiz/jquery-3.1.1.min.js"></script>
+    <script >
+        $('.toggle').click(function(){
+    $('.credential').animate({
+        height: "toggle",
+        'padding-top': 'toggle',
+        'padding-bottom': 'toggle',
+        opacity: 'toggle'
+    }, "slow");
+});
+    </script>
+</body>
+</html>

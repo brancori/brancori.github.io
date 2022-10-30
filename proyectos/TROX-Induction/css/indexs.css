@@ -1,0 +1,316 @@
+
+@font-face {font-family: "HelveticaNeueW02-47LtCn"; src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot"); src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.svg#HelveticaNeueW02-47LtCn") format("svg"); }
+body{
+    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+}  
+header{
+    display: flex;
+    margin: 0 20px;
+}
+img {
+    margin: 25px;
+    width: 200px;
+}
+p{
+    color: #6e7883;
+    text-align: center;
+}
+.Bienvenido{
+    display: grid;
+    place-items: center;
+}
+.Bienvenido p{
+    text-align:justify ;
+    width: 88vw;
+}
+h1, h2, h3{
+    color: #00375F;
+    text-align: center;
+}
+#subcontainer2 p{
+    display: inline-block;
+    padding-right: 25px;
+    color:#00375F ;
+    font-weight: bold;
+}
+#Container2{
+    margin-left: 35px;
+}
+#SubContainer1 p{
+    display: inline-block;
+    padding-right: 25px;
+    font-size: .875rem;
+    font-weight: 500;
+}
+.induction{
+    display: grid;
+    place-items: center;
+}
+.evaluacion {
+    display: flex;
+    flex-direction: column;
+    width: 88vw;
+    align-items: center;
+    justify-content: center;
+    margin: 4vw;
+}
+.evaluacion button{
+    width: 40vw;
+    height: 35px;
+    background-color: #00375F;
+    color: aliceblue;
+    font-weight: bold;
+    font-size: large;
+    border: none;
+    border-radius: 15px;
+    margin: 30px 0px;
+    /* display: none; */
+}
+button:hover{
+    background-color: #6e7883;
+    transform: scale(1.1);
+}
+.induction img{
+    width: 75vw;
+    border-radius: 20px;
+}
+.info img:hover{
+    transform: scale(1.2);
+    border-radius: 15px;
+}
+.info{ 
+    display: flex;
+    flex-direction: row;
+    justify-content: baseline;
+    overflow-x: scroll;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+}
+.info div{
+    width: 300px;
+    margin: 0 25px;
+    text-align: center;
+    scroll-snap-align: center;
+    box-sizing: border-box;
+}
+.info div p{
+    margin-top: 0;
+}
+.info div .date{
+    font-size: small;
+    margin: 0;
+}
+.picture{
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+.footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0px;
+}
+footer div{
+    flex-direction: column;
+    width: 30vw;
+    align-items: center;
+    padding: 0px;
+}
+.info_footer{
+    font-size: small;
+    text-align: center;
+    padding: 0px;
+}
+.info_footer ul{
+    padding: 0px;
+}
+a:hover {
+    color:#ff8000;
+}
+/* Validar CURP */
+
+#registro_login pre{
+    margin-top: 35px;
+    text-align: center;
+    justify-content: center;
+    width: 50%;
+    margin: auto;
+    margin-top: 25px;
+    }
+#resultado {
+    color: red;
+    font-weight: bold;
+    border-radius: 15px;
+}
+#resultado.ok {
+    color: green;
+}
+#registro_{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    grid-template-areas: 
+    "x x x"
+    "a b d"
+    "e c c"
+    "bot bot bot";
+}
+#text_registro{
+    color: #00375F;
+    width: 90%;
+    margin: auto;
+    margin-bottom: 15px;
+}
+#Inicio{
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: 
+    "x x"
+    "a b"
+    "c c";
+    margin-bottom: 15px;
+}
+.item1{
+    grid-area: a;
+}
+.item2{
+    grid-area: b;
+}
+.item3{
+    grid-area: c;
+}
+.item4{
+    grid-area: d;
+}
+.reset_password{
+    grid-area: e;
+}
+.title_info{
+    grid-area: x;
+    margin: 0;
+    place-self: start;
+}
+.infor_label{
+    grid-area: bot;
+}
+#registro_login{
+    width: 600px;
+    background: #e2e2e2;
+    border-radius: 8px;
+}
+#submit_register{
+    margin-bottom: 5px;
+}
+#registro_login input{
+    height: 24px;
+}
+#submit_register, #submit_login{
+    width: 200px;
+    place-self: center;
+    border-radius: 25px;
+    border: none;
+    background-color: #00375F;
+    color: aliceblue;
+    font-weight: 700;
+    transition: all .5s ease;
+}
+#submit_register:hover, #submit_login:hover{
+    background-color: #5f5f5f;
+    color: aliceblue;
+    font-weight: 700;
+}
+.reset_password{
+    text-align: end;
+    font-size: small;
+}
+#form_container{
+    width: 90%;
+    margin: auto;
+}
+#registro_login .toggle{
+    position: relative;
+    top: 12px;
+    left: 488px;
+    width: 100px;
+    font-size: 8px;
+    line-height: 25px;
+    text-align: center;
+    border-top: 2px solid #00375F;
+    border-bottom: 2px solid #00375F;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+#registro_login .toggle:hover{
+    border-top: 2px solid #6e7883;
+    border-bottom: 2px solid #6e7883;
+}
+#registro_login .toggle h2:hover{
+    color: #5f5f5f;
+}
+#registro_login .toggle h2{
+    margin: 0;
+}
+#registro_login .item1, .item2, .item4{
+    background: #f5f5f5;
+    outline: none;
+    border: none;
+    border-bottom:2px solid #6e7883;
+    transition: all .5s ease;
+}
+#registro_login .item1:hover, .item2:hover, .item4:hover{
+    border-bottom:2px solid #00375F;
+}
+#registro_login .form_{
+    display: none;
+}
+#registro_login .form_:nth-child(2){
+    display: block;
+}
+@media (max-width: 600px){
+    #form_container, #Inicio, #registro_{
+        display:flex;
+        flex-direction: column;
+    }
+    #registro_login{
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    #registro_login , #Inicio, #registro_, input{
+        display:flex;
+        width: 100%;
+        margin: auto;
+        gap: 15px;
+    }
+    #Container2 {
+        display: none;
+    }
+    #video_ img{
+        width: 100%;
+        margin: 0;
+    }
+    #submit_login{
+        margin-bottom: 20px;
+        justify-content: center;
+    }
+    #submit_register{
+        width: 50%;
+        display: inline-block;
+        place-self: start;
+        margin-top: 25px;
+    }
+    .reset_password{
+        display: flex;
+        margin: auto;
+        margin-bottom: 20px;
+    }
+    #registro_login .toggle{
+        position: relative;
+        left: 4px;
+        left: 60%;
+    }
+}

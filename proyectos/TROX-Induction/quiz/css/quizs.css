@@ -1,0 +1,304 @@
+@import url(//db.onlinewebfonts.com/c/0c96daa6c25910a00efd1f0ea3c5c02d?family=HelveticaNeueW02-75Bold);
+@import url(//db.onlinewebfonts.com/c/396a25718aa788c4df0b49b11e6a248d?family=HelveticaNeueW02-47LtCn);
+@font-face {font-family: "HelveticaNeueW02-47LtCn"; src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot"); src: url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.woff") format("woff"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/396a25718aa788c4df0b49b11e6a248d.svg#HelveticaNeueW02-47LtCn") format("svg"); };
+*  
+
+:root{
+    --azul-trox: #00375F;
+        padding: 0;
+        margin: 0;
+}
+body{
+    display: grid;
+    place-items: center;
+    height: 100vh;
+    background: #fff;
+    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+#contaier {
+    height: auto;
+    width: auto;
+}
+#logo_start{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 45px;
+    align-items: center;
+    width: 400px;
+    margin: 0 auto 35px auto;
+}
+#start{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:70px;
+    width: 250px;
+    padding: 20px 0;
+    background: #fff;
+    color: #00375F;
+    font-size: 23px;
+    font-weight: 700;
+    border-radius:  30px 30px;
+    border: 2px solid #00375F;
+    cursor: pointer;
+    margin: auto;
+    /* display: none; */
+}
+#start:hover{
+    background: #00375F;
+    color: #fff;
+
+}
+#info_{
+    display: grid;
+    text-align: justify;
+    width: 30vw;
+    margin-bottom: 25px;
+    font-weight: 700;
+    place-items: center;
+    display: none;
+}
+#guide, #quiz{
+    height: auto;
+    width: 580px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 30px 10px;
+    border: 2px solid #00375F;
+    display: none;
+}
+#guide h2{
+    font-size: 60px;
+    color: #00375F;
+    margin: 0 auto;
+}
+#guide h4{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    margin: 0 auto;
+}
+#guide #button {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+#guide #button button{
+    height: 50px;
+    width: 120px;
+    margin: 10px 25px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #00375F;
+    border: 1px solid #fff;
+    border-radius: 20px 5px;
+    cursor: pointer;
+}
+#guide #button button:last-child{
+    margin:10px 0;
+}
+#guide #button button:hover{
+    background: #001d31;
+}
+#quiz{
+    /* display: block; */
+    height: 480px;
+    position: relative;
+}
+#quiz #quiz_header{
+    height: 60px;
+    width: 100%;
+    background: #fff;
+    position: absolute;
+    top:0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    border-radius: 30px 0;
+}
+#quiz #quiz_header h5{
+    font-size: 20px;
+    margin: 0 20px;
+    color: #00375F;
+}
+#quiz #quiz_header #timer{
+    height: 50px;
+    width: 230px;
+    background: #00375F;
+    color: #fff;
+    border: 1px solid #fff;
+    font-size: 18px;
+    border-radius: 20px 5px;
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 10px;
+}
+#quiz #quiz_header #timer h6{
+    font-size: 14px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    margin: 0 10px;
+}
+#quiz #quiz_header #timer #time{
+    height: 47px;
+    width: 40px;
+    background: #fff;
+    color: #001d31;
+    border: 1px solid #fff;
+    border-radius: 15px 7px;
+    position: absolute;
+    left: 185px;
+    top: 2px;
+}
+/* Quiz Question */
+#quiz #question{
+    position: absolute;
+    top: 50px;
+    display: flex;
+    flex-direction: row;
+}
+#quiz #question h2{
+    font-size: 27px;
+    color: #001d31;
+}
+#quiz #question h2:first-child{
+    margin: 0 10 px 0 5px;
+}
+/* Quiz Option  */
+#quiz #optionList{
+    height: 400px;
+    width: 100%;
+    position: absolute;
+    top: 120px;
+}
+#quiz #optionList h4{
+    height: 50px;
+    width: 535px;
+    background: #00375F;
+    margin: 5px 0;
+    border-radius: 7px;
+    padding: 10px 20px ;
+    font-size: 20px;
+    color: #fff;
+    overflow: hidden;
+    border: 1px solid #fff;
+    cursor: pointer;
+    place-self: center;
+}
+
+#quiz #optionList h4:hover{
+    background: #001d31;
+}
+#quiz #optionList .active{
+    background: #00375F;
+}
+#quiz #optionList .disabled{
+    pointer-events:none;
+}
+
+/* Answers Section */
+#quiz #answersSection{
+    height: 60px;
+    width: 100%;
+    background: #001d31;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    border-radius: 25px 0;
+}
+#quiz #answersSection h3{
+    margin: 0px 30px;
+    display:none;
+    color: #fff;
+}
+#quiz #answersSection h3:last-child{
+    height: 40px;
+    width: 100px;
+    display: grid;
+    place-items:center ;
+    background: #fff;
+    position: absolute;
+    right: 0;
+    color: #00375F;
+    border: 1px solid #00375F;   
+    font-size: 18px;
+    border-radius: 20px 5px;
+    cursor: pointer;
+    margin: 0 20px;
+}
+#quiz #answersSection h3:hover{
+    background: #00375F;
+    color: #fff;
+}
+#quiz #answersSection h3:first-child:hover{
+    background: none;
+}
+
+/* Result Selection */
+#container #result{
+    height: 500px;
+    width: 450px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 30px 10px;
+    border: 1px solid #fff;
+    overflow: hidden;
+    position: relative;
+    display: none;
+}
+#container #result i{
+    font-size: 180px;
+    color: #00375F;
+    position: absolute;
+    top:30px;
+    left: 100px;
+    background: #fff;
+}
+#container #result h6{
+    height: 40px;
+    width: 87%;
+    font-size: 25px;
+    position: absolute;
+    text-align: center;
+    top: 235px;
+    margin-top: 30px;
+}
+#container #result #points{
+    font-size: 30px;
+    top: 275px;
+}
+#container #result button{
+    height: 60px;
+    width: 260px;
+    border: none;
+    outline: none;
+    background: #001d31;
+    color: #fff;
+    position: absolute;
+    left: 105px;
+    top: 335px;
+    border: 1px solid #fff;
+    border-radius: 20px 5px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+#container #result button:last-child{
+    top: 405px;
+}
+#container #result button:hover{
+    background: #001d31;
+}
+#info p{
+    text-align: center;
+}
