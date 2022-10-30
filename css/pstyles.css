@@ -1,15 +1,16 @@
 :root {
     font-size: 62.5%;
     font-family: monospace;
-}
-html{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
 }
+
 body{
     font-size: 1.5rem;
+}
+#proyects_container{
+    display: flex;
 }
 .nav-bar{
     display: flex;
@@ -20,45 +21,64 @@ body{
     text-decoration: none;
     font-weight: bold;
 }
-.google div{
+.proyect_containers{
     display: inline-block;
     justify-content: center;
     width: 360px;
     text-align: center;
 }
-.google img{
+.img_proyects{
+    display: flex;
+    justify-content: center;
     width: 300px;
-    border-radius: 15px;
+    height: 150px;
+    object-fit: fill;
+    place-content: center;
+    align-content: center;
+    margin-top: auto;
+}
+.img_only{
+    width: 300px;
+    border-radius: 7px 15px;
     margin-bottom: 15px;
+    place-content: center;
+    align-items: center;
 }
-.google img:hover{
-    width: 500px;
+.main img:hover{
+    width: 350px;
 }
-.google div{
-    display: inline-block;
-    justify-content: center;
-    width: 360px;
-    text-align: center;
-}
-.google button{
+.main button{
     width: 120px;
     border-radius: 10px;
 }
-.google a{
+.main a{
     text-decoration: none;
 
 }
-.google p{
+.main p{
     align-items: center;
     font-family: monospace;
     font-size: 2rem;
 }
+.container{
+    margin: 25xp;
+}
 .button {
+    display: flex;
     display: inline-block;
+    justify-content: center;
+    margin:25px;
+}
+.div_container {
+    margin: 35px;
 }
 .TROX_Induction_page{
     width: 300px;
     border-radius: 15px;
     margin-bottom: 15px;
     background: #000;
+}
+.img_container{
+    width: 300px;
+    height: 150px;
 }
