@@ -1,15 +1,5 @@
-$('.toggle').click(function(){
-    $('.form_').animate({
-        height: "toggle",
-        'padding-top': 'toggle',
-        'padding-bottom': 'toggle',
-        opacity: 'toggle'
-    }, "slow");
-});
-
 // Start Section
-let start = document.querySelector("#start");
-let start_logo = document.querySelector("#logo_start");
+let start = document.querySelector("#main_container");
 
 // Guide
 let guide = document.querySelector("#guide");
@@ -54,23 +44,22 @@ let correct = 0;
 // Store Answer Value
 let UserAns = undefined;
 
-
 obtener_localstorage();
 
 //Obtein localStorag
 function obtener_localstorage(){
     var loco = localStorage.getItem("usuario");
     var usuario_ = document.getElementById("username");
-    usuario_.innerText = "Usuario: " + loco;
+    usuario_.innerText = "USUARIO: " + loco;
 };
 
 // What happen when 'Start' Button will Click
 start.addEventListener("click",()=>{
     start.style.display ="none";
     guide.style.display ="block";
-    start_logo.style.display ="none";
-    
 });
+
+
 // What happen when 'Exit' Button will Click
 exit.addEventListener("click",()=>{
     start.style.display ="block";
@@ -90,7 +79,7 @@ let countDown = ()=>{
 }
 //setInterval(countDown,1000)
 
-let loadData =()=>{
+let loadData = () => {
     questionNo.innerText = index + 1 + ". ";
     questionText.innerText = MCQS[index].question;
     option1.innerText = MCQS[index].choice1;
@@ -160,11 +149,27 @@ next_question.addEventListener("click", () => {
             interval = setInterval(countDown , 1000);
     }
     else{
-        index = 0;
-    }
+            index = 0;
+            //When quiz Question Complete Display Result Section
+            clearInterval(interval);
+            quiz.style.display = "none";
+            points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
+            result.style.display = "block";
+        }
     for(i = 0; i <= 3; i++) {
         choice_que[i].classList.remove("disabled");
     }
+})
+//what happen when 'Quit' Button Will Click
+quit.addEventListener("click", () => {
+    start.style.display = "block";
+    result.style.display = "none";
+});
+
+//Start Again When 'Start Again' Button Will Clicked
+startAgain.addEventListener("click", () => {
+    guide.style.display = "block";
+    result.style.display = "none";
 });
 
 

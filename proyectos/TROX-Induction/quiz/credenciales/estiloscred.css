@@ -221,6 +221,13 @@ margin: 35px;
 #backcredential p{
     margin: 7px auto;
 }
+#username{
+    font-size: 20px;
+    color: #00375F;
+    font-family: helvetica;
+    font-weight: 900;
+    margin: 25px;
+}
 #backcredential div{
     display: flex;
     margin: auto;

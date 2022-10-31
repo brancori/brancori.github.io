@@ -141,8 +141,19 @@
         </article>
         </div>
     </footer>
-    <script>ir_Examen.style.display = "none";</script>
+   
     <script src="./quiz/jquery-3.1.1.min.js"></script>
-    <script src="./quiz/scripts.js" ></script>
+    <script>
+        $('.toggle').click(function(){
+            $('.form_').animate({
+                height: "toggle",
+                'padding-top': 'toggle',
+                'padding-bottom': 'toggle',
+                opacity: 'toggle'
+            }, "slow");
+        });
+        ir_Examen.style.display = "none";
+        </script>
+
 </body>
 </html>

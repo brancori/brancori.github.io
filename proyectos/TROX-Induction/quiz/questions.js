@@ -11,61 +11,61 @@ let MCQS = [{
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 2
 },{
         question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 1
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 0
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 3
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 1
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 2
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 3
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 2
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 4
+    answer: 0
 }];

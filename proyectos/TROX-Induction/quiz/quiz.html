@@ -4,19 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/">
-    <link href="//db.onlinewebfonts.com/c/396a25718aa788c4df0b49b11e6a248d?family=HelveticaNeueW02-47LtCn" rel="stylesheet" type="text/css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/quizs.css">
     <link rel="shortcut icon" type="image/x-icon" href="/proyectos/TROX-Induction/assets/img/logo.png">
     <title>Examen SHI</title>
 </head>
 <body>
     <pre id="username"></pre>
-        <section id="container">
-            
+
+        <div id="container">
+            <!--    Start Section     -->
             <div id="main_container">
-                <img id="logo_start" src="/trox logo.gif" alt="Logo_Trox">
+                <img id="logo_start" src="/proyectos/TROX-Induction/assets/img/trox logo.gif" alt="Logo_Trox">
                 <div id="start">INICIAR EL EXAMEN</div>
                 <div id="info">
                     <p>TROX MÉXICO S.A de C.V se rerva el derecho, de la apliación
@@ -24,7 +22,7 @@
                     <p>Recuerda que tus respuestas son el fruta de tu tiempo y atención invertida en la inducción.</p>
                 </div>
             </div>
-           
+            <!--    Guide Section    -->
             <div id="guide">
                 <h2>Guía de examen</h2>
                 <h4>1.Solo dispondrás de 20 segundos para responder cada pregunta.</h4>
@@ -70,10 +68,10 @@
                 <h6>Has completado el examen</h6>
                 <h6 id="points">Tu Resultado es 4 de 10</h6>
                 <button id="quit">Cerrar examen</button>
-                <button id="StartAgain">Repetir el Examen</button>
+                <button id="startAgain">Repetir el Examen</button>
             </div>
-        </section>
-        <script src="/quiz/questions.js"></script>
-        <script src="/quiz/scripts.js"></script>  
+        </div>
+        <script src="./questions.js"></script>
+        <script src="./scripts.js"></script>  
 </body>
 </html>
