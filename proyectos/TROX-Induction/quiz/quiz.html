@@ -67,8 +67,16 @@
                 <i class="fas fa-trophy">Fin</i>
                 <h6>Has completado el examen</h6>
                 <h6 id="points">Tu Resultado es 4 de 10</h6>
-                <button id="quit">Cerrar examen</button>
-                <button id="startAgain">Repetir el Examen</button>
+                <!-- <button id="quit">Cerrar examen</button> -->
+                <div id="haceCredencial" style="display: none;">
+                    <h2 id="congrat_text_end">Felicidades ahora podras realizar el llenado de datos de tu credencial de acceso para mandarlo</h2>
+                <a href="./credenciales/credencial.html" ><button  >Hacer Credencial</button></a>
+                </div>
+                <div id="quit" style="display: none;">
+                    <h2 class="sorry_text_end">Lamentablemente no podras seguir Continuando con tu proceso deberas volverlo a intentar</h2>
+                    <button >Cerrar Quiz</button>
+                </div>
+                
             </div>
         </div>
         <script src="./questions.js"></script>

@@ -28,7 +28,7 @@ let next_question = document.querySelector("#next_question");
 let result = document.querySelector("#result");
 let points = document.querySelector("#points");
 let quit = document.querySelector("#quit");
-let StartAgain = document.querySelector("#StartAgain");
+let hacerCredencial = document.querySelector("#haceCredencial");
 
 // Get All 'h4' form quiz Section (MCQS)
 let choice_que = document.querySelectorAll(".choice_que");
@@ -207,17 +207,28 @@ next_question.addEventListener("click", () => {
     else{
             index = 0;
             //When quiz Question Complete Display Result Section
-            clearInterval(interval);
+            clearInterval(interval);correct
             quiz.style.display = "none";
             points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
-
             result.style.display = "block";
+            mostrarBoton()
+            function mostrarBoton(){
+            if( correct >= 2){
+                hacerCredencial.style.display = 'block';
+                quit.style.display = 'none';
+            }else{
+                hacerCredencial.style.display = 'none';
+                quit.style.display = 'block';
+            }
+            };
+            
         }
 
     for(i = 0; i <= 3; i++) {
         choice_que[i].classList.remove("disabled");
     }
 })
+
 
 
 //what happen when 'Quit' Button Will Click

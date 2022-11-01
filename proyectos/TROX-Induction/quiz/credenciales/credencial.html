@@ -113,6 +113,28 @@
     }, "slow");
 });
     </script>
+    <script>
+        var procesarImagen = function(imagen, callback){
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL(imagen);
+    fileReader.onload = function(){
+        callback(fileReader.result);
+    };
+};
+$("#pp").on("change", function(){
+    var imagen = $(this)[0].files[0];
+    procesarImagen(imagen, function(result){
+        $("#list").append("<img src='" + result + "'>");
+    });
+});
+
+$("#LE").on("change", function(){
+    var imagen = $(this)[0].files[0];
+    procesarImagen(imagen, function(result){
+        $("#list2").append("<img src='" + result + "'>");
+    });
+});
+    </script>
     
 
     <script src="/proyectos/TROX-Induction/quiz/scripts.js"></script>

@@ -258,6 +258,8 @@ body{
 
 /* Result Selection */
 #container #result{
+    place-content: center;
+    margin: auto;
     height: 500px;
     width: 450px;
     padding: 20px;
@@ -288,6 +290,20 @@ body{
 #container #result #points{
     font-size: 30px;
     top: 275px;
+}
+#container .sorry_text_end{
+    font-size: 20px;
+    position: relative;
+    top: 320px;
+    text-align: center;
+    color: #001d31;
+}
+#container #congrat_text_end{
+    font-size: 20px;
+    position: relative;
+    top: 320px;
+    text-align: center;
+    color: #001d31;
 }
 #container #result button{
     height: 60px;

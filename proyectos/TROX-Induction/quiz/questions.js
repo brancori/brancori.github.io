@@ -11,7 +11,7 @@ let MCQS = [{
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 2
+    answer: 1
 },{
         question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
@@ -25,14 +25,7 @@ let MCQS = [{
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 0
-},{
-       question: "¿Dónde debo usar calzado de seguridad?",
-    choice1: "En todo momento",
-    choice2: "Nunca debo utilizarlos",
-    choice3: "Sólo cuando me lo indiquen",
-    choice4: "En todo el área de producción",
-    answer: 3
+    answer: 1
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
@@ -46,26 +39,33 @@ let MCQS = [{
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 2
+    answer: 1
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 3
+    answer: 1
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 2
+    answer: 1
 },{
        question: "¿Dónde debo usar calzado de seguridad?",
     choice1: "En todo momento",
     choice2: "Nunca debo utilizarlos",
     choice3: "Sólo cuando me lo indiquen",
     choice4: "En todo el área de producción",
-    answer: 0
+    answer: 1
+},{
+       question: "¿Dónde debo usar calzado de seguridad?",
+    choice1: "En todo momento",
+    choice2: "Nunca debo utilizarlos",
+    choice3: "Sólo cuando me lo indiquen",
+    choice4: "En todo el área de producción",
+    answer: 1
 }];
