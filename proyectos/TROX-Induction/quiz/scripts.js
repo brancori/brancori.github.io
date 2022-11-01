@@ -37,6 +37,85 @@ let index = 0;
 let timer = 0;
 let interval = 0;
 
+//Get All Checkboxs
+let TA_ = document.getElementById("TA_");
+let TA = document.getElementById("TA");
+
+let EC_ = document.getElementById("EC_");
+let EC = document.getElementById("EC");
+
+let TE_ = document.getElementById("TE_");
+let TE = document.getElementById("TE");
+
+let OM_ = document.getElementById("OM_");
+let OM = document.getElementById("OM");
+
+let CI_ = document.getElementById("CI_");
+let CI = document.getElementById("CI");
+
+let MSP_ = document.getElementById("MSP_");
+let MSP = document.getElementById("MSP");
+
+
+function ShowSkills(){  
+    if(TA.checked){
+        TA_.style.background ='#00375F';
+    }else{
+        TA_.style.background ='none';
+    };
+
+    if(EC.checked){
+        EC_.style.background ='#00375F';
+    }else{
+        EC_.style.background ='none';
+    };
+
+    if(TE.checked){
+        TE_.style.background ='#00375F';
+    }else{
+        TE_.style.background ='none';
+    };
+
+    if(OM.checked){
+        OM_.style.background ='#00375F';
+    }else{
+        OM_.style.background ='none';
+    };
+    if(CI.checked){
+        CI_.style.background ='#00375F';
+    }else{
+        CI_.style.background ='none';
+    };
+    if(MSP.checked){
+        MSP_.style.background ='#00375F';
+    }else{
+        MSP_.style.background ='none';
+    };
+}
+var procesarImagen = function(imagen, callback){
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL(imagen);
+    fileReader.onload = function(){
+        callback(fileReader.result);
+    };
+};
+$("#pp").on("change", function(){
+    var imagen = $(this)[0].files[0];
+    procesarImagen(imagen, function(result){
+        $("#list").append("<img src='" + result + "'>");
+    });
+});
+
+$("#LE").on("change", function(){
+    var imagen = $(this)[0].files[0];
+    procesarImagen(imagen, function(result){
+        $("#list2").append("<img src='" + result + "'>");
+    });
+});
+
+
+
+
 // Total points
 let correct = 0;
 
@@ -171,6 +250,30 @@ startAgain.addEventListener("click", () => {
     guide.style.display = "block";
     result.style.display = "none";
 });
+
+//Inner Text tag P
+function cambio(){
+    var NContratista = document.getElementById("NEC").value.toUpperCase();
+    document.getElementById("nContratista").innerHTML = NContratista;
+
+    var nt = document.getElementById("Nt").value.toUpperCase();
+    document.getElementById("input_nt").innerHTML = nt;
+
+   var pt = document.getElementById("pt").value.toUpperCase();
+   document.getElementById("input_pt").innerHTML = pt;
+
+   var nss = document.getElementById("nss").value.toUpperCase();
+   document.getElementById("input_nss").innerHTML = nss;
+
+   var ce = document.getElementById("ce").value.toUpperCase();
+   document.getElementById("input_ce").innerHTML = ce;
+
+   var nc = document.getElementById("nc").value.toUpperCase();
+   document.getElementById("input_nc").innerHTML = nc;
+
+   var cT = document.getElementById("cT").value.toUpperCase();
+   document.getElementById("input_ct").innerHTML = cT;
+}
 
 
 //Función para validar una CURP
