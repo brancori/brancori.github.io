@@ -92,29 +92,6 @@ function ShowSkills(){
         MSP_.style.background ='none';
     };
 }
-var procesarImagen = function(imagen, callback){
-    var fileReader = new FileReader();
-    fileReader.readAsDataURL(imagen);
-    fileReader.onload = function(){
-        callback(fileReader.result);
-    };
-};
-$("#pp").on("change", function(){
-    var imagen = $(this)[0].files[0];
-    procesarImagen(imagen, function(result){
-        $("#list").append("<img src='" + result + "'>");
-    });
-});
-
-$("#LE").on("change", function(){
-    var imagen = $(this)[0].files[0];
-    procesarImagen(imagen, function(result){
-        $("#list2").append("<img src='" + result + "'>");
-    });
-});
-
-
-
 
 // Total points
 let correct = 0;
@@ -233,23 +210,22 @@ next_question.addEventListener("click", () => {
             clearInterval(interval);
             quiz.style.display = "none";
             points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
+
             result.style.display = "block";
         }
+
     for(i = 0; i <= 3; i++) {
         choice_que[i].classList.remove("disabled");
     }
 })
+
+
 //what happen when 'Quit' Button Will Click
 quit.addEventListener("click", () => {
     start.style.display = "block";
     result.style.display = "none";
 });
 
-//Start Again When 'Start Again' Button Will Clicked
-startAgain.addEventListener("click", () => {
-    guide.style.display = "block";
-    result.style.display = "none";
-});
 
 //Inner Text tag P
 function cambio(){
