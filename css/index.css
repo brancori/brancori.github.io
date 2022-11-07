@@ -35,7 +35,7 @@ body{
 .icons a img:hover{
     width: 40px;
     filter: brightness(10000%);
-    border-bottom:3px solid #d96a1b;
+    border-bottom:3px solid var(--orange);
     padding: 5px;
 }
 title #name {
@@ -55,11 +55,13 @@ li{
     margin: 4px 5px;
 }
 .nav-bar ul li a:hover{
-    color: var(--orange);
+    border-bottom: 3px solid var(--orange);
+    filter: opacity(100%);
 }
 .nav-bar ul li a{
     text-decoration: none;
     color: white;
+    filter: opacity(45%);
     font-weight: bold;
 }
 .main-title{
@@ -78,7 +80,7 @@ li{
     gap:5%;
 }
 .main-description{
-    border-left: 3px solid #374547;
+    border-left: 3px solid var(--soft-Grey);
 }
 .main-description p{
     padding: 6px 5px;
@@ -86,7 +88,7 @@ li{
     margin: 0 25px;
 }
 .firts-info p:nth-child(1){
-    background-color: #374547;
+    background-color: var(--soft-Grey);
     margin-bottom: 25px;
     margin-top: 25px;
 }

@@ -209,6 +209,7 @@ a:hover {
     width: 85%;
     margin: auto;
     text-align: center;
+    text-transform: uppercase;
 }
 .item2{
     grid-area: b;
@@ -217,13 +218,9 @@ a:hover {
     width: 80%;
     margin: auto;
     text-align: center;
+    text-transform: uppercase;
 }
-.item3{
-    grid-area: c;
-}
-.item4{
-    grid-area: d;
-}
+
 .reset_password{
     grid-area: e;
 }
