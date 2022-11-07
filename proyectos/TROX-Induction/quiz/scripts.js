@@ -1,6 +1,6 @@
 // Start Section
 let start = document.querySelector("#main_container");
-
+let resultado = document.getElementById("resultado");
 // Guide
 let guide = document.querySelector("#guide");
 let exit = document.querySelector("#exit");
@@ -92,6 +92,54 @@ function ShowSkills(){
         MSP_.style.background ='none';
     };
 }
+
+var validado = "No valido";
+var valido = "No valido";
+
+var validado_ = 0;
+var valido_ = 0;
+
+
+const formulario = document.getElementById('nombre');
+const inputs = document.querySelectorAll('#registro_ input');
+const ir_Examen = document.getElementById("ir_Examen");
+const expresiones = {
+    nombre: /^[a-zA-ZÀ-ÿ\s]{6,40}$/, // Letras y espacios, pueden llevar acentos.
+}
+
+
+const validarFormulario = (e) =>{
+     switch(e.target.name){
+         case "nombre":
+         if(expresiones.nombre.test(e.target.value)){
+            document.getElementById('nombre').classList.remove('item2-incorrecto');
+            document.getElementById('nombre').classList.add('item2-correcto');
+            validado = "Válido";
+            resultado.classList.add("ok");
+            ir_Examen.style.display = "block";
+
+         }else{
+            validado = "No valido";
+            document.getElementById('nombre').classList.add('item2-incorrecto');
+            document.getElementById('nombre').classList.remove('item2-correcto');
+            resultado.classList.remove("ok");
+            ir_Examen.style.display = "none";
+         }
+         break;  
+        }
+        resultado.innerText = "Nombre: " + e.target.value + "\nFormato: " + validado;
+        
+    };
+    
+
+inputs.forEach((input) => {
+    input.addEventListener('keyup', validarFormulario);
+    input.addEventListener('blur', validarFormulario);
+});
+formulario.addEventListener('submit', (e) => {
+    e.preventDefault();
+});
+
 
 // Total points
 let correct = 0;
@@ -294,25 +342,34 @@ function curpValida(curp) {
 //Handler para el evento cuando cambia el input
 //Lleva la CURP a mayúsculas para validarlo
 function validarInput(input) {
-    var curp = input.value.toUpperCase(),
-        resultado = document.getElementById("resultado"),
-        ir_Examen = document.getElementById("ir_Examen"),
-        valido = "No válido";
+    var curp = input.value.toUpperCase();
         ir_Examen.style.display = "none";
     if (curpValida(curp)) { // ⬅️ Acá se comprueba
         valido = "Válido";
-        ir_Examen = document.getElementById("ir_Examen"),
+        document.getElementById('curp').classList.remove('item1-incorrecto');
+        document.getElementById('curp').classList.add('item1-correcto');
         resultado.classList.add("ok");
         ir_Examen.style.display = "block";
     }
-
     else {
     	resultado.classList.remove("ok");
+        document.getElementById('curp').classList.add('item1-incorrecto');
+        document.getElementById('curp').classList.remove('item1-correcto');
+        ir_Examen.style.display = "none";
     }
-
-    resultado.innerText = "CURP: " + curp + "\nFormato: " + valido;    
+    resultado.innerText = "CURP: " + curp + "\nFormato: " + valido;
     localStorage.setItem("usuario", curp);
 };
+
+
+
+
+
+
+
+
+
+
 
 
 

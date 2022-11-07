@@ -24,20 +24,20 @@
         <div id="form_container" class="form_container">
             <div id="header_container">
                 <div id="rectangule"></div>
-                <p>INGRESA UNA FOTOGRAFIA</p> <input type="file" id="pp">
-                <p>INGRESA EL LOGO DE TU EMPRESA</p> <input type="file" id="LE">
+                <p for="LE">INGRESA UNA FOTOGRAFIA</p> <input type="file" id="pp">
+                <p>INGRESA EL LOGO DE TU EMPRESA</p> <input type="file" id="LE" name="LE">
                 <P>NOMBRE DE LA EMPRESA CONTRATISTA </P>
                 <input type="text" placeholder="Nombre empresa" class="nombre" id="NEC"  oninput="cambio()">
                 <p>NOMBRE DEL TRABAJADOR</p>  
                 <input type="text" placeholder="Juan Hernández Hernández" class="nombre" id="Nt"  oninput="cambio()">
                 <p>PUESTO DEL TRABAJADOR    </p> 
                 <input type="text" placeholder="Soldador" id="pt" oninput="cambio()">
-                <p>NÚMERO DE SEGURIDAD SOCIAL    </p> 
-                <input type="number" placeholder="222 222 555" id="nss" oninput="cambio()">
+                <p>NÚMERO DE SEGURIDAD SOCIAL </p> 
+                <input type="number" placeholder="222 222 555" id="nss" oninput="cambio()" m="9" max="9">
                 <p>CONTACTO DE EMERGENCIA   </p> 
                 <input type="text" placeholder="Juan Hernández Hernández" class="nombre" id="ce" oninput="cambio()">
                 <p>NÚMERO DE CONTACTO   </p> 
-                <input type="number" placeholder="222 222 2222" id="nc" oninput="cambio()">
+                <input type="number" placeholder="222 222 2222" id="nc" oninput="cambio()" max="10">
                 <p>CONTACTO TROX </p> 
                 <input type="text" placeholder="Nombre del Contacto" class="nombre" id="cT" oninput="cambio()">
             </div>
@@ -114,13 +114,7 @@
 });
     </script>
     <script>
-        var procesarImagen = function(imagen, callback){
-    var fileReader = new FileReader();
-    fileReader.readAsDataURL(imagen);
-    fileReader.onload = function(){
-        callback(fileReader.result);
-    };
-};
+
 $("#pp").on("change", function(){
     var imagen = $(this)[0].files[0];
     procesarImagen(imagen, function(result){
@@ -134,6 +128,13 @@ $("#LE").on("change", function(){
         $("#list2").append("<img src='" + result + "'>");
     });
 });
+var procesarImagen = function(imagen, callback){
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL(imagen);
+    fileReader.onload = function(){
+        callback(fileReader.result);
+    };
+};
     </script>
     
 

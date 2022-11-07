@@ -48,29 +48,13 @@
         
         <div id="registro_login">
             <div class="toggle">
-                <h2>Iniciar Sesión</h2>
             </div>
             
-            <div id="form_container" >
-                <div class="form_">
-                <form action="#" id="Inicio">
-                    <h2 class="title_info">Iniciar Sesión</h2>
-                    <input type="text" placeholder="CURP" required class="item1">
-                    <input type="password" placeholder="Contraseña" required class="item2">
-                    <input type="submit" value="Iniciar Sesión" id="submit_login" class="item3">
-                </form>
-            </div>
             <div class="form_">
                 <form action="#" id="registro_">
                     <h2 class="title_info">Registro</h2>
-                    <input type="text" id="curp_input" oninput="validarInput(this)" placeholder="Ingrese su CURP" class="item1" required>
-                    <input type="password" placeholder="Contraseña" class="item2" required>
-                    <input type="email" placeholder="alguien@dominio.com" class="item4" required>
-                
-                    
-      
-                    <input type="submit" value="Registrarse" id="submit_register" class="item3">
-                    <a href="#" class="reset_password">Olvide mi contraseña</a>
+                    <input type="text" id="curp" oninput="validarInput(this)" placeholder="Ingrese su CURP" class="item1"  name="curp" required>
+                    <input type="text" placeholder="Brandon Cortes" class="item2" name="nombre" id="nombre" required>     
                     <p id="text_registro" class="infor_label">Para validar tu registro será necesario que te registres con tu CURP  </p>
                 </form>
             </div>
@@ -81,10 +65,10 @@
         </div>
         <pre id="resultado"></pre>
 
-        <a id="ir_Examen" href="./quiz/quiz.html"><button class="ir_Examen"> IR AL EXÁMEN </button></a>
+        <a id="ir_Examen" href="./quiz/quiz.html"><button class="ir_Examen"  type="submit"> IR AL EXÁMEN </button></a>
 
     </section>
-    <h2>INFORMACIÓN RELEVANTE</h2>
+    <h2>BOLITIN DE SEGURIDAD</h2>
     <section class="info">
             <div>
                 <img class="picture" src="./assets/img/Kachel_Mann_360x165px_EN.webp" alt="">
@@ -143,17 +127,6 @@
     </footer>
    
     <script src="./quiz/jquery-3.1.1.min.js"></script>
-    <script>
-        $('.toggle').click(function(){
-            $('.form_').animate({
-                height: "toggle",
-                'padding-top': 'toggle',
-                'padding-bottom': 'toggle',
-                opacity: 'toggle'
-            }, "slow");
-        });
-        ir_Examen.style.display = "none";
-        </script>
         <script src="./quiz/scripts.js"></script>
 
 </body>

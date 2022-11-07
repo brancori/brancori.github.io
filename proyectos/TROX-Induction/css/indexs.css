@@ -74,6 +74,24 @@ h1, h2, h3{
     margin: 30px 0px;
     /* display: none; */
 }
+
+/* Validación para formulario */
+.item2-incorrecto{
+    color: #bb2929;
+    opacity: 1;
+}
+.item2-correcto{
+    color: #1ed12d;
+    opacity: 1;
+}
+.item1-incorrecto{
+    color: #bb2929;
+    opacity: 1;
+}
+.item1-correcto{
+    color: #1ed12d;
+    opacity: 1;
+}
 button:hover{
     background-color: #6e7883;
     transform: scale(1.1);
@@ -150,13 +168,17 @@ a:hover {
     color: red;
     font-weight: bold;
     border-radius: 15px;
+    text-align: center;
 }
 #resultado.ok {
     color: green;
 }
+#ir_Examen{
+    display: none;
+}
 #registro_{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     grid-gap: 10px;
     grid-template-areas: 
     "x x x"
@@ -182,9 +204,19 @@ a:hover {
 }
 .item1{
     grid-area: a;
+    border-radius: 7px;
+    border: none;
+    width: 85%;
+    margin: auto;
+    text-align: center;
 }
 .item2{
     grid-area: b;
+    border-radius: 7px;
+    border: none;
+    width: 80%;
+    margin: auto;
+    text-align: center;
 }
 .item3{
     grid-area: c;
@@ -198,6 +230,8 @@ a:hover {
 .title_info{
     grid-area: x;
     margin: 0;
+    padding-left: 25px;
+    padding-top: 15px;
     place-self: start;
 }
 .infor_label{
@@ -237,29 +271,8 @@ a:hover {
     width: 90%;
     margin: auto;
 }
-#registro_login .toggle{
-    position: relative;
-    top: 12px;
-    left: 488px;
-    width: 100px;
-    font-size: 8px;
-    line-height: 25px;
-    text-align: center;
-    border-top: 2px solid #00375F;
-    border-bottom: 2px solid #00375F;
-    transition: all .5s ease;
-    cursor: pointer;
-}
-#registro_login .toggle:hover{
-    border-top: 2px solid #6e7883;
-    border-bottom: 2px solid #6e7883;
-}
-#registro_login .toggle h2:hover{
-    color: #5f5f5f;
-}
-#registro_login .toggle h2{
-    margin: 0;
-}
+
+
 #registro_login .item1, .item2, .item4{
     background: #f5f5f5;
     outline: none;
@@ -313,10 +326,5 @@ a:hover {
         display: flex;
         margin: auto;
         margin-bottom: 20px;
-    }
-    #registro_login .toggle{
-        position: relative;
-        left: 4px;
-        left: 60%;
     }
 }
