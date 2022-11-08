@@ -128,18 +128,15 @@ const validarFormulario = (e) =>{
          break;  
         }
         resultado.innerText = "Nombre: " + e.target.value + "\nFormato: " + validado;
+        localStorage.setItem("Usuario.value", e.target.value);
         
     };
-
-    
-
+   
 inputs.forEach((input) => {
     input.addEventListener('keyup', validarFormulario);
     input.addEventListener('blur', validarFormulario);
 });
-formulario.addEventListener('submit', (e) => {
-    e.preventDefault();
-});
+
 
 
 // Total points
@@ -149,14 +146,15 @@ let correct = 0;
 // Store Answer Value
 let UserAns = undefined;
 
-obtener_localstorage();
 
 //Obtein localStorag
 function obtener_localstorage(){
-    var loco = localStorage.getItem("nombre");
+    var loco = localStorage.getItem("Usuario.value");
     var usuario_ = document.getElementById("username");
     usuario_.innerText = "USUARIO: " + loco;
 };
+
+obtener_localstorage();
 
 // What happen when 'Start' Button will Click
 start.addEventListener("click",()=>{
@@ -359,7 +357,6 @@ function validarInput(input) {
         ir_Examen.style.display = "none";
     }
     resultado.innerText = "CURP: " + curp + "\nFormato: " + valido;
-    localStorage.setItem("usuario", curp);
 };
 
 
