@@ -130,6 +130,7 @@ const validarFormulario = (e) =>{
         resultado.innerText = "Nombre: " + e.target.value + "\nFormato: " + validado;
         
     };
+
     
 
 inputs.forEach((input) => {
@@ -152,7 +153,7 @@ obtener_localstorage();
 
 //Obtein localStorag
 function obtener_localstorage(){
-    var loco = localStorage.getItem("usuario");
+    var loco = localStorage.getItem("nombre");
     var usuario_ = document.getElementById("username");
     usuario_.innerText = "USUARIO: " + loco;
 };
@@ -360,6 +361,7 @@ function validarInput(input) {
     resultado.innerText = "CURP: " + curp + "\nFormato: " + valido;
     localStorage.setItem("usuario", curp);
 };
+
 
 
 

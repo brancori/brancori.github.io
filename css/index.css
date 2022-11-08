@@ -168,8 +168,14 @@ li{
     height: 128px;
     border-radius: 10px;
 }
-.proyect_container img:hover,.proyect_container a:hover
-{
+.proyect_container .item{
+    background: rgb(155, 14, 14);
+    width: 250px;
+    height: 128px;
+    border-radius: 10px;
+    display: none;
+}
+.proyect_container img:hover,.proyect_container a:hover {
     width: 270px;
     height:138.44px;
 }
