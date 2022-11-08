@@ -62,7 +62,7 @@ h1, h2, h3{
     justify-content: center;
     margin: 4vw;
 }
-.evaluacion button{
+.evaluacion .ir_Examen{
     width: 40vw;
     height: 35px;
     background-color: #00375F;
@@ -174,7 +174,7 @@ a:hover {
     color: green;
 }
 #ir_Examen{
-    display: none;
+    /* display: none; */
 }
 #registro_{
     display: grid;

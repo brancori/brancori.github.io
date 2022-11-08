@@ -1,6 +1,6 @@
 // Start Section
 let start = document.querySelector("#main_container");
-let resultado = document.getElementById("resultado");
+
 // Guide
 let guide = document.querySelector("#guide");
 let exit = document.querySelector("#exit");
@@ -92,51 +92,6 @@ function ShowSkills(){
         MSP_.style.background ='none';
     };
 }
-
-var validado = "No valido";
-var valido = "No valido";
-
-var validado_ = 0;
-var valido_ = 0;
-
-
-const formulario = document.getElementById('nombre');
-const inputs = document.querySelectorAll('#registro_ input');
-const ir_Examen = document.getElementById("ir_Examen");
-const expresiones = {
-    nombre: /^[a-zA-ZÀ-ÿ\s]{6,40}$/, // Letras y espacios, pueden llevar acentos.
-}
-
-
-const validarFormulario = (e) =>{
-     switch(e.target.name){
-         case "nombre":
-         if(expresiones.nombre.test(e.target.value)){
-            document.getElementById('nombre').classList.remove('item2-incorrecto');
-            document.getElementById('nombre').classList.add('item2-correcto');
-            validado = "Válido";
-            resultado.classList.add("ok");
-            ir_Examen.style.display = "block";
-
-         }else{
-            validado = "No valido";
-            document.getElementById('nombre').classList.add('item2-incorrecto');
-            document.getElementById('nombre').classList.remove('item2-correcto');
-            resultado.classList.remove("ok");
-            ir_Examen.style.display = "none";
-         }
-         break;  
-        }
-        resultado.innerText = "Nombre: " + e.target.value + "\nFormato: " + validado;
-        localStorage.setItem("Usuario.value", e.target.value);
-        
-    };
-   
-inputs.forEach((input) => {
-    input.addEventListener('keyup', validarFormulario);
-    input.addEventListener('blur', validarFormulario);
-});
-
 
 
 // Total points
@@ -308,57 +263,6 @@ function cambio(){
    var cT = document.getElementById("cT").value.toUpperCase();
    document.getElementById("input_ct").innerHTML = cT;
 }
-
-
-//Función para validar una CURP
-function curpValida(curp) {
-    var re = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/,
-        validado = curp.match(re);
-	
-    if (!validado)  //Coincide con el formato general?
-    	return false;
-    
-    //Validar que coincida el dígito verificador
-    function digitoVerificador(curp17) {
-        //Fuente https://consultas.curp.gob.mx/CurpSP/
-        var diccionario  = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
-            lngSuma      = 0.0,
-            lngDigito    = 0.0;
-        for(var i=0; i<17; i++)
-            lngSuma = lngSuma + diccionario.indexOf(curp17.charAt(i)) * (18 - i);
-        lngDigito = 10 - lngSuma % 10;
-        if (lngDigito == 10) return 0;
-        return lngDigito;
-    }
-  
-    if (validado[2] != digitoVerificador(validado[1])) 
-    	return false;
-        
-    return true; //Validado
-}
-
-
-//Handler para el evento cuando cambia el input
-//Lleva la CURP a mayúsculas para validarlo
-function validarInput(input) {
-    var curp = input.value.toUpperCase();
-        ir_Examen.style.display = "none";
-    if (curpValida(curp)) { // ⬅️ Acá se comprueba
-        valido = "Válido";
-        document.getElementById('curp').classList.remove('item1-incorrecto');
-        document.getElementById('curp').classList.add('item1-correcto');
-        resultado.classList.add("ok");
-        ir_Examen.style.display = "block";
-    }
-    else {
-    	resultado.classList.remove("ok");
-        document.getElementById('curp').classList.add('item1-incorrecto');
-        document.getElementById('curp').classList.remove('item1-correcto');
-        ir_Examen.style.display = "none";
-    }
-    resultado.innerText = "CURP: " + curp + "\nFormato: " + valido;
-};
-
 
 
 
