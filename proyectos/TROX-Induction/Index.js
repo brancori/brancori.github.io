@@ -76,11 +76,11 @@ inputs.forEach((input) => {
    input.addEventListener('blur', validarFormulario);
 });
 
-if(campos.nombre && campos.curp){
-   console.log(!campos.nombre && !campos.curp);
-   ir_Examen.style.display = 'block';
-}
-
+formulario.addEventListener('submit', (e) => {
+   e.preventDefault();
+   if(campos.nombre && campos.curp)
+   window.location = "./quiz/quiz.html";
+})
 
 // ./quiz/quiz.html
 
