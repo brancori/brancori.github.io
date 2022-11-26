@@ -37,7 +37,7 @@
             como la de nuestros propios colaboradores, por lo que es de indispensable que termines esta inducción para poder ingresar y realizar tu 
             trabajo de manera segura.
         </P>
-    </section>
+    </section> 
     <section class="induction" ><h2>INDUCCIÓN</h2>
         <div id="video_">
             <img src="./assets/img/video_trox.png" alt="video_inducción">
@@ -47,26 +47,27 @@
         <p>Estas a punto de Realizar tu examen de evaluación contaras con 15 min para realizarlo, si no acreditas tu examen al primer intento tendran que pasar 6 horas para que puedas volver a realizarlo.</p>
         
         <div id="registro_login">
-            <div class="toggle">
-            </div>
-            
-            <div class="form_">
+
                 <form action="#" id="registro_">
-                    <h2 class="title_info">Registro</h2>
-                    <input type="text" id="curp" oninput="validarInput(this)" placeholder="Ingrese su CURP" class="item1"  name="curp" required>
-                    <input type="text" placeholder="Brandon Cortes" class="item2" name="nombre" id="nombre" required>     
-                    <p id="text_registro" class="infor_label">Para validar tu registro será necesario que te registres con tu CURP  </p>
+                    <div class="register_container">
+                        <h2 class="title_info">Registro</h2>
+                        <div class="inputs_Container">
+                            <input type="text" id="curp" placeholder="Ingrese su CURP" class="item1"  name="curp" required>
+                            <input type="text" placeholder="Brandon Cortes" class="item2" name="nombre" id="nombre" required>   
+                        </div>
+                        <p id="text_registro" class="infor_label">Para validar tu registro será necesario que te registres con tu CURP  </p>
+                    </div>
+                    <div class="result_container">
+                        <pre id="resultado" class="item3"></pre>
+                        <a id="ir_Examen"  class="ir_Examen " href="./quiz/quiz.html" style="display: none;">IR AL EXÁMEN</a>
+                    </div>
+
                 </form>
+
+    
             </div>
+ 
 
-            </div>
-
-            
-        </div>
-        <pre id="resultado"></pre>
-
-        <a id="ir_Examen" href="./quiz/quiz.html"><button class="ir_Examen"  type="submit"> IR AL EXÁMEN </button></a>
-        
 
     </section>
     <h2>BOLITIN DE SEGURIDAD</h2>
@@ -111,7 +112,7 @@
                 222 222 2222 </p>
             <p>Número Recepción <br>
             222 222 2222</p>
-            <p>Coreo electrónico <br>
+            <p id="email">Coreo electrónico <br>
             seguridadindustrial@troxgroup.mx</p>
             </article>
         </div>

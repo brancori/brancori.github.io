@@ -10,7 +10,7 @@ body{
     font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 18px;
     font-weight: 900;
-}  
+}
 header{
     display: flex;
     margin: 0 20px;
@@ -62,18 +62,6 @@ h1, h2, h3{
     justify-content: center;
     margin: 4vw;
 }
-.evaluacion .ir_Examen{
-    width: 40vw;
-    height: 35px;
-    background-color: #00375F;
-    color: aliceblue;
-    font-weight: bold;
-    font-size: large;
-    border: none;
-    border-radius: 15px;
-    margin: 30px 0px;
-    /* display: none; */
-}
 
 /* Validación para formulario */
 .item2-incorrecto{
@@ -92,10 +80,6 @@ h1, h2, h3{
     color: #1ed12d;
     opacity: 1;
 }
-button:hover{
-    background-color: #6e7883;
-    transform: scale(1.1);
-}
 .induction img{
     width: 75vw;
     border-radius: 20px;
@@ -104,7 +88,7 @@ button:hover{
     transform: scale(1.2);
     border-radius: 15px;
 }
-.info{ 
+.info{
     display: flex;
     flex-direction: row;
     justify-content: baseline;
@@ -151,160 +135,95 @@ footer div{
 .info_footer ul{
     padding: 0px;
 }
-a:hover {
-    color:#ff8000;
-}
 /* Validar CURP */
 
 #registro_login pre{
-    margin-top: 35px;
-    text-align: center;
-    justify-content: center;
-    width: 50%;
-    margin: auto;
-    margin-top: 25px;
+    justify-items: center;
+    align-items: center;
+    width: 60%;
+    margin: auto ;
     }
 #resultado {
     color: red;
     font-weight: bold;
     border-radius: 15px;
     text-align: center;
+
 }
 #resultado.ok {
     color: green;
 }
-#ir_Examen{
-    /* display: none; */
-}
-#registro_{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 10px;
-    grid-template-areas: 
-    "x x x"
-    "a b d"
-    "e c c"
-    "bot bot bot";
-}
-#text_registro{
-    color: #00375F;
-    width: 90%;
-    margin: auto;
-    margin-bottom: 15px;
-}
-#Inicio{
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-areas: 
-    "x x"
-    "a b"
-    "c c";
-    margin-bottom: 15px;
-}
-.item1{
-    grid-area: a;
-    border-radius: 7px;
-    border: none;
-    width: 85%;
-    margin: auto;
-    text-align: center;
-    text-transform: uppercase;
-}
-.item2{
-    grid-area: b;
-    border-radius: 7px;
-    border: none;
-    width: 80%;
-    margin: auto;
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.reset_password{
-    grid-area: e;
-}
-.title_info{
-    grid-area: x;
-    margin: 0;
-    padding-left: 25px;
-    padding-top: 15px;
-    place-self: start;
-}
-.infor_label{
-    grid-area: bot;
-}
-#registro_login{
+ /* Registro toggle */
+ #registro_login .register_container{
     width: 600px;
     background: #e2e2e2;
     border-radius: 8px;
-}
-#submit_register{
-    margin-bottom: 5px;
-}
-#registro_login input{
-    height: 24px;
-}
-#submit_register, #submit_login{
-    width: 200px;
-    place-self: center;
-    border-radius: 25px;
-    border: none;
-    background-color: #00375F;
-    color: aliceblue;
-    font-weight: 700;
-    transition: all .5s ease;
-}
-#submit_register:hover, #submit_login:hover{
-    background-color: #5f5f5f;
-    color: aliceblue;
-    font-weight: 700;
-}
-.reset_password{
-    text-align: end;
-    font-size: small;
-}
-#form_container{
-    width: 90%;
     margin: auto;
+    justify-content: center;
+    text-align: center;
+    padding: 7px;
 }
-
-
-#registro_login .item1, .item2, .item4{
+.inputs_Container input{
     background: #f5f5f5;
     outline: none;
     border: none;
+    margin: auto 15px;
     border-bottom:2px solid #6e7883;
     transition: all .5s ease;
+    text-align: center;
+    width: 200px;
 }
-#registro_login .item1:hover, .item2:hover, .item4:hover{
-    border-bottom:2px solid #00375F;
+.ir_Examen{
+    width: 200px;
+    height: 35px;
+    background-color: #00375F;
+    color: aliceblue;
+    font-weight: bold;
+    font-size: large;
+    border: none;
+    border-radius: 5px;
+    margin: 25px auto auto;
+    text-align: center;
+    place-content: center;
+    align-content: center;
+    cursor: pointer;
+    padding-top: 15px;
 }
-#registro_login .form_{
+.visible{
     display: none;
 }
-#registro_login .form_:nth-child(2){
-    display: block;
+.result_container{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    justify-items: center;
+    align-content: center;
 }
 @media (max-width: 600px){
-    #form_container, #Inicio, #registro_{
+     #registro_ {
         display:flex;
         flex-direction: column;
+        align-items: center;
     }
-    #registro_login{
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-    #registro_login , #Inicio, #registro_, input{
-        display:flex;
+    #registro_login .register_container{
         width: 100%;
-        margin: auto;
-        gap: 15px;
+        padding: 1px;
+
     }
-    #Container2 {
-        display: none;
+    .inputs_Container input{
+        width: 80%;
     }
+
+    .infor_label{
+        margin:5px auto;
+    }
+    #registro_login pre{
+        font-size: 14px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 90%;
+        justify-content: center;
+        }
     #video_ img{
         width: 100%;
         margin: 0;
@@ -312,6 +231,9 @@ a:hover {
     #submit_login{
         margin-bottom: 20px;
         justify-content: center;
+    }
+    #Container2{
+        display: none;
     }
     #submit_register{
         width: 50%;
@@ -323,5 +245,14 @@ a:hover {
         display: flex;
         margin: auto;
         margin-bottom: 20px;
+    }
+    .evaluacion .ir_Examen{
+        font-size: 14px;
+    }
+    #email{
+        display: none;
+    }
+    .title_info{
+        margin: 7px 0;
     }
 }

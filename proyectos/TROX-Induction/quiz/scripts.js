@@ -104,7 +104,7 @@ let UserAns = undefined;
 
 //Obtein localStorag
 function obtener_localstorage(){
-    var loco = localStorage.getItem("Usuario.value");
+    var loco = localStorage.getItem('nombre').toUpperCase();
     var usuario_ = document.getElementById("username");
     usuario_.innerText = "USUARIO: " + loco;
 };
