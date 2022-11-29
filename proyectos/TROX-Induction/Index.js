@@ -19,15 +19,15 @@ let valido = "No valido";
 const validarFormulario = (e) =>{
     switch(e.target.name){
         case "curp":
-        if(expresiones.re.test(e.target.value.toUpperCase()) ){
-           document.getElementById('curp').classList.remove('item2-incorrecto');
-           document.getElementById('curp').classList.add('item2-correcto');
+           document.getElementById('curp').classList.remove('item1-incorrecto');
+           document.getElementById('curp').classList.add('item1-correcto');
            resultado.classList.add("ok");
            valido = "Válido";
-           campos['curp'] = true;
+           campos['curp'] = false;
+           campos['curp'] = true; //Validado
         }else{
-           document.getElementById('curp').classList.add('item2-incorrecto');
-           document.getElementById('curp').classList.remove('item2-correcto');
+           document.getElementById('curp').classList.add('item1-incorrecto');
+           document.getElementById('curp').classList.remove('item1-correcto');
            resultado.classList.remove("ok");
            campos['curp'] = false;
            valido = "No valido";
@@ -35,15 +35,15 @@ const validarFormulario = (e) =>{
         break; 
         case "nombre":
         if(expresiones.nombre.test(e.target.value) ){
-           document.getElementById('nombre').classList.remove('item2-incorrecto');
-           document.getElementById('nombre').classList.add('item2-correcto');
+           document.getElementById('nombre').classList.remove('item1-incorrecto');
+           document.getElementById('nombre').classList.add('item1-correcto');
            resultado.classList.add("ok");
            valido = "Válido";  
            campos['nombre'] = true; 
 
         }else{
-           document.getElementById('nombre').classList.add('item2-incorrecto');
-           document.getElementById('nombre').classList.remove('item2-correcto');
+           document.getElementById('nombre').classList.add('item1-incorrecto');
+           document.getElementById('nombre').classList.remove('item1-correcto');
            resultado.classList.remove("ok");
            campos['nombre'] = false;
            valido = "No valido"; 
@@ -56,19 +56,7 @@ const validarFormulario = (e) =>{
 
 
 
-//    function digitoVerificador(validado) {
-//     var diccionario  = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
-//         lngSuma      = 0.0,
-//         lngDigito    = 0.0;
-//     for(var i=0; i<17; i++)
-//         lngSuma = lngSuma + diccionario.indexOf(curp_).charAt(i)) * (18 - i);
-//     lngDigito = 10 - lngSuma % 10;
-//     if (lngDigito == 10) return 0;
-//     return lngDigito;  
-// };
-// if (validado[2] != digitoVerificador(validado[1])) 
-// return false;
-// return true; //Validado
+
 
 
 inputs.forEach((input) => {
@@ -80,6 +68,9 @@ formulario.addEventListener('submit', (e) => {
    e.preventDefault();
    if(campos.nombre && campos.curp)
    window.location = "./quiz/quiz.html";
+   else{
+
+   }
 })
 
 // ./quiz/quiz.html

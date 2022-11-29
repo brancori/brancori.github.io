@@ -23,6 +23,10 @@ p{
     color: #6e7883;
     text-align: center;
 }
+h1, h2, h3{
+    color: #00375F;
+    text-align: center;
+}
 .Bienvenido{
     display: grid;
     place-items: center;
@@ -30,10 +34,6 @@ p{
 .Bienvenido p{
     text-align:justify ;
     width: 88vw;
-}
-h1, h2, h3{
-    color: #00375F;
-    text-align: center;
 }
 #subcontainer2 p{
     display: inline-block;
@@ -62,23 +62,18 @@ h1, h2, h3{
     justify-content: center;
     margin: 4vw;
 }
-
 /* Validación para formulario */
-.item2-incorrecto{
-    color: #bb2929;
-    opacity: 1;
-}
-.item2-correcto{
-    color: #1ed12d;
-    opacity: 1;
-}
 .item1-incorrecto{
     color: #bb2929;
     opacity: 1;
+    border: 1px solid #bb2929;
+    border-bottom: none;
 }
 .item1-correcto{
     color: #1ed12d;
     opacity: 1;
+    border: 1px solid #1ed12d;
+    border-bottom: none;
 }
 .induction img{
     width: 75vw;
@@ -136,7 +131,6 @@ footer div{
     padding: 0px;
 }
 /* Validar CURP */
-
 #registro_login pre{
     justify-items: center;
     align-items: center;
@@ -164,14 +158,27 @@ footer div{
     padding: 7px;
 }
 .inputs_Container input{
+    box-shadow: none;
     background: #f5f5f5;
     outline: none;
-    border: none;
+    border: 0px solid f5f5f5s ;
     margin: auto 15px;
-    border-bottom:2px solid #6e7883;
+    border-bottom:1px solid #6e7883;
     transition: all .5s ease;
     text-align: center;
     width: 200px;
+    border-radius: 2px;
+    line-height: 45px;
+    height: 20px;
+    text-transform: uppercase;
+}
+.inputs_Container input:hover {
+	box-shadow: 3px 0px 30px rgba(163,163,163, 1);
+}
+.inputs_Container input:focus {
+	border: 3px solid #00375F;
+	outline: none;
+	box-shadow: 3px 0px 30px rgba(163,163,163, 0.4);
 }
 .ir_Examen{
     width: 200px;
@@ -188,9 +195,6 @@ footer div{
     align-content: center;
     cursor: pointer;
 
-}
-.visible{
-    display: none;
 }
 .result_container{
     display: flex;
