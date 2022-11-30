@@ -5,8 +5,7 @@ const inputs = document.querySelectorAll('#registro_ input');
 const ir_Examen = document.getElementById('ir_Examen');
 const expresiones = {
     nombre: /^[a-zA-ZÀ-ÿ\s]{6,40}$/, // Letras y espacios, pueden llevar acentos.
-    re: /^([A-ZÑ][AEIOUXÁÉÍÓÚ][A-ZÑ]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/
-}
+    re: /^([A-ZÑ][AEIOUXÁÉÍÓÚ][A-ZÑ]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/}
 
 const campos = {
     nombre: false,
@@ -19,18 +18,20 @@ let valido = "No valido";
 const validarFormulario = (e) =>{
     switch(e.target.name){
         case "curp":
-           document.getElementById('curp').classList.remove('item1-incorrecto');
-           document.getElementById('curp').classList.add('item1-correcto');
-           resultado.classList.add("ok");
-           valido = "Válido";
-           campos['curp'] = false;
-           campos['curp'] = true; //Validado
+         if(expresiones.re.test(e.target.value.toUpperCase())){
+            document.getElementById('curp').classList.remove('item1-incorrecto');
+            document.getElementById('curp').classList.add('item1-correcto');
+            resultado.classList.add("ok");
+            campos['curp'] = true;
+            valido = "Válido";
+            
         }else{
            document.getElementById('curp').classList.add('item1-incorrecto');
            document.getElementById('curp').classList.remove('item1-correcto');
            resultado.classList.remove("ok");
            campos['curp'] = false;
            valido = "No valido";
+           
         }
         break; 
         case "nombre":
@@ -55,10 +56,6 @@ const validarFormulario = (e) =>{
    };
 
 
-
-
-
-
 inputs.forEach((input) => {
    input.addEventListener('keyup', validarFormulario);
    input.addEventListener('blur', validarFormulario);
@@ -68,9 +65,6 @@ formulario.addEventListener('submit', (e) => {
    e.preventDefault();
    if(campos.nombre && campos.curp)
    window.location = "./quiz/quiz.html";
-   else{
-
-   }
 })
 
 // ./quiz/quiz.html
