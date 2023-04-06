@@ -1,0 +1,97 @@
+body{
+    margin: 0;}
+footer p{
+    text-align: center;}
+p{
+    margin: 0; padding: 0; }
+#contact_header{
+    display: flex;
+    width: 100vw;
+    height: 25px;
+    background-color: orangered;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+    justify-content: end;
+}
+#navbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7%;
+    padding: 4px;
+    margin-top: 15px;
+    font-size: 20px;
+    
+}
+#contact_header p{
+    display: flex;
+    color: aliceblue;
+    font-weight: 300;
+    margin-right: 55px;
+}
+#navbar p:hover{
+    font-size: 22px;
+    border-bottom: solid 1px orangered;
+    font-weight: bold;
+}
+#portal{
+    display: felx;
+    text-align: center;
+    width: 100vw;
+    height: 65vh;
+    background-color: brown;
+}
+#tex1{
+    align-items: center;
+    padding-top: 15vh;
+    margin-bottom: 0;
+    font-size: 35px;
+}
+#portal h2{
+    width: auto;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 25px;
+    font-size: 18px;
+}
+button{
+    height: 40px;
+    width: 200px;
+    margin-top: 60px;
+    background-color: none;
+    margin-left: 15px;
+    background-color: transparent;
+    border: solid 3px rgb(53, 53, 53);    
+}
+button:hover{
+    background-color: orangered;
+    color: aliceblue;
+    font-weight: bold;
+}
+#logo_proyeccion{
+    height: 60px;
+}
+#navbar_2{
+    display: flex;
+    gap: 25px;
+}
+#navbar_2 p{
+    width: 145px;
+    text-align: center;
+}
+#brands_{
+    display: flex;
+    flex-direction: column;
+    height: 13vh;
+    width: 100vw;
+    background-color: grey;
+    position: absolute;
+    bottom: 0;
+    justify-content: center;
+} 
+h1{
+    margin: 0;
+}
+
+
