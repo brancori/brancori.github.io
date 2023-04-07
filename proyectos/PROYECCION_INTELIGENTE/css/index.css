@@ -14,6 +14,9 @@ p{
     align-items: center;
     justify-content: end;
 }
+a{
+    text-decoration: none;
+}
 #navbar{
     display: flex;
     align-items: center;
@@ -30,8 +33,12 @@ p{
     font-weight: 300;
     margin-right: 55px;
 }
-#navbar p:hover{
-    font-size: 22px;
+.ico{
+    height: 20px;
+    margin-right: 15px;
+    filter: invert(100%);
+}
+.navmenu:hover{
     border-bottom: solid 1px orangered;
     font-weight: bold;
 }

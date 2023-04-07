@@ -1,0 +1,19 @@
+.login_{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    border: solid 1px gray;
+    margin-top: 25vh;
+    height: 45vh;
+    width: 35vw;
+    margin-left: 35vw;
+    border-radius: 7px;
+    gap: 7px;
+}
+input{
+    width: 90%;
+    text-align: center;
+}
+
