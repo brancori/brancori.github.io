@@ -43,7 +43,7 @@ a{
     background-color: brown;
     position: relative;
     bottom: -15px;
-    background-image: url(/brancori.github.io/proyectos/PROYECCION_INTELIGENTE/assets/img/foto_web.jpg);
+    background-image: url(../assets/img/foto_web.jpg);
 }
 #tex1{
     align-items: center;

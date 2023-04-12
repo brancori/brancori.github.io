@@ -3,6 +3,8 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 0;
+    padding: 0;
 }
 a{
     text-decoration: none;
@@ -11,19 +13,28 @@ a{
 #main_container_contact{
     display: flex;
     gap: 40px;
+    top: 0;
 }
 .container{
     text-align: center;
+    height: 80%;
+    padding: 10px;
+}
+header{
+    margin-top: 25px;
 }
 #map{
-    height: 80vh;
+    height: 70vh;
     margin-top: 30px;
+    border-radius: 25px;
 }
 .container h4{
     display: flex;
     text-align: center;
     justify-content: center;
     align-items: center;
+    margin: 15 auto 15 auto;
+    margin: 0;
 }
 .container p{
     font-weight: 100;
@@ -35,6 +46,7 @@ a{
     display: flex;
     flex-direction: column;
     width: 40vw;
+    height: 250px;
     align-items: center;
 }
 .input_first{
@@ -49,11 +61,11 @@ a{
 }
 .input_second{
     width: 89%;
-    height: 180px;
     margin-top: 10px;
+    height: 100px;
 }
 button{
-    margin-top: px;
+    margin-top: 5px;
     width: 90%;
 }
 
@@ -62,19 +74,34 @@ button{
         width: auto;
         height: 70vh;
         margin-top: 30px;
+        margin: auto;
+        border-radius: 4px;
     }
-    .container h4{
-        margin: 0;
+    body{
+        height: auto;
+        justify-content: center;
+        align-items: center;
+        margin-top: 55px;
+    }
+    body #navbar{
+        display: none ;
     }
 
 }
 @media (max-width: 580px){
+    body{
+        height: auto;
+    }
+    .map_container{
+        margin: auto;
+    }
     #map{
         max-width: 90%;
         height: auto;
+        margin: 30px auto 15px auto;
         margin-top: 30px;
     }
-    body{
+    #main_container_contact{
         flex-direction: column;
         margin: 0;
     }
@@ -90,4 +117,5 @@ button{
         justify-content: center;
         margin: auto;
     }
+    
 }
