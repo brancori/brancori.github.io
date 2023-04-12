@@ -83,8 +83,11 @@ button{
         align-items: center;
         margin-top: 55px;
     }
-    body #navbar{
+    body #navbar_2{
         display: none ;
+    }
+    #logo_proyeccion{
+        margin-bottom: 25px;
     }
 
 }

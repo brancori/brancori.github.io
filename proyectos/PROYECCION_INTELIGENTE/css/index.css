@@ -1,92 +1,79 @@
 body{
-    margin: 0;}
-footer p{
-    text-align: center;}
-p{
-    margin: 0; padding: 0; }
-    a{
-        text-decoration: none;
-        color: black;
-    }
-#contact_header{
     display: flex;
-    width: 100vw;
-    height: 25px;
-    background-color: orangered;
-    margin: 0px;
-    padding: 0px;
-    align-items: center;
-    justify-content: end;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
 }
 a{
     text-decoration: none;
-}
-#contact_header p{
-    display: flex;
-    color: aliceblue;
-    font-weight: 300;
-    margin-right: 55px;
-}
-#contact_header a{
     color: aliceblue;
 }
 .ico{
-    height: 20px;
-    margin-right: 15px;
+    width: 12px;
     filter: invert(100%);
+    margin-right: 7px;
+    align-self: center;
+    justify-self: center;
+
 }
-#portal{
-    display: felx;
-    text-align: center;
-    width: 100vw;
-    height: 70vh;
-    background-color: brown;
-    position: relative;
-    bottom: -15px;
-    background-image: url(../assets/img/foto_web.jpg);
-}
-#tex1{
+#contact_header{
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    background-color: orangered;
+    color: aliceblue;
     align-items: center;
-    padding-top: 15vh;
-    margin-bottom: 0;
-    font-size: 35px;
-}
-#portal h2{
-    width: auto;
-    margin: 0;
-    padding: 0;
-    margin-bottom: 25px;
-    font-size: 20px;
-}
-button{
-    height: 40px;
-    width: 200px;
-    margin-top: 60px;
-    background-color: none;
-    margin-left: 15px;
-    background-color: transparent;
-    border: solid 3px rgb(53, 53, 53);    
+    height: 30px;
+} 
+#contact_header p :nth-child(2){
+    margin-right: 25px;
 }
 #brands_{
     display: flex;
+    background-color: grey;    
+    justify-content: center;
+    align-items: center;
+}
+#main_content_inicio{
+    display: flex;
     flex-direction: column;
-    height: 13vh;
-    width: 100vw;
-    background-color: grey;
     position: absolute;
     bottom: 0;
+    width: 100%;
+}
+#portal{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-} 
-h1{
-    margin: 0;
+    align-items: center;
+    height: 70vh;
+    background-image: url(../assets/img/foto_web.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.buttons_inicio{
+    display: flex;
+    gap: 15px;
+}
+button{
+    background-color: hsla(0, 5%, 29%, 0.7);
+    color: aliceblue;
+    border: solid 1px black;
 }
 button:hover{
     background-color: orangered;
-    color: aliceblue;
-    font-weight: bold;
 }
-@media (max-width: 780px){
 
+
+
+
+
+@media (min-width: 880px){
+     #navbar{
+        display: none;
+    }
 }
 
 

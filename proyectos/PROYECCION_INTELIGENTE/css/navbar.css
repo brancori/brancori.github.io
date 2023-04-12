@@ -1,11 +1,12 @@
 #navbar_2{
     display: flex;
+    
 }
 #navbar_2 a{
     width: 95px;
     text-align: center;
     height: 21px;
-    
+    color: black;
 }
 #navbar_2 a:nth-child(6){
     width: 120px;
@@ -14,12 +15,13 @@
     border-bottom: solid 2px rgb(255, 255, 255);
 }
 /* Efectos Hover */
-.navmenu:hover{
+
+#navbar_2 a:nth-child(6):hover{
     border-bottom: solid 2px orangered;
     font-weight: bold;
-    color: orangered;
+    color: orangered; 
 }
-#navbar_2 a:nth-child(6):hover{
+#navbar_2 a:hover{
     border-bottom: solid 2px orangered;
     font-weight: bold;
     color: orangered; 

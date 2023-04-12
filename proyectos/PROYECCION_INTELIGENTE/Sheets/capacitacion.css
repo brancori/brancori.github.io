@@ -1,3 +1,9 @@
+
+body{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
 .login_{
     display: flex;
     flex-direction: column;
@@ -6,10 +12,9 @@
     border: solid 1px gray;
     border-radius: 14px;
     gap: 7px;
-    margin-right: 25vw;
-    margin-right: 25vw;
+    width: 50vh;
+    padding: 10px;
     margin-top: 25vh;
-    width: 50vw;
     text-align: center;
 }
 input{
@@ -19,4 +24,14 @@ input{
 button{
     width: 125px;
 }
-
+.info_property{
+    justify-self: center;
+    align-self: center;
+    position: absolute;
+    bottom: 0;
+    font-size: 12px;
+}
+#navbar{
+    position: absolute;
+    top: 0;
+}
