@@ -1,8 +1,16 @@
 body{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 40px;
+}
+a{
+    text-decoration: none;
+    color: black;
+}
+#main_container_contact{
+    display: flex;
 }
 .container{
     text-align: center;

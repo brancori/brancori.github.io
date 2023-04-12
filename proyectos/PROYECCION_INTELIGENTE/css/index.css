@@ -21,15 +21,6 @@ p{
 a{
     text-decoration: none;
 }
-#navbar{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3px;
-    margin-top: 10px;
-    font-size: 14px;
-    gap: 55px;
-}
 #contact_header p{
     display: flex;
     color: aliceblue;
@@ -44,9 +35,6 @@ a{
     margin-right: 15px;
     filter: invert(100%);
 }
-
-
-
 #portal{
     display: felx;
     text-align: center;
@@ -79,25 +67,6 @@ button{
     background-color: transparent;
     border: solid 3px rgb(53, 53, 53);    
 }
-
-#logo_proyeccion{
-    height: 60px;
-}
-#navbar_2{
-    display: flex;
-}
-#navbar_2 a{
-    width: 95px;
-    text-align: center;
-    height: 21px;
-    
-}
-#navbar_2 a:nth-child(6){
-    width: 120px;
-    height: 22px;
-    margin-left: 5px;
-    border-bottom: solid 2px rgb(255, 255, 255);
-}
 #brands_{
     display: flex;
     flex-direction: column;
@@ -110,26 +79,12 @@ button{
 } 
 h1{
     margin: 0;
-
-}
-/* Efectos Hover */
-.navmenu:hover{
-    border-bottom: solid 2px orangered;
-    font-weight: bold;
-    color: orangered;
-}
-#navbar_2 a:nth-child(6):hover{
-    border-bottom: solid 2px orangered;
-    font-weight: bold;
-    color: orangered; 
 }
 button:hover{
     background-color: orangered;
     color: aliceblue;
     font-weight: bold;
 }
-
-
 @media (max-width: 780px){
 
 }

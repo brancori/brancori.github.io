@@ -1,0 +1,38 @@
+#navbar_2{
+    display: flex;
+}
+#navbar_2 a{
+    width: 95px;
+    text-align: center;
+    height: 21px;
+    
+}
+#navbar_2 a:nth-child(6){
+    width: 120px;
+    height: 22px;
+    margin-left: 5px;
+    border-bottom: solid 2px rgb(255, 255, 255);
+}
+/* Efectos Hover */
+.navmenu:hover{
+    border-bottom: solid 2px orangered;
+    font-weight: bold;
+    color: orangered;
+}
+#navbar_2 a:nth-child(6):hover{
+    border-bottom: solid 2px orangered;
+    font-weight: bold;
+    color: orangered; 
+}
+#navbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    margin-top: 10px;
+    font-size: 14px;
+    gap: 55px;
+}
+#logo_proyeccion{
+    height: 60px;
+}
