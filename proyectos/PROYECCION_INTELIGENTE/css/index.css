@@ -4,6 +4,10 @@ footer p{
     text-align: center;}
 p{
     margin: 0; padding: 0; }
+    a{
+        text-decoration: none;
+        color: black;
+    }
 #contact_header{
     display: flex;
     width: 100vw;
@@ -21,11 +25,10 @@ a{
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7%;
-    padding: 4px;
-    margin-top: 15px;
-    font-size: 20px;
-    
+    padding: 3px;
+    margin-top: 10px;
+    font-size: 14px;
+    gap: 55px;
 }
 #contact_header p{
     display: flex;
@@ -33,21 +36,26 @@ a{
     font-weight: 300;
     margin-right: 55px;
 }
+#contact_header a{
+    color: aliceblue;
+}
 .ico{
     height: 20px;
     margin-right: 15px;
     filter: invert(100%);
 }
-.navmenu:hover{
-    border-bottom: solid 1px orangered;
-    font-weight: bold;
-}
+
+
+
 #portal{
     display: felx;
     text-align: center;
     width: 100vw;
-    height: 65vh;
+    height: 70vh;
     background-color: brown;
+    position: relative;
+    bottom: -15px;
+    background-image: url(/brancori.github.io/proyectos/PROYECCION_INTELIGENTE/assets/img/foto_web.jpg);
 }
 #tex1{
     align-items: center;
@@ -60,7 +68,7 @@ a{
     margin: 0;
     padding: 0;
     margin-bottom: 25px;
-    font-size: 18px;
+    font-size: 20px;
 }
 button{
     height: 40px;
@@ -71,21 +79,24 @@ button{
     background-color: transparent;
     border: solid 3px rgb(53, 53, 53);    
 }
-button:hover{
-    background-color: orangered;
-    color: aliceblue;
-    font-weight: bold;
-}
+
 #logo_proyeccion{
     height: 60px;
 }
 #navbar_2{
     display: flex;
-    gap: 25px;
 }
-#navbar_2 p{
-    width: 145px;
+#navbar_2 a{
+    width: 95px;
     text-align: center;
+    height: 21px;
+    
+}
+#navbar_2 a:nth-child(6){
+    width: 120px;
+    height: 22px;
+    margin-left: 5px;
+    border-bottom: solid 2px rgb(255, 255, 255);
 }
 #brands_{
     display: flex;
@@ -99,6 +110,28 @@ button:hover{
 } 
 h1{
     margin: 0;
+
+}
+/* Efectos Hover */
+.navmenu:hover{
+    border-bottom: solid 2px orangered;
+    font-weight: bold;
+    color: orangered;
+}
+#navbar_2 a:nth-child(6):hover{
+    border-bottom: solid 2px orangered;
+    font-weight: bold;
+    color: orangered; 
+}
+button:hover{
+    background-color: orangered;
+    color: aliceblue;
+    font-weight: bold;
+}
+
+
+@media (max-width: 780px){
+
 }
 
 

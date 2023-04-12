@@ -143,6 +143,7 @@ li{
 }
 #Proyectos_web{
     display: flex;
+    justify-content: center;
 }
 .proyect_container img{
     display: flex;
@@ -156,7 +157,11 @@ li{
     border-radius: 10px;
 }
 #maquetacion_container{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
     padding: 30px;
+    font-size: 20px;
 }
 #maquetacion_container p{
     font-size: 18px;
@@ -266,6 +271,15 @@ li{
     .nav-bar ul li{
         font-size: 1.8rem;
         margin: 0 10px;
+    }
+    #maquetacion_container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    #Proyectos_web{
+        flex-direction: column;
     }
     .container{
         overflow-x: scroll;
