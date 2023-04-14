@@ -35,3 +35,9 @@ button{
     position: absolute;
     top: 0;
 }
+
+@media (max-width: 880px){
+    #navbar_2{
+       display: none !important;
+   }
+}

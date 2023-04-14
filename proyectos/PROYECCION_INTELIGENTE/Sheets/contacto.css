@@ -9,6 +9,7 @@ body{
 a{
     text-decoration: none;
     color: black;
+    font-weight: 100;
 }
 #main_container_contact{
     display: flex;
@@ -16,12 +17,21 @@ a{
     top: 0;
 }
 .container{
+    display: flex;
+    flex-direction: column;
     text-align: center;
     height: 80%;
     padding: 10px;
+    justify-items: center;
+    align-items: center;
+    margin: auto;
 }
 header{
     margin-top: 25px;
+}
+.fb_ico{
+    width: 35px;
+    margin-bottom: 5px;
 }
 #map{
     height: 70vh;
@@ -89,7 +99,6 @@ button{
     #logo_proyeccion{
         margin-bottom: 25px;
     }
-
 }
 @media (max-width: 580px){
     body{

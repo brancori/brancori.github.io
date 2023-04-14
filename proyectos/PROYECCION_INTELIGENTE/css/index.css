@@ -70,7 +70,7 @@ button:hover{
 
 
 
-@media (min-width: 880px){
+@media (max-width: 880px){
      #navbar{
         display: none;
     }
