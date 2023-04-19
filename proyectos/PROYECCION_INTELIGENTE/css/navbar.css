@@ -31,7 +31,7 @@
     color: black;
     overflow: hidden;
 }
-#navbar_2 a:nth-child(6){
+#navbar_2 a:nth-child(7){
     width: 125px;
     height: 20px;
     margin-left: 5px;
@@ -40,7 +40,7 @@
 }
 /* Efectos Hover */
 
-#navbar_2 a:nth-child(6):hover{
+#navbar_2 a:nth-child(7):hover{
     border-bottom: solid 2px orangered;
     font-weight: bold;
     color: orangered; 

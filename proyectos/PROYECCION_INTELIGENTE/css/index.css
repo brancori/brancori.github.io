@@ -62,6 +62,8 @@ a{
     display: flex;
     flex-direction: column;
     text-align: center;
+    justify-content: center;
+    align-items: center;
     gap: 25px;
     width: 45%;
 }
@@ -87,12 +89,16 @@ a{
     display: flex;
     flex-direction: column;
     width: 29%;
-    text-align: justify;
+    max-width: 300px;
+    text-align: center;
 }
 .text_container{
     display: flex;
     flex-direction: column;
     gap: 25px;
+    justify-content: center;
+    align-items: center;
+
 }
 /* #brands_{
     position: absolute;
@@ -101,8 +107,71 @@ a{
 #tex1{
     text-align: center;
 }
-
-
+.proyectos{
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;  
+    padding: 0 40px 0 40px;
+    justify-content: center;
+    text-align: center;
+}
+.proyect_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+.poryecto_ img{
+    width: 200px;
+    height: 250px;
+    background-color: #F37235;
+    border-radius: 7px;
+}
+.fotter{
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;  
+    padding: 0 40px 0 40px;
+    background-color: rgb(71, 71, 71);
+}
+.contacto_card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 45vw;
+}
+#map{
+    width: 200px;
+    height: auto;
+    border-radius: 7px;
+}
+.fotter .news_latter_card img{
+    width: 200px;
+    height: 240px;
+    background-color: #F37235;
+    border-radius: 7px;
+}
+.news_latter_card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45vw;
+    gap: 25px;
+}
+.derechos{
+    display: inline;
+}
+.textCardLetter{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 35%;
+}
 
 
 

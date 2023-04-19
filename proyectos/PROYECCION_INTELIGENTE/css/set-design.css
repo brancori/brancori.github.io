@@ -1,0 +1,18 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.button_set{
+    border-radius: 20px;
+    border: solid 1px orangered;
+    width: 200px;
+    height: 30px;
+    color: rgb(255, 255, 255);
+    background-color: orangered;;
+    font-weight: bold;
+}
+.button_set:hover{
+    border: solid 1px orangered;
+    color: orangered;
+    background-color: rgb(255, 255, 255);
+}
