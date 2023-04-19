@@ -4,3 +4,36 @@ body{
     justify-content: center;
     align-items: center;
 }
+.cursos{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.cursos img{
+    width: 300px;
+    height: 150px;
+    background-color: blue;
+    margin: 7px;
+    border-radius: 15px;
+}
+.container_cursos{
+    display: flex;
+    width: 100vw;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+button{
+    width: 280px;
+    height: 25px;
+    background-color: orangered;
+    border: none;
+    border-radius: 5px;
+    color: aliceblue;
+    font-weight: bold;
+}
+button:hover{
+    background-color: aliceblue;
+    color: orangered;
+    border: solid 2px orangered;
+}
