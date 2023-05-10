@@ -4,11 +4,21 @@ body{
     justify-content: center;
     align-items: center;
 }
+h1, h2{
+    text-align: center;
+    margin: 15px 0 15px 0;
+}
+p{
+    text-align: justify;
+    width: 90vw;
+    margin: 15px 0 15px 0;
+}
 .cursos{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 15px 0 15px 0;
 }
 .cursos img{
     width: 300px;
