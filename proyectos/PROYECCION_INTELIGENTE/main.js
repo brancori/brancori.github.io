@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var altura = $('#navbar').offset().top;
+    let altura = $('#navbar').offset().top;
 
     $(window).on('scroll', function(){
         if ($(window).scrollTop() > altura ){
@@ -12,3 +12,24 @@ $(document).ready(function(){
         }
     });
 });
+
+$(document).ready(function(){
+    let altura = $('#navbar').offset().top;
+
+    $(window).on('scroll', function(){
+        if ($(window).scrollTop() > altura + 380){
+            $('#icon_container').removeClass('icon_container',"ico_contact_" )
+            $('#icon_container').addClass('icon_container_', 'ico_contact')
+
+                    
+
+        }else {
+            $('#icon_container').removeClass('.icon_container_')
+            $('#icon_container').addClass('.icon_container')
+            $('#icon_container').addClass('ico_contact_')
+            
+        }
+    });
+});
+
+

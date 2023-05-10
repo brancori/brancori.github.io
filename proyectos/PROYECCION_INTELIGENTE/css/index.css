@@ -31,6 +31,37 @@ a{
 #contact_header a{
     margin-right: 20px;
 }
+.icon_container_{
+    display: flex;
+    flex-wrap: wrap;
+    width: 35px;
+    border-radius: 0px 5px 5px 0px; 
+    height: 150px;
+    gap: 3px;
+    background-color: #F37235;
+    padding: 3px;
+    align-items: center;
+    position: fixed;
+    top: 300px;
+}
+.icon_container{
+    display: none;
+}
+.ico_contact{ 
+    width: 25px;
+    height: 25px;
+    margin-left: 5px;
+}
+.ico_contact_{
+    display: none;
+}
+
+.ico_contact:hover{
+    width: 37px;
+    height: 37px;
+    margin-left: 0;
+}
+
 #main_content_inicio{
     display: flex;
     justify-content: center;
@@ -176,11 +207,40 @@ a{
 
 
 
-
 @media (max-width: 880px){
      #navbar{
         display: none;
     }
+    #main_content_inicio{
+        flex-direction: column;
+    }
+    #main_content_inicio img{
+        width: 90vw;
+    }
+    .container_services{
+        flex-direction: column-reverse;
+
+    }
+    .services_container{
+        width: 90vw;
+        justify-content: center;
+    }
+    #servicios img{
+        width: 90vw;
+    }
+    .contacto_card{
+        display: flex;
+        flex-direction: column;
+    }
+    #main_content_inicio p{
+        text-align: justify;
+    }
+    .news_latter_card{
+        display: none;
+    }
+    
+    
 }
+
 
 
