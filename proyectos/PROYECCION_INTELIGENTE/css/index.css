@@ -19,6 +19,9 @@ a{
     align-self: center;
     justify-self: center;
 }
+.menu_button{
+    display: none;
+}
 #contact_header{
     display: flex;
     justify-content: flex-end;
@@ -151,7 +154,8 @@ a{
 .poryecto_ img{
     width: 200px;
     height: 250px;
-    background-color: #F37235;
+    background-color: #ffffff;
+    border: 1px solid #c7c7c7;
     border-radius: 7px;
 }
 .fotter{
@@ -264,8 +268,42 @@ a{
         grid-template-columns: repeat(2, 1fr);
     }
     .proyectos{
-        height: 40vh;
+        height: auto;
+        margin: 7vh 0 7vh 0;
     }
+    .proyectos img{
+        width: 200px;
+        object-fit: cover;
+        height: 80px;
+        padding: 12px;
+    }
+    #contact_header p{
+        align-items: center;
+        justify-content: center;
+        margin-top: auto;
+        font-size: medium;
+        padding: 3px;
+        margin-left: 25px;
+    }
+    #contact_header {
+        gap: 0;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        flex-direction: initial;
+
+    }
+    #contact_header p:nth-child(1){
+    display: none;
+    }
+    .menu_button{
+        display: block;
+        width: 40px;
+        filter: invert(100%);
+    }
+    
+
+    
     
     
 }
