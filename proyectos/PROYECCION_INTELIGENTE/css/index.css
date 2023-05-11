@@ -130,10 +130,6 @@ a{
     align-items: center;
 
 }
-/* #brands_{
-    position: absolute;
-    bottom: 0;
-} */
 #tex1{
     text-align: center;
 }
@@ -205,28 +201,53 @@ a{
 
 
 
-
-
 @media (max-width: 880px){
+    body{
+        display: block;
+    }
      #navbar{
         display: none;
     }
     #main_content_inicio{
-        flex-direction: column;
+        display: block;
+        margin: 7vh 0 7vh 0;
+        height: fit-content;
+        padding: 0 25px 0 25px
+
     }
     #main_content_inicio img{
-        width: 90vw;
+        width: 85vw;
     }
     .container_services{
         flex-direction: column-reverse;
 
     }
     .services_container{
+        flex-direction: column;
+        align-items: center;
         width: 90vw;
         justify-content: center;
     }
-    #servicios img{
+    #servicios{
+        height: auto;
+        padding: auto;
+    }
+    .services{
+        flex-direction: column;
+        align-items: center;
+    }
+    .services p{
+        text-align: center;
+    }
+    .card{
         width: 90vw;
+        max-width: 75vw;
+        margin: auto;
+        padding: auto;
+
+    }
+    #servicios img{
+        width: 85vw;
     }
     .contacto_card{
         display: flex;
@@ -237,6 +258,13 @@ a{
     }
     .news_latter_card{
         display: none;
+    }
+    .proyect_container{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .proyectos{
+        height: 40vh;
     }
     
     
