@@ -137,9 +137,11 @@ a{
     text-align: center;
 }
 .proyectos{
-    height: 90vh;
+    height: auto;
+    margin-bottom: 55px;
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     gap: 35px;  
     padding: 0 40px 0 40px;
     justify-content: center;
@@ -153,18 +155,19 @@ a{
 }
 .poryecto_ img{
     width: 200px;
-    height: 250px;
+    height: 100px;
+    object-fit: contain;
     background-color: #ffffff;
     border: 1px solid #c7c7c7;
     border-radius: 7px;
 }
 .fotter{
-    height: 60vh;
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 35px;  
-    padding: 0 40px 0 40px;
+    padding: 40px 40px 40px 40px;
     background-color: rgb(71, 71, 71);
 }
 .contacto_card{
@@ -175,15 +178,26 @@ a{
     width: 45vw;
 }
 #map{
-    width: 200px;
+    max-width: 800px;
+    max-height: 800px;
     height: auto;
     border-radius: 7px;
+}
+.contacto_card{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: auto;
 }
 .fotter .news_latter_card img{
     width: 200px;
     height: 240px;
     background-color: #F37235;
     border-radius: 7px;
+}
+.ico__contact_ img{ 
+    width: 50px;
+    margin: 15px;
 }
 .news_latter_card{
     display: flex;
@@ -266,15 +280,16 @@ a{
     .proyect_container{
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        width: 80vw;
     }
     .proyectos{
         height: auto;
         margin: 7vh 0 7vh 0;
     }
     .proyectos img{
-        width: 200px;
-        object-fit: cover;
-        height: 80px;
+        max-width: 100px;
+        object-fit: contain;
+        height: 60px;
         padding: 12px;
     }
     #contact_header p{
@@ -298,9 +313,29 @@ a{
     }
     .menu_button{
         display: block;
-        width: 40px;
+        width: 30px;
+        padding-right: 15px;
         filter: invert(100%);
     }
+    #map{
+        width: 80vw;
+        height: 30vh;
+    }
+    .contacto_card{
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        width: auto;
+    }
+    .ico__contact_ img{ 
+        width: 50px;
+        margin: 15px;
+    }
+    .fotter{
+        height: auto;
+        padding: 30px;
+    }
+    
     
 
     
