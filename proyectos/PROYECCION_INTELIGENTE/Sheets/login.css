@@ -29,6 +29,7 @@ body{
 .container{
     display: flex;
     align-items: center;
+    width: 100vw;
     gap: 25px;
 }
 .imge_capa{
@@ -75,5 +76,15 @@ button{
 @media (max-width: 880px){
     #navbar_2{
        display: none !important;
+   }
+   .container{
+    display: flex;
+    flex-direction: column;
+    width: 95vw;
+    margin: 0;
+   }
+   .login_{
+    margin: 25px;
+    border: none;
    }
 }
