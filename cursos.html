@@ -4,47 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/cursos.css">
     <title>Cursos</title>
-    <style>
-        nav{
-            background: rgb(116, 29, 29);
-            height: 40px;
 
-        }
-        .navegador ul{
-            display: flex;
-            list-style: none;
-            align-items: center;
-            margin left: 20px;
-        }
-        .navegador ul li{
-            margin: 0px 20px;
-            font-weight: bold;
-            display: grid;
-            align-items: center;
-            height: 40px;
-            color: white;
-        }
-        .navegador ul li:hover{
-            color: rgb(158, 226, 0);
-        }
-        div{
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            margin-left: 5px;
-        }
-        div:hover{
-        color: green; 
-        }
-        div a{
-            display: flex;
-            text-decoration: none;
-            text-align: center;
-            padding: 15px;
-        }
-    </style>
-    
 </head>
 <body>
     <nav class="navegador">
@@ -61,5 +23,76 @@
         <p> Open Boot Camp</p>
         <a href="https://campus.open-bootcamp.com/">Aquí</a>
     </div>
+    <section class="transformaciones">
+        <h2>TRANSFORMACIONES</h2>
+        <P>CSS STYLE</P>
+        <a href="#">Esto es un link</a>
+        <pre>
+            <code>
+            style>
+                a:link{
+                    color: rgb(15, 82, 59);
+                }
+                a:visited{
+                    color: rgb(27, 0, 177);
+                }
+                a:nth-child(1){ // seudo clases
+                    background-color: antiquewhite;
+                }
+
+                a::before{ // seudo elementos
+                    content: ":)   ";
+                }
+            /style>
+
+            <p><h2>PROPIEDAD TRANSFORM</h2>
+                
+                <h3>transform: </h3>
+                translateX(20px, -20px) // de un punto "a" a un punto "b" || X o Y
+                scale(1.2) // agranda los objetos|| también se puede aplicar a los ejes || X o Y 
+                skew(20deg) //deg = grados, una propiedad para deformar
+                rotate(20deg) // rota en los ejes X o Y 
+                matrix()
+            </p>
+            <p>
+                <h3>transform-origin:</h3>
+                transform-origin: left top; // Sirver para poder cambiar el punto base de donde inicia el eje de transformación
+            </p>
+            <h2>PROPIEDADES DE TRANSFORMACIÓN 3D</h2>
+            <P>PROPIEDADES:  
+                transform-style: preserve-3d; // propiedad del padre
+                perspective: 100 px // nos da profundidad  de x cantidad de pixeles|| desde donde se ve el objeto
+                perspective-origin: ;// desde dónde inicia el punto de fuja de la perspectiva
+                backface visibility:; // podemos girar la card para revelar lo que esta detras|| hay que incluir esta propiedad al padre transform-style: preserve-3d;
+            </P>
+            <h2>EFECTO PARALLAX</h2>
+            <P>El fondo se mueve a una velocidad y el objeto a otra 
+                -container{
+                    perpective:8 px;
+                    perspective-origin: 50%;
+                    overflow-x: hidden;
+                    overflow-y: scroll;
+                    position: relative;
+                }
+                transform: tranlateZ(2px) scale(0.75);
+            </P>
+            <h2>TRANSITION PROPERTY Y DURATION</h2>
+            <p> 
+                transition-property: none | all| property> | initial | inherit;
+                transition-duration: time> | initial | inherit; // transition: transform 500ms;
+                transtion timing function: linear | ease| ease-in| ease-out| ease-in-out|step-start| step-end|cubic-bezier(n,n,n) // transition-delay:0.5s; // transition:transform 1s liner; //
+            </p>
+            <P>
+                will-change: transform;
+            </P>
+
+                
+
+        </code>
+           
+        </pre>
+
+    </section>
+    rel = i
 </body>
 </html>
