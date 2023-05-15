@@ -13,11 +13,13 @@ a{
     color: aliceblue;
 }
 .ico{
-    width: 12px;
-    filter: invert(100%);
+    width: 20px;
     margin-right: 7px;
     align-self: center;
     justify-self: center;
+}
+#contact_header p{
+    display: flex;
 }
 .menu_button{
     display: none;
@@ -352,12 +354,12 @@ a{
         position: fixed;
         bottom: 0;
         display: flex;
-        gap: 10px;
+        gap: 20px;
         justify-content: center;
         align-items: center;
-        height: 60px;
+        height: 40px;
         width: 100vw;
-        background-color: orangered;
+        background-color: #F37235;
         color: aliceblue;
         text-decoration: none;
         color: aliceblue;

@@ -21,7 +21,8 @@
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    border-radius: 7px;
+    border-radius: 3px;
+    padding: 7px;
     gap: 15px;
 }
 .number_class{
@@ -47,8 +48,9 @@
 }
 #comments_{
     display: flex;
-    border-radius: 15PX;
+    border-radius: 10PX;
     width: 100%;
+    padding: 10px;
 }
 .comments_container{
     display: flex;
@@ -138,6 +140,7 @@
         width: 90vw;
     }
     .video{
+        display: flex;
         align-items: center;
         margin: 0;
         padding: 0;
@@ -155,5 +158,34 @@
     }
     .comments_container{
         padding:0%
+    }
+    .id_data{
+        display: flex;
+        flex-direction: row;
+        gap: 35px;
+        justify-content: start;
+        font-size: 13px;
+    }
+    #comments_{
+        padding: 7px;
+        border-radius: 5px;
+    }
+    .class_info div:nth-child(3){
+        display: flex;
+        justify-content: space-between;
+    }
+    .class_info div:nth-child(4) div{
+        display: flex;
+        justify-content: space-between;
+        margin: 0 7px;
+    }
+    .avatar{
+        display: flex;
+        gap: 25px;
+        align-items: center; 
+        justify-content: space-evenly;      justify-content: space-between;
+    }
+    .put_comments{
+        margin: 0 12px
     }
 }
