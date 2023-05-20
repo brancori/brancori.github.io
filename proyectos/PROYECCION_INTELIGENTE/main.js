@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
     let altura = $('#navbar').offset().top;
 
@@ -31,5 +32,3 @@ $(document).ready(function(){
         }
     });
 });
-
-

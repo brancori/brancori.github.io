@@ -4,22 +4,23 @@
     justify-content: center;
     padding: 3px;
     font-size: 14px;
-    margin-top: 10px;
     gap: 55px;
-    background-color: white;
+    margin-top: 0;
+    background-color: #f7f7f7;
     transition: all ease .3s;
-    
+}
+a{
+    text-decoration: none;
 }
 .navbar_scroll{
     position: fixed;
     padding: 0;
     top: 0;
-    margin-top: 0 !important;
+    
     z-index: 1000;
     width: 100%;
     box-shadow: 0px 4px 3px rgba(0, 0, 0, .05);
 }
-
 #navbar_2{
     display: flex;
     
@@ -28,7 +29,7 @@
     width: 90px;
     text-align: center;
     height: 21px;
-    color: black;
+    color: rgb(88, 88, 88);
     overflow: hidden;
 }
 #navbar_2 a:nth-child(7){
@@ -41,14 +42,14 @@
 /* Efectos Hover */
 
 #navbar_2 a:nth-child(7):hover{
-    border-bottom: solid 2px orangered;
+    border-bottom: solid 4px orangered;
     font-weight: bold;
     color: orangered; 
 }
 #navbar_2 a:hover{
-    border-bottom: solid 2px orangered;
+    border-bottom: solid 4px orangered;
     font-weight: bold;
-    color: orangered; 
+    color: orangered;
 }
 
 #logo_proyeccion{
