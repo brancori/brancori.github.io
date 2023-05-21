@@ -1,3 +1,8 @@
+:root {
+    --bg-color: #f7f7f7;
+    --primary-color: #e26122;
+  }
+
 #navbar{
     display: flex;
     align-items: center;
@@ -6,7 +11,7 @@
     font-size: 14px;
     gap: 55px;
     margin-top: 0;
-    background-color: #f7f7f7;
+    background-color: var(--bg-color);
     transition: all ease .3s;
 }
 a{
@@ -42,14 +47,14 @@ a{
 /* Efectos Hover */
 
 #navbar_2 a:nth-child(7):hover{
-    border-bottom: solid 4px orangered;
+    border-bottom: solid 4px var(--primary-color);
     font-weight: bold;
-    color: orangered; 
+    color: var(--primary-color); 
 }
 #navbar_2 a:hover{
-    border-bottom: solid 4px orangered;
+    border-bottom: solid 4px var(--primary-color);
     font-weight: bold;
-    color: orangered;
+    color: var(--primary-color);
 }
 
 #logo_proyeccion{

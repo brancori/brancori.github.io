@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="css/set-design.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <script src="main.js"></script>
     <title>PROYECCIÓN INTELIGENTE</title>
 </head>
@@ -22,31 +22,101 @@
                 <a href="index.html"><img id="logo_proyeccion" src="assets/img/proyecc_int.png" alt="logo proyección inteligente"></a>
             </div> 
             <div id="navbar_2">
-            <a class="navmenu" href="index.html">INICIO</a>
-            <a class="navmenu" href="#">NOSOTROS</a>
+            <a class="navmenu" href="#home">INICIO</a>
+            <a class="navmenu" href="#us_">NOSOTROS</a>
             <a class="navmenu" href="#">SERVICIOS</a>
-            <a class="navmenu" href="#">PROYECTOS</a>
+            <a class="navmenu" href="#proyectos">PROYECTOS</a>
             <a href="#">BLOG</a>
             <a class="navmenu" href="Sheets/contacto.html">CONTACTO</a>
             <a class="navmenu" href="Sheets/login.html">CAPACITACIÓN</a>
             </div>
         </div>
     </header>
-    <section>
+    <section id="home" class="main_sect">
         <article>
-            <h3>Servicios en:</h3>
-            <div class="container_type">
-                <h2> &nbsp;<span class="typed"></span> </h2>
+            <div class="backgroung_img">
+                <video autoplay muted loop id="myVideo">
+                    <source src="./assets/pexels-daniel-casallas-contreras-6838894-1920x1080-60fps.mp4" type="video/mp4">
+                  </video>
+                
+                <div class="container_type">
+                    <h3>Servicios en:</h3>
+                    <span class="typed"></span>
+                </div>
             </div>
         </article>
-        <div>
+        <div class="description_cont">
             <div>
-
+                <h2>30</h2>
+                <p>AÑOS DE</p>
+                <p>EXPERIENCIA</p>
             </div>
+            <span></span>
             <div>
-
+                <h2>100</h2>
+                <p>PROYECTOS</p>
+                <p>REALIZADOS</p>
+            </div>
+            <button> Nosotros</button>
             </div>
         </div>
+        <div class="lo_que">
+            <div>
+                <h2>LO QUE</h2>
+                <h2>REALIZAMOS</h2>
+            </div>
+            <p>Nuestros servicios implican cubrir todas las instancias de gobierno, tanto municipales (Protección Civil, Desarrollo Urbano, etc.) como estatales y federales (Conagua, Medio Ambiente, Comunicaciones y Transportes, etc) para la gestión y obtención de las autorizaciones que su proyecto de desarrollo inmobiliario requiera.
+                Contamos con una amplia experiencia en la Constitución de Régimen en Condominio.
+                Además asesoramos a instancias municipales para la gestión de recursos ante el Gobierno Federal.</p>
+        </div>
+    </section>
+    <section id="us_">
+        <div class="us_sect">
+            <div class="services_cont">
+                <p>Proyección Inteligente, es una empresa que inicia su actividad a partir de la necesidad de las empresas de construcción de cubrir la gestión de trámites ante todas las instancias de gobierno para obtener todos los permisos necesarios y así poder llevar a termino de manera exitosa cada uno de los proyectos de las empresas constructoras, así como los proyectos municipales, logrando una gestión de recursos efectiva ante las instancias federales.</p>
+                <div class="text_si">
+                    <h2>SERVICIOS <br>INTEGRALES &nbsp;<h2>DE <br>CONSTRUCCIÓN</h2>  </h2>
+                </div>
+            </div>
+            <span></span>
+            <div>
+                <img src="./assets/img/wall_dos.png" alt="">
+            </div>
+        </div>
+    </section>
+    <section id="proyectos">
+        <div class="cards_containers">
+            <div class="card">
+                <h4>Condominio vertical Hight Towers</h4>
+            </div>
+            <div>
+                <img src="./assets/img/images_2.jpeg" alt="">
+            </div>
+            <div>
+                <img src="./assets/img/images_3.jpeg" alt="">
+            </div>
+            <div>
+                <img src="./assets/img/images_4.jpeg" alt="">
+            </div>
+            <div>
+                <img src="./assets/img/images_1.jpeg" alt="">
+            </div>
+            <div>
+                <img src="./assets/img/images_2.jpeg" alt="">
+            </div>
+            <div>
+                <img src="./assets/img/images_3.jpeg" alt="">
+            </div>
+            <div>
+                <img src="./assets/img/images_4.jpeg" alt="">
+            </div>
+        </div>
+        <div class="cards_text">
+            <h2>PROYECTOS EN LOS QUE HEMOS COLABORADO</h2>
+            <p>30 años de experiencia respaldando y colaborando</p>
+            <button>PROYECTOS</button>
+        </div>
+
     </section>
 
 
@@ -56,7 +126,7 @@
     <script>
         const typed = new Typed('.typed', {
     strings: [
-        '<i class="Servicios_cahnge">Brandon</i>',
+        '<i class="Servicios_cahnge">Aprobaciones Municipales</i>',
         '<i class="Servicios_cahnge">Cortes</i>',
         '<i class="Servicios_cahnge">Hola</i>',
     ],
@@ -72,6 +142,7 @@
 	showCursor: true, // Mostrar cursor palpitanto
 	cursorChar: '|', // Caracter para el cursor
 	contentType: 'html', // 'html' o 'null' para texto sin formato
+    autoInsertCss: true,
 });
     </script>
     <script src="./main.js"></script>

@@ -5,6 +5,8 @@
 }
 :root {
     --bg-color: #f7f7f7;
+    --primary-color: #e26122;
+    --bg-secondary: rgb(56, 56, 56);
   }
 
 body {
@@ -14,20 +16,210 @@ body {
     padding: 0;
     background-color: var(--bg-color);
 }
-
-
-span{
-    left: 0;
-    width: 0;
-    background-color: var(--bg-color);
-    animation: type 5s infinite alternate steps(29);
+button{
+    padding: 25xp;
+    width: 100px;
+    height: 35px;
+    border-radius: 7px;
+    background: none;
+    border: 2px solid black;
+}
+button:hover{
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border: none;
 }
 
+#myVideo{
+    z-index: 0;
+    position: absolute;
+    object-fit: cover;
+    width: 100vw;
+    height: 250px;
+    margin: 0;
+    padding: 0;
+}
 .Servicios_cahnge{
     font-weight: bold;
-    color: blue;
+    color: var(--bg-color);
     font-style: normal;
+    font-size: 3em;
+    border-radius: 15px;
+    font-weight: 500;
+    padding: 0;
+    margin-left: 25px;
+    text-shadow: rgb(48, 48, 48) 1px 0 10px;
 }
+.container_type{
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+.backgroung_img{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    font-weight: 500;
+    width: 97vw;
+    margin: 0;
+    padding: 0;
+    height: 250px;
+}
+.backgroung_img h3{
+    margin-top: 25px;
+    display: inline;
+    font-weight: 600;
+    width: 90vw;
+    padding: 5px;
+    font-size: 2em;
+    margin-left: 20px;
+    display: inline;
+    text-shadow: rgb(199, 199, 199) .3px 0 15px;
+}
+.description_cont{
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    align-items: center;
+    padding: 25px 10vw;
+}
+.description_cont div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+.description_cont p{
+    height: 25px;
+    font-size: 1.7em;
+
+}
+.description_cont h2 , .lo_que h2{
+    height: 36px;
+    font-size: 1.7em;
+}
+
+.description_cont span{
+    padding: 50px;
+    border-right: 3px solid black;
+    height: 100%;
+    display: inline;
+}
+
+.description_cont p:nth-child(3){
+    color: var(--primary-color);
+    margin: 0;
+    padding: 0;
+}
+.lo_que{
+    display: flex;
+    gap: 5vw;
+    padding: 10vh 5vw;
+    text-align: justify; 
+}
+.lo_que div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.lo_que h2:nth-child(2){
+    color: var(--primary-color);
+}
+
+.us_sect{
+    display: flex;
+    margin-top: 25px;
+    height: 90vh;
+    flex-direction: column;
+    align-items: center;
+}
+.services_cont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5vw;
+    gap: 7vw;
+    text-align: justify;
+}
+.services_cont P{
+    width: 70%;
+}
+.us_sect img{
+    width: 65vw;
+    height: auto;
+    margin: auto;
+}
+.services_cont h2:nth-child(1){
+    color: var(--primary-color);
+}
+.services_cont h2{
+    display: inline;
+
+}
+#home{
+    height: 90vh;
+}
+#services{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5vw;
+    height: 95vh;
+}
+.cards_containers{
+    margin-top: 3vh;
+    display: grid;
+    grid-template-columns: repeat(4, 150px);
+    gap: 4vw;
+}
+.cards_containers img{
+    width: 150px;
+    height: 200px;
+    object-fit: scale-down;
+    border-radius: 3px;
+}
+.cards_containers img:hover{
+    transform: rotate(.5deg);
+    object-position: 0;
+}
+
+.cards_text{
+    display: none;
+}
+.card{
+    position: relative;
+    width: 150px;
+    height: 180px;
+    background-image: url('../assets/img/images_1.jpeg');
+}
+.card:hover{
+    background-image: url('../assets/img/images_1.jpeg');
+
+}
+.card h4{
+position: absolute;
+bottom: -10px;
+ background-color: var(--bg-secondary);
+ height: 35px;
+ margin: 0;
+ color: var(--bg-color);
+ text-align: center;
+ font-size: 12px;
+ font-weight: 300;
+}
+#proyectos{
+    height: 90vh;
+    margin-top: 120px;
+    padding: 5vw;
+    margin: 120px auto 0 auto;
+}
+
 
 @keyframes type{
     from{
