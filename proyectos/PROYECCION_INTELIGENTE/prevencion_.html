@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="prevencion_.css">
+    <title>PREVECIÓN</title>
+</head>
+<body>
+    <div class="img_cont">
+        <img src="/proyecc_int.png" alt="">
+    </div>
+    <h1>En proyección inteligente nos preocupamos por tu seguridad por lo que te traemos información relevante sobre 
+        los ultimos acontecimientos sobre el volcan.
+    </h1>
+
+    <div id="estado_actual">
+        <h3>Estado Actual de semáforo volcánico</h3>
+        <p>AMARILLO FASE 3 </p>
+        <span>actualizado 23/05/23</span>
+    </div>
+
+    <h2>
+        Se recomiendan las siguientes acciones para cuidar las salud
+    </h2>
+
+    <p>
+        <ul>
+            <li>Limpiar ojos y garganta con agua limpia.</li>
+            <li>Cubrir nariz y boca con pañuelo o cubreboca.</li>
+            <li>Cerrar ventanas o cubrirlas y permanecer lo más posible en interiores.</li>
+            <li>Evitar la acumulación de ceniza en techos y patios.</li>
+            <li>Barrer las cenizas, evitar humedecerla y recolectarla en bolsas.</li>
+            <li>Cubrir recipientes de agua para evitar su contaminación.</li>
+        </ul>
+    </p>
+
+    <h3 class="info">DA CLICK EN CADA RECUADRO PARA MAS INFORMACIÓN</h3>
+        <h2 >FASES DEL VOLCAN</h2>
+        <button id="amarillo_fase" onclick="amarillo()">AMARILLO </button>
+        <div id="amarillo_" class="oculto">
+            <ul>
+                <li><h5>FASE 1: Manifestación de actividad</h5></li>
+                <li>Sismicidad volcánica local frecuente</li>
+                <li>Emisiones esporádicas y ligeras de ceniza</li>
+            </ul>
+            <ul>
+                <li><h5>FASE 2: Incremento de actividad</h5></li>
+                <li>Pluma de vapor de agua</li>
+                <li>Ligera caída de ceniza en áreas cercanas</li>
+                <li>Caída de fragmentos incandescentes</li>
+                <ul>
+                    <li>Anunciar el cambio a las 
+                        autoridades de protección civil 
+                        en los tres niveles de gobierno, 
+                        y a los funcionarios 
+                        responsables</li>
+                </ul>
+            </ul>
+            <ul>
+                <li><h5>FASE 3: Actividad intermedia a alta</h5></li>
+                <li>Crecimiento rápido de domos de grandes dimensiones y su destrucción en explosiones fuertes</li>
+                <li>Pluma de vapor de agua</li>
+                <li>Persistencia de fumarolas, gas y caída leve de cenizas en áreas cercanas</li>
+            </ul>
+        </div>
+        <button id="rojo_fase" onclick="rojo()">ROJO </button>
+        <div id="rojo_" class="oculto">
+            <p>Hay peligro. Tú y tu familia deben estar listos para la evacuación</p>
+        <ul>
+            <li><h5>FASE 1. Actividad explosiva de peligro intermedio a alto</h5></li>
+            <li>Columna eruptiva de varios kilómetros de vapor de agua y gas</li>
+            <li>Lanzamiento de fragmentos incandescentes sobre las laderas del volcán</li>
+        </ul>
+        <ul>
+            <li><h5>FASE 1. Actividad explosiva de peligro intermedio a alto</h5></li>
+            <li>Columnas eruptivas de gran alcance</li>
+            <li>Intensa caída de ceniza, arena y fragmentos volcánicos a distancias mayores</li>
+        </ul>
+        </div>
+
+        <section class="salud_cont">
+            
+        <h2>DATOS DE SALUD</h2>
+        <button id="uno" onclick="unouno()">¿Qué es la ceniza volcánica?</button>
+        <div id="uno_" class="oculto">
+            <p>
+                La ceniza volcánica no es ceniza en realidad. Es roca pulverizada. Una capa de una pulgada de ceniza seca pesa diez libras por pie cuadrado a medida que cae. A menudo contiene pequeños trozos de lava ligera y expandida llamada piedra pómez o escoria volcánica. La ceniza volcánica fresca puede ser áspera, ácida, arenosa, vidriosa, maloliente y completamente desagradable.
+            </p>
+            <p>La ceniza volcánica no es ceniza en realidad. Es roca pulverizada. Una capa de una pulgada de ceniza seca pesa diez libras por pie cuadrado a medida que cae. A menudo contiene pequeños trozos de lava ligera y expandida llamada piedra pómez o escoria volcánica. La ceniza volcánica fresca puede ser áspera, ácida, arenosa, vidriosa, maloliente y completamente desagradable.</p>
+            <ul>
+                <li>Una fuerte lluvia de cenizas altera el suministro de energía. La gran demanda repentina de luz eléctrica puede provocar que el servicio eléctrico se agote o falle.</li>
+                <li>
+                    La ceniza obstruye las corrientes de agua, alcantarillas, plantas de aguas residuales y maquinaria de todo tipo. 
+                </li>
+                <li>La ceniza se amontona en las carreteras, vías férreas y los senderos, como la nieve, pero se asemeja a arena suave</li>
+                <li>Las cenizas finas pueden ser resbaladizas.</li>
+                <li>El peso de la ceniza puede provocar el colapso de los techos.</li>
+            </ul>
+        </div>
+
+
+        <button id="dos" onclick="dosdos()">Recomendaciones</button>
+        <div id="dos_" class="oculto" >
+            <ul>
+                <li>En caso de caída de ceniza moderada o abundante, especialmente partículas finas, el asma bronquial y otras afecciones respiratorias crónicas pueden agravarse, tanto en niños como en adultos.</li>
+                <li>En caso de caída de ceniza moderada o abundante, especialmente partículas finas, el asma bronquial y otras afecciones respiratorias crónicas pueden agravarse, tanto en niños como en adultos.</li>
+                <li>Las partículas de cenizas son abrasivas y también pueden causar abrasiones en la córnea.</li>
+            </ul>
+        </div>
+
+        <button id="tres" onclick="trestres()">¿Qué hacer la primera vez que la ceniza volcánica comienza a caer?</button>
+        <div id="tres_" class="oculto">
+            <ul>
+                <li>Siga las recomendaciones de las autoridades de emergencia.</li>
+                <li>No entre en pánico, mantenga la calma: la ceniza es más molesta que peligrosa para su salud, pero debe minimizar la exposición a las cenizas. </li>
+                <li>Permanezca adentro hasta que las cenizas se asienten. No haga mandados.</li>
+                <li>Si se encuentra afuera, cúbrase y busque refugio.</li>
+                <li>Mientras esté afuera, use una máscara si está disponible o un pañuelo/paño y protéjase los ojos, la piel y cúbrase la cabeza.</li>
+                <li>Use el teléfono solo si es esencial.</li>
+                <li>Use su radio para obtener información sobre la caída de ceniza.</li>
+            </ul>
+        </div>
+
+        <button id="cuatro" onclick="cuatrocuatro()">Qué hacer cuando las cenizas volcánicas caen continuamente</button>
+        <div id="cuatro_" class="oculto">
+            <ul>
+                <li>Siga las recomendaciones de las autoridades de emergencia.</li>
+                <li>Debe minimizar la exposición a la ceniza permaneciendo en el interior tanto como sea posible.</li>
+                <li>Busque atención médica si se desarrollan síntomas respiratorios o de pecho.</li>
+            </ul>
+        </div>
+
+        <button id="cinco" onclick="cincocinco()">Si necesita salir</button>
+        <div id="cinco_" class="oculto">
+            <ul>
+                <li>La protección más efectiva es usar una máscara ligera de alta eficiencia (como la N95) o una máscara quirúrgica común.</li>
+                <li>Asegure un buen ajuste de la máscara en la cara, ajustando los clips y las correas para la nariz.</li>
+                <li>Use la misma máscara hasta que esté visiblemente sucia o dañada.</li>
+                <li>Proteja los ojos, la piel y cubra la cabeza.</li>
+                <li>Quítese los lentes de contacto y use anteojos cuando sea posible</li>
+            </ul>
+        </div>
+
+        <button id="seis" onclick="seisseis()">En su casa</button>
+        <div id="seis_" class="oculto">
+            <li>Minimice la entrada de ceniza a la casa:
+                <ol><li>Cierre puertas y ventanas y selle la abertura de la chimenea de ser el caso.</li>
+                    <li>Coloque toallas húmedas en la parte inferior de las puertas y otros lugares donde haya corrientes de aire.</li>
+                    <li>Minimice el uso de calentadores de aire forzado, aires acondicionados o secadoras de ropa.</li>
+                        <li>No use ventiladores.</li>
+                    </ol>
+
+
+
+            </li>
+            <ul>
+                <li>Proteja las fuentes de agua de la contaminación por cenizas. Si el agua tiene un sabor u olor ácido, use agua embotellada.</li>
+                <li>Retire la ceniza de las frutas y verduras lavándolas.
+                </li>
+                <li>Use una radio que funcione con baterías para obtener información.</li>
+            </ul>
+        </div>
+
+        <button id="siete" onclick="sietesiete()">Protección respiratoria</button>
+        <div id="siete_" class="oculto">
+            <p>
+                Las personas deben saber que respirar las cenizas puede ser dañino y se recomienda la protección para todos.
+            </p>
+            <p>Para la población en general que tiene que dejar sus hogares por períodos cortos, cualquier tipo de mascara quirúrgica común podría ser eficiente. Asegure un buen ajuste de la máscara a la cara, ajustando los clips y las correas para la nariz.</p>
+            <p>
+                Se deben considerar dos tipos de población para obtener consejos especiales de protección respiratoria:
+            </p>
+
+            <ul>
+                <li>Personas que trabajan afuera y están muy expuestas a la ceniza (por ejemplo, equipos de limpieza, equipos de emergencia y rescate, policía).</li>
+                <li>Las personas que son más vulnerables a las partículas de cenizas (por ejemplo, afecciones médicas graves, pacientes con asma, niños, ancianos).</li>
+            </ul>
+        </div>
+
+        <button id="ocho" onclick="ochoocho()">Principales efectos sobre la salud de la caída de ceniza</button>
+        <table id="ocho_" class="oculto">
+            <tr class="main_title">
+                <td>CONSECUENCIAS</td>
+                <td> IMPACTO EN LA COMUNIDAD</td>
+                <td>MEDIDAS PREVENTIVAS </td>
+            </tr>
+            <td colspan="3" class="title_table" width="100vw">RESPIRATORIA</td>
+            <tr>
+                <td> Inhalación de ceniza fina menor a 10 micras de diámetro </td>
+                <td>Asma, exacerbación de una enfermedad pulmonar preexistente</td>
+                <td>Pruebas de laboratorio para el tamaño de partícula; use máscaras de alta eficiencia; proteja los hogares / oficinas de la infiltración de cenizas</td>
+            </tr>
+            <tr>
+                <td>Inhalación de polvo silíceo (presencia de sílice cristalina, por ejemplo, cuarzo)</td>
+                <td>Silicosis, si la exposición es pesada y continua (por años): riesgo laboral al aire libre</td>
+                <td>Silicosis, si la exposición es pesada y continua (por años): riesgo laboral al aire libre</td>
+            </tr>
+            <tr><td  colspan="3" class="title_table">TÓXICO</td></tr>
+            <tr>
+                <td>Ingestión de agua contaminada con fluoruro, posiblemente también metales pesados (por ejemplo, cobalto, arsénico)</td>
+                <td>Ingestión de agua contaminada con fluoruro, posiblemente también metales pesados (por ejemplo, cobalto, arsénico)</td>
+                <td>Pruebas de laboratorio para elementos tóxicos lixiviables; evite beber aguas superficiales (es decir, use agua de cisterna)</td>
+            </tr>
+            <tr>
+                <td>Ingestión de alimentos contaminados (como se indicó anteriormente), incluida la leche</td>
+                <td>Lo mencionado anteriormente</td>
+                <td>Pruebas de laboratorio para la biodisponibilidad de elementos tóxicos; observar la salud de los animales en busca de alimento, análisis de laboratorio de la leche</td>
+            </tr>
+            <tr>
+                <td>Lluvia ácida</td>
+                <td>Irritación de ojos y piel; posible contaminación tóxica</td>
+                <td>Protección durante la lluvia; No beba agua de lluvia, especialmente de techos de metal, etc.</td>
+            </tr>
+            <tr><td colspan="3" class="title_table">OCULAR</td></tr>
+            <tr>
+                <td>Protección durante la lluvia; No beba agua de lluvia, especialmente de techos de metal, etc.</td>
+                <td>Conjuntivitis, abrasiones en la córnea</td>
+                <td>Conjuntivitis, abrasiones en la córnea</td>
+            </tr>
+            <tr><td colspan="3" class="title_table">MECÁNICA</td></tr>
+            <tr>
+                <td>Colapso del techo y caída desde los techos</td>
+                <td>Trauma</td>
+                <td>	
+                    Prevenir la acumulación de cenizas; tener cuidado por el peligro de caídas desde los techos al realizar limpiezas</td>
+            </tr>
+            <tr>
+                <td>Accidentes automovilísticos (carreteras resbaladizas y poca visibilidad)</td>
+                <td>Trauma</td>
+                <td>Control de tráfico</td>
+            </tr>
+            <tr>
+                <td>Daño en los motores de la aeronave</td>
+                <td>Trauma</td>
+                <td>Alerta de erupción al tráfico aéreo</td>
+            </tr>
+            <tr>
+                <td>Alerta de erupción al tráfico aéreo</td>
+                <td>Incapacidad de recibir alertas</td>
+                <td>Incapacidad de recibir alertas</td>
+            </tr>
+            <tr>
+                <td>Cortes de electricidad (cenizas húmedas en aisladores horizontales)</td>
+                <td>Cortes de electricidad (cenizas húmedas en aisladores horizontales)</td>
+                <td>Cortes de electricidad (cenizas húmedas en aisladores horizontales)</td>
+            </tr>
+            <tr>
+                <td>Escasa visibilidad</td>
+                <td>	
+                    Cesación del transporte de emergencia; casas y viajeros varados; trauma</td>
+                <td>Designar refugios de emergencia</td>
+            </tr>
+
+
+        </table>
+        </section>
+
+        <a class="twitter-timeline" data-width="400" data-height="300" data-dnt="true" href="https://twitter.com/PC_Estatal?ref_src=twsrc%5Etfw">Tweets by PC_Estatal</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+        <script>
+
+
+            function unouno(){
+                const uno = document.querySelector('#uno_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#uno_').classList.remove('oculto')
+                    document.querySelector('#uno_').classList.add('visible')
+                }else{
+                    document.querySelector('#uno_').classList.remove('visible')
+                    document.querySelector('#uno_').classList.add('oculto')
+                }
+            }
+
+            function dosdos(){
+                const uno = document.querySelector('#dos_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#dos_').classList.remove('oculto')
+                    document.querySelector('#dos_').classList.add('visible')
+                }else{
+                    document.querySelector('#dos_').classList.remove('visible')
+                    document.querySelector('#dos_').classList.add('oculto')
+                }
+            }
+
+            function trestres(){
+                const uno = document.querySelector('#tres_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#tres_').classList.remove('oculto')
+                    document.querySelector('#tres_').classList.add('visible')
+                }else{
+    document.querySelector('#tres_').classList.remove('visible')
+                    document.querySelector('#tres_').classList.add('oculto')
+                }
+            }
+
+            function cuatrocuatro(){
+                const uno = document.querySelector('#cuatro_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#cuatro_').classList.remove('oculto')
+                    document.querySelector('#cuatro_').classList.add('visible')
+                }else{
+    document.querySelector('#cuatro_').classList.remove('visible')
+                    document.querySelector('#cuatro_').classList.add('oculto')
+                }
+            }
+
+            function cincocinco(){
+                const uno = document.querySelector('#cinco_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#cinco_').classList.remove('oculto')
+                    document.querySelector('#cinco_').classList.add('visible')
+                }else{
+    document.querySelector('#cinco_').classList.remove('visible')
+                    document.querySelector('#cinco_').classList.add('oculto')
+                }
+            }
+
+            function seisseis(){
+                const uno = document.querySelector('#seis_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#seis_').classList.remove('oculto')
+                    document.querySelector('#seis_').classList.add('visible')
+                }else{
+    document.querySelector('#seis_').classList.remove('visible')
+                    document.querySelector('#seis_').classList.add('oculto')
+                }
+            }
+
+            function sietesiete(){
+                const uno = document.querySelector('#siete_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#siete_').classList.remove('oculto')
+                    document.querySelector('#siete_').classList.add('visible')
+                }else{
+    document.querySelector('#siete_').classList.remove('visible')
+                    document.querySelector('#siete_').classList.add('oculto')
+                }
+            }
+
+            function ochoocho(){
+                const uno = document.querySelector('#ocho_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#ocho_').classList.remove('oculto')
+                    document.querySelector('#ocho_').classList.add('visible')
+                }else{
+    document.querySelector('#ocho_').classList.remove('visible')
+                    document.querySelector('#ocho_').classList.add('oculto')
+                }
+            }
+
+            function amarillo(){
+                const uno = document.querySelector('#amarillo_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#amarillo_').classList.remove('oculto')
+                    document.querySelector('#amarillo_').classList.add('visible')
+                }else{
+    document.querySelector('#amarillo_').classList.remove('visible')
+                    document.querySelector('#amarillo_').classList.add('oculto')
+                }
+            }
+
+            function rojo(){
+                const uno = document.querySelector('#rojo_').classList
+                if( uno == 'oculto'){
+                    document.querySelector('#rojo_').classList.remove('oculto')
+                    document.querySelector('#rojo_').classList.add('visible')
+                }else{
+    document.querySelector('#rojo_').classList.remove('visible')
+                    document.querySelector('#rojo_').classList.add('oculto')
+                }
+            }
+
+
+
+        </script>
+
+</body>
+</body>
+</html>

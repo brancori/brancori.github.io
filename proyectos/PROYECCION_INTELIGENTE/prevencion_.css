@@ -1,0 +1,129 @@
+*{
+    margin: 0;
+    padding: 0 ;
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    background-color: var(--bg-color);
+}
+:root {
+    --bg-color: #f7f7f7;
+    --primary-color: #e26122;
+    --bg-secondary: rgb(56, 56, 56);
+  }
+  
+button{
+    width: 100%;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border:  #86350c;
+    cursor: pointer;
+    font-size: 14px;
+    height: 45px;
+}
+h2{
+    text-align: center;
+    margin: 15px 0;
+    font-size: 20px;
+}
+
+h1{
+    padding: 5px;
+    font-size: 14px;
+    color: var(--bg-color);
+    text-align: center;
+    margin-top: 15px;
+    background-color: var(--primary-color);
+}
+h3{
+    text-align: center;
+    font-size: 13px;
+}
+p{
+    padding: 5px 15px;
+}
+ul,li{
+    list-style: square;
+    padding: 0 25px;
+}
+img{
+    width: 50%;
+}
+.img_cont{
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+.salud_cont{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100vw;
+    text-align: justify;
+}
+.salud_cont div, table{
+    font-size: 14px;
+}
+.visible{
+    display: visible;
+}
+.oculto{
+    display: none;
+}
+#amarillo_fase{
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+}
+#rojo_fase{
+    background-color: red;
+}
+#estado_actual{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    margin: 25px 0;
+    gap: 0;
+    line-height: 15px;
+    background-color: yellow;
+    padding: 7px 0;
+}
+#estado_actual span{
+    font-size: 12px;
+}
+#estado_actual p{
+    font-size: 18px;
+    font-weight: bold;
+}
+.info{
+    font-size: 15px;
+    margin: 25px 0;
+}
+.ocho_ table{
+    text-align: center;
+    padding: 5px;
+    gap: 5px;
+
+}
+tr{
+    text-align: center;
+    border: 1px solid black;
+
+}
+td{
+    border: 1px solid black;
+}
+.title_table{
+    background-color: rgb(180, 180, 180);
+    font-weight: bold;
+    font-size: 18px;
+}
+.main_title{
+    background-color: rgb(21, 21, 110);
+    font-weight: bold;
+    color: var(--bg-color);
+
+}
