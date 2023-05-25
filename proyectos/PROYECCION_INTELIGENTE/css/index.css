@@ -26,7 +26,7 @@ button{
 }
 button:hover{
     background: rgb(226,97,34);
-    background: radial-gradient(circle, rgba(226,97,34,1) 0%, rgba(226,169,34,1) 100%);  
+    background: radial-gradient(circle, rgba(226,97,34,1) 0%, rgb(124, 34, 1) 100%);  
     color: var(--bg-color);
     border: none;
 }
@@ -89,6 +89,7 @@ input{
     text-shadow: rgb(199, 199, 199) .3px 0 15px;
 }
 .description_cont{
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 25px;
@@ -140,6 +141,7 @@ input{
 }
 
 .us_sect{
+    position: relative;
     display: flex;
     margin-top: 25px;
     height: 90vh;
@@ -157,7 +159,7 @@ input{
 .services_cont P{
     width: 70%;
 }
-.us_sect img{
+.us_sect_img{
     width: 65vw;
     height: auto;
     margin: auto;
@@ -254,6 +256,54 @@ input{
 #card8{
     background-image: url('../assets/img/images_4.jpeg');
 }
+
+
+
+#card1:hover{
+    background-image: url('../assets/img/images_2.jpeg');
+}
+#card2:hover{
+    background-image: url('../assets/img/images_3.jpeg');
+}
+#card3:hover{
+    background-image: url('../assets/img/images_4.jpeg');
+}
+#card4:hover{
+    background-image: url('../assets/img/images_1.jpeg');
+}
+#card5:hover{
+    background-image: url('../assets/img/images_2.jpeg');
+}
+#card6:hover{
+    background-image: url('../assets/img/images_3.jpeg');
+}
+#card7:hover{
+    background-image: url('../assets/img/images_4.jpeg');
+}
+#card8:hover{
+    background-image: url('../assets/img/images_1.jpeg');
+}
+
+
+.card{
+    position: relative;
+    width: 150px;
+    height: 180px;
+
+}
+.cards_containers h4{
+    position: absolute;
+    bottom: -10px;
+    background-color: var(--bg-secondary);
+    height: 35px;
+    margin: 0;
+    color: var(--bg-color);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300;
+}
+
+
 .line_contact_{
     border-right: 2.5px solid rgb(92, 92, 92);
     height: 350px;
@@ -273,22 +323,9 @@ input{
     margin-bottom: 25px;
 }
 
-.card{
-    position: relative;
-    width: 150px;
-    height: 180px;
-}
-.card h4{
-    position: absolute;
-    bottom: -10px;
-    background-color: var(--bg-secondary);
-    height: 35px;
-    margin: 0;
-    color: var(--bg-color);
-    text-align: center;
-    font-size: 12px;
-    font-weight: 300;
-}
+
+
+
 
 .cards_text{
     display: flex;
@@ -367,7 +404,6 @@ li{
     height: 150px;
 }
 
-
 @keyframes type{
     from{
         width: 100%;
@@ -376,10 +412,6 @@ li{
         width: 0;
     }
 }
-
-
-
-
 
 .templatemo_contacttitle {
     width: 100%;
@@ -417,7 +449,6 @@ li{
     height: 100px;
 }
 
-
 .templatemo_contactform .btn-primary {
     background: #92bf24;
     border: none;
@@ -428,6 +459,34 @@ li{
 
 .templatemo_contactform .btn-primary:hover {
     background: #a6d82c;
+}
+
+.img_space{
+    width: 150px;
+    height: auto;
+}
+
+.img_uno{
+    position: absolute;
+    width: 280px;
+    height: auto;
+    right: 0;
+}
+
+.img_dos_cont{
+    width: 150px;
+    height: 280px;
+}
+
+.img_dos_cont img{
+    position: absolute;
+    right: 0;
+    margin-top: 25px;
+    height: 280px;
+}
+
+.us_img_cont{
+    display: flex;
 }
 
 

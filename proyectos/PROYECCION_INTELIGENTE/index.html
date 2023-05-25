@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <script src="main.js"></script>
+
     <title>PROYECCIÓN INTELIGENTE</title>
 </head>
 <body>
@@ -58,6 +59,8 @@
                 <p>REALIZADOS</p>
             </div>
             <button> Nosotros</button>
+            <div class="img_space"></div>
+            <img class="img_uno" src="./assets/img/img_1.png" alt="">
             </div>
         </div>
         <div class="lo_que">
@@ -69,6 +72,7 @@
                 Contamos con una amplia experiencia en la Constitución de Régimen en Condominio.
                 Además asesoramos a instancias municipales para la gestión de recursos ante el Gobierno Federal.</p>
         </div>
+
     </section>
     <section id="us_">
         <div class="us_sect">
@@ -79,8 +83,9 @@
                 </div>
             </div>
             <span class="us_line"></span>
-            <div>
-                <img src="./assets/img/wall_dos.png" alt="">
+            <div class="us_img_cont">
+                <img class="us_sect_img" src="./assets/img/wall_dos.png" alt="">
+                <div class="img_dos_cont"><img src="./assets/img/img_2.png" alt=""></div>
             </div>
         </div>
     </section>
@@ -129,7 +134,7 @@
         <div class="cards_text">
             <h2>PROYECTOS EN LOS QUE HEMOS COLABORADO</h2>
             <p>30 años de experiencia respaldando y colaborando</p>
-            <button>PROYECTOS</button>
+            <a href="./Sheets/proyectos.html"><button >PROYECTOS</button></a>
         </div>
 
     </section>
@@ -154,35 +159,6 @@
                 <button onclick="Correo(); return false">ENVIAR</button>
             </form>
 
-
-
-                <!-- <div class="row">
-                    <div id="templatemo_contact" class="col-md-4 gallery-contact">
-                </div>
-                    <div class="col-md-8 templatemo_contactform">
-                    <div class="templatemo_contacttitle">CONTACTO</div>
-                    <div class="templatemo_sub_contacttitle">Si requieres un subtitulo escribelo aquí</div>
-                        <p> Escribe aquí el mensaje que quieres presentar si es necesario.</p>
-                
-                    <form action="enviar.php" method="post">
-                                        <input type="text" name="name" id="name" class="name" placeholder="NOMBRE">
-                                        <input type="text" name="mail" id="mail" class="email" placeholder="CORREO">
-                                        <input type="text" name="phone" id="subject" class="subject" placeholder="TELÉFONO">
-                                        <textarea name="message" class="message" placeholder="MENSAJE ... " id="message"></textarea>
-                                        <div class="clear"></div>
-                                            <div class="col-md-8"> 
-                                                <button type="submit" class="btn btn-primary">ENVIAR </button>
-                    </div>
-                    </form>
-
-                    </div>
-
-
-
-
-
-
-            </div> -->
     </section>
     <section>
         <div class="whats">
@@ -222,6 +198,8 @@
                 <li>222 556 4569</li>
             </ul>
         </div>
+
+
     </footer>
     
 
@@ -230,8 +208,9 @@
         const typed = new Typed('.typed', {
     strings: [
         '<i class="Servicios_cahnge">Aprobaciones Municipales</i>',
-        '<i class="Servicios_cahnge">Cortes</i>',
-        '<i class="Servicios_cahnge">Hola</i>',
+        '<i class="Servicios_cahnge">Aprobaciones Estatales</i>',
+        '<i class="Servicios_cahnge">Requerimientos para la contrucción</i>',
+        '<i class="Servicios_cahnge">Régimen de condominio</i>',
     ],
     stringsElement: '#cadenas-texto', // ID del elemento que contiene cadenas de texto a mostrar.
 	typeSpeed: 75, // Velocidad en mlisegundos para poner una letra,
