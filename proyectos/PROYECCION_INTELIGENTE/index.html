@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="./css/mobile-first.css">
     <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="./css/proyectosImg.css">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <link rel="stylesheet" href="css/set-design.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,9 +32,15 @@
             <a href="#">BLOG</a>
             <a class="navmenu" href="#contact_">CONTACTO</a>
             <a class="navmenu" href="Sheets/login.html">CAPACITACIÓN</a>
+            <div id="DarkMode">
+                <img class="mode" src="./assets/img/dar_mode.png" alt="">
+            </div>
             </div>
         </div>
     </header>
+    <section class="logo_icon_cont">
+        <img src="./assets/img/proyecc_int.png" alt="Logo poryección" class="logo_icon">
+    </section>
     <section id="home" class="main_sect">
         <article>
             <div class="backgroung_img">
@@ -74,6 +82,8 @@
         </div>
 
     </section>
+
+    
     <section id="us_">
         <div class="us_sect">
             <div class="services_cont">
@@ -89,9 +99,10 @@
             </div>
         </div>
     </section>
+
     <section id="proyectos">
         <div class="cards_containers">
-            <div>
+            <div class="first_cards_sect">
                 <div class="card" id="card1">
                     <h4>Condominio vertical Hight Towers</h4>
                 </div>
@@ -143,7 +154,8 @@
         <div>
             <h3>IMPULSA TUS PROYECTOS CON</h3>
             <h3>PROYECCIÓN INTELIGENTE</h3>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.828540124531!2d-98.2575583!3d19.027275599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfc70ccd8cee9d%3A0x7284408936cb0ed3!2sMargaritas%2055%2C%20Floresta%2C%2072810%20Tlaxcalancingo%2C%20Pue.!5e0!3m2!1ses-419!2smx!4v1684705685606!5m2!1ses-419!2smx" width="380px" height="280" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <a href="https://www.google.com/maps?ll=19.027813,-98.257709&z=17&t=m&hl=es-419&gl=MX&mapclient=embed&q=Margaritas+55+Floresta+72810+Tlaxcalancingo,+Pue."><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.828540124531!2d-98.2575583!3d19.027275599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cfc70ccd8cee9d%3A0x7284408936cb0ed3!2sMargaritas%2055%2C%20Floresta%2C%2072810%20Tlaxcalancingo%2C%20Pue.!5e0!3m2!1ses-419!2smx!4v1684705685606!5m2!1ses-419!2smx" width="380px" height="280" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </a>
         </div>
         <span class="line_contact_"></span>
         <div class="form_container">
@@ -162,7 +174,7 @@
     </section>
     <section>
         <div class="whats">
-            <a href="#proyectos"><svg id="whats_icon" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="2.59cm" height="2.59cm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
+            <a href="https://wa.me/2211657325" target="_blank"><svg id="whats_icon" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="2.59cm" height="2.59cm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
                 viewBox="0 0 2159 2794">
                  <g id="Capa_x0020_1">
                   <metadata id="CorelCorpID_0Corel-Layer"/>
@@ -238,5 +250,7 @@
 
 
     </script>
+    <script src="./css/DarkMode.js"></script>
+
 </body>
 </html>

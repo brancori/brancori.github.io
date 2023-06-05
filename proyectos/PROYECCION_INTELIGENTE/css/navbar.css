@@ -1,6 +1,8 @@
 :root {
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
+    --font-text: #000000;
+
   }
 
 #navbar{
@@ -12,10 +14,26 @@
     gap: 55px;
     margin-top: 0;
     background-color: var(--bg-color);
-    transition: all ease .3s;
+    transition: all ease .6s;
 }
+.mode{
+    display: flex;
+    width: 50px;
+}
+#DarkMode{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: var(--font-text);
+    gap: 4px;
+    margin-left: 55px;
+}
+
 a{
     text-decoration: none;
+    color: var(--font-text);
 }
 .navbar_scroll{
     position: fixed;
@@ -28,6 +46,9 @@ a{
 }
 #navbar_2{
     display: flex;
+    align-items: center;
+    color: var(--font-text);
+
     
 }
 #navbar_2 a{
@@ -41,8 +62,8 @@ a{
     width: 125px;
     height: 20px;
     margin-left: 5px;
-    border-bottom: solid 2px rgb(255, 255, 255);
     overflow: hidden;
+
 }
 /* Efectos Hover */
 

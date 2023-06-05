@@ -1,0 +1,102 @@
+@media (max-width: 780px){
+
+    .description_cont, .lo_que, #home, #contact_, #proyectos, .logo_icon{
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    .description_cont span,
+    .arrow_, .img_dos_cont, 
+    .us_line, .line_contact_, 
+    .typed,
+    .img_uno{
+        display: none;
+    }
+    #us_, .services_cont, .us_img_cont{
+        display: flex;
+        flex-direction: column;
+        gap: 100px;
+        height: auto;
+    }
+    .services_cont P{
+        width: auto;
+    }
+    .lo_que{
+        margin-bottom: 100px;
+    }
+    #home, #proyectos{
+        height: auto;
+    }
+    .services_cont, #proyectos{
+        flex-direction: column-reverse;
+    }
+    .cards_containers{
+        display: flex;
+        justify-content: start;
+        margin-top: 3vh;
+        display: flex;
+        gap: 45px;
+        width: 95%;
+        height: 100%;
+        padding: 0 10px;
+        overflow-x: scroll;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        justify-content: start;
+        overflow-y: hidden;
+    }
+    .cards_containers::-webkit-scrollbar {
+        display: none;
+    }
+    .cards_containers div{
+        display: flex;
+    }
+    .cards_containers .second_cards_sect, .first_cards_sect{
+        display: flex;
+    }
+
+    .card {
+        width: 260px;
+        height: 350px;
+        object-fit: scale-down;
+        scroll-snap-align: center;
+        align-items: center;
+
+
+    }
+    .card img{
+        text-align: center;
+    }
+
+    #proyectos{
+        padding: 0;
+        gap: 0;
+        align-items: none;
+        margin: 0 ;
+    }
+    iframe{
+        width: 90vw;
+    }
+    .logo_icon{
+        width: 100px;
+        height: auto;
+        margin: 25px auto;
+
+    }
+    .cards_containers img{
+        width: auto;
+        height: auto;
+        object-fit: scale-down;
+        border-radius: 3px;
+        
+    }
+    .cards_containers{
+        height: auto;
+    }
+    .cards_containers h4{
+        width: 260px;
+
+    }
+
+    
+}
