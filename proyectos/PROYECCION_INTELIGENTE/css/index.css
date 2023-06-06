@@ -10,23 +10,17 @@
     --font-text: #000000;
   }
 
-body {
+body, 
+.container_type,
+.description_cont div,
+.lo_que div,
+.us_sect,
+#contact_ div:nth-child(1) {
     display: flex;
     flex-direction: column;
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-color);
-    color: var(--font-text);
 }
-
-button{
-    padding: 25xp;
-    width: 120px;
-    height: 45px;
-    border-radius: 7px;
-    background: none;
-    border: 2px solid black;
-}
+body {margin: 0;padding: 0;background-color: var(--bg-color);color: var(--font-text);}
+button{padding: 25xp;width: 120px;height: 45px;border-radius: 7px;background: none;border: 2px solid black;}
 button:hover{
     background: var(--primary-color);
     background: radial-gradient(circle, rgba(226,97,34,1) 0%, rgb(124, 34, 1) 100%);  
@@ -39,8 +33,6 @@ input{
     border-bottom: 1px solid rgb(77, 77, 77);
     text-align: center;
 }
-
-
 #myVideo{
     z-index: 0;
     position: absolute;
@@ -62,14 +54,11 @@ input{
     text-shadow: rgb(48, 48, 48) 1px 0 10px;
 }
 .container_type{
-    display: flex;
-    flex-direction: column;
     z-index: 2;
     width: 100vw;
     margin: 0;
     padding: 0;
 }
-
 .backgroung_img{
     display: flex;
     position: relative;
@@ -100,8 +89,6 @@ input{
     padding: 25px 10vw;
 }
 .description_cont div{
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     font-weight: 600;
@@ -114,14 +101,12 @@ input{
     height: 36px;
     font-size: 1.7em;
 }
-
 .description_cont span{
     padding: 50px;
     border-right: 3px solid black;
     height: 100%;
     display: inline;
 }
-
 .description_cont p:nth-child(3){
     color: var(--primary-color);
     margin: 0;
@@ -134,21 +119,16 @@ input{
     text-align: justify; 
 }
 .lo_que div{
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 .lo_que h2:nth-child(2){
     color: var(--primary-color);
 }
-
 .us_sect{
     position: relative;
-    display: flex;
     margin-top: 25px;
     height: 90vh;
-    flex-direction: column;
     align-items: center;
 }
 .services_cont{
@@ -184,7 +164,6 @@ input{
     padding: 5vw;
     height: 95vh;
 }
-
 .cards_containers{
     justify-content: center;
     display: flex;
@@ -200,7 +179,6 @@ input{
 .cards_containers .second_cards_sect, .logo_icon_cont{
     display: none;
 }
-
 .cards_containers img{
     width: 150px;
     height: 200px;
@@ -219,10 +197,7 @@ input{
     padding: 7vh 3vw;
     gap: 35px;
 }
-
 #contact_ div:nth-child(1){
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 
@@ -230,11 +205,9 @@ input{
 #contact_ div:nth-child(1) h3:nth-child(2){
     color: #e26122;
 }
-
 #contact_ div:nth-child(1) h3:nth-child(2){
     margin-bottom: 52px;
 }
-
 .card{
     position: relative;
     width: 150px;
@@ -252,19 +225,15 @@ input{
     font-size: 12px;
     font-weight: 300;
 }
-
-
 .line_contact_{
     border-right: 2.5px solid rgb(92, 92, 92);
     height: 350px;
     width: 50px;
 }
-
 #proyectos img{
     width: 35px;
     height: 45px;
 }
-
 .us_line{
     display: block;
     width: 80%;
@@ -272,11 +241,6 @@ input{
     border-bottom: 4px solid black;
     margin-bottom: 25px;
 }
-
-
-
-
-
 .cards_text{
     display: flex;
     flex-direction: column;
@@ -285,7 +249,6 @@ input{
     text-align: center;
     gap: 25px;
 }
-
 #proyectos{
     display: flex;
     height: 90vh;
@@ -294,7 +257,6 @@ input{
     align-items: center;
     margin: 60px auto 0 auto;
 }
-
 .form_container{
     display: flex;
     flex-direction: column;
@@ -304,7 +266,6 @@ input{
     padding: 25px;
     gap: 15px;
 }
-
 .input_contact{
     display: flex;
     gap: 15px;
@@ -316,11 +277,9 @@ input{
     justify-content: center;
     align-items: center;
 }
-
 .input_name{
     width: 100%;
 }
-
 #comments{
     width: 100%;
     height: 150px;
@@ -353,7 +312,6 @@ li{
     width: 150px;
     height: 150px;
 }
-
 @keyframes type{
     from{
         width: 100%;
@@ -361,42 +319,6 @@ li{
     to{
         width: 0;
     }
-}
-
-.templatemo_contacttitle {
-    width: 100%;
-    margin-bottom: 10px;
-    font-size: 32px;
-    font-weight: bold;
-    color: #ffffff;
-    text-align: center;
-}
-
-.templatemo_sub_contacttitle {
-    width: 100%;
-    font-size: 22px;
-    color: #91bf24;
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.templatemo_contact {
-    margin: 30px;
-    width: 100%;
-    margin-left: 15%;
-}
-
-.templatemo_contactform input, textarea {
-    width: 100%;
-    background: #282828;
-    border: 1px solid #393939;
-    padding: 7px 10px;
-    margin: 0px 0px 10px 0px;
-    background-color: #FAFAFA;
-}
-
-.templatemo_contactform textarea {
-    height: 100px;
 }
 
 .img_space{
@@ -426,3 +348,99 @@ li{
     display: flex;
 }
 
+.team_conteiner{
+    display: flex;
+    gap: 50px;
+    overflow-x: scroll;
+    align-items: center;
+    overscroll-behavior-x: cover;
+    justify-content: start;
+    width: 100%;
+    height:500px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.new_{
+    width: auto;
+}
+
+
+.card_team, .new_{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 300px;
+    background-color: #000000;
+    border-radius: 5px;
+    position: relative;
+
+}
+
+.img_team{
+    width: 200px;
+    filter: saturate(0);
+}
+
+.new_:hover .img_team{
+    transform: scale(1.4);
+    z-index: 3;
+    filter: saturate(1);
+    align-self: flex-start;
+    position: absolute;
+    bottom: 105px;
+    right: 15px;
+}
+.new_:hover .team_info{
+    position: absolute;
+    bottom: -25px;
+    z-index: 4;
+    background-color: var(--primary-color);
+}
+
+.hover_img{
+    transform: scale(1.4);
+    z-index: 3;
+    filter: saturate(1);
+    align-self: flex-start;
+    position: absolute;
+    bottom: 105px;
+    right: 15px;
+}
+.hover_info{
+    position: absolute;
+    bottom: -25px;
+    z-index: 4;
+    background-color: var(--primary-color);
+}
+
+
+
+.new_:hover h3{
+    color: #231E1A;
+}
+.new_ h3{
+    margin: 0;
+    initial-letter: 0;
+    line-height: 5px;
+}
+.new_ h3, .new_ p{
+    margin-bottom: 0;
+    font-size: 12px;
+}
+.team_info{
+    background-color: var(--font-text);
+    color: var(--bg-color);
+    text-align: center;
+    width: 250px;
+    height: 90px;
+}
+.new_:hover h2{
+    box-shadow: 12px 4px 3px 2px rgba(0, 0, 0, .05);
+}
+
+.brands_cont{
+
+}
