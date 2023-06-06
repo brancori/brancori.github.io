@@ -111,6 +111,30 @@ start_();
 start();
 
 
+const imagenes = new Array(
+    '../assets/img/us_img/1_.jpg',
+    '../assets/img/us_img/2_.jpg',
+    '../assets/img/us_img/3_.jpg',
+    '../assets/img/us_img/4_.jpg',
+    '../assets/img/us_img/5_.jpg',
+    '../assets/img/us_img/6_.jpg',
+    '../assets/img/us_img/7_.jpg',
+) 
+
+function cambiar (){
+    const  index=Math.floor((Math.random()*imagenes.length))
+    document.querySelector(".us_sect_img").src=imagenes[index];
+}
+
+onload=function()
+{
+    cambiar();
+
+    setInterval(cambiar,5000);
+}
+
+
+
 
 
 

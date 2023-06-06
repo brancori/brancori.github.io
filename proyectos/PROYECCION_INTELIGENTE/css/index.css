@@ -145,7 +145,9 @@ input{
 .us_sect_img{
     width: 65vw;
     height: auto;
+    aspect-ratio: 16/9;
     margin: auto;
+    object-fit: contain;
 }
 .services_cont h2:nth-child(1){
     color: var(--primary-color);
@@ -368,8 +370,6 @@ li{
     height: 600px;
     position: relative;
 }
-    
-
 
 .card_team, .new_{
     display: flex;
@@ -385,6 +385,8 @@ li{
 .img_team{
     width: 200px;
     filter: saturate(0);
+    position: absolute;
+    top: -20px;
 }
 
 .new_:hover .img_team{
@@ -447,3 +449,4 @@ li{
     overflow-y: hidden;
     overflow-x: hidden;
 }
+
