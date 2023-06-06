@@ -157,7 +157,7 @@ input{
 
 }
 #home{
-    height: 90vh;
+    height: auto;
 }
 #services{
     display: flex;
@@ -407,6 +407,7 @@ li{
 
 
 
+
 .new_:hover h3{
     color: #231E1A;
 }
@@ -450,3 +451,7 @@ li{
     overflow-x: hidden;
 }
 
+.conta_salider img{
+    height: 400px;
+    object-fit: cover;
+}
