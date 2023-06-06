@@ -54,7 +54,10 @@ const typed = new Typed('.typed', {
 });
 
 const teamConteiner = document.querySelector('.team_conteiner');
+const brands = document.querySelector('.brands_cont');
 let maxScrollLeft = teamConteiner.scrollWidth - teamConteiner.clientWidth;
+let maxScrollLeftBrands = brands.scrollWidth - brands.clientWidth;
+
 
 
 let intervalo = null;
@@ -76,13 +79,26 @@ const stop = () => {
     clearInterval(intervalo);
 }
 
+
+const start_ = () => {
+    intervalo = setInterval(function() {
+        brands.scrollLeft = brands.scrollLeft + step;
+    if(brands.scrollLeft === maxScrollLeftBrands){
+        step = (step * -1);
+    }else if(brands.scrollLeft ===  0){
+        step = (step * -1);
+    }
+    },10);
+}
+
+
 teamConteiner.addEventListener('mouseover', ()=>{
     stop()
 })
 teamConteiner.addEventListener('mouseout', ()=>{
     start()
 })
-
+start_();
 start();
 
 
