@@ -365,7 +365,10 @@ li{
 
 .new_{
     width: auto;
+    height: 600px;
+    position: relative;
 }
+    
 
 
 .card_team, .new_{
@@ -377,7 +380,6 @@ li{
     height: 300px;
     background-color: #2e2e2e;
     border-radius: 5px;
-    position: relative;
 }
 
 .img_team{
@@ -395,22 +397,6 @@ li{
     right: 15px;
 }
 .new_:hover .team_info{
-    position: absolute;
-    bottom: -25px;
-    z-index: 4;
-    background-color: var(--primary-color);
-}
-
-.hover_img{
-    transform: scale(1.4);
-    z-index: 3;
-    filter: saturate(1);
-    align-self: flex-start;
-    position: absolute;
-    bottom: 105px;
-    right: 15px;
-}
-.hover_info{
     position: absolute;
     bottom: -25px;
     z-index: 4;
@@ -437,6 +423,8 @@ li{
     text-align: center;
     width: 250px;
     height: 90px;
+    position: absolute;
+    bottom: 0;
 }
 .new_:hover h2{
     box-shadow: 12px 4px 3px 2px rgba(0, 0, 0, .05);

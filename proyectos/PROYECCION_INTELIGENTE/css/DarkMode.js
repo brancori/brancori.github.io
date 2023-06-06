@@ -58,6 +58,11 @@ const brands = document.querySelector('.brands_cont');
 let maxScrollLeft = teamConteiner.scrollWidth - teamConteiner.clientWidth;
 let maxScrollLeftBrands = brands.scrollWidth - brands.clientWidth;
 
+console.log(maxScrollLeft/8);
+
+const size = teamConteiner.getBoundingClientRect()
+var height = size.height;
+var width = size.width;
 
 
 let intervalo = null;
@@ -75,6 +80,8 @@ const start = () => {
 }
 
 
+
+
 const stop = () => {
     clearInterval(intervalo);
 }
@@ -90,6 +97,8 @@ const start_ = () => {
     }
     },10);
 }
+
+ 
 
 
 teamConteiner.addEventListener('mouseover', ()=>{
