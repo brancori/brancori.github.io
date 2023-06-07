@@ -79,9 +79,6 @@ const start = () => {
     },10);
 }
 
-
-
-
 const stop = () => {
     clearInterval(intervalo);
 }
@@ -133,9 +130,38 @@ onload=function()
     setInterval(cambiar,5000);
 }
 
+const venta = document.querySelector('#venta').addEventListener('click', () =>{
+    let des1 = document.querySelector('#venta_inm').classList.value
+    if ( des1 === 'noVisible'){
+        des1 = document.querySelector('#venta_inm').classList.remove('noVisible')
+        des1 = document.querySelector('#venta_inm').classList.add('visible')
+    }else{
+        des1 = document.querySelector('#venta_inm').classList.remove('visible')
+        des1 = document.querySelector('#venta_inm').classList.add('noVisible')
+    }
 
+})
+const busquedaEspe = document.querySelector('#busquedaEspe').addEventListener('click', () =>{
+    let des1 = document.querySelector('#Busqueda_Esp').classList.value
+    if ( des1 === 'noVisible'){
+        des1 = document.querySelector('#Busqueda_Esp').classList.remove('noVisible')
+        des1 = document.querySelector('#Busqueda_Esp').classList.add('visible')
+    }else{
+        des1 = document.querySelector('#Busqueda_Esp').classList.remove('visible')
+        des1 = document.querySelector('#Busqueda_Esp').classList.add('noVisible')
+    }
+})
 
-
+const estudiosMer = document.querySelector('#estudiosMer').addEventListener('click', () =>{
+    let des1 = document.querySelector('#Estudios_mer').classList.value
+    if ( des1 === 'noVisible'){
+        des1 = document.querySelector('#Estudios_mer').classList.remove('noVisible')
+        des1 = document.querySelector('#Estudios_mer').classList.add('visible')
+    }else{
+        des1 = document.querySelector('#Estudios_mer').classList.remove('visible')
+        des1 = document.querySelector('#Estudios_mer').classList.add('noVisible')
+    }
+})
 
 
 

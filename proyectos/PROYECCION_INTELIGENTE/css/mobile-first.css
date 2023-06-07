@@ -101,6 +101,15 @@
         width: 100vw;
         height: 200px;
     }
+    .main_alcon_cont{
+        gap: 35px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .desplegar{
+        width: 100vw;
+    }
 
     
 }

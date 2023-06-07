@@ -20,8 +20,8 @@ body,
     flex-direction: column;
 }
 body {margin: 0;padding: 0;background-color: var(--bg-color);color: var(--font-text);}
-button{padding: 25xp;width: 120px;height: 45px;border-radius: 7px;background: none;border: 2px solid black;}
-button:hover{
+.button{padding: 25xp;width: 120px;height: 45px;border-radius: 7px;background: none;border: 2px solid black;}
+.button:hover{
     background: var(--primary-color);
     background: radial-gradient(circle, rgba(226,97,34,1) 0%, rgb(124, 34, 1) 100%);  
     color: var(--bg-color);
@@ -128,7 +128,7 @@ input{
 .us_sect{
     position: relative;
     margin-top: 25px;
-    height: 90vh;
+    height: auto;
     align-items: center;
 }
 .services_cont{
@@ -354,8 +354,7 @@ li{
     display: flex;
     gap: 50px;
     justify-content: start;
-    width: 100%;
-    padding: 0 100px;
+    width: 90%;
     height:500px;
     overflow-x: scroll;
     overscroll-behavior-x: cover;
@@ -364,6 +363,7 @@ li{
     overflow-x: hidden;
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
+    margin: 0 auto;
 }
 
 .new_{
@@ -456,3 +456,46 @@ li{
     height: 400px;
     object-fit: cover;
 }
+
+.team{
+    display: flex;
+    align-items: center;
+    height: 900px;
+
+}
+.desplegable{
+    display: flex;
+    width: 350px;
+    text-align: start;
+    border-style: none;
+    background: none;
+    font-weight: bold;
+    color: #104175;
+    align-items: center;
+}
+#Alcon{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px;
+}
+
+.noVisible{
+display: none;
+}
+.visible{
+    display: visible;
+}
+.uno_arrow {
+    width: 25px;
+    height: 25px;
+}
+.main_alcon_cont{
+    display: flex;
+}
+.alcon_logo{
+    width: 200px;
+    padding:0 50px;
+}
+
