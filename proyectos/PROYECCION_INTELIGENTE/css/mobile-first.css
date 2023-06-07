@@ -106,10 +106,45 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        width: 100vw;
     }
     .desplegar{
         width: 100vw;
     }
+    .div_conte_serv{
+        flex-direction: column;
+    }
+    .pi_main_cont{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 5px;
+        gap: 15px;
+    }
+    .img_con_pi img{
+        width: 200px;
+    }
+    .brands_cont{
+        width: 100%;
+        height: 100px;
+    }
+    .desplegable{
+        width: 100vw;
+        text-align: center;
+        justify-content: center;
+        justify-self: center;
+        align-self: center;
+        align-items: center ;
+        margin: 0;
+    }
+    #Alcon{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
 
     
 }

@@ -165,6 +165,3 @@ const estudiosMer = document.querySelector('#estudiosMer').addEventListener('cli
 
 
 
-
-
-

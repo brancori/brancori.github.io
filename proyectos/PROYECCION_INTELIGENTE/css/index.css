@@ -128,24 +128,34 @@ input{
 .us_sect{
     position: relative;
     margin-top: 25px;
-    height: auto;
     align-items: center;
+    scroll-snap-align: center;
+}
+.piServices{
+    scroll-snap-align: center;
+
 }
 .services_cont{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5vw;
+    padding: 2vw;
     gap: 7vw;
     text-align: justify;
 }
 .services_cont P{
     width: 70%;
 }
+.title_team{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10vh;
+}
 .us_sect_img{
     width: 65vw;
-    height: auto;
-    aspect-ratio: 16/9;
+    height: 350PX;
+    aspect-ratio: 21/ 9;
     margin: auto;
     object-fit: contain;
 }
@@ -253,11 +263,10 @@ input{
 }
 #proyectos{
     display: flex;
-    height: 90vh;
     padding: 5vw;
     gap: 5vw;
     align-items: center;
-    margin: 60px auto 0 auto;
+    margin: 30px auto;
 }
 .form_container{
     display: flex;
@@ -348,6 +357,9 @@ li{
 }
 .us_img_cont{
     display: flex;
+}
+#team{
+    height: 90vh;
 }
 
 .team_conteiner{
@@ -460,7 +472,7 @@ li{
 .team{
     display: flex;
     align-items: center;
-    height: 900px;
+    height: 600px;
 
 }
 .desplegable{
@@ -470,17 +482,21 @@ li{
     border-style: none;
     background: none;
     font-weight: bold;
-    color: #104175;
     align-items: center;
+}
+
+#Alcon .desplegable{
+    color: #104175;
+
 }
 #Alcon{
     display: flex;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
     gap: 20px;
     padding: 15px;
 }
-
 .noVisible{
 display: none;
 }
@@ -498,4 +514,85 @@ display: none;
     width: 200px;
     padding:0 50px;
 }
+.services_cont_alcon{
+    width: 600px;
+}
+#piServices{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 90vw;
+    gap: 25px;
+    padding: 7vw;
+    margin: 0 auto;
+}
+#piServices h3{
+    display: flex;
+    margin: 0 auto;
+    text-align: center;
+}
+#piServices .div_conte_serv{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+}
+#piServices .div_conte_serv h3{
+    display: flex;
+    align-self: center;
+    color: var(--primary-color);
+    margin: auto 0 auto 4px;
+}
+.div_conte_serv h2, h3{
+    font-size: 20px;
+    text-align: center;
+}
+.services_cont_pi{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50vw;
+}
+.img_con_pi{
+    width: 30vw;
+}
+.img_con_pi img{
+    width: 400px;
+}
+.pi_main_cont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 150px;
+}
+.services_cont_pi .hijo_serv_pi{
+    display: flex;
+    flex-direction: column;
+}
+.services_cont_pi h2 ,h3{
+    font-size: 20px;
+    margin: 0 auto;
+}
+.services_cont_pi h3{
+    color: var(--primary-color);
+}
+.services_cont_pi .desplegable{
+    justify-self: center;
+    align-self: center;
+}
+.services_cont_pi .desplegable:hover{
+    color:var(--primary-color);
+}
+.services_cont_pi .desplegable:hover .uno_arrow{
+    fill: var(--primary-color);
+}
+
+.cont_cont_serv_pi{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
 
