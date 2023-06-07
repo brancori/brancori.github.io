@@ -55,14 +55,8 @@ const typed = new Typed('.typed', {
 
 const teamConteiner = document.querySelector('.team_conteiner');
 const brands = document.querySelector('.brands_cont');
-let maxScrollLeft = teamConteiner.scrollWidth - teamConteiner.clientWidth;
+let maxScrollLeft = teamConteiner.scrollWidth  - teamConteiner.clientWidth ;
 let maxScrollLeftBrands = brands.scrollWidth - brands.clientWidth;
-
-console.log(maxScrollLeft/8);
-
-const size = teamConteiner.getBoundingClientRect()
-var height = size.height;
-var width = size.width;
 
 
 let intervalo = null;

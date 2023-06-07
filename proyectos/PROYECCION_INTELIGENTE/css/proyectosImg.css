@@ -1,68 +1,33 @@
 #card1{
-    background-image: url('../assets/img/images_1.jpeg');
+    background-image: url('../assets/img/image_1.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
 #card2{
-    background-image: url('../assets/img/images_2.jpeg');
+    background-image: url('../assets/img/image_2.jpg');
     background-size: cover;
     background-repeat: no-repeat;
 
 }
 #card3{
-    background-image: url('../assets/img/images_3.jpeg');
+    background-image: url('../assets/img/image_3.jpg');
     background-size: cover;
     background-repeat: no-repeat;
 
 }
 #card4{
-    background-image: url('../assets/img/images_4.jpeg');
+    background-image: url('../assets/img/image_4.jpg');
     background-size: cover;
     background-repeat: no-repeat;
 
 }
 #card5{
-    background-image: url('../assets/img/images_1.jpeg');
+    background-image: url('../assets/img/image_5.jpg');
     background-size: cover;
     background-repeat: no-repeat;
 }
 #card6{
-    background-image: url('../assets/img/images_2.jpeg');
+    background-image: url('../assets/img/image_6.jpg');
     background-size: cover;
     background-repeat: no-repeat;
-}
-#card7{
-    background-image: url('../assets/img/images_3.jpeg');
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-#card8{
-    background-image: url('../assets/img/images_4.jpeg');
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-
-#card1:hover{
-    background-image: url('../assets/img/images_2.jpeg');
-}
-#card2:hover{
-    background-image: url('../assets/img/images_3.jpeg');
-}
-#card3:hover{
-    background-image: url('../assets/img/images_4.jpeg');
-}
-#card4:hover{
-    background-image: url('../assets/img/images_1.jpeg');
-}
-#card5:hover{
-    background-image: url('../assets/img/images_2.jpeg');
-}
-#card6:hover{
-    background-image: url('../assets/img/images_3.jpeg');
-}
-#card7:hover{
-    background-image: url('../assets/img/images_4.jpeg');
-}
-#card8:hover{
-    background-image: url('../assets/img/images_1.jpeg');
 }

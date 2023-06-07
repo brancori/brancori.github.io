@@ -223,14 +223,18 @@ input{
 .card{
     position: relative;
     width: 150px;
-    height: 180px;
+    height: 240px;
 
 }
 .cards_containers h4{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     bottom: -10px;
     background-color: var(--bg-secondary);
-    height: 35px;
+    height: 55px;
+    width: 150px;
     margin: 0;
     color: var(--bg-color);
     text-align: center;
@@ -360,6 +364,9 @@ li{
 }
 #team{
     height: 90vh;
+    width: auto;
+    overflow-x: hidden;
+    
 }
 
 .team_conteiner{
@@ -368,7 +375,6 @@ li{
     justify-content: start;
     width: 90%;
     height:500px;
-    overflow-x: scroll;
     overscroll-behavior-x: cover;
     align-items: center;
     overflow-y: hidden;
@@ -455,6 +461,7 @@ li{
     gap: 70px;
     background-color: #2e2e2e;
     height: 160px;
+    width: 90vw;
     align-items: center;
     justify-content: center;
     overflow-x: scroll;
@@ -462,6 +469,7 @@ li{
     align-items: center;
     overflow-y: hidden;
     overflow-x: hidden;
+    box-sizing: content-box;
 }
 
 .conta_salider img{
@@ -495,7 +503,6 @@ li{
     flex-direction: column;
     justify-content: center;
     gap: 20px;
-    padding: 15px;
 }
 .noVisible{
 display: none;
@@ -513,6 +520,7 @@ display: none;
 .alcon_logo{
     width: 200px;
     padding:0 50px;
+    box-sizing: border-box;
 }
 .services_cont_alcon{
     width: 600px;
@@ -526,6 +534,7 @@ display: none;
     gap: 25px;
     padding: 7vw;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 #piServices h3{
     display: flex;
