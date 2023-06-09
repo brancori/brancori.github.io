@@ -366,7 +366,6 @@ li{
     height: 90vh;
     width: auto;
     overflow-x: hidden;
-    
 }
 
 .team_conteiner{
@@ -374,7 +373,7 @@ li{
     gap: 50px;
     justify-content: start;
     width: 90%;
-    height:500px;
+    height:450px;
     overscroll-behavior-x: cover;
     align-items: center;
     overflow-y: hidden;
@@ -382,6 +381,7 @@ li{
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
     margin: 0 auto;
+    margin-top: 25px;
 }
 
 .new_{
