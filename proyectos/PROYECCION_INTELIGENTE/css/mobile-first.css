@@ -145,19 +145,24 @@
 #Alcon{
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+
 }
 .desplegable{
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 #venta_inm{
     width: 90vw;
     padding: 0 15px;
     text-align: justify;
-    box-sizing: content-box;
-
+    box-sizing: border-box;
+}
+.services_cont_alcon{
+    width: 90vw;
+    box-sizing: border-box;
+    text-align: justify;
 }
 
     
