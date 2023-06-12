@@ -522,7 +522,6 @@ display: none;
     width: 90vw;
     gap: 25px;
     padding: 7vw;
-    margin: 0 auto;
     box-sizing: border-box;
 }
 #piServices h3{
@@ -547,12 +546,9 @@ display: none;
     font-size: 20px;
     text-align: center;
 }
-.services_cont_pi{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 50vw;
-}
+
+
+
 .img_con_pi{
     width: 30vw;
 }
@@ -579,6 +575,7 @@ display: none;
 .services_cont_pi .desplegable{
     justify-self: center;
     align-self: center;
+    color: var(--font-text);
 }
 .services_cont_pi .desplegable:hover{
     color:var(--primary-color);

@@ -1,3 +1,11 @@
+:root {
+    --bg-color: #f7f7f7;
+    --primary-color: #e26122;
+    --bg-secondary: rgb(56, 56, 56);
+    --font-text: #000000;
+    --button: #f7f7f7;
+  }
+
 @media (max-width: 780px){
 
     .description_cont, .lo_que, #home, #contact_, #proyectos, .logo_icon{
@@ -20,6 +28,10 @@
     .services_cont P{
         width: auto;
         padding: 0 5vw;
+    }
+    #piServices{
+        padding: 3vw;
+        box-sizing: border-box;
     }
     #piServices h2{
         text-align: center;
@@ -146,6 +158,9 @@
     
 .services_cont_pi h2, h3{
     text-align: center;
+}
+.services_cont_pi{
+    width: 70vw;
 }
 #Alcon{
     justify-content: center;
