@@ -89,8 +89,13 @@ h1:nth-child(2){
     text-align: end;
 }
 .footer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     bottom: 0vh;
+    height: 100px;
 }
 @media (max-width: 780px){
     .blog_container{
