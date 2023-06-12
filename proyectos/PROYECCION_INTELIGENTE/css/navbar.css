@@ -132,11 +132,10 @@ li{
         justify-content: center;
         align-items: center;
         width: 100vw;
-        color: black;
         height: 45px;
         border: 1px solid black;
-        background-color: var(--bg-color);
-        color: var(--primary-color);
+        background-color: var(--primary-color);
+        color: var(--bg-color);
     }
     .navbar_visible{
         flex-direction: column;

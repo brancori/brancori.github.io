@@ -480,6 +480,7 @@ input{
     background: none;
     font-weight: bold;
     align-items: center;
+    box-sizing: border-box;
 }
 
 #Alcon .desplegable{
@@ -576,6 +577,7 @@ display: none;
     justify-self: center;
     align-self: center;
     color: var(--font-text);
+
 }
 .services_cont_pi .desplegable:hover{
     color:var(--primary-color);
