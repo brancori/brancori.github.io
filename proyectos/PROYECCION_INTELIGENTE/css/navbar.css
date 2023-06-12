@@ -156,11 +156,12 @@ li{
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 25px;
+        padding: 35px;
+        box-sizing: border-box;
         height: 35px;
     }
     .logo_icon_cont img{
-        margin: 25px;
+        margin: 20px;
     }
     .logo_icon{
         width: 100px;

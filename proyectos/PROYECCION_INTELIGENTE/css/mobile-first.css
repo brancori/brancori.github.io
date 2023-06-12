@@ -14,14 +14,19 @@
     #us_, .services_cont, .us_img_cont{
         display: flex;
         flex-direction: column;
-        gap: 100px;
+        gap: 50px;
         height: auto;
     }
     .services_cont P{
         width: auto;
+        padding: 0 5vw;
+    }
+    #piServices h2{
+        text-align: center;
+        font-size: 18px;
     }
     .lo_que{
-        margin-bottom: 100px;
+        padding: 0 5vw;
     }
     #home, #proyectos{
         height: auto;
@@ -152,6 +157,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#venta{
+    width: 90vw;
+    box-sizing: border-box;
 }
 #venta_inm{
     width: 90vw;
