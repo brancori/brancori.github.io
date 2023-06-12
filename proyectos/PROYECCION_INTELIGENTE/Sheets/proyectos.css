@@ -58,6 +58,7 @@ h1:nth-child(2){
 }
 .main_text{
     text-align: justify;
+    height: 100%;
 }
 .last_container{
     display: flex;
@@ -89,13 +90,15 @@ h1:nth-child(2){
 }
 .footer{
     position: absolute;
-    bottom: 0;
+    bottom: 0vh;
 }
 @media (max-width: 780px){
     .blog_container{
         flex-direction: column;
         width: 95%;
+        height: inherit;
         padding: 0;
+        gap: 15px;
         margin: 0 auto;
     }
     .main_blog_img{
@@ -108,6 +111,8 @@ h1:nth-child(2){
         flex-direction: row;
         gap: 15px;
         margin-bottom: 35px;
+        height: 600px;
+
     }
     .last_hist img{
         width: 100px;
@@ -131,7 +136,10 @@ h1:nth-child(2){
         }
         h3 {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 55px;
+        }
+        .separator_h1{
+            display: none;
         }
 
 }
