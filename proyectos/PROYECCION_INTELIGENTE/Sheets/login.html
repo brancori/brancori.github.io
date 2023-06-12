@@ -6,23 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Sheets/login.css">
     <link rel="stylesheet" href="../css/set-design.css">
-    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/mobile-first.css">
+
     <title>CAPACITACIÓN</title>
 </head>
 <body>
-    <div id="navbar">  
-        <div>
-            <a href="../index.html"> <img id="logo_proyeccion" src="../assets/img/proyecc_int.png" alt="logo proyección inteligente"></a>
-        </div> 
-        <div id="navbar_2">
-        <a class="navmenu" href="../index.html">INICIO</a>
-        <a class="navmenu" href="#">NOSOTROS</a>
-        <a class="navmenu" href="#">SERVICIOS</a>
-        <a class="navmenu" href="#">PROYECTOS</a>
-        <a class="navmenu" href="./contacto.html">CONTACTO</a>
-        <a class="navmenu" href="./login.html">CAPACITACIÓN</a>
+    <header>
+        <div id="navbar" class="navbar_visible" >  
+            <div>
+                <a href="index.html"><img id="logo_proyeccion" src="assets/img/proyecc_int.png" alt="logo proyección inteligente"></a>
+            </div> 
+            <div id="navbar_2" class="navbar_2_menu">
+            <a id="inicio_" class="navmenu" href="#home">INICIO</a>
+            <a id="nosotros_" class="navmenu" href="#us_">NOSOTROS</a>
+            <a id="servicios_" class="navmenu" href="#">SERVICIOS</a>
+            <a id="poryectos" class="navmenu" href="#proyectos">PROYECTOS</a>
+            <a id="blog" class="navmenu" href="./Sheets/proyectos.html" >BLOG</a>
+            <a id="contacto" class="navmenu" href="#contact_">CONTACTO</a>
+            <a id="capacitacion" class="navmenu" href="Sheets/login.html">CAPACITACIÓN</a>
+            <div id="DarkMode">
+                <img class="mode" src="./assets/img/dar_mode.png" alt="Hola">
+            </div>
+            </div>
         </div>
-    </div>
+    </header>
+
+    <section class="logo_icon_cont">
+        <img src="./assets/img/proyecc_int.png" alt="Logo poryección" class="logo_icon">
+        <img src="./assets/ico/lista.png" alt="" class="menu_list" id="menu_list_des">
+    </section>
     <form class="login_">
         <h2>INGRESO</h2>
         <div class="container">
@@ -45,5 +57,7 @@
                     
     </form>
     <p class="info_property">Programa elaborado por proyección inteligente</p>
+    <script src="../css/DarkMode.js"></script>
+
 </body>
 </html>
