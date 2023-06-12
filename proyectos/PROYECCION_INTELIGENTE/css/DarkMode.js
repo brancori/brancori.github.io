@@ -6,6 +6,7 @@ let logoPoryeccion = document.querySelector('#logo_proyeccion')
 let  var1 =  style.setProperty('--bg-color', '#f7f7f7');
 let  var2 = style.setProperty('--primary-color', '#e26122');
 let  var3 =  style.setProperty('--font-text', '#181818');
+let  var4 =  style.setProperty( '--button', '#f7f7f7');
 
 
 DarkMode.addEventListener('click', function(){
@@ -15,6 +16,7 @@ DarkMode.addEventListener('click', function(){
        var1 = style.setProperty('--bg-color', '#181818');
        var2 = style.setProperty('--primary-color', '#f7f7f7');
        var3 = style.setProperty('--font-text', '#f7f7f7');
+       var4 =  style.setProperty( '--button', '#e26122');
        mode.setAttribute("src", "./assets/img/day_mode.png");
        logoPoryeccion.setAttribute('src', 'assets/img/logo_proyección_white.png')
         console.log('no');
@@ -22,6 +24,7 @@ DarkMode.addEventListener('click', function(){
         var1 = style.setProperty('--bg-color', '#f7f7f7');
         var2 = style.setProperty('--primary-color', '#e26122');
         var3 = style.setProperty('--font-text', '#181818');
+        var4 =  style.setProperty( '--button', '#f7f7f7');
         mode.setAttribute("src", "./assets/img/dar_mode.png");
         logoPoryeccion.setAttribute('src', 'assets/img/proyecc_int.png')
 
@@ -89,9 +92,6 @@ const start_ = () => {
     },10);
 }
 
- 
-
-
 teamConteiner.addEventListener('mouseover', ()=>{
     stop()
 })
@@ -156,6 +156,60 @@ const estudiosMer = document.querySelector('#estudiosMer').addEventListener('cli
         des1 = document.querySelector('#Estudios_mer').classList.add('noVisible')
     }
 })
+
+
+menudesp_ = document.querySelector('#menu_list_des').addEventListener('click', function(){
+    let principal  = document.getElementById('navbar_2').classList.value
+
+if(principal === 'navbar_2_menu'){
+    document.querySelector("#navbar_2").classList.remove('navbar_2_menu')
+    document.querySelector("#navbar_2").classList.add('navbar_2_menu_visible')
+    document.querySelector('#inicio_').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+    document.querySelector('#nosotros_').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+    document.querySelector('#servicios_').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+    document.querySelector('#poryectos').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+    document.querySelector('#blog').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+    document.querySelector('#contacto').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+    document.querySelector('#capacitacion').addEventListener('click', function(){
+        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    
+    })
+
+
+
+
+}else{
+    document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+    document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+}
+
+    });
+    
 
 
 
