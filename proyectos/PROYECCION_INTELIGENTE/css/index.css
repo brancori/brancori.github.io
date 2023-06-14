@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
 }
 :root {
     --bg-color: #f7f7f7;
@@ -10,7 +11,13 @@
     --font-text: #5f6062;
     --button: #f7f7f7;
   }
-
+  html{
+    scroll-behavior: smooth;
+}
+::selection{
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+}
 body, 
 .container_type,
 .description_cont div,
@@ -19,29 +26,55 @@ body,
 #contact_ div:nth-child(1) {
     display: flex;
     flex-direction: column;
+    color: #5f6062;
 }
-body {margin: 0;padding: 0;background-color: var(--bg-color);color: var(--font-text);}
-.button{padding: 25xp;width: 120px;height: 45px;border-radius: 7px;background: var(--button);border: 2px solid black;}
-.button:hover{
-    background: var(--primary-color);
-    background: radial-gradient(circle, #f1ab11 0%, #e26122 100%);  
-    color: var(--bg-color);
-    border: none;
+body{
+    height: 100vh;
+    width: 100vw;
 }
-input{
-    width: 70%;
-    border: 0;
-    border-bottom: 1px solid rgb(77, 77, 77);
-    text-align: center;
+.scroller{
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
 }
-#myVideo{
+.scroller section {
+    scroll-snap-align: start;
+}
+body 
+{margin: 0;padding: 
+    0;background-color: var(--bg-color);
+    color: var(--font-text);
+}
+
+.myVideo{
     z-index: 0;
     position: absolute;
     object-fit: cover;
     width: 100vw;
     height: 250px;
     margin: 0;
+    overflow-x: hidden;
     padding: 0;
+}
+.banda_video{
+    background-color: var(--primary-color);
+    position: absolute;
+    width: 70%;
+    height: 15%;
+    top: 25px;
+    z-index: 1;
+    left: 15vw;
+    opacity: .4;
+    border-radius: 5px;
+}
+.servicios_en_video{
+    z-index: 2;
+    color: var(--bg-color);
+}
+.text_si{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .Servicios_cahnge{
     font-weight: bold;
@@ -54,6 +87,9 @@ input{
     margin-left: 25px;
     text-shadow: rgb(48, 48, 48) 1px 0 10px;
 }
+.typed{
+    margin-top: 20px;
+}
 .container_type{
     z-index: 2;
     width: 100vw;
@@ -65,10 +101,11 @@ input{
     position: relative;
     justify-content: center;
     font-weight: 500;
-    width: 97vw;
+    width: 100vw;
     margin: 0;
     padding: 0;
     height: 250px;
+    overflow-x: hidden;
 }
 .backgroung_img h3{
     margin-top: 25px;
@@ -79,7 +116,6 @@ input{
     font-size: 2em;
     margin-left: 20px;
     display: inline;
-    text-shadow: rgb(199, 199, 199) .3px 0 15px;
 }
 .description_cont{
     position: relative;
@@ -115,6 +151,7 @@ input{
 }
 .lo_que{
     display: flex;
+    color: var(--font-text);
     gap: 5vw;
     padding: 10vh 5vw;
     text-align: justify; 
@@ -122,6 +159,8 @@ input{
 .lo_que div{
     justify-content: center;
     align-items: center;
+    color: var(--font-text);
+
 }
 .lo_que h2:nth-child(2){
     color: var(--primary-color);
@@ -268,6 +307,9 @@ input{
     text-align: center;
     gap: 25px;
 }
+.cards_text h2{
+    color: var(--primary-color);
+}
 #proyectos{
     display: flex;
     padding: 5vw;
@@ -324,24 +366,20 @@ input{
         width: 0;
     }
 }
-
 .img_space{
     width: 150px;
     height: auto;
 }
-
 .img_uno{
     position: absolute;
     width: 20%;
     height: auto;
     right: 0;
 }
-
 .img_dos_cont{
     width: 150px;
     height: 280px;
 }
-
 .img_dos_cont img{
     position: absolute;
     right: 0;
@@ -356,7 +394,6 @@ input{
     width: auto;
     overflow-x: hidden;
 }
-
 .team_conteiner{
     display: flex;
     gap: 50px;
@@ -372,13 +409,11 @@ input{
     margin: 0 auto;
     margin-top: 25px;
 }
-
 .new_{
     width: auto;
     height: 600px;
     position: relative;
 }
-
 .card_team, .new_{
     display: flex;
     flex-direction: column;
@@ -389,14 +424,12 @@ input{
     background-color: #2e2e2e;
     border-radius: 5px;
 }
-
 .img_team{
     width: 200px;
     filter: saturate(0);
     position: absolute;
     top: -20px;
 }
-
 .new_:hover .img_team{
     transform: scale(1.4);
     z-index: 3;
@@ -412,10 +445,6 @@ input{
     z-index: 4;
     background-color: var(--primary-color);
 }
-
-
-
-
 .new_:hover h3{
     color: #231E1A;
 }
@@ -444,7 +473,6 @@ input{
     height: 120px;
     width: auto;
 }
-
 .brands_cont{
     display: flex;
     gap: 70px;
@@ -460,12 +488,10 @@ input{
     overflow-x: hidden;
     box-sizing: content-box;
 }
-
 .conta_salider img{
     height: 400px;
     object-fit: cover;
 }
-
 .team{
     display: flex;
     align-items: center;
@@ -474,18 +500,18 @@ input{
 }
 .desplegable{
     display: flex;
-    width: 350px;
-    text-align: start;
+    width: 400px;
     border-style: none;
-    background: none;
-    font-weight: bold;
+    border: 2px solid #5f6062;
+    border-radius: 25px;
+    text-align: start;
     align-items: center;
+    height: 40px;
     box-sizing: border-box;
 }
 
 #Alcon .desplegable{
     color: #104175;
-
 }
 #Alcon{
     display: flex;
@@ -530,8 +556,9 @@ display: none;
     margin: 0 auto;
     text-align: center;
 }
-#piServices .div_conte_serv{
+ .div_conte_serv{
     display: flex;
+    gap: 25px;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -547,9 +574,6 @@ display: none;
     font-size: 20px;
     text-align: center;
 }
-
-
-
 .img_con_pi{
     width: 30vw;
 }
@@ -565,6 +589,7 @@ display: none;
 .services_cont_pi .hijo_serv_pi{
     display: flex;
     flex-direction: column;
+    gap: 15x;
 }
 .services_cont_pi h2 ,h3{
     font-size: 20px;
