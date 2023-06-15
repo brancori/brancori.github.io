@@ -81,8 +81,7 @@ const mainCont = document.querySelector("#navbar");
 
 
         imgLogoSect.setAttribute('src', './assets/img/proyecc_int.png')
-        imgDarckMode_.setAttribute('serc', './assets/img/dar_mode.png')
-        listaSect.setAttribute('src', '../assets/ico/lista.png')
+        listaSect.setAttribute('src', './assets/ico/lista.png')
 
         logoImg.setAttribute('src', '../assets/img/proyecc_int.png')
 
