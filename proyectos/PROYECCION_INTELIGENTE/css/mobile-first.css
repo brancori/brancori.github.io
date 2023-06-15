@@ -2,13 +2,17 @@
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
     --bg-secondary: rgb(56, 56, 56);
-    --font-text: #5f6062;
     --button: #f7f7f7;
+    --font-text: #5f6062;
+
   }
 
 @media (max-width: 780px){
+    p{
+        color: var(--font-text);
+    }
 
-    .description_cont, .lo_que, #home, #contact_, .proyectos_, .logo_icon{
+    .description_cont, .lo_que, .main_sect, .contact_, .proyectos_, .logo_icon{
         display: flex;
         flex-direction: column;
         gap: 30px;
@@ -22,9 +26,9 @@
     .myVideo{
         height: auto;
     }
-    /* .scroller section {
+    .scroller section {
         scroll-snap-align: start;
-    } */
+    }
     #us_, .services_cont, .us_img_cont{
         display: flex;
         flex-direction: column;
@@ -35,11 +39,11 @@
         width: auto;
         padding: 0 5vw;
     }
-    #piServices  .lo_que h2{
+    .piServices  .lo_que h2{
         font-size: 30px;
     }
     
-    #piServices{
+    .piServices{
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -49,19 +53,19 @@
         width: 100vw;
         box-sizing: border-box;
     }
-    #piServices h2{
+    .piServices h2{
         text-align: center;
         font-size: 18px;
         color: var(--font-text);
     }
-    #piServices .lo_que{
+    .piServices .lo_que{
         padding: 0 5vw;
         margin-top: 30px;
     }
-    /* .button{
+    .button{
         scroll-snap-type: y mandatory;
-    } */
-    #home, .proyectos_{
+    }
+    .main_sect .proyectos_{
         height: auto;
     }
     .proyectos_{
@@ -87,7 +91,7 @@
     .cards_text{
         gap: 15px;
     }
-    /* .cards_containers{
+    .cards_containers{
         display: flex;
         margin-top: 3vh;
         width: 100%;
@@ -103,7 +107,7 @@
     }
     .cards_containers::-webkit-scrollbar {
         display: none;
-    } */
+    }
     .cards_containers div{
         display: flex;
         gap: 20px;
@@ -119,14 +123,14 @@
 
     }
 
-    /* .card {
+    .card {
         width: 260px;
         height: 350px;
         object-fit: scale-down;
         scroll-snap-align: center;
         align-items: center;
         box-shadow: rgb(184, 184, 184) 2px 0 8px;
-    } */
+    }
     .card img{
         text-align: center;
     }
@@ -163,7 +167,7 @@
     }
     .main_alcon_cont{
         gap: 35px;
-        flex-direction: column;
+        flex-direction: column-reverse;
         justify-content: center;
         align-items: center;
     }
@@ -171,7 +175,7 @@
         flex-direction: column;
         gap: 0;
     }
-    #piServices .div_conte_serv h3{
+    .piServices .div_conte_serv h3{
         color: var(--primary-color);
     }
     .pi_main_cont{
@@ -182,21 +186,19 @@
         margin: 0;
         padding: 0;
         gap: 15px;
-        width: 100vw;
         box-sizing: border-box;
     }
     .cont_cont_serv_pi{
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin: 0;
+        margin-bottom: 25px;
         padding: 0;
-        width: 100vw;
         align-items: center;
         box-sizing: border-box;
     }
     .img_con_pi img{
-        width: 150px;
+        width: 200px;
         margin: 0 ;
         padding: 0;
     }
@@ -204,13 +206,25 @@
         width: 100%;
         height: 100px;
     }
-    #venta{
-        width: 100vw;
-    }
-    .services_cont_alcon{
-        width: 100vw;
+
+    .services_cont_alcon {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 80vw;
         box-sizing: border-box;
+        box-shadow: rgb(211, 211, 211) 1px 0 8px;
     }
+    .services_cont_alcon .desplegable  {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: auto 15px;
+        text-align: center;
+
+    }
+    
     
 .services_cont_pi h2, h3{
     text-align: center;
@@ -220,10 +234,10 @@
 }
 .services_cont_pi{
     padding: 15px;
-    width: 100vw;
     box-sizing: border-box;
     background-color: var(--bg-color);
     width: 80vw;
+    height: auto;
     border-radius: 15px;
     box-shadow: rgb(211, 211, 211) 1px 0 8px;
 }
@@ -241,31 +255,30 @@
     border: none;
     align-self: center;
     background: none;
+    text-align: center;
     padding: 15px;
     box-sizing: border-box;
     width: 100%;
-    height: 45px;
+    color: var(--font-text);
 }
 .desplegable .uno_arrow{
     display: none;
 }
-#venta{
-    width: 90vw;
-    box-sizing: border-box;
-}
-#venta_inm{
+.venta_{
     width: 90vw;
     padding: 0 15px;
-    text-align: justify;
     box-sizing: border-box;
+    text-align: center;
 }
-.services_cont_alcon{
-    width: 100vw;
+#venta_inm, #Busqueda_Esp, #Estudios_mer{
+    width: 80vw;
+    padding: 0 15px;
+    text-align: center;
     box-sizing: border-box;
-    text-align: justify;
 }
 
-/* section [id]{
+
+section [id]{
     scroll-margin-top: 150px;
 }
 .map_sect_cont{
@@ -278,7 +291,7 @@
     scroll-snap-align: center;
     scroll-margin-top: 150px;
     margin: 5vh 0;
-} */
+}
 
     
 }

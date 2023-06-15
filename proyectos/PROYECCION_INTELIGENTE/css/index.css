@@ -8,10 +8,10 @@
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
     --bg-secondary: rgb(56, 56, 56);
-    --font-text: #5f6062;
     --button: #f7f7f7;
-  }
+    --font-text: #5f6062;
 
+  }
 ::selection{
     background-color: var(--primary-color);
     color: var(--bg-color);
@@ -21,7 +21,7 @@ body,
 .description_cont div,
 .lo_que div,
 .us_sect,
-#contact_ div:nth-child(1) {
+.contact_ div:nth-child(1) {
     display: flex;
     flex-direction: column;
     color: #5f6062;
@@ -146,6 +146,7 @@ body
 .description_cont h2 , .lo_que h2{
     height: 36px;
     font-size: 1.7em;
+    color: var(--font-text);
 }
 .description_cont span{
     padding: 50px;
@@ -227,13 +228,7 @@ body
     height: 90vh;
     margin: 25px 0;
 }
-#services{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 5vw;
-    height: 95vh;
-}
+
 .cards_containers{
     justify-content: center;
     display: flex;
@@ -260,7 +255,7 @@ body
     transform: rotate(.5deg);
     object-position: 0;
 }
-#contact_{
+.contact_{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -268,15 +263,15 @@ body
     padding: 7vh 3vw;
     gap: 35px;
 }
-#contact_ div:nth-child(1){
+.contact_ div:nth-child(1){
     justify-content: center;
     align-items: center;
 
 }
-#contact_ div:nth-child(1) h3:nth-child(2){
+.contact_ div:nth-child(1) h3:nth-child(2){
     color: #e26122;
 }
-#contact_ div:nth-child(1) h3:nth-child(2){
+.contact_ div:nth-child(1) h3:nth-child(2){
     margin-bottom: 52px;
 }
 .card{
@@ -519,22 +514,58 @@ body
     height: 600px;
 
 }
-.desplegable{
-    display: flex;
-    width: 400px;
+ .desplegable{
+    display: none;
     border-style: none;
-    border: 2px solid #5f6062;
-    border-radius: 25px;
-    text-align: start;
+    text-align: center;
     align-items: center;
-    height: 40px;
+    padding: 5px;
+    color: var(--font-text);
     box-sizing: border-box;
 }
+.services_cont_pi{
+    display: flex;
+    flex-direction: column;
+    width: 28vw;
+    border-radius: 8px;
+    padding: 15px;
+    height: 120px;
+    text-align: center;
+    box-shadow: rgb(184, 184, 184) 2px 0 8px;
+}
+.services_cont_pi:hover .desplegable{
+    display: flex;
+}
+.services_cont_pi:hover{
+    height: fit-content;
+}
+.cont_cont_serv_pi{
+    display: flex;
+    gap: 15px;
+    margin: 35px 0;
+    
+}
+.services_cont_pi div:nth-child(2){
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 35px;
+    padding: 15px;
 
-#Alcon .desplegable{
+    }
+    .hijo_serv_pi{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+.alcon .desplegable{
     color: #104175;
 }
-#Alcon{
+.alcon{
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -562,7 +593,7 @@ display: none;
 .services_cont_alcon{
     width: 600px;
 }
-#piServices{
+.piServices{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -572,20 +603,20 @@ display: none;
     padding: 7vw;
     box-sizing: border-box;
 }
-#piServices h3{
+.piServices h3{
     display: flex;
     margin: 0 auto;
     text-align: center;
 }
  .div_conte_serv{
     display: flex;
-    gap: 25px;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     margin: 0 auto;
 }
-#piServices .div_conte_serv h3{
+.piServices .div_conte_serv h3{
     display: flex;
     align-self: center;
     color: var(--primary-color);
@@ -605,38 +636,30 @@ display: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 150px;
+    gap: 20px;
 }
-.services_cont_pi .hijo_serv_pi{
-    display: flex;
-    flex-direction: column;
-    gap: 15x;
-}
+
+
 .services_cont_pi h2 ,h3{
     font-size: 20px;
     margin: 0 auto;
 }
+.services_cont_pi h2 {
+    color: var(--font-text);
+}
 .services_cont_pi h3{
     color: var(--primary-color);
 }
-.services_cont_pi .desplegable{
-    justify-self: center;
-    align-self: center;
-    color: var(--font-text);
 
-}
 .services_cont_pi .desplegable:hover{
-    color:var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--bg-color);
 }
 .services_cont_pi .desplegable:hover .uno_arrow{
     fill: var(--primary-color);
 }
 
-.cont_cont_serv_pi{
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
+
 
 section [id]{
     scroll-margin-top: 70px;

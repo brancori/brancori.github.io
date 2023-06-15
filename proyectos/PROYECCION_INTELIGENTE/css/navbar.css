@@ -2,7 +2,11 @@
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
     --Secondary-color: #be3f00;
-    --font-text: #000000;
+    --font-text: #5f6062;
+  }
+  body{
+    color: var(--font-text);
+;
   }
 .navbar_visible{
     display: flex;
