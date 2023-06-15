@@ -209,9 +209,6 @@ li{
         background-color: var(--Secondary-color);
         color: var(--bg-color)!important;
     }
-    .myVideo{
-        top: 0;
-    }
     .main_sect{
         margin-top: 10px;
     }

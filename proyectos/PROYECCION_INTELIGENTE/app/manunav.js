@@ -83,7 +83,7 @@ const mainCont = document.querySelector("#navbar");
         imgLogoSect.setAttribute('src', './assets/img/proyecc_int.png')
         listaSect.setAttribute('src', './assets/ico/lista.png')
 
-        logoImg.setAttribute('src', '../assets/img/proyecc_int.png')
+        logoImg.setAttribute('src', './assets/img/proyecc_int.png')
 
         inicioA.setAttribute('href', '#home')
         nosotrosA.setAttribute('href', '#us_')
