@@ -11,9 +11,7 @@
     --font-text: #5f6062;
     --button: #f7f7f7;
   }
-  html{
-    scroll-behavior: smooth;
-}
+
 ::selection{
     background-color: var(--primary-color);
     color: var(--bg-color);
@@ -28,33 +26,37 @@ body,
     flex-direction: column;
     color: #5f6062;
 }
-body{
-    height: 100vh;
-    width: 100vw;
-}
+
 .scroller{
     height: 100vh;
     overflow-y: scroll;
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
+    overflow-x: hidden;
+
 }
 .scroller section {
     scroll-snap-align: start;
+    scroll-behavior: smooth;
+
 }
 body 
 {margin: 0;padding: 
     0;background-color: var(--bg-color);
     color: var(--font-text);
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
 }
-
 .myVideo{
     z-index: 0;
     position: absolute;
-    object-fit: cover;
+    object-fit:cover ;
     width: 100vw;
-    height: 250px;
+    height: 350px;
     margin: 0;
-    overflow-x: hidden;
     padding: 0;
+    overflow: hidden;
+    bottom: 0;
 }
 .banda_video{
     background-color: var(--primary-color);
@@ -107,6 +109,20 @@ body
     height: 250px;
     overflow-x: hidden;
 }
+.label_section_cont{
+    display: flex;
+    align-items: center;
+    margin-top: 25px;
+}
+.label_section{
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    margin:0 35px;
+    height: 3px;
+    align-items: center;
+    width: 50%;
+}
 .backgroung_img h3{
     margin-top: 25px;
     display: inline;
@@ -124,6 +140,7 @@ body
     gap: 25px;
     align-items: center;
     padding: 25px 10vw;
+    margin: 50px 0;
 }
 .description_cont div{
     align-items: center;
@@ -153,7 +170,6 @@ body
     display: flex;
     color: var(--font-text);
     gap: 5vw;
-    padding: 10vh 5vw;
     text-align: justify; 
 }
 .lo_que div{
@@ -179,7 +195,7 @@ body
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2vw;
+    padding: 1vw;
     gap: 7vw;
     text-align: justify;
 }
@@ -208,7 +224,8 @@ body
 
 }
 #home{
-    height: auto;
+    height: 90vh;
+    margin: 25px 0;
 }
 #services{
     display: flex;
@@ -288,7 +305,7 @@ body
     height: 350px;
     width: 50px;
 }
-#proyectos img{
+.proyectos_ img{
     width: 35px;
     height: 45px;
 }
@@ -310,12 +327,13 @@ body
 .cards_text h2{
     color: var(--primary-color);
 }
-#proyectos{
+.proyectos_{
     display: flex;
-    padding: 5vw;
-    gap: 5vw;
+    justify-content: center;
+    padding: 10px;
+    gap: 3vw;
     align-items: center;
-    margin: 30px auto;
+    margin: 15px auto;
 }
 .form_container{
     display: flex;
@@ -388,11 +406,6 @@ body
 }
 .us_img_cont{
     display: flex;
-}
-#team{
-    height: 90vh;
-    width: auto;
-    overflow-x: hidden;
 }
 .team_conteiner{
     display: flex;
@@ -615,6 +628,10 @@ display: none;
     display: flex;
     flex-direction: column;
     gap: 25px;
+}
+
+section [id]{
+    scroll-margin-top: 70px;
 }
 
 

@@ -200,9 +200,6 @@ if(principal === 'navbar_2_menu'){
     
     })
 
-
-
-
 }else{
     document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
     document.querySelector("#navbar_2").classList.add('navbar_2_menu')
@@ -210,6 +207,28 @@ if(principal === 'navbar_2_menu'){
 
     });
     
+const menuLinks = document.querySelectorAll('#navbar_2  a[href^="#"]');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        const id = entry.target.getAttribute("id");
+        const menuLink = document.querySelector(`#navbar_2 a[href="#${id}"]`);
+        if(entry.isIntersecting){
+            menuLink.classList.add('selected_menubar');
+        }else{
+            menuLink.classList.remove('selected_menubar');
+
+        }
+    })
+}, { rootMargin: "-30% 0px -70% 0px" })
+
+menuLinks.forEach((menuLink) => {
+    const hash = menuLink.getAttribute("href");
+    const target = document.querySelector(hash);
+    if(target){
+        observer.observe(target)
+    }
+})
 
 
 

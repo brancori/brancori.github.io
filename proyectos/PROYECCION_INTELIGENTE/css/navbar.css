@@ -45,22 +45,27 @@ a{
     display: flex;
     align-items: center;
     color: var(--font-text);
-
-    
+    height: 65px;
+    position: relative;
 }
 .navbar_2_menu a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 90px;
     text-align: center;
-    height: 21px;
+    height: 45px;
     color: rgb(88, 88, 88);
     overflow: hidden;
 }
 .navbar_2_menu a:nth-child(7){
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 125px;
-    height: 20px;
+    height: 45px;
     margin-left: 5px;
     overflow: hidden;
-
 }
 /* Efectos Hover */
 
@@ -68,6 +73,11 @@ a{
     border-bottom: solid 4px var(--primary-color);
     font-weight: bold;
     color: var(--primary-color); 
+}
+.selected_menubar {
+    border-bottom: solid 4px var(--primary-color);
+    font-weight: bold;
+    color: var(--primary-color)!important;
 }
 .navbar_2_menu a:hover{
     border-bottom: solid 4px var(--primary-color);
@@ -90,6 +100,9 @@ footer{
     font-size: .7em;
     padding: 4vh 0;
     width: 100vw;
+    box-sizing: border-box;
+    overflow-y: hidden;
+
 }
 li{
     list-style: none;
@@ -105,7 +118,7 @@ li{
     justify-content: center;
     align-items: center;
     color: black;
-    height: 35px;
+    height: 45px;
     border: 1px solid black;
     margin: 0;
 }
@@ -172,6 +185,9 @@ li{
     }
     .menu_list{
         width: 35px;
+    }
+    section [id]{
+        scroll-margin-top: 70px;
     }
 
 }

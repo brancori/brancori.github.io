@@ -29,7 +29,7 @@ input{
 html{
     scroll-behavior: smooth;
 }
-img, picture, video, iframe, figure{
+img, picture, figure{
     max-width: 100%;
     object-fit: cover;
     box-sizing: border-box;

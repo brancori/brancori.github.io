@@ -13,6 +13,9 @@
         flex-direction: column;
         gap: 30px;
     }
+    .scroller section {
+        scroll-snap-align: start;
+    }
 
     .description_cont span,
     .arrow_, .img_dos_cont, 
