@@ -1,7 +1,10 @@
 :root {
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
+    --Secondary-color: #be3f00;
+
     --font-text: #000000;
+
 
   }
 .navbar_visible{
@@ -146,7 +149,6 @@ li{
         align-items: center;
         width: 100vw;
         height: 45px;
-        border: 1px solid black;
         background-color: var(--primary-color);
         color: var(--bg-color);
     }
@@ -186,8 +188,17 @@ li{
     .menu_list{
         width: 35px;
     }
-    section [id]{
-        scroll-margin-top: 70px;
+    .selected_menubar{
+        border-bottom: solid 4px var(--primary-color);
+        font-weight: bold;
+        background-color: var(--Secondary-color);
+        color: var(--bg-color)!important;
+    }
+    .myVideo{
+        top: 0;
+    }
+    .main_sect{
+        margin-top: 10px;
     }
 
 }

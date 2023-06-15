@@ -73,11 +73,6 @@ body
     z-index: 2;
     color: var(--bg-color);
 }
-.text_si{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 .Servicios_cahnge{
     font-weight: bold;
     color: var(--bg-color);
@@ -199,6 +194,14 @@ body
     gap: 7vw;
     text-align: justify;
 }
+.text_si{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    padding-bottom: 30px;
+}
 .services_cont P{
     width: 70%;
 }
@@ -223,7 +226,7 @@ body
     display: inline;
 
 }
-#home{
+.main_sect{
     height: 90vh;
     margin: 25px 0;
 }
