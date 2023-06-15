@@ -32,12 +32,10 @@ body,
     overflow-y: scroll;
     scroll-snap-type: y proximity;
     overflow-x: hidden;
-
 }
 .scroller section {
     scroll-snap-align: start;
     scroll-behavior: smooth;
-
 }
 body 
 {margin: 0;padding: 
@@ -447,6 +445,15 @@ body
     top: -20px;
 }
 .new_:hover .img_team{
+    transform: scale(1.4);
+    z-index: 3;
+    filter: saturate(1);
+    align-self: flex-start;
+    position: absolute;
+    bottom: 105px;
+    right: 15px;
+}
+.Selected_team{
     transform: scale(1.4);
     z-index: 3;
     filter: saturate(1);

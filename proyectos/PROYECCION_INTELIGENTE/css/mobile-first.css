@@ -2,21 +2,17 @@
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
     --bg-secondary: rgb(56, 56, 56);
-    --font-text: #000000;
+    --font-text: #5f6062;
     --button: #f7f7f7;
   }
 
 @media (max-width: 780px){
 
-    .description_cont, .lo_que, #home, #contact_, #proyectos, .logo_icon{
+    .description_cont, .lo_que, #home, #contact_, .proyectos_, .logo_icon{
         display: flex;
         flex-direction: column;
         gap: 30px;
     }
-    .scroller section {
-        scroll-snap-align: start;
-    }
-
     .description_cont span,
     .arrow_, .img_dos_cont, 
     .us_line, .line_contact_,
@@ -25,6 +21,9 @@
     }
     .myVideo{
         height: auto;
+    }
+    .scroller section {
+        scroll-snap-align: start;
     }
     #us_, .services_cont, .us_img_cont{
         display: flex;
@@ -53,6 +52,7 @@
     #piServices h2{
         text-align: center;
         font-size: 18px;
+        color: var(--font-text);
     }
     #piServices .lo_que{
         padding: 0 5vw;
@@ -61,16 +61,21 @@
     .button{
         scroll-snap-type: y mandatory;
     }
-    #home, #proyectos{
+    #home, .proyectos_{
         height: auto;
     }
-    #proyectos{
+    .proyectos_{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .proyectos_{
         position: relative;
         margin: 65px 0;
         padding: 25px 0;
         gap: 0;
     }
-    .services_cont, #proyectos{
+    .services_cont, .proyectos_{
         flex-direction: column-reverse;
     }
     .cards_text .button{
@@ -84,10 +89,8 @@
     }
     .cards_containers{
         display: flex;
-        justify-content: start;
         margin-top: 3vh;
-        display: flex;
-        width: 95%;
+        width: 100%;
         height: 100%;
         padding: 0 10px;
         overflow-x: scroll;
@@ -95,6 +98,8 @@
         scroll-snap-type: x proximity;
         justify-content: start;
         overflow-y: hidden;
+        scroll-behavior: smooth;
+
     }
     .cards_containers::-webkit-scrollbar {
         display: none;
@@ -259,8 +264,22 @@
     box-sizing: border-box;
     text-align: justify;
 }
-.footer_cont h3{
-    color: #e26122 ;  
+
+section [id]{
+    scroll-margin-top: 150px;
+}
+.map_sect_cont{
+    display: flex;
+    height: 100%;
+    margin: 5vh 0;
+    scroll-snap-align: center;
+}
+.form_container{
+    scroll-snap-align: center;
+    scroll-margin-top: 150px;
+    margin: 5vh 0;
+
+
 }
 
     

@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
     let altura = $('#navbar').offset().top;
 
@@ -21,8 +20,6 @@ $(document).ready(function(){
         if ($(window).scrollTop() > altura + 380){
             $('#icon_container').removeClass('icon_container',"ico_contact_" )
             $('#icon_container').addClass('icon_container_', 'ico_contact')
-
-                    
 
         }else {
             $('#icon_container').removeClass('.icon_container_')

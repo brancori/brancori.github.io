@@ -2,7 +2,6 @@
     --bg-color: #f7f7f7;
     --primary-color: #e26122;
     --Secondary-color: #be3f00;
-
     --font-text: #000000;
 
 
@@ -96,21 +95,25 @@ footer{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 65px;
-    background-color: var(--bg-secondary);
-    color: var(--bg-color);
+    background: radial-gradient(circle at 18.7% 37.8%, rgb(88, 88, 88) 0%, rgb(68, 68, 68) 90%);    color: var(--bg-color);
     text-align: center;
     font-size: .7em;
     padding: 4vh 0;
     width: 100vw;
     box-sizing: border-box;
     overflow-y: hidden;
-
+    line-height: 1.4em;
+}
+.footer_cont h3{
+    color: #e26122 ; 
+    text-shadow: rgb(46, 46, 46) 1px 0 2px;
+    line-height: 2em;
 }
 li{
     list-style: none;
     text-align: center;
 }
+
 .navbar_2_desp{
     display: flex;
     flex-direction: column;
@@ -140,7 +143,7 @@ li{
         display: flex;
         flex-direction: column;
         position: absolute;
-        top: 80px;
+        top: 70px;
         z-index: 5;
     }
     .navmenu{
@@ -151,6 +154,15 @@ li{
         height: 45px;
         background-color: var(--primary-color);
         color: var(--bg-color);
+        border: 1px solid var(--primary-color);
+    }
+    .navbar_scroll{
+        position: fixed;
+        padding: 0;
+        top: 0;
+        z-index: 1000;
+        width: 100%;
+        box-shadow: 0px 4px 3px rgba(0, 0, 0, .05);
     }
     .navbar_visible{
         flex-direction: column;
@@ -176,6 +188,7 @@ li{
     }
     .logo_icon_cont img{
         margin: 20px;
+        fill: var(--primary-color);
     }
     .logo_icon{
         width: 100px;
@@ -200,5 +213,22 @@ li{
     .main_sect{
         margin-top: 10px;
     }
+    .logo_icon_cont{
+        position: fixed;
+        z-index: 4;
+        background-color: var(--bg-color);
+        width: 100vw;
+    }
+    #home{
+        margin-top: 70px;
+    }
+    section[id]{
+        scroll-margin-top: 85px;
+    }
+    .label_section_cont{
+        margin: 0;
+    }
+
+
 
 }

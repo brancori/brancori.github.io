@@ -5,8 +5,6 @@ const autor_ = document.querySelector('.autor');
 const imagen_ = document.querySelector('#imagen_main');
 highTowers = document.querySelector('#highTowers')
 
-
-
 let blog = [
     {   
         titulo: '¿CÓMO INICIO PROTECCIÓN INTELIGENTE?',
@@ -29,9 +27,6 @@ let blog = [
 highTowers.addEventListener('click', click_);
 let position = 0;
 
-
-
-
 function contenido(titulo, imagen, fecha, texto, autor){
     mainTitel.innerHTML = blog[position].titulo;
     imagen_.setAttribute('src', blog[position].imagen);
@@ -39,7 +34,6 @@ function contenido(titulo, imagen, fecha, texto, autor){
     mainText.innerHTML = blog[position].texto;
     autor_.innerHTML = blog[position].autor;
 }
-
 function click_(event){
     if(position === 0){
         position = 1
@@ -51,14 +45,3 @@ function click_(event){
 }
 click_()
     
-
-
-
-
-
-
-
-
-
-
-
