@@ -26,9 +26,9 @@ input{
     text-align: center;
     background-color: var(--bg-color);
 }
-html{
+/* html{
     scroll-behavior: smooth;
-}
+} */
 img, picture, figure{
     max-width: 100%;
     object-fit: cover;

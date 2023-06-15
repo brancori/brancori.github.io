@@ -29,9 +29,7 @@ DarkMode.addEventListener('click', function(){
         logoPoryeccion.setAttribute('src', 'assets/img/proyecc_int.png')
 
 
-        console.log('si');
     }
-    console.log('nose');
 })
 
 const typed = new Typed('.typed', {
@@ -134,7 +132,8 @@ const venta = document.querySelector('#venta').addEventListener('click', () =>{
         des1 = document.querySelector('#venta_inm').classList.add('noVisible')
     }
 
-})
+});
+
 const busquedaEspe = document.querySelector('#busquedaEspe').addEventListener('click', () =>{
     let des1 = document.querySelector('#Busqueda_Esp').classList.value
     if ( des1 === 'noVisible'){
@@ -229,6 +228,8 @@ menuLinks.forEach((menuLink) => {
         observer.observe(target)
     }
 })
+
+
 
 
 

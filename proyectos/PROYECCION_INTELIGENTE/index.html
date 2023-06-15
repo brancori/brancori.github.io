@@ -20,31 +20,13 @@
 </head>
 <body>
     <header>
-        <div id="navbar" class="navbar_visible" >  
-            <div>
-                <a href="index.html"><img id="logo_proyeccion" src="assets/img/proyecc_int.png" alt="logo proyección inteligente"></a>
-            </div> 
-            <div id="navbar_2" class="navbar_2_menu">
-            <a id="inicio_" class="navmenu" href="#home">INICIO</a>
-            <a id="nosotros_" class="navmenu" href="#us_">NOSOTROS</a>
-            <a id="poryectos" class="navmenu" href="#proyectos">PROYECTOS</a>
-            <a id="servicios_" class="navmenu" href="#piServices">SERVICIOS</a>
-            <a id="blog" class="navmenu" href="./Sheets/proyectos.html" >BLOG</a>
-            <a id="contacto" class="navmenu" href="#contact_">CONTACTO</a>
-            <a id="capacitacion" class="navmenu" href="Sheets/login.html">CAPACITACIÓN</a>
-            <div id="DarkMode">
-                <img class="mode" src="./assets/img/dar_mode.png" alt="Hola">
-            </div>
-            </div>
+        <div id="navbar">
         </div>
+        <section class="logo_icon_cont"></section>
     </header>
 
-    <article  class="scroller">
-        <section class="logo_icon_cont">
-            <img src="./assets/img/proyecc_int.png" alt="Logo poryección" class="logo_icon">
-            <img src="./assets/ico/lista.png" alt="" class="menu_list" id="menu_list_des">
-        </section>
-    
+
+    <article  class="scroller">    
         <section id="home" class="main_sect">
 
                 <div class="backgroung_img">
@@ -539,9 +521,14 @@
     
         </footer>
     </article>
-    
+
+
     <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+
+    <script src="./app//manunav.js">
+    </script>
     <script>
+        
         const desplegar_ = document.querySelector('#desplegar_').addEventListener("click", () => {
     document.querySelector('.second_cards_sect').classList.remove('second_cards_sect')
     document.querySelector('.cards_text').style.display = 'none'
@@ -550,5 +537,31 @@
 
     </script>
     <script src="./css/DarkMode.js"></script>
+    <script>
+        let prinPosition = window.pageYOffset
+        let $nav = document.querySelector('#navbar_2')
+        let $conte_ = document.querySelector('.logo_icon_cont')
+
+
+        
+        window.addEventListener('scroll', function(){
+            let actualPositiion = window.pageYOffset
+            if( prinPosition >= actualPositiion){
+                $nav.classList.remove('navbar_2_menu_visible')
+$nav.classList.add('navbar_2_menu')
+
+                $conte_.style.position = "fixed"
+                $conte_.style.top = "0px"
+            }else{
+                $nav.classList.add('navbar_2_menu')
+                $nav.classList.remove('navbar_2_menu_visible')
+
+                $conte_.style.position = "absolute"
+                $conte_.style.top = "-80px"
+            }
+            prinPosition = actualPositiion;
+        })
+
+    </script>x
 </body>
 </html>

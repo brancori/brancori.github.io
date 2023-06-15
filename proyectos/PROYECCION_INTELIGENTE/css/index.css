@@ -29,10 +29,9 @@ body,
 
 .scroller{
     height: 100vh;
-    overflow-y: scroll;
     scroll-snap-type: y proximity;
-    overflow-x: hidden;
 }
+
 .scroller section {
     scroll-snap-align: start;
     scroll-behavior: smooth;
@@ -507,7 +506,6 @@ body
     overflow-x: scroll;
     overscroll-behavior-x: cover;
     align-items: center;
-    overflow-y: hidden;
     overflow-x: hidden;
     box-sizing: content-box;
 }

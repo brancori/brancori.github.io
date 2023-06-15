@@ -22,9 +22,9 @@
     .myVideo{
         height: auto;
     }
-    .scroller section {
+    /* .scroller section {
         scroll-snap-align: start;
-    }
+    } */
     #us_, .services_cont, .us_img_cont{
         display: flex;
         flex-direction: column;
@@ -58,9 +58,9 @@
         padding: 0 5vw;
         margin-top: 30px;
     }
-    .button{
+    /* .button{
         scroll-snap-type: y mandatory;
-    }
+    } */
     #home, .proyectos_{
         height: auto;
     }
@@ -87,7 +87,7 @@
     .cards_text{
         gap: 15px;
     }
-    .cards_containers{
+    /* .cards_containers{
         display: flex;
         margin-top: 3vh;
         width: 100%;
@@ -103,7 +103,7 @@
     }
     .cards_containers::-webkit-scrollbar {
         display: none;
-    }
+    } */
     .cards_containers div{
         display: flex;
         gap: 20px;
@@ -119,14 +119,14 @@
 
     }
 
-    .card {
+    /* .card {
         width: 260px;
         height: 350px;
         object-fit: scale-down;
         scroll-snap-align: center;
         align-items: center;
         box-shadow: rgb(184, 184, 184) 2px 0 8px;
-    }
+    } */
     .card img{
         text-align: center;
     }
@@ -265,7 +265,7 @@
     text-align: justify;
 }
 
-section [id]{
+/* section [id]{
     scroll-margin-top: 150px;
 }
 .map_sect_cont{
@@ -278,9 +278,7 @@ section [id]{
     scroll-snap-align: center;
     scroll-margin-top: 150px;
     margin: 5vh 0;
-
-
-}
+} */
 
     
 }
