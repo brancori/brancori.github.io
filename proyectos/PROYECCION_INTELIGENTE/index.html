@@ -371,18 +371,20 @@
             </div>
             </article>
             <article class="mercadeo">
-                <h3>MERCADEO</h3>
+                <div class="info_merca_cont">
+                    <h3>MERCADEO</h3>
+                    <p>Aplicamos todo nuestro expertice para la promoción de nuestros proyectos</p>
+                </div>
+
                 <div class="container">
                     <div class="item_">
                       <div class="quote">
-                        <img src="./assets/img/image_1.png" alt="" class="picture_" media="(max-width: 780px)">
                         <p>Análisis y definición de canales de
                             customer journey</span></p>
                       </div>
                     </div>
                     <div class="item_">
                       <div class="quote">
-                        <img src="./assets/img/image_2.jpg" alt="" class="picture_" media="(max-width: 780px)">
                         <h3>LEAN STARTUP</h3>
                         <p>Este enfoque metodológico parte de un producto mínimo variable para validar rápidamente una idea de negocio por medio de retroalimentaciones de forma rápida y económica.</p>
                         <p>Validación de oferta de comercialización y monetización</span></p>
@@ -391,7 +393,6 @@
                     </div>
                     <div class="item_">
                       <div class="quote">
-                        <img src="./assets/img/image_3.jpg" alt="" class="picture_" media="(max-width: 780px)">
                         <H3>AGIL</H3>
                         <p>Es un conjunto de metodologías que se enfocan en una gestión de proyectos de forma iterativa y exponencial en la que se realizan entregas de forma periódica en ciclos cortos adaptando tu producto a los cambios y necesidades de tus usuarios.</p>
                         <h3>GROWHT HACKING</h3>
@@ -400,7 +401,6 @@
                     </div>
                     <div class="item_">
                       <div class="quote">
-                        <img src="./assets/img/image_4.jpg" alt="" class="picture_" media="(max-width: 780px)">
                         <H3>HUMAN CENTERED DESIGN</H3>
                         <P>Es un enfoque de diseño que utiliza la observación y empatía para conocer y crear diseños centrados en las personas.</P>
                         <p>Mejora de retención y fidelidad</span></p>
@@ -410,13 +410,11 @@
                     </div>
                     <div class="item_">
                       <div class="quote">
-                        <img src="./assets/img/image_2.jpg" alt="" class="picture_" media="(max-width: 780px)">
                         <p>Diseño de equipos internos</span></p>
                       </div>
                     </div>
                     <div class="item_">
                       <div class="quote">
-                        <img src="./assets/img/image_1.png" alt="" class="picture_"  media="(max-width: 780px)">
                         <p>Diseño de equipos internos</span></p>
                       </div>
                     </div>
@@ -434,7 +432,7 @@
             </div>
             <span class="line_contact_"></span>
             <div class="form_container">
-                <h3>Escribenos y nos pondremos en <br> contacto contigo</h3>
+                <h3>Escríbenos y nos pondremos en <br> contácto contigo</h3>
                 <p>Ingresa tus datos</p>
                 <form action="">
                     <input type="text" placeholder="John Snow" class="input_name" required="true">
@@ -484,34 +482,23 @@
 
     <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
 
-    <script src="./app//manunav.js">
+    <script src="./app/manunav.js">
     </script>
-    <!-- <script>
-        
-        const desplegar_ = document.querySelector('#desplegar_').addEventListener("click", () => {
-    document.querySelector('.second_cards_sect').classList.remove('second_cards_sect')
-    document.querySelector('.cards_text').style.display = 'none'
-    document.querySelector('#desplegar_').style.display = 'none'
-});
-
-    </script> -->
-    <script src="./css/DarkMode.js"></script>
     <script>
         let prinPosition = window.pageYOffset
         let $nav = document.querySelector('#navbar_2')
         let $conte_ = document.querySelector('.logo_icon_cont')
-console.log(prinPosition);
+
+
 
         window.addEventListener('scroll', function(){
             let actualPositiion = window.pageYOffset
             if( prinPosition >= actualPositiion){
                 $nav.classList.remove('navbar_2_menu_visible')
 $nav.classList.add('navbar_2_menu')
-console.log(actualPositiion);
 
                 $conte_.style.position = "fixed"
                 $conte_.style.top = "0px"
-                console.log('hey');
             }else{
                 $nav.classList.add('navbar_2_menu')
                 $nav.classList.remove('navbar_2_menu_visible')
@@ -523,5 +510,16 @@ console.log(actualPositiion);
         })
 
     </script>
+    <!-- <script>
+        
+        const desplegar_ = document.querySelector('#desplegar_').addEventListener("click", () => {
+    document.querySelector('.second_cards_sect').classList.remove('second_cards_sect')
+    document.querySelector('.cards_text').style.display = 'none'
+    document.querySelector('#desplegar_').style.display = 'none'
+});
+
+    </script> -->
+    <script src="./css/DarkMode.js"></script>
+
 </body>
 </html>

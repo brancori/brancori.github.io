@@ -298,23 +298,38 @@ section [id]{
     scroll-margin-top: 150px;
     margin: 5vh 0;
 } 
-.picture_{
-    width: 300px;
-    height: 500px;
-    object-fit: cover;
-    z-index: 0;
-    position: absolute;
-    top: 0;
-    background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
 
-}
 .quote{
-    position: relative;
-    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    padding: 0 auto;
+    margin: 0 auto;
+    width: 70vw;
+    text-align: center;
     height: 500px;
+    background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+}
+.mercadeo h3{
+color: purple;
+}
+.info_merca_cont{
+    display: flex;
+    margin: 35px 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 25px;
+    z-index: 5;
+    color: var(--font-text);
 }
 .container{
     display: flex;
+    gap: 15px;
+    position: relative;
+    height: 500px;
     overflow-x: scroll;
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
@@ -322,15 +337,15 @@ section [id]{
     scroll-behavior: smooth;
     justify-content: start;
     padding: 0 15vw;
-    background: rgb(31, 31, 31);
+    background: linear-gradient(76.8deg, rgb(121, 45, 129) 3.6%, rgb(36, 31, 98) 90.4%);
 }
 .quote p, h3{
     display: flex;
+    justify-items: center;
     align-self: center;
     z-index: 5;
     font-size: 25px;
     position: static;
-    margin: 25px 0;
     color: var(--bg-color);
 }
 div [class]{

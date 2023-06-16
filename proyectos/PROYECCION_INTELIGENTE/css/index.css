@@ -692,6 +692,26 @@ section [id]{
 .img_mercadeo{
     display: flex;
 }
+.mercadeo .container .quote .picture_ img{
+    display: none;
+}
+img .picture_{
+    display: none;
+}
+.mercadeo h3{
+    color: purple;
+    }
+    .info_merca_cont{
+        display: flex;
+        margin: 35px 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 25px;
+        z-index: 5;
+        color: var(--font-text);
+    }
 
 
 
