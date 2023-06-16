@@ -181,11 +181,11 @@ if(principal === 'navbar_2_menu'){
         document.querySelector("#navbar_2").classList.add('navbar_2_menu')
     
     })
-    document.querySelector('#blog').addEventListener('click', function(){
-        document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
-        document.querySelector("#navbar_2").classList.add('navbar_2_menu')
+    // document.querySelector('#blog').addEventListener('click', function(){
+    //     document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
+    //     document.querySelector("#navbar_2").classList.add('navbar_2_menu')
     
-    })
+    // })
     document.querySelector('#contacto').addEventListener('click', function(){
         document.querySelector("#navbar_2").classList.remove('navbar_2_menu_visible')
         document.querySelector("#navbar_2").classList.add('navbar_2_menu')
@@ -226,6 +226,9 @@ menuLinks.forEach((menuLink) => {
         observer.observe(target)
     }
 })
+
+
+
 
 
 

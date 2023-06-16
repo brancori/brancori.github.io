@@ -4,14 +4,6 @@
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box;
 }
-:root {
-    --bg-color: #f7f7f7;
-    --primary-color: #e26122;
-    --bg-secondary: rgb(56, 56, 56);
-    --button: #f7f7f7;
-    --font-text: #5f6062;
-
-  }
 ::selection{
     background-color: var(--primary-color);
     color: var(--bg-color);
@@ -29,13 +21,12 @@ body,
 
 .scroller{
     height: 100vh;
+    overflow-y: scroll;
     scroll-snap-type: y proximity;
 }
-
-.scroller section {
+/* .scroller section {
     scroll-snap-align: start;
-    scroll-behavior: smooth;
-}
+} */
 body 
 {margin: 0;padding: 
     0;background-color: var(--bg-color);
@@ -104,7 +95,6 @@ body
 .label_section_cont{
     display: flex;
     align-items: center;
-    margin-top: 25px;
 }
 .label_section{
     background-color: var(--primary-color);
@@ -178,12 +168,10 @@ body
     position: relative;
     margin-top: 25px;
     align-items: center;
-    scroll-snap-align: center;
+    scroll-snap-align: start;
+    height: 100%;
 }
-.piServices{
-    scroll-snap-align: center;
 
-}
 .services_cont{
     display: flex;
     justify-content: center;
@@ -225,24 +213,26 @@ body
 
 }
 .main_sect{
-    height: 90vh;
-    margin: 25px 0;
+    height: auto;
+    width: 98vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .cards_containers{
     justify-content: center;
     display: flex;
+    flex-direction: column;
     margin-top: 3vh;
     display: flex;
     gap: 45px;
 }
 .cards_containers div{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 45px;
 }
 .cards_containers .second_cards_sect{
-    display: none;
+    display: flex;
 
 }
 .cards_containers img{
@@ -295,6 +285,7 @@ body
     text-align: center;
     font-size: 12px;
     font-weight: 300;
+    line-height: 16px;
 }
 .line_contact_{
     border-right: 2.5px solid rgb(92, 92, 92);
@@ -304,6 +295,9 @@ body
 .proyectos_ img{
     width: 35px;
     height: 45px;
+}
+.us_{
+    height: auto;
 }
 .us_line{
     display: block;
@@ -586,6 +580,8 @@ body
     flex-direction: column;
     justify-content: center;
     gap: 20px;
+    scroll-snap-align: none;
+
 }
 .noVisible{
 display: none;
@@ -626,9 +622,8 @@ display: none;
     flex-direction: column;
     justify-content: center;
     align-content: center;
-    width: 90vw;
     gap: 25px;
-    padding: 7vw;
+    padding: 0 5vw;
     box-sizing: border-box;
 }
 .piServices h3{
@@ -665,9 +660,8 @@ display: none;
     justify-content: center;
     align-items: center;
     gap: 20px;
+    scroll-snap-align: start;
 }
-
-
 .services_cont_pi h2 ,h3{
     font-size: 20px;
     margin: 0 auto;
@@ -687,10 +681,18 @@ display: none;
     fill: var(--primary-color);
 }
 
-
-
 section [id]{
-    scroll-margin-top: 70px;
+    scroll-margin-top: 70px!important;
 }
+.img_mercadeo img{
+    height: 500px;
+    width: 300px;
+    object-fit: cover;}
+
+.img_mercadeo{
+    display: flex;
+}
+
+
 
 

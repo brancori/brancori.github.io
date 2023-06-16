@@ -17,6 +17,9 @@
         flex-direction: column;
         gap: 30px;
     }
+    .hijo_serv_pi h3{
+        z-index: 2;
+    }
     .description_cont span,
     .arrow_, .img_dos_cont, 
     .us_line, .line_contact_,
@@ -93,6 +96,7 @@
     }
     .cards_containers{
         display: flex;
+        flex-direction: row;
         margin-top: 3vh;
         width: 100%;
         height: 100%;
@@ -103,6 +107,7 @@
         justify-content: start;
         overflow-y: hidden;
         scroll-behavior: smooth;
+        justify-content: start;
 
     }
     .cards_containers::-webkit-scrollbar {
@@ -177,6 +182,7 @@
     }
     .piServices .div_conte_serv h3{
         color: var(--primary-color);
+        z-index: 1;
     }
     .pi_main_cont{
         display: flex;
@@ -291,7 +297,49 @@ section [id]{
     scroll-snap-align: center;
     scroll-margin-top: 150px;
     margin: 5vh 0;
-}
+} 
+.picture_{
+    width: 300px;
+    height: 500px;
+    object-fit: cover;
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
 
-    
+}
+.quote{
+    position: relative;
+    width: 300px;
+    height: 500px;
+}
+.container{
+    display: flex;
+    overflow-x: scroll;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    justify-content: start;
+    padding: 0 15vw;
+    background: rgb(31, 31, 31);
+}
+.quote p, h3{
+    display: flex;
+    align-self: center;
+    z-index: 5;
+    font-size: 25px;
+    position: static;
+    margin: 25px 0;
+    color: var(--bg-color);
+}
+div [class]{
+    scroll-snap-align: center;
+}
+.quote:before {
+    content: "";
+    inset: 0;
+    background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+  }
+
 }

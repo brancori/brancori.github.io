@@ -102,10 +102,11 @@ footer{
     text-align: center;
     font-size: .7em;
     padding: 4vh 0;
-    width: 100vw;
+    width: 98vw;
     box-sizing: border-box;
-    overflow-y: hidden;
+    overflow-x: hidden;
     line-height: 1.4em;
+    box-sizing: border-box;
 }
 .footer_cont h3{
     color: #e26122 ; 
@@ -147,7 +148,7 @@ li{
         flex-direction: column;
         position: absolute;
         top: 70px;
-        z-index: 5;
+        z-index: 10;
     }
     .navmenu{
         display: flex;
@@ -187,6 +188,7 @@ li{
         padding: 35px;
         box-sizing: border-box;
         height: 35px;
+        z-index: 50;
     }
     .logo_icon_cont img{
         margin: 20px;

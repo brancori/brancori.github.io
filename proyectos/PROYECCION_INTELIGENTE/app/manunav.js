@@ -20,7 +20,7 @@ const mainCont = document.querySelector("#navbar");
         const nosotrosA = document.createElement('a');
         const proyectosA = document.createElement('a');
         const servicisoA = document.createElement('a');
-        const blogA = document.createElement('a');
+        // const blogA = document.createElement('a');
         const contactoA = document.createElement('a');
         const CapacitacionA = document.createElement('a');
 
@@ -30,7 +30,7 @@ const mainCont = document.querySelector("#navbar");
         nosotrosA.textContent = 'NOSOTROS';
         proyectosA.textContent = 'PROYECTOS';
         servicisoA.textContent = 'SERVICIOS';
-        blogA.textContent = 'BLOG';
+        // blogA.textContent = 'BLOG';
         contactoA.textContent = 'CONTACTO';
         CapacitacionA.textContent = 'CAPACITACIÓN';
 
@@ -40,16 +40,25 @@ const mainCont = document.querySelector("#navbar");
         nosotrosA.setAttribute('class', 'navmenu')
         proyectosA.setAttribute('class', 'navmenu')
         servicisoA.setAttribute('class', 'navmenu')
-        blogA.setAttribute('class', 'navmenu')
+        // blogA.setAttribute('class', 'navmenu')
         contactoA.setAttribute('class', 'navmenu')
         CapacitacionA.setAttribute('class', 'navmenu')
+
+        inicioA.setAttribute('id', 'inicio_')
+        nosotrosA.setAttribute('id', 'nosotros_')
+        proyectosA.setAttribute('id', 'poryectos')
+        servicisoA.setAttribute('id', 'servicios_')
+        // blogA.setAttribute('class', 'navmenu')
+        contactoA.setAttribute('id', 'contacto')
+        CapacitacionA.setAttribute('id', 'capacitacion')
+        
 
         mainCont.appendChild(navbar2)
         navbar2.appendChild(inicioA)
         navbar2.appendChild(nosotrosA)
         navbar2.appendChild(proyectosA)
         navbar2.appendChild(servicisoA)
-        navbar2.appendChild(blogA)
+        // navbar2.appendChild(blogA)
         navbar2.appendChild(contactoA)
         navbar2.appendChild(CapacitacionA)
         }
@@ -75,21 +84,17 @@ const mainCont = document.querySelector("#navbar");
         sectionCon.appendChild(imgLogoSect)
         sectionCon.appendChild(listaSect)
 
-
-
 //Atributos para las imágenes// 
-
 
         imgLogoSect.setAttribute('src', './assets/img/proyecc_int.png')
         listaSect.setAttribute('src', './assets/ico/lista.png')
-
         logoImg.setAttribute('src', './assets/img/proyecc_int.png')
 
         inicioA.setAttribute('href', '#home')
         nosotrosA.setAttribute('href', '#us_')
         proyectosA.setAttribute('href', '#proyectos')
         servicisoA.setAttribute('href', '#piServices')
-        blogA.setAttribute('href', './Sheets/proyectos.html')
+        // blogA.setAttribute('href', './Sheets/proyectos.html')
         contactoA.setAttribute('href', '#contact_')
         CapacitacionA.setAttribute('href', 'Sheets/login.html')
 
