@@ -135,6 +135,9 @@ li{
 .main_cont_nav, .logo_icon_cont{
     display: none;
 }
+#capacitacion{
+    width: 120px;
+}
 @media (max-width: 780px){
     .navbar_2_menu{
         display: none;
@@ -204,6 +207,9 @@ li{
     }
     .menu_list{
         width: 35px;
+    }
+    #capacitacion{
+        width: 100vw;
     }
     .selected_menubar{
         border-bottom: solid 4px var(--primary-color);
