@@ -6,6 +6,10 @@
     --font-text: #5f6062;
 
   }
+  .form_container h3{
+    color: var(--font-text);
+
+  }
 
 @media (max-width: 780px){
     p{
