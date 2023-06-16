@@ -241,6 +241,10 @@
 .div_conte_serv h3 {
     color: var(--bg-color);
 }
+.map_sect_cont h3{
+    color: var(--font-text);
+
+}
 .services_cont_pi{
     padding: 15px;
     box-sizing: border-box;
