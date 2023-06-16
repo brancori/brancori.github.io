@@ -45,6 +45,9 @@
     .piServices  .lo_que h2{
         font-size: 30px;
     }
+    .services_cont h3{
+        color: var(--font-text);
+    }
     
     .piServices{
         display: flex;
@@ -311,9 +314,14 @@ section [id]{
     height: 500px;
     background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
 }
+.info_merca_cont{
+    z-index: 0;
+}
 .mercadeo h3{
 color: purple;
+z-index: 0;
 }
+
 .info_merca_cont{
     display: flex;
     margin: 35px 0;
