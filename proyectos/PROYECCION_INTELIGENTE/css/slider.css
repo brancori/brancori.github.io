@@ -7,7 +7,7 @@
     margin: 0 auto ;
     width: 98vw;
     max-height: 80vh;
-    background: #111;
+    background: radial-gradient(circle, #f1ab11 0%, #e26122 100%);
     overflow-x: hidden;
     box-sizing: border-box;
   }
@@ -139,7 +139,7 @@
     }
   }
 }
-@media (min-width: 780px){
+/* @media (min-width: 780px){
   .container{
     display: flex;
     width: 100%;
@@ -153,5 +153,5 @@
     scroll-behavior: smooth;
     justify-content: start;
     gap: 15px;
-  }
+  } */
 }

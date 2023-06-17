@@ -46,6 +46,9 @@
         width: auto;
         padding: 0 5vw;
     }
+    .label_section_cont{
+        width: 100vw;
+    }
     .piServices  .lo_que h2{
         font-size: 30px;
     }
@@ -247,6 +250,7 @@
 }
 .map_sect_cont h3{
     color: var(--font-text);
+    z-index: 1;
 
 }
 .services_cont_pi{
@@ -326,7 +330,7 @@ section [id]{
     z-index: 0;
 }
 .mercadeo h3{
-color: purple;
+color: var(--primary-color);
 z-index: 0;
 }
 
@@ -341,9 +345,13 @@ z-index: 0;
     z-index: 5;
     color: var(--font-text);
 }
+.text_si{
+    z-index: 0;
+}
 .container{
     display: flex;
     gap: 15px;
+    z-index: 1;
     position: relative;
     height: 500px;
     overflow-x: scroll;
@@ -353,7 +361,7 @@ z-index: 0;
     scroll-behavior: smooth;
     justify-content: start;
     padding: 0 15vw;
-    background: linear-gradient(76.8deg, rgb(121, 45, 129) 3.6%, rgb(36, 31, 98) 90.4%);
+    background: radial-gradient(circle, #f1ab11 0%, #e26122 100%);  
 }
 .quote p, h3{
     display: flex;

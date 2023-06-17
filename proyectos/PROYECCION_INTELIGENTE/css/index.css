@@ -703,7 +703,7 @@ img .picture_{
     display: none;
 }
 .mercadeo h3{
-    color: purple;
+    color: var(--primary-color);
     }
     .info_merca_cont{
         display: flex;
