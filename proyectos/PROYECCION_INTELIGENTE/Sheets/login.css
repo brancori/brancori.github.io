@@ -46,15 +46,15 @@ body{
     color: #e26122;
 
 }
-.button_{
+.button{
     width: 125px;
+    color: grey;
 }
 .button_{
     display: flex;
     flex-direction: column;
     gap: 7px;
     align-items: center;
-
 }
 .info_property{
     justify-self: center;

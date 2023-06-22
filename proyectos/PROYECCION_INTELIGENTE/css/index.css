@@ -412,7 +412,6 @@ body
     overflow-y: hidden;
     overflow-x: hidden;
     overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
     margin: 0 auto;
     margin-top: 25px;
 }
@@ -484,8 +483,11 @@ body
     margin-bottom: 0;
     font-size: 12px;
     color: var(--bg-color);
+
 }
 .team_info{
+    display: flex;
+    flex-direction: column;
     background-color: var(--font-text);
     text-align: center;
     width: 250px;
