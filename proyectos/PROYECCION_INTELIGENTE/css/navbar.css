@@ -192,6 +192,7 @@ li{
         box-sizing: border-box;
         height: 35px;
         z-index: 50;
+        background-color: var(--bg-color);
     }
     .logo_icon_cont img{
         margin: 20px;

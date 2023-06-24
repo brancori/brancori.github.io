@@ -28,7 +28,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+    background: linear-gradient(25deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
   }
   .item_:not(:last-child) {
     border-bottom: 1px solid #ccc;
@@ -53,7 +53,7 @@
     opacity: 0;
     transition: 1s;
     transform: translateX(50%);
-    width: 80%;
+    width: 90%;
     height: 80%;
     margin: 3vh;
   }
@@ -91,32 +91,32 @@
     transform: translate(4rem, 100%);
   }
   .item_:nth-child(1) {
-    background-image: url("../assets/img/image_1.png");
+    background-image: url("../assets/img/background.png");
     background-position: 72% 35%;
   }
   
   .item_:nth-child(2) {
-    background-image: url("../assets/img/image_2.jpg");
+    background-image: url("../assets/img/background.png");
     background-position: 60% 8%;
   }
   
   .item_:nth-child(3) {
-    background-image: url("../assets/img/image_3.jpg");
+    background-image: url("../assets/img/background.png");
     background-position: 52% 8%;
   }
   
   .item_:nth-child(4) {
-    background-image: url("../assets/img/image_4.jpg");
+    background-image: url("../assets/img/background.png");
     background-position: 45% 8%;
   }
   
   .item_:nth-child(5) {
-    background-image: url("../assets/img/image_4.jpg");
+    background-image: url("../assets/img/background.png");
     background-position: 45% 25%;
   }
   
   .item_:nth-child(6) {
-    background-image: url("../assets/img/image_5.jpg");
+    background-image: url("../assets/img/background.png");
     background-position: 65% 2%;
   }
   

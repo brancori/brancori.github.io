@@ -15,6 +15,12 @@
     p{
         color: var(--font-text);
     }
+    h3{
+        font-size: 20px!important;
+    }
+    .whats_icon{
+        z-index: 100;
+    }
 
     .description_cont, .lo_que, .main_sect, .contact_, .proyectos_, .logo_icon{
         display: flex;
@@ -180,11 +186,15 @@
         width: 100vw;
         height: 200px;
     }
+    .alcon h3{
+        font-size: 30px;
+    }
     .main_alcon_cont{
         gap: 35px;
         flex-direction: column-reverse;
         justify-content: center;
         align-items: center;
+        z-index: 0;
     }
     .div_conte_serv{
         flex-direction: column;
@@ -267,6 +277,15 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    z-index: 0;
+}
+.quote p, h3{
+    z-index: 0;
+    font-size: 10px;
+}
+.quote p{
+    z-index: 0;
+    font-size: medium;
 }
 
 .desplegable{
@@ -304,6 +323,7 @@ section [id]{
 }
 .map_sect_cont{
     display: flex;
+    flex-direction: column;
     height: 100%;
     margin: 5vh 0;
     scroll-snap-align: center;
@@ -316,22 +336,43 @@ section [id]{
 
 .quote{
     display: flex;
-    flex-direction: column;
+    position: relative;
     justify-content: center;
-    align-self: center;
-    padding: 0 auto;
-    margin: 0 auto;
-    width: 70vw;
+    align-items: center;
+    flex-direction: column;
+    width: 80vw;
+    padding: 20px 5px;
+    padding-top: 70px ;
+
     text-align: center;
-    height: 500px;
-    background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+    border-radius: 15px;
+    height: 70vh;
+    background: linear-gradient(25deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
 }
-.info_merca_cont{
-    z-index: 0;
+
+.analicis_mercado{
+    width: 90%;
+    color: var(--bg-color);
+    margin: 7px auto;
+    padding: 5px;
 }
+.analicis_mercado p{
+    color: var(--bg-color);
+
+}
+.analicis_cont li:nth-child(1){
+    line-height: 20px;
+    height: 45px;
+}
+.analicis_cont li:nth-child(5){
+    line-height: 20px;
+    height: 45px;
+}
+
 .mercadeo h3{
 color: var(--primary-color);
 z-index: 0;
+font-size: 30px;
 }
 
 .info_merca_cont{
@@ -345,15 +386,21 @@ z-index: 0;
     z-index: 5;
     color: var(--font-text);
 }
+.info_merca_cont p{
+    font-size: medium;
+    text-align: justify;
+    padding: 5vw;
+
+}
 .text_si{
     z-index: 0;
 }
 .container{
     display: flex;
     gap: 15px;
-    z-index: 1;
+    z-index: 0;
     position: relative;
-    height: 500px;
+    height: 70vh;
     overflow-x: scroll;
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
@@ -361,16 +408,38 @@ z-index: 0;
     scroll-behavior: smooth;
     justify-content: start;
     padding: 0 15vw;
-    background: radial-gradient(circle, #f1ab11 0%, #e26122 100%);  
+    background-color: var(--bg-color);
+}
+.retargeting_list{
+    height: 75px;
+    color: var(--bg-color);
+    height: 120px;
+    font-size: 15px;
+    line-height: 15px;
+}
+.analisis-h4{
+    margin: 15px 0;
+}
+.container h3{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    top: 15px;
+
+}
+.retargeting_p {
+    line-height: 20px;
 }
 .quote p, h3{
     display: flex;
     justify-items: center;
     align-self: center;
     z-index: 5;
-    font-size: 25px;
+    font-size: small;
     position: static;
-    color: var(--bg-color);
 }
 div [class]{
     scroll-snap-align: center;
@@ -379,6 +448,9 @@ div [class]{
     content: "";
     inset: 0;
     background: linear-gradient(25deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+  }
+  .item_{
+    background-image: url(../assets/img/background.png);
   }
 
 }
