@@ -721,12 +721,10 @@ section [id]{
 }
 .quote p{
     text-align: center;
-    font-size: 15px;
     color: var(--font-text);
 }
 .quote h3{
     font-size: 25px;
-
 }
 .bold_text{
     font-weight: bold;
@@ -741,7 +739,7 @@ section [id]{
     background-color: #f1ab11;
     color: var(--font-text)!important;
     border-radius: 15px;
-    padding: 0 15px;
+    padding: 0 10px;
 }
 .retargeting_list{
     display: flex;
@@ -749,13 +747,15 @@ section [id]{
     justify-content: center;
     width: 100%;
     background-color: var(--font-text);
-    padding: 5px;
+    padding: 2px;
     border-radius: 25px 100px 100px 25px;
-    margin: 15px 0;
+    margin: 10px 0;
+    font-size: small;
+    line-height: 15px;
 }
 .retargeting_list img{
-    width: 85px;
-    height: 85px;
+    width: 75px;
+    height: 75px;
     background-color: var(--primary-color);
     padding: 7px;
     border-radius: 100%;
@@ -766,13 +766,11 @@ section [id]{
     text-align: center;
     justify-content: center;
     align-items: center;
-    width: 60%;
-    height: 35px;
+    width: 90%;
+    height: 30px;
     background-color: #f1ab11;
     color: var(--font-text)!important;
     border-radius: 15px;
-
-
 }
 
 .analicis_mercado{
@@ -782,9 +780,9 @@ section [id]{
     background-color: var(--primary-color);
     border-radius: 25px;
     font-size: small;
-    margin: 12px 0;
+    margin: 7px 0;
     width: 105%;
-    height: 35px;
+    height: 30px;
 }
 .analicis_mercado p{
     background-color: var(--font-text);
@@ -794,6 +792,7 @@ section [id]{
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--bg-color);
 }
 .analicis_cont{
     display: flex;
@@ -804,31 +803,30 @@ section [id]{
     color: var(--bg-color);
     border-radius: 25px;
     width: 80%;
-    margin-left: 15px;
+    margin-left: 10px;
     text-align: center;
 }
 
 img .picture_{
     display: none;
 }
-
-
-
-
+.info_merca_cont{
+    display: flex;
+    margin: 35px 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 25px;
+    z-index: 5;
+    color: var(--font-text);
+}
 .mercadeo h3{
     color: var(--primary-color);
     }
-    .info_merca_cont{
-        display: flex;
-        margin: 35px 0;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        font-size: 25px;
-        z-index: 5;
-        color: var(--font-text);
-    }
+.info_merca_cont p{
+    font-size: medium;
+}
 
 
 

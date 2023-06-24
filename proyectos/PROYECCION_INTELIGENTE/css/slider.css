@@ -54,19 +54,17 @@
     transition: 1s;
     transform: translateX(50%);
     width: 90%;
-    height: 80%;
-    margin: 3vh;
+    height: 90%;
+    margin: 2vh;
   }
   .quote p {
       position: relative;
       display: inline-block;
       margin-bottom: 1.7rem;
-      font-size: 1.4rem;
       font-style: italic;
     }
     .quote p:before, .quote p:after {
       position: absolute;
-      font-size: 5.5rem;
       opacity: 0.6;
     }
     .quote p:before {
