@@ -119,11 +119,16 @@ body
     position: relative;
     display: flex;
     justify-content: space-between;
-    gap: 25px;
     align-items: center;
     padding: 25px 10vw;
     margin: 50px 0;
 }
+.description_cont > * + * {
+    margin-left: 25px;
+}
+
+
+.description_cont
 .alcon h3{
     color: var(--font-text);
 }
@@ -229,11 +234,16 @@ body
     flex-direction: column;
     margin-top: 3vh;
     display: flex;
-    gap: 45px;
 }
+.cards_containers > * + * {
+    margin-top: 45px;
+}
+
 .cards_containers div{
     display: flex;
-    gap: 45px;
+}
+.cards_containers div > * + * {
+    margin-left: 45px;
 }
 .cards_containers .second_cards_sect{
     display: flex;
@@ -403,7 +413,6 @@ body
 }
 .team_conteiner{
     display: flex;
-    gap: 50px;
     justify-content: start;
     width: 90%;
     height:450px;
@@ -414,6 +423,9 @@ body
     overscroll-behavior-x: contain;
     margin: 0 auto;
     margin-top: 25px;
+}
+.team_conteiner> * + * {
+    margin-left: 50px;
 }
 .new_{
     width: auto;
@@ -507,7 +519,6 @@ body
 }
 .brands_cont{
     display: flex;
-    gap: 70px;
     background-color: #2e2e2e;
     height: 160px;
     width: 90vw;
@@ -518,6 +529,9 @@ body
     align-items: center;
     overflow-x: hidden;
     box-sizing: content-box;
+}
+.brands_cont > * + * {
+    margin-left: 70px;
 }
 .conta_salider img{
     height: 400px;
