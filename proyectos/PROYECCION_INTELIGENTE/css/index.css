@@ -582,15 +582,13 @@ body
     text-align: center;
     margin-top: 35px;
     padding: 15px;
-
-    }
-    .hijo_serv_pi{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-
+}
+.hijo_serv_pi{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 .alcon .desplegable{
     color: #104175;
 }
@@ -692,7 +690,6 @@ display: none;
 .services_cont_pi h3{
     color: var(--primary-color);
 }
-
 .services_cont_pi .desplegable:hover{
     background-color: var(--primary-color);
     color: var(--bg-color);
@@ -700,7 +697,6 @@ display: none;
 .services_cont_pi .desplegable:hover .uno_arrow{
     fill: var(--primary-color);
 }
-
 section [id]{
     scroll-margin-top: 70px!important;
 }
@@ -732,8 +728,7 @@ section [id]{
 .foda_cont{
     display: flex;
     font-size: medium;
-    font-family: 'Poppins', sans-serif;
-    
+    font-family: 'Poppins', sans-serif;   
 }
 .foda_title, .analisis_comp_title, .mercado_title, .retargering_title{
     background-color: #f1ab11;

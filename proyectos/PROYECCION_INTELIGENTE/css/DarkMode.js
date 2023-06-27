@@ -34,7 +34,7 @@ const typed = new Typed('.typed', {
     strings: [
         '<i class="Servicios_cahnge">Aprobaciones Municipales</i>',
         '<i class="Servicios_cahnge">Aprobaciones Estatales</i>',
-        '<i class="Servicios_cahnge">Requerimientos para la contrucción</i>',
+        '<i class="Servicios_cahnge">Requerimientos para la construcción</i>',
         '<i class="Servicios_cahnge">Régimen de condominio</i>',
     ],
     stringsElement: '#cadenas-texto', // ID del elemento que contiene cadenas de texto a mostrar.
