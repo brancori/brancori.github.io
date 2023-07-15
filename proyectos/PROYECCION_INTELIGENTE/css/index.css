@@ -177,7 +177,7 @@ body
     position: relative;
     margin-top: 25px;
     align-items: center;
-    scroll-snap-align: start;
+    /* scroll-snap-align: start; */
     height: 100%;
 }
 
@@ -599,7 +599,6 @@ body
     justify-content: center;
     gap: 20px;
     scroll-snap-align: none;
-
 }
 .noVisible{
 display: none;
@@ -678,7 +677,7 @@ display: none;
     justify-content: center;
     align-items: center;
     gap: 20px;
-    scroll-snap-align: start;
+    /* scroll-snap-align: start; */
 }
 .services_cont_pi h2 ,h3{
     font-size: 20px;
