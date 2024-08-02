@@ -416,13 +416,13 @@ body
     justify-content: start;
     width: 90%;
     height:0;
-    overscroll-behavior-x: cover;
+    /* overscroll-behavior-x: cover;
     align-items: center;
     overflow-y: hidden;
     overflow-x: hidden;
     overscroll-behavior-x: contain;
     margin: 0 auto;
-    margin-top: 25px;
+    margin-top: 25px; */
 }
 .team_conteiner> * + * {
     margin-left: 50px;
