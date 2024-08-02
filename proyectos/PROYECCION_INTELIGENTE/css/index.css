@@ -415,7 +415,7 @@ body
     display: flex;
     justify-content: start;
     width: 90%;
-    height:0;
+    height: 1px;
     /* overscroll-behavior-x: cover;
     align-items: center;
     overflow-y: hidden;
