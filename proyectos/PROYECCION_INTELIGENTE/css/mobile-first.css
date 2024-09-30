@@ -128,7 +128,7 @@
 
     .cards_containers > * + * {
         margin-top: 0;
-        margin-left: 45px;
+        margin-left: 65px;
     }
 
     .cards_containers::-webkit-scrollbar {
