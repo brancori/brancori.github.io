@@ -124,8 +124,13 @@
         overflow-y: hidden;
         scroll-behavior: smooth;
         justify-content: start;
-
     }
+
+    .cards_containers > * + * {
+        margin-top: 0;
+        margin-left: 45px;
+    }
+
     .cards_containers::-webkit-scrollbar {
         display: none;
     }
