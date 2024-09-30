@@ -106,6 +106,9 @@ const imagenes = new Array(
     './assets/img/us_img/5_.jpg',
     './assets/img/us_img/6_.jpg',
     './assets/img/us_img/7_.jpg',
+    './assets/img/us_img/8_.jpg',
+    './assets/img/us_img/9_.jpg',
+    './assets/img/us_img/10_.jpg',
 ) 
 
 function cambiar (){
