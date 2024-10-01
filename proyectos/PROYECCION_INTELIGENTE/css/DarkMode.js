@@ -120,7 +120,7 @@ onload=function()
 {
     cambiar();
 
-    setInterval(cambiar,6000);
+    setInterval(cambiar,3000);
 }
 
 const venta = document.querySelector('#venta').addEventListener('click', () =>{
