@@ -8,6 +8,9 @@ body {
     padding: 20px;
     box-sizing: border-box;
 }
+input[type="text"], input[type="password"] {
+    font-size: 16px;
+  }  
 ul {
     padding: 0;
 }
