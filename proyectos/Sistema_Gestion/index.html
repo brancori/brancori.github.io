@@ -7,13 +7,30 @@
     <title>Sistema de Gestión</title>
 </head>
 <body>
-    <div class="container">
-        <div class="photo">Foto</div>
-        <div>Nombre</div>
-        <div>Form usuario</div>
-        <div>Form contraseña</div>
-        <div>Form Iniciar sesión</div>
+    <div class="login-container">
+        <div class="photo-container">
+            <img src="path/to/company-photo.jpg" alt="Company Photo">
+        </div>
+        <form class="login-form" id="loginForm">
+            <input type="text" id="username" placeholder="Usuario" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Iniciar sesión</button>
+        </form>
     </div>
-    
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if ((username === 'Admin' && password === '123') || (username === 'Consulta' && password === '123')) {
+                alert('Inicio de sesión exitoso');
+                // Redirect to the appropriate page
+            } else {
+                alert('Usuario o contraseña incorrectos');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -268,6 +268,61 @@ li{
     flex-direction: column;
     padding: 15px;
 }
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    border: #1b2426 2px solid;
+    background-color: var(--dark);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--soft-Grey);
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+}
+
+.login-form input {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+}
+
+.login-form button {
+    padding: 10px;
+    width: 100%;
+    background-color: var(--orange);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background-color: darken(var(--orange), 10%);
+}
+
+.photo-container {
+    margin-bottom: 20px;
+}
+
+.photo-container img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 @media (max-width: 780px){
     .nav-bar ul li{
         font-size: 1.8rem;

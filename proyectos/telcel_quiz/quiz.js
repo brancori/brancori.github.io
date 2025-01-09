@@ -105,5 +105,26 @@ function showResults() {
     incorrectQuestionsDisplay.innerHTML = `<h3>Preguntas Incorrectas</h3><ul>${incorrectAnswers.map(question => `<li class="incorrect">${question}</li>`).join('')}</ul>`;
 }
 
+// Function to handle login redirection
+function handleLogin() {
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if ((username === 'pizazo' && password === '123') || (username === 'Consulta' && password === '123')) {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            startQuiz();
+        } else {
+            alert('Usuario o contraseña incorrectos');
+        }
+    });
+}
+
+// Initialize login handling
+handleLogin();
+
 // Inicializa el quiz
 startQuiz();

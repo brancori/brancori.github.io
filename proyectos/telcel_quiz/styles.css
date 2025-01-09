@@ -11,7 +11,6 @@ body {
 ul {
     padding: 0;
 }
-
 #quiz-container {
     background-color: white;
     padding: 20px;
@@ -185,3 +184,53 @@ ul {
         align-self: center;
     }
 }
+
+/* ...existing code... */
+
+#login-container {
+    background-color: rgba(0, 0, 139, 0.8); /* Royal blue with transparency */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    color: white;
+    margin: 50px 10px;
+    position: absolute;
+    top: 25vh;
+}
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#loginForm label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#loginForm input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#loginForm button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4169E1; /* Royal blue */
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#loginForm button:hover {
+    background-color: #27408B; /* Darker royal blue */
+}
+
+/* ...existing code... */
