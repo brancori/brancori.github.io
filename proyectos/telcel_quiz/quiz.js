@@ -113,7 +113,7 @@ function handleLogin() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        if ((username === 'picazo' && password === '123') || (username === 'Consulta' && password === '123')) {
+        if ((username === 'Picazo' && password === '123') || (username === 'Consulta' && password === '123')) {
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('quiz-container').style.display = 'block';
             startQuiz();
