@@ -118,9 +118,19 @@ function handleLogin() {
             document.getElementById('quiz-container').style.display = 'block';
             startQuiz();
         } else {
-            alert('Usuario o contraseña incorrectos');
+            showPopup('Usuario o contraseña incorrectos');
         }
     });
+}
+
+function showPopup(message) {
+    const popup = document.createElement('div');
+    popup.className = 'popup';
+    popup.innerText = message;
+    document.body.appendChild(popup);
+    setTimeout(() => {
+        popup.remove();
+    }, 3000);
 }
 
 // Initialize login handling
