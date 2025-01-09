@@ -34,19 +34,7 @@
         <div id="correct-questions" style="display: none;"></div>
         <div id="incorrect-questions"></div>
     </div>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
 
-            if ((username === 'Admin' && password === '123') || (username === 'Consulta' && password === '123')) {
-                // Redirect to the appropriate page
-            } else {
-                alert('Usuario o contraseña incorrectos');
-            }
-        });
-    </script>
     <script src="quiz.js" type="module"></script>
 
 </body>
