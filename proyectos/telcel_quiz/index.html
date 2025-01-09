@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interactivo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #question-container {
+            margin-bottom: 20px;
+        }
+
+        .answer-button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #e7e7e7;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .answer-button:hover {
+            background-color: #d7d7d7;
+        }
+
+        #next-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        #next-button:hover {
+            background-color: #45a049;
+        }
+
+        #result-container {
+            display: none;
+        }
+
+        #correct-questions li {
+            color: navy;
+            border: 1px solid navy;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        #incorrect-questions li {
+            color: red;
+            border: 1px solid red;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        #question-counter {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            #quiz-container {
+                padding: 15px;
+            }
+
+            .answer-button {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            #next-button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            #correct-questions li,
+            #incorrect-questions li {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .answer-button {
+                padding: 6px;
+                font-size: 12px;
+            }
+
+            #next-button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            #correct-questions li,
+            #incorrect-questions li {
+                padding: 6px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="question-counter"></div>
+        <div id="question-container">
+            <h2 id="question"></h2>
+            <button class="answer-button"></button>
+            <button class="answer-button"></button>
+            <button class="answer-button"></button>
+            <button class="answer-button"></button>
+        </div>
+        <button id="next-button">Siguiente</button>
+        <div id="result-container">
+            <h2>Resultados</h2>
+            <p id="score"></p>
+            <div id="correct-questions"></div>
+            <div id="incorrect-questions"></div>
+        </div>
+    </div>
+    <script src="quiz.js"></script>
+</body>
+</html>
