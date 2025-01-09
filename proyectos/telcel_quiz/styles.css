@@ -8,6 +8,9 @@ body {
     padding: 20px;
     box-sizing: border-box;
 }
+ul {
+    padding: 0;
+}
 
 #quiz-container {
     background-color: white;
@@ -16,13 +19,34 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     width: 100%;
+    text-align: center;
     padding: 50px;
     box-sizing: border-box;
     overflow-y: auto; /* Añadido para la barra de desplazamiento */
 }
-
+#toggle-correct-questions{
+    margin-top: 15px;
+    background-color: #45a049;
+    height: 30px;
+    border-radius: 12px;
+    width: 80vw;
+    text-align: center;
+    align-items: center;
+}
+.btn{
+    border: none;
+    font-weight: bold;
+    color: white;
+    align-items: center;
+    text-align: center;    
+}
+.flecha{
+    height: 15px;
+    padding: 0 10px;
+}
 #question-container {
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .answer-button {
@@ -59,6 +83,7 @@ body {
 
 #result-container {
     display: none;
+    margin: 25px 0;
 }
 
 #correct-questions li {
@@ -68,6 +93,9 @@ body {
     font-size: 12px;
     margin: 5px 0;
     border-radius: 6px;
+    text-decoration: none;
+    list-style: none;
+
 }
 #dataset-counter{
     font-size: 12px;
@@ -86,6 +114,7 @@ body {
     margin: 5px 0;
     border-radius: 6px;
     font-weight: bold;
+    list-style: none;
 }
 
 #question-counter {
@@ -118,26 +147,41 @@ body {
     #incorrect-questions li {
         padding: 8px;
         font-size: 14px;
+        text-decoration: none;
+        list-style: none;
+
     }
 }
 
 @media (max-width: 400px) {
     body {
         padding: 5px;
+        display: flex;
+        text-align: center;
+        align-content: center;
     }
 
     #quiz-container {
         padding: 15px;
+        height: 95vh;
+        text-align: center;
+        align-content: center;
+    }
+    #question{
+        margin-bottom: 25px;
     }
 
     .answer-button {
-        padding: 6px;
-        font-size: 12px;
+        padding: 8px;
+        font-size: 18px;
     }
 
     #correct-questions li,
     #incorrect-questions li {
+        display: flex;
         padding: 6px;
         font-size: 12px;
+        text-align: center;
+        align-self: center;
     }
 }

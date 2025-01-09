@@ -380,4 +380,84 @@ export const questions = [
         "answers": ["Monitorea en tiempo real el rendimiento, el estado, la actividad y la ubicación del automóvil, brindándole al usuario información útil sobre conductas de manejo, mantenimiento preventivo y problemas del auto, transformando el vehículo en un automóvil inteligente utilizando solamente una App y un equipo GPS que no requiere instalación", "Monitorea solo la ubicación del automóvil", "Monitorea solo el rendimiento del automóvil", "Monitorea solo la actividad del automóvil"],
         "correct": 0
     },
+    {
+        "question": "¿Cuáles son los beneficios principales de Smart Car Empresarial?",
+        "answers": [
+            "El vehículo no pierde garantías, instalación no invasiva; Activación sencilla por el usuario; Un equipo se puede usar en diferentes vehículos; Internet a bordo listo para compartir",
+            "Permite monitorear el estado del automóvil; Internet a bordo listo para compartir; Un equipo por vehículo",
+            "Activación complicada; Instalación requiere soporte técnico; Equipo fijo en un solo vehículo",
+            "Internet a bordo limitado a un dispositivo; Instalación compleja; Activación realizada por Telcel"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los plazos disponibles para Smart Car?",
+        "answers": [
+            "Plazo libre, 18 y 24 meses",
+            "12 y 18 meses",
+            "Solo plazo forzoso de 24 meses",
+            "6, 12 y 18 meses"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué componentes incluye la solución Smart Car?",
+        "answers": [
+            "Dispositivo GPS, suscripción, app Smart Car Telcel",
+            "Solo la app Smart Car Telcel",
+            "Dispositivo GPS y un plan de datos sin suscripción",
+            "Suscripción y dispositivo sin necesidad de app"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos vehículos puedes visualizar con Zeek mi auto?",
+        "answers": [
+            "24 vehículos",
+            "18 vehículos",
+            "12 vehículos",
+            "6 vehículos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuánto cuesta la renta de Zeek mi auto?",
+        "answers": [
+            "$199.00",
+            "$299.00",
+            "$399.00",
+            "$699.00"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es Video a Bordo?",
+        "answers": [
+            "Es una solución que brinda información de video en tiempo real de las diferentes perspectivas de una unidad, como cabina, exterior o dentro de las cajas",
+            "Es una herramienta para grabar video únicamente del interior de la cabina",
+            "Es un servicio de transmisión de video para flotas de transporte pesado",
+            "Es una app que muestra videos educativos para conductores"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué beneficios tiene Video a Bordo?",
+        "answers": [
+            "App móvil para monitoreo de las unidades, alertas de hasta 14 eventos en tiempo real, grabación por evento, permite descargar video y foto, reporte histórico de 400 días",
+            "Permite visualizar grabaciones de hasta 7 días únicamente",
+            "Incluye reportes básicos de eventos de manejo, pero sin alertas",
+            "No permite descarga de videos, pero genera reportes históricos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la funcionalidad del sistema DMS de Video a Bordo?",
+        "answers": [
+            "Permite alertar por voz al conductor sobre comportamientos anormales o malos hábitos (cansancio, ojos cerrados, uso de celular)",
+            "Detecta automáticamente peligros y malas prácticas de manejo con inteligencia artificial",
+            "Genera reportes automáticos de eventos críticos sin alertar al conductor",
+            "Monitorea únicamente la ubicación y estado del vehículo"
+        ],
+        "correct": 0
+    }
 ];
