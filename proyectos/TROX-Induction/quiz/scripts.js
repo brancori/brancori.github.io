@@ -1,10 +1,34 @@
 // Start Section
 let start = document.querySelector("#main_container");
+if (start) {
+    start.addEventListener("click", () => {
+        start.style.display = "none";
+        guide.style.display = "block";
+    });
+}
 
 // Guide
 let guide = document.querySelector("#guide");
 let exit = document.querySelector("#exit");
+if (exit) {
+    exit.addEventListener("click", () => {
+        start.style.display = "block";
+        guide.style.display = "none";
+    });
+}
 let continueBnt = document.querySelector("#continue");
+if (continueBnt) {
+    continueBnt.addEventListener("click", () => {
+        quiz.style.display = "block";
+        guide.style.display = "none";
+        interval = setInterval(countDown, 1000);
+        loadData();
+        choice_que.forEach(removeActive => {
+            removeActive.classList.remove("active");
+        });
+        total_correct.innerHTML = `${correct = 0} de ${MCQS.length} Preguntas`;
+    });
+}
 
 // Quiz Section
 let quiz = document.querySelector("#quiz");
@@ -23,15 +47,60 @@ let option4 = document.querySelector("#option4");
 // Correct and next Button
 let total_correct = document.querySelector("#total_correct");
 let next_question = document.querySelector("#next_question");
+if (next_question) {
+    next_question.addEventListener("click", () => {
+        if (index !== MCQS.length - 1) {
+            index++;
+            choice_que.forEach(removeActive => {
+                removeActive.classList.remove("active");
+            });
+            loadData();
+            total_correct.style.display = "block";
+            total_correct.innerHTML = `${correct} de ${MCQS.length} Preguntas`;
+            clearInterval(interval);
+            interval = setInterval(countDown, 1000);
+        } else {
+            index = 0;
+            clearInterval(interval);
+            quiz.style.display = "none";
+            points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
+            result.style.display = "block";
+            mostrarBoton();
+        }
+        for (i = 0; i <= 3; i++) {
+            choice_que[i].classList.remove("disabled");
+        }
+    });
+}
 
 // Result Section
 let result = document.querySelector("#result");
 let points = document.querySelector("#points");
 let quit = document.querySelector("#quit");
+if (quit) {
+    quit.addEventListener("click", () => {
+        start.style.display = "block";
+        result.style.display = "none";
+    });
+}
 let hacerCredencial = document.querySelector("#haceCredencial");
 
 // Get All 'h4' form quiz Section (MCQS)
 let choice_que = document.querySelectorAll(".choice_que");
+choice_que.forEach((Choices, choiceNo) => {
+    Choices.addEventListener("click", () => {
+        Choices.classList.add("active");
+        if (choiceNo === MCQS[index].answer) {
+            correct++;
+        } else {
+            correct += 0;
+        }
+        clearInterval(interval);
+        for (i = 0; i <= 3; i++) {
+            choice_que[i].classList.add("disabled");
+        }
+    });
+});
 
 let index = 0;
 let timer = 0;
@@ -111,18 +180,6 @@ function obtener_localstorage(){
 
 obtener_localstorage();
 
-// What happen when 'Start' Button will Click
-start.addEventListener("click",()=>{
-    start.style.display ="none";
-    guide.style.display ="block";
-});
-
-
-// What happen when 'Exit' Button will Click
-exit.addEventListener("click",()=>{
-    start.style.display ="block";
-    guide.style.display ="none";
-});
 
 //Creating Timer For Quiz Timer Section
 let countDown = ()=>{
@@ -138,12 +195,24 @@ let countDown = ()=>{
 //setInterval(countDown,1000)
 
 let loadData = () => {
-    questionNo.innerText = index + 1 + ". ";
-    questionText.innerText = MCQS[index].question;
-    option1.innerText = MCQS[index].choice1;
-    option2.innerText = MCQS[index].choice2;
-    option3.innerText = MCQS[index].choice3;
-    option4.innerText = MCQS[index].choice4;
+    if (questionNo) {
+        questionNo.innerText = index + 1 + ". ";
+    }
+    if (questionText) {
+        questionText.innerText = MCQS[index].question;
+    }
+    if (option1) {
+        option1.innerText = MCQS[index].choice1;
+    }
+    if (option2) {
+        option2.innerText = MCQS[index].choice2;
+    }
+    if (option3) {
+        option3.innerText = MCQS[index].choice3;
+    }
+    if (option4) {
+        option4.innerText = MCQS[index].choice4;
+    }
 
     //timer start
     timer = 0;
@@ -151,93 +220,28 @@ let loadData = () => {
 
 loadData();
 
-// What happen when 'Continue' Button will Click
-continueBnt.addEventListener("click", () => {
-    quiz.style.display ="block";
-    guide.style.display ="none";
-
-    interval = setInterval(countDown, 1000);
-    loadData();
-    // Remove All Active Classes when continue button will click
- 
-    choice_que.forEach(removeActive =>{
-        removeActive.classList.remove("active");
-        })
-        total_correct.innerHTML = `${correct = 0} de ${MCQS.length} Preguntas`;
-});
-
-choice_que.forEach((Choices, choiceNo) =>{
-Choices.addEventListener("click", () => {
-    Choices.classList.add("active");
-    //Check answer
-    if(choiceNo === MCQS[index].answer)
-    {
-        correct++;
-    }
-    else
+choice_que.forEach((Choices, choiceNo) => {
+    Choices.addEventListener("click", () => {
+        Choices.classList.add("active");
+        //Check answer
+        if(choiceNo === MCQS[index].answer)
         {
-            correct += 0;
+            correct++;
         }
-        //Stop Counter
-        clearInterval(interval);
-
-        //disable All Option whe User Select An Option
-        for (i = 0; i <= 3; i++)
-        {
-            choice_que[i].classList.add("disabled");
-        }
-    });
-});
-
-// What happen when 'Next' Button will Click
-next_question.addEventListener("click", () => {
-    //if index is less then MCQS.length
-    if (index !== MCQS.length - 1){
-        index++;
-        choice_que.forEach(removeActive =>{
-            removeActive.classList.remove("active");
-            })
-            //question
-            loadData();
-
-            //result
-            total_correct.style.display = "block";
-            total_correct.innerHTML = `${correct} de ${MCQS.length} Preguntas`;
-            clearInterval(interval);
-            interval = setInterval(countDown , 1000);
-    }
-    else{
-            index = 0;
-            //When quiz Question Complete Display Result Section
-            clearInterval(interval);correct
-            quiz.style.display = "none";
-            points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
-            result.style.display = "block";
-            mostrarBoton()
-            function mostrarBoton(){
-            if( correct >= 2){
-                hacerCredencial.style.display = 'block';
-                quit.style.display = 'none';
-            }else{
-                hacerCredencial.style.display = 'none';
-                quit.style.display = 'block';
+        else
+            {
+                correct += 0;
             }
-            };
-            
-        }
+            //Stop Counter
+            clearInterval(interval);
 
-    for(i = 0; i <= 3; i++) {
-        choice_que[i].classList.remove("disabled");
-    }
-})
-
-
-
-//what happen when 'Quit' Button Will Click
-quit.addEventListener("click", () => {
-    start.style.display = "block";
-    result.style.display = "none";
-});
+            //disable All Option whe User Select An Option
+            for (i = 0; i <= 3; i++)
+            {
+                choice_que[i].classList.add("disabled");
+            }
+        });
+    });
 
 
 //Inner Text tag P
@@ -263,6 +267,15 @@ function cambio(){
    var cT = document.getElementById("cT").value.toUpperCase();
    document.getElementById("input_ct").innerHTML = cT;
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    var element = document.getElementById("someElementId");
+    if (element) {
+        element.addEventListener("click", function() {
+            // ...existing code...
+        });
+    }
+});
 
 
 

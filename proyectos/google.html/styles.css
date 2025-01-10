@@ -12,7 +12,7 @@ body {
     margin: 0;
     padding: 0;
 }
-li{
+li {
     display: inline-block;
     list-style: none;
     font-size: 1.5rem;
@@ -56,7 +56,6 @@ a {
 a:hover {
     text-decoration: underline;
 }
-
 .google span {
     margin: 0 1rem;
     filter: drop-shadow(0 0 0.75rem rgb(148, 148, 148));
@@ -79,12 +78,6 @@ a:hover {
 .google span:nth-child(6) {
     color: #D50f25;
 }
-.go
-.google span:nth-child(1){
-    color:3369E8
-    margin: 0 1rem;
-    filter: drop-shadow(0 0 0.75rem rgb(148, 148, 148));
-}
 .buscador {
     display: flex;
     justify-content: space-around;
@@ -94,19 +87,18 @@ a:hover {
     margin: 0 auto;
     border-radius: 25px;
     align-items: center;
-
 }
-.buscador:hover{
+.buscador:hover {
     box-shadow: 0 1px 6px 0 #797979;
     border: 1px #333333;
 }
-.buscador img{
+.buscador img {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
     width: 18px;
 }
-.buscador .search-icon span{
+.buscador .search-icon span {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -124,7 +116,6 @@ a:hover {
     color: #3b3b3b;
     font-family: monospace;
 }
-
 .button {
     display: flex;
     justify-content: center;
@@ -141,7 +132,7 @@ a:hover {
     font-size: 2rem;
     border-radius: 4px;
 }
-.button button:hover{
+.button button:hover {
     box-shadow: 0 1px 1px #292929;
     border: 1px solid #4b4b4b;
 }
@@ -152,17 +143,16 @@ a:hover {
     font-size: 3rem;
     color: #333333;
 }
-.latino span:nth-child(2){
+.latino span:nth-child(2) {
     color: blue;
     margin-left: 15px;
 }
-
 .footer {
     background-color: #cecece;
     width: 100%;
     font-size: 1.5rem;
     color: #333333;
-    border-top: 1px solid  #a7a7a7;
+    border-top: 1px solid #a7a7a7;
     position: absolute;
     bottom: 0;
     justify-content: space-between;
@@ -177,6 +167,42 @@ a:hover {
     font-size: 1.5rem;
     color: var(--grey);
     font-weight: bold;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .google {
+        font-size: 8rem;
+    }
+    .buscador {
+        width: 90%;
+    }
+    #buscador {
+        width: 80%;
+        font-size: 2rem;
+    }
+    .button button {
+        font-size: 1.5rem;
+        padding: 1rem;
+        margin: 0 1rem;
+    }
+    .latino {
+        font-size: 2rem;
+    }
+    .footer p {
+        margin: 0 20px;
+    }
+}
+@media (max-width: 480px) {
+    .google {
+        font-size: 6rem;
+    }
+    .button {
+        flex-direction: column;
+    }
+    .button button {
+        margin: 1rem 0;
+    }
 }
 
 
