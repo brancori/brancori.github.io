@@ -4204,7 +4204,6 @@ export const questions = [
         "Mantener una comunicación abierta y honesta"
         ],
         "correct": 0
-    }  
-    
+    }     
 
 ];

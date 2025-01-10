@@ -7,7 +7,7 @@ function getRandomQuestions(questions, num) {
     return shuffled.slice(0, num);
 }
 
-let selectedQuestions = getRandomQuestions(questions, 25);
+let selectedQuestions = [];
 
 let currentQuestionIndex = 0;
 let correctAnswers = [];
@@ -41,7 +41,9 @@ function startQuiz() {
     score = 0;
     correctAnswers = [];
     incorrectAnswers = [];
-    selectedQuestions = getRandomQuestions(questions, 35);
+    const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
+    const remainingQuestions = questions.filter((_, index) => !correctIndices.includes(index));
+    selectedQuestions = getRandomQuestions(remainingQuestions, 35);
     datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`; // Actualiza el contador del dataset
     showQuestion();
 }
@@ -76,6 +78,9 @@ function selectAnswer(selectedIndex) {
         score++;
         if (!correctAnswers.includes(currentQuestion.question)) {
             correctAnswers.push(currentQuestion.question);
+            const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
+            correctIndices.push(questions.indexOf(currentQuestion));
+            localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
         }
     } else {
         if (!incorrectAnswers.includes(currentQuestion.question)) {
@@ -114,7 +119,8 @@ function showResults() {
     });
 
     document.getElementById('clear-memory').addEventListener('click', () => {
-        // Placeholder for future functionality
+        localStorage.clear();
+        showPopup('Memoria borrada');
     });
 }
 
