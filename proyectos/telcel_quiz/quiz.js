@@ -357,8 +357,6 @@ function filterIncorrectQuestions(searchTerm) {
 function updateProgress() {
     const progress = (currentQuestionIndex / selectedQuestions.length) * 100;
     document.querySelector('.progress-bar').style.width = `${progress}%`;
-    document.querySelector('.progress-text').textContent = 
-        `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
 }
 
 // Prevent double-tap zoom on mobile

@@ -14,8 +14,19 @@ input[type="text"], input[type="password"] {
 ul {
     padding: 0;
 }
-#question-item{
+.question-item{
     margin: 5px 0;
+    color: #000270;
+    text-align: left;
+    background-color: #e2e2e2;
+    padding: 10px;
+    border-radius: 7px;
+}
+.answer-section{
+    background-color: #ececec;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 6px;
 }
 #quiz-container {
     background-color: white;
@@ -263,7 +274,7 @@ ul {
 .btn.light-gray {
     background-color: #000270;
     color: rgb(255, 255, 255);
-    margin-top: 10px;
+    margin: 10px 0;
     width: 90vw;
     height: 35px;
     border-radius: 6px;
@@ -281,11 +292,53 @@ ul {
 /* ...existing code... */
 
 .search-bar {
-    width: 100%;
+    width: 90vw;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+/* ...existing code... */
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ...existing code... */
+
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background-color: #eee;
+    border-radius: 3px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #000270; /* Blue color */
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 /* ...existing code... */
