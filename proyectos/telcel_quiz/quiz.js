@@ -394,3 +394,4 @@ function handleSwipe() {
         }
     }
 }
+
