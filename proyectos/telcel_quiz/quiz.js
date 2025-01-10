@@ -41,7 +41,7 @@ function startQuiz() {
     score = 0;
     correctAnswers = [];
     incorrectAnswers = [];
-    selectedQuestions = getRandomQuestions(questions, 25);
+    selectedQuestions = getRandomQuestions(questions, 35);
     datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`; // Actualiza el contador del dataset
     showQuestion();
 }
@@ -103,6 +103,19 @@ function showResults() {
     
     correctQuestionsDisplay.innerHTML = `<h3>Preguntas Correctas</h3><ul>${correctAnswers.map(question => `<li>${question}</li>`).join('')}</ul>`;
     incorrectQuestionsDisplay.innerHTML = `<h3>Preguntas Incorrectas</h3><ul>${incorrectAnswers.map(question => `<li class="incorrect">${question}</li>`).join('')}</ul>`;
+    
+    document.getElementById('retry-quiz').addEventListener('click', () => {
+        resultContainer.style.display = 'none';
+        quizContainer.style.display = 'block';
+        questionContainer.style.display = 'block';
+        questionCounter.style.display = 'block';
+        answerButtons.forEach(button => button.style.display = 'block');
+        startQuiz();
+    });
+
+    document.getElementById('clear-memory').addEventListener('click', () => {
+        // Placeholder for future functionality
+    });
 }
 
 // Function to handle login redirection
@@ -112,7 +125,6 @@ function handleLogin() {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-
         if ((username === 'picazo' && password === '1234') || (username === 'Consulta' && password === '123')) {
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('quiz-container').style.display = 'block';

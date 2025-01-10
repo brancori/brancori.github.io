@@ -250,3 +250,17 @@ ul {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 1000;
 }
+
+/* ...existing code... */
+
+.btn.light-gray {
+    background-color: #d3d3d3;
+    color: black;
+    margin-top: 10px;
+}
+
+.btn.light-gray:hover {
+    background-color: #c0c0c0;
+}
+
+/* ...existing code... */
