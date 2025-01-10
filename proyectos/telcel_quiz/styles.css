@@ -14,22 +14,8 @@ input[type="text"], input[type="password"] {
 ul {
     padding: 0;
 }
-#questions-list{
+#question-item{
     margin: 5px 0;
-    text-align: left;
-    padding: 0 12px;
-}
-.question-item{
-    margin: 7px 0;
-    background-color: #e9e9e9;
-    padding: 12px;
-    border-radius: 6px;
-}
-.question-item strong{
-    color: rgb(0, 0, 97);
-}
-.question-item br{
-    color: rgb(133, 0, 0);
 }
 #quiz-container {
     background-color: white;
@@ -160,7 +146,7 @@ ul {
 
     .answer-button {
         padding: 8px;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     #correct-questions li,
@@ -194,9 +180,6 @@ ul {
     .answer-button {
         padding: 8px;
         font-size: 18px;
-    }
-    #incorrect-questions-list{
-        text-align: left;
     }
 
     #correct-questions li,
@@ -277,50 +260,6 @@ ul {
 
 /* ...existing code... */
 
-.popup.confirmation {
-    background-color: white;
-    color: black;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    max-width: 80%;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-}
-
-.popup-warning {
-    color: #ff0000;
-    font-size: 14px;
-    margin: 10px 0;
-}
-
-.popup-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.popup-buttons .btn {
-    padding: 8px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.popup-buttons .confirm {
-    background-color: #000270;
-}
-
-.popup-buttons .cancel {
-    background-color: #666;
-}
-
-/* ...existing code... */
-
 .btn.light-gray {
     background-color: #000270;
     color: rgb(255, 255, 255);
@@ -342,56 +281,29 @@ ul {
 /* ...existing code... */
 
 .search-bar {
-    width: 90vw;
+    width: 100%;
     padding: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 /* ...existing code... */
 
-.question-header {
-    padding: 10px;
-    transition: background-color 0.3s ease;
-}
-
-.question-header:hover {
-    background-color: #d7d7d7;
-}
-
-.answer-section {
-    padding: 2px 10px;
-    margin-top: 5px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-}
-..answer-section p{
-    margin: 4px 0;
-}
-
-/* ...existing code... */
-
-.progress-bar-container {
-    width: 100%;
-    height: 6px;
-    background-color: #eee;
-    border-radius: 3px;
-    margin: 10px 0;
+.profile-image {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
     overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-.progress-bar {
+.profile-image img {
+    width: 100%;
     height: 100%;
-    background-color: #000270; /* Changed to blue */
-    transition: width 0.3s ease;
-}
-
-.progress-text {
-    font-size: 14px;
-    color: #666;
-    text-align: center;
-    margin-bottom: 15px;
+    object-fit: cover;
 }
 
 /* ...existing code... */
