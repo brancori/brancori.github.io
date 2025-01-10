@@ -16,7 +16,16 @@
             <button type="submit">Iniciar Sesión</button>
         </form>
     </div>
+    <div id="options-container" style="display: none;">
+        <button id="start-quiz" class="btn light-gray">Iniciar Examen</button>
+        <button id="view-questions" class="btn light-gray">Ver Preguntas</button>
+        <button id="view-incorrect" class="btn light-gray">Ver Preguntas Incorrectas</button>
+    </div>
     <div id="quiz-container" style="display: none;">
+        <div class="progress-bar-container">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="progress-text"></div>
         <div id="question-counter"></div>
         <div id="dataset-counter"></div> <!-- Contador del dataset -->
         <div id="question"></div>
@@ -27,6 +36,21 @@
             <button class="answer-button"></button>
         </div>
         <button id="next-button" class="btn">Siguiente</button>
+        <button id="start-timer" class="btn light-gray">Iniciar Timer</button> <!-- New button to start the timer -->
+        <div id="timer-display" style="display: none;">Tiempo restante: <span id="timer">Iniciar</span></div> <!-- Timer display -->
+    </div>
+    <div id="questions-container" style="display: none;">
+        <h2>Base de Datos</h2>
+        <input type="text" id="search-bar" placeholder="Buscar preguntas..." class="search-bar">
+        <button id="back-to-options" class="btn light-gray">Volver</button>
+        <div id="questions-list"></div>
+        
+    </div>
+    <div id="incorrect-questions-container" style="display: none;">
+        <h2>Preguntas Incorrectas</h2>
+        <input type="text" id="search-incorrect" placeholder="Buscar preguntas..." class="search-bar">
+        <button id="back-to-options-incorrect" class="btn light-gray">Volver</button>
+        <div id="incorrect-questions-list"></div>
     </div>
     <div id="result-container" style="display: none;">
         <div id="score"></div>
