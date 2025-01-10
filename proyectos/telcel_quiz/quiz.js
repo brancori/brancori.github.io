@@ -67,7 +67,23 @@ function displayQuestions() {
     questions.forEach((question, index) => {
         const questionItem = document.createElement('div');
         questionItem.classList.add('question-item');
-        questionItem.innerHTML = `<strong>${index + 1}. ${question.question}</strong><br>Respuesta: ${question.answers[question.correct]}`;
+        questionItem.innerHTML = `
+            <div class="question-header" style="cursor: pointer;">
+                <strong>${index + 1}. ${question.question}</strong>
+            </div>
+            <div class="answer-section" style="display: none;">
+                <p>Respuesta:<br>${question.answers[question.correct]}</p>
+            </div>`;
+        
+        questionItem.querySelector('.question-header').addEventListener('click', () => {
+            const answerSection = questionItem.querySelector('.answer-section');
+            if (answerSection.style.display === 'none') {
+                answerSection.style.display = 'block';
+            } else {
+                answerSection.style.display = 'none';
+            }
+        });
+        
         questionsList.appendChild(questionItem);
     });
 }
@@ -90,14 +106,21 @@ function startQuiz() {
     correctAnswers = [];
     incorrectAnswers = [];
     const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
-    const remainingQuestions = questions.filter((_, index) => !correctIndices.includes(index));
-    selectedQuestions = getRandomQuestions(remainingQuestions, 35);
-    datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`; // Actualiza el contador del dataset
+    const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+    
+    // Prioritize incorrect questions and add remaining questions
+    const incorrectQuestions = questions.filter((_, index) => incorrectIndices.includes(index));
+    const remainingQuestions = questions.filter((_, index) => !correctIndices.includes(index) && !incorrectIndices.includes(index));
+    const numRemaining = Math.max(35 - incorrectQuestions.length, 0);
+    
+    selectedQuestions = [...incorrectQuestions, ...getRandomQuestions(remainingQuestions, numRemaining)];
+    datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`;
     showQuestion();
 }
 
 function showQuestion() {
     resetState();
+    updateProgress();
     const currentQuestion = selectedQuestions[currentQuestionIndex];
     questionCounter.innerText = `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
     questionContainer.innerText = currentQuestion.question;
@@ -129,10 +152,22 @@ function selectAnswer(selectedIndex) {
             const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
             correctIndices.push(questions.indexOf(currentQuestion));
             localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
+            
+            // Remove from incorrectIndices if it was previously incorrect
+            const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+            const indexToRemove = incorrectIndices.indexOf(questions.indexOf(currentQuestion));
+            if (indexToRemove > -1) {
+                incorrectIndices.splice(indexToRemove, 1);
+                localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+            }
         }
     } else {
         if (!incorrectAnswers.includes(currentQuestion.question)) {
             incorrectAnswers.push(currentQuestion.question);
+            // Store incorrect answer index in localStorage
+            const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+            incorrectIndices.push(questions.indexOf(currentQuestion));
+            localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
         }
     }
     currentQuestionIndex++;
@@ -150,7 +185,7 @@ let timerInterval;
 
 document.getElementById('start-timer').addEventListener('click', () => {
     document.getElementById('timer-display').style.display = 'block';
-    startTimer(.5 * 60, document.getElementById('timer'));
+    startTimer(15 * 60, document.getElementById('timer'));
 });
 
 function startTimer(duration, display) {
@@ -203,8 +238,28 @@ function showResults() {
     });
 
     document.getElementById('clear-memory').addEventListener('click', () => {
-        localStorage.clear();
-        showPopup('Memoria borrada');
+        const confirmMessage = 'Memoria borrada correctamente';
+        const confirmPopup = document.createElement('div');
+        confirmPopup.className = 'popup confirmation';
+        confirmPopup.innerHTML = `
+            <p>¿Estás seguro que deseas borrar toda la memoria?</p>
+            <p class="popup-warning">Esta acción no se puede deshacer y perderás el registro de todas las preguntas respondidas.</p>
+            <div class="popup-buttons">
+                <button class="btn confirm">Confirmar</button>
+                <button class="btn cancel">Cancelar</button>
+            </div>
+        `;
+        document.body.appendChild(confirmPopup);
+
+        confirmPopup.querySelector('.confirm').onclick = () => {
+            localStorage.clear();
+            confirmPopup.remove();
+            showPopup('Memoria borrada correctamente');
+        };
+
+        confirmPopup.querySelector('.cancel').onclick = () => {
+            confirmPopup.remove();
+        };
     });
 }
 
@@ -239,3 +294,105 @@ handleLogin();
 
 // Inicializa el quiz
 startQuiz();
+
+document.getElementById('view-incorrect').addEventListener('click', () => {
+    optionsContainer.style.display = 'none';
+    document.getElementById('incorrect-questions-container').style.display = 'block';
+    displayIncorrectQuestions();
+});
+
+document.getElementById('back-to-options-incorrect').addEventListener('click', () => {
+    document.getElementById('incorrect-questions-container').style.display = 'none';
+    optionsContainer.style.display = 'block';
+});
+
+document.getElementById('search-incorrect').addEventListener('input', () => {
+    const searchTerm = document.getElementById('search-incorrect').value.toLowerCase();
+    filterIncorrectQuestions(searchTerm);
+});
+
+function displayIncorrectQuestions() {
+    const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+    const incorrectQuestionsList = document.getElementById('incorrect-questions-list');
+    incorrectQuestionsList.innerHTML = '';
+    
+    incorrectIndices.forEach(index => {
+        const question = questions[index];
+        const questionItem = document.createElement('div');
+        questionItem.classList.add('question-item');
+        questionItem.innerHTML = `
+            <div class="question-header" style="cursor: pointer;">
+                <strong>${index + 1}. ${question.question}</strong>
+            </div>
+            <div class="answer-section" style="display: none;">
+                <p>Respuesta:<br>${question.answers[question.correct]}</p>
+            </div>`;
+        
+        questionItem.querySelector('.question-header').addEventListener('click', () => {
+            const answerSection = questionItem.querySelector('.answer-section');
+            if (answerSection.style.display === 'none') {
+                answerSection.style.display = 'block';
+            } else {
+                answerSection.style.display = 'none';
+            }
+        });
+        
+        incorrectQuestionsList.appendChild(questionItem);
+    });
+}
+
+function filterIncorrectQuestions(searchTerm) {
+    const questionItems = document.querySelectorAll('#incorrect-questions-list .question-item');
+    questionItems.forEach(item => {
+        const questionText = item.textContent.toLowerCase();
+        if (questionText.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Update progress bar
+function updateProgress() {
+    const progress = (currentQuestionIndex / selectedQuestions.length) * 100;
+    document.querySelector('.progress-bar').style.width = `${progress}%`;
+    document.querySelector('.progress-text').textContent = 
+        `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
+}
+
+// Prevent double-tap zoom on mobile
+document.addEventListener('touchstart', function(event) {
+    if (event.touches.length > 1) {
+        event.preventDefault();
+    }
+}, { passive: false });
+
+// Add swipe gesture support
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = touchEndX - touchStartX;
+    
+    if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0 && currentQuestionIndex > 0) {
+            // Swipe right - previous question
+            currentQuestionIndex--;
+            showQuestion();
+        } else if (diff < 0 && currentQuestionIndex < selectedQuestions.length - 1) {
+            // Swipe left - next question
+            selectAnswer(-1); // Mark as incorrect if unanswered
+        }
+    }
+}
