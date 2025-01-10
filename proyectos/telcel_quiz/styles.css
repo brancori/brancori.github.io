@@ -126,6 +126,7 @@ ul {
     text-align: center;
 }
 
+
 /* Media Queries for Responsive Design */
 @media (max-width: 600px) {
     body {
@@ -254,13 +255,13 @@ ul {
 /* ...existing code... */
 
 .btn.light-gray {
-    background-color: #d3d3d3;
-    color: black;
+    background-color: #000270;
+    color: rgb(255, 255, 255);
     margin-top: 10px;
+    width: 90vw;
+    height: 35px;
+    border-radius: 6px;
 }
 
-.btn.light-gray:hover {
-    background-color: #c0c0c0;
-}
 
 /* ...existing code... */
