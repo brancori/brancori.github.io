@@ -2315,4 +2315,1895 @@ export const questions = [
         ],
         "correct": 0
     },
+    {
+        "question": "¿Cuánto cuesta la llamada al buzón de voz sin límite de tiempo desde cualquier parte del país?",
+        "answers": ["$1.19", "$1.50", "$0.99", "$2.00"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los APN´s que aplican para las empresas?",
+        "answers": ["Dedicados y prediseñados", "Genéricos y personalizados", "Internacionales y locales", "Estándar y avanzado"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de SMS no están incluidos en los servicios sin límite?",
+        "answers": ["SMS Premium y marcaciones especiales", "SMS internacionales y grupales", "SMS a líneas fijas y grupales", "SMS multimedia y estándar"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se notifica al cliente sobre los beneficios de la facturación electrónica?",
+        "answers": ["A través de un correo de bienvenida", "Mediante un SMS", "Por llamada automática", "Con un mensaje en la factura"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué solución permite convertir tu celular en terminal punto de venta que acepta pagos con tarjeta?",
+        "answers": ["Billpocket", "Aspel NOI", "SmartCar", "Control Móvil Telcel"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué velocidad de navegación ofrecen los planes de Internet en tu casa en tecnología 4G?",
+        "answers": ["5 y 10 Mbps", "15 y 20 Mbps", "40 y 50 Mbps", "70 y 100 Mbps"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué esquema permite la activación de dispositivos IoT?",
+        "answers": ["Prepago y Postpago", "Solo Prepago", "Solo Postpago", "Prepago, Postpago y Mixto"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos días de garantía tiene un iPhone por cambio con costo?",
+        "answers": ["90 días", "30 días", "60 días", "120 días"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los componentes de la solución Gestión de Fuerza en Campo powered by Lertek?",
+        "answers": ["Portal web, aplicación móvil, base de datos y módulo de reportes", "Aplicación móvil, servidor dedicado y soporte técnico", "Portal web, soporte técnico y herramienta de análisis", "Base de datos, aplicación web y sistema de mensajería"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el objetivo de las acciones preventivas?",
+        "answers": ["Cumplir objetivos o condiciones en riesgo de no alcanzarse", "Eliminar problemas reales existentes", "Autorizar auditorías internas", "Implementar políticas correctivas"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se define el enfoque al cliente?",
+        "answers": ["Cumplir con los requisitos y exceder las expectativas", "Proveer servicios según el presupuesto", "Garantizar la satisfacción mínima del cliente", "Ofrecer descuentos y promociones constantes"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué beneficio obtiene una organización al cumplir con ISO/IEC 20000?",
+        "answers": ["Se comporta de forma socialmente responsable", "Accede a mayores subsidios gubernamentales", "Aumenta el presupuesto operativo automáticamente", "Obtiene reconocimiento en eventos internacionales"],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes son los responsables de autorizar acciones correctivas en el sistema de mejora continua?",
+        "answers": ["Personal de alta dirección: Director, Subdirector o Gerente", "Coordinadores y supervisores de área", "Auditores externos del sistema", "Representantes del comité de calidad"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué son las competencias laborales?",
+        "answers": ["La capacidad de desempeñar efectivamente una función de trabajo", "Certificaciones profesionales obtenidas en instituciones reconocidas", "Conocimientos académicos adquiridos durante la formación", "Capacidad de innovar dentro de un entorno laboral competitivo"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un control dentro de la gestión de riesgos?",
+        "answers": ["Cualquier medida de seguridad para tratar riesgos", "Una estrategia exclusivamente tecnológica contra riesgos", "Un procedimiento de auditoría interna", "Un reporte mensual sobre incidentes detectados"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es el efecto de la incertidumbre en el logro de los objetivos?",
+        "answers": ["Riesgo", "Problema", "Control", "Auditoría"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los pasos para la solución de un problema?",
+        "answers": ["Definición, acción inmediata, identificar causa raíz, acción propuesta, evaluación y seguimiento", "Identificación, análisis preliminar, ejecución, control y auditoría", "Identificación, definición de políticas, implementación de controles, reporte y evaluación", "Análisis, diagnóstico, acciones correctivas, auditoría y certificación"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo está integrado el comité de administración de calidad?",
+        "answers": ["Un representante y un suplente de cada dirección que lo integra", "Todos los directores generales y subdirectores", "Miembros del equipo de auditores internos y externos", "Un grupo designado exclusivamente por el gerente de calidad"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué encontrarás en el manual de inducción de calidad de Telcel?",
+        "answers": [
+            "Principios de gestión de calidad, procedimientos de uso común, red de procesos Telcel y medios de comunicación",
+            "Un listado completo de las políticas de calidad y su implementación",
+            "Exclusivamente los principios de la gestión de calidad",
+            "Instrucciones detalladas sobre el sistema de gestión integrado"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es un lineamiento del P-00.00.00.00.00-001 sobre el control de información documentada?",
+        "answers": [
+            "Evitar el uso de documentos obsoletos y garantizar registros definidos",
+            "Revisar documentos cada seis meses para eliminar duplicados",
+            "Registrar todos los datos en un formato físico",
+            "Solicitar aprobación previa de la alta dirección para cualquier cambio"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el objetivo del procedimiento de elaboración, actualización y eliminación de documentos?",
+        "answers": [
+            "Proporcionar una guía para todas las áreas sobre cómo elaborar, actualizar y eliminar documentación",
+            "Garantizar que todos los documentos sean revisados cada trimestre",
+            "Crear un repositorio central de archivos en formato digital",
+            "Implementar un sistema de auditoría documental anual"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son algunos de los medios para atender consultas, reclamaciones y quejas del cliente?",
+        "answers": [
+            "Correo electrónico, CATS (*111 y 01-800), CACS, kioscos Telcel y otros medios dispuestos por la empresa",
+            "Llamadas al número local de atención a clientes únicamente",
+            "Correos postales enviados al centro corporativo",
+            "Visitas presenciales obligatorias a los centros de atención"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es @-DOC?",
+        "answers": [
+            "El sistema de administración de documentos del sistema de gestión integrado",
+            "Un portal exclusivo para el envío de reclamaciones",
+            "Un software de auditoría externa",
+            "El nombre del repositorio de políticas internas de Telcel"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Dónde se puede consultar la política de calidad de Telcel?",
+        "answers": [
+            "En el sistema de gestión integrado",
+            "En el manual de inducción de calidad",
+            "En los kioscos Telcel de atención a clientes",
+            "En el portal web externo de Telcel"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué sistema permite consultar no conformidades y acciones correctivas?",
+        "answers": [
+            "El sistema @-DOC, proceso de mejora continua",
+            "El portal de calidad",
+            "El procedimiento general de auditoría interna",
+            "El sistema de gestión de clientes (SGC)"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Dónde se encuentra información nacional sobre el sistema de gestión integrado?",
+        "answers": [
+            "En el portal de calidad",
+            "En el manual de inducción de calidad",
+            "En los kioscos Telcel",
+            "En las oficinas corporativas de cada región"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Dónde se pueden consultar los objetivos del sistema de gestión integrado (SGI)?",
+        "answers": [
+            "En el portal de calidad",
+            "En el manual de procedimientos del SGI",
+            "En el sistema de auditoría interna",
+            "En las oficinas de la alta dirección"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es uno de los objetivos del SGI relacionado con la norma ISO 45K?",
+        "answers": [
+            "Cumplir con al menos el 85% del estándar de seguridad en call center de R1 a R9",
+            "Cumplir con al menos el 90% del estándar de seguridad en CAC’s y CVT’s",
+            "Cumplir con al menos el 75% del estándar de seguridad física en centrales de R1 a R9",
+            "Cumplir con todos los estándares de seguridad sin excepciones"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué porcentaje mínimo de cumplimiento se establece para el estándar de seguridad física en centrales de R1 a R9?",
+        "answers": [
+            "85%",
+            "80%",
+            "90%",
+            "75%"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Dónde se pueden consultar los objetivos vigentes de Telcel?",
+        "answers": [
+            "En el portal de calidad, cultura corporativa o la intranet Telcel",
+            "En las oficinas corporativas de Telcel únicamente",
+            "En el sistema de auditoría interna",
+            "En los kioscos Telcel para clientes"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es el servicio BUDA en Telcel?",
+        "answers": [
+            "Una herramienta de análisis de datos que mide la penetración y rentabilidad de productos y servicios",
+            "Un sistema para el monitoreo de incidencias laborales",
+            "Un portal exclusivo para capacitación de empleados",
+            "Un módulo de gestión de objetivos del SGI"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son algunos medios de difusión del SGI?",
+        "answers": [
+            "Portal de calidad, tablero de comunicación, revista en línea y comités de administración",
+            "Tablero físico en las oficinas corporativas únicamente",
+            "Reuniones anuales obligatorias para todos los empleados",
+            "Correos electrónicos enviados a los departamentos involucrados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los sistemas de apoyo del SGI?",
+        "answers": [
+            "@Doc y sistema de mejora continua",
+            "Sistema de auditorías internas y control documental",
+            "Gestión de riesgos y auditorías externas",
+            "Sistema de reportes y portal de calidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué procedimiento está relacionado con el control de documentos y registros del sistema de calidad?",
+        "answers": [
+            "P-00.00.00.00.00-001",
+            "P-00.00.00.00.00-002",
+            "P-00.00.00.00.00-003",
+            "P-00.00.00.00.00-004"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué procedimiento se encarga de la calificación de auditores en el sistema de calidad?",
+        "answers": [
+            "P-00.00.00.00.00-004",
+            "P-00.00.00.00.00-002",
+            "P-00.00.00.00.00-005",
+            "P-00.00.00.00.00-006"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué procedimiento trata el tratamiento y valoración de riesgos?",
+        "answers": [
+            "P-00.00.00.00.00-005",
+            "P-00.00.00.00.00-006",
+            "P-00.00.00.00.00-007",
+            "P-00.00.00.00.00-003"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el procedimiento relacionado con la atención de producto no conforme?",
+        "answers": [
+            "P-00.00.00.00.00-006",
+            "P-00.00.00.00.00-007",
+            "P-00.00.00.00.00-008",
+            "P-00.00.00.00.00-009"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es un documento común del Sistema de Gestión Integrado (SGI)?",
+        "answers": [
+            "Manual de calidad (MC-00.00.00.00.00-001)",
+            "Política de privacidad de datos",
+            "Informe anual de resultados",
+            "Procedimiento de auditorías internas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué norma se enfoca en la satisfacción del cliente a través de la mejora continua?",
+        "answers": [
+            "ISO 9001:2015",
+            "ISO/IEC 20000-1:2018",
+            "ISO/IEC 27001:2013",
+            "ISO 450001:2018"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué norma define los requerimientos para preservar la confidencialidad, integridad y disponibilidad de la información?",
+        "answers": [
+            "ISO/IEC 27001:2013",
+            "ISO 9001:2015",
+            "ISO 450001:2018",
+            "ISO/IEC 20000-1:2018"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué procedimiento precisa los pasos para realizar una auditoría al SGI?",
+        "answers": [
+            "Procedimiento de Auditorías al Sistema de Gestión Integrado",
+            "Procedimiento para la mejora continua",
+            "Procedimiento de calificación de auditores",
+            "Procedimiento para la actualización de documentos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué significa SGSI?",
+        "answers": [
+            "Sistema de Gestión de Seguridad de la Información",
+            "Sistema General de Servicios Integrados",
+            "Seguridad General de Sistemas Informáticos",
+            "Sistema de Gestión de Servicios Internacionales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es compliance?",
+        "answers": [
+            "Procedimientos y buenas prácticas para identificar riesgos operativos y legales",
+            "Una norma de seguridad de la información",
+            "Un sistema de auditoría interna",
+            "Un conjunto de políticas para la mejora continua"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son las tres propiedades de la seguridad de la información?",
+        "answers": [
+            "Confidencialidad, Integridad y Disponibilidad",
+            "Accesibilidad, Transparencia y Seguridad",
+            "Fiabilidad, Seguridad y Confidencialidad",
+            "Disponibilidad, Exactitud y Autenticidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué significa la integridad de la información?",
+        "answers": [
+            "Salvaguardar la exactitud y completitud de los activos",
+            "Garantizar el acceso a la información por entidades autorizadas",
+            "Mantener los datos protegidos contra accesos no autorizados",
+            "Preservar la estabilidad de los sistemas informáticos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es la disponibilidad de la información?",
+        "answers": [
+            "La propiedad de ser accesible y utilizable a demanda de una entidad autorizada",
+            "La capacidad de la información para ser almacenada en servidores seguros",
+            "La característica de los sistemas de estar protegidos contra fallos técnicos",
+            "La habilidad de la información para ser transferida sin pérdida de datos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Dónde se encuentra la política de seguridad de la información en el SGI?",
+        "answers": [
+            "@doc: PL-00.00.00.00.00-016",
+            "Manual de calidad MC-00.00.00.00.00-001",
+            "Portal de calidad/cultura corporativa",
+            "Tablero de comunicación del SGI"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué son los datos personales?",
+        "answers": [
+            "Cualquier información concerniente a una persona física que la hace identificada o identificable",
+            "Información confidencial que pertenece exclusivamente a una organización",
+            "Datos técnicos relacionados con sistemas informáticos",
+            "Información compartida públicamente en redes sociales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO 27001:2013, ¿qué es una amenaza?",
+        "answers": [
+            "Una causa potencial de un incidente no deseado que puede causar daño a un sistema u organización",
+            "La posibilidad de que un usuario no autorizado acceda a datos",
+            "Una debilidad en el sistema que puede ser explotada",
+            "Un error en los procedimientos de seguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un riesgo de seguridad de la información?",
+        "answers": [
+            "La combinación de las consecuencias de un evento de seguridad de la información y la probabilidad de ocurrencia",
+            "Una brecha que permite a terceros acceder a los datos",
+            "Un fallo en los controles de seguridad establecidos",
+            "Un incidente que afecta la disponibilidad de los sistemas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo protege Telcel los datos personales de sus clientes y empleados?",
+        "answers": [
+            "Con la implementación de controles de la norma ISO 27001",
+            "Mediante la encriptación de todos los datos almacenados",
+            "A través de auditorías internas periódicas",
+            "Con la capacitación del personal en ciberseguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la política de Telcel para la gestión de datos personales?",
+        "answers": [
+            "PL-00.00.00.00.00-022 Gestión de datos personales de Telcel",
+            "PL-00.02.00.00.00-001 Código de ética",
+            "PL-00.02.00.00.00-002 Imagen del personal",
+            "PL-00.00.00.00.00-016 Política de seguridad de la información"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué significa la confidencialidad de la información?",
+        "answers": [
+            "La propiedad de la información de no revelarse a individuos, organizaciones o procesos no autorizados",
+            "La capacidad de los datos de estar disponibles a cualquier usuario autorizado",
+            "La garantía de que los datos se mantendrán inalterados",
+            "El acceso restringido únicamente a los administradores del sistema"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué significa la disponibilidad de la información?",
+        "answers": [
+            "La propiedad de ser accesible y utilizable a demanda de una entidad autorizada",
+            "La capacidad de los datos para ser transferidos de manera segura",
+            "La garantía de que los datos se mantendrán confidenciales",
+            "La facilidad de acceso a los datos sin importar su nivel de autorización"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué significa la integridad de la información?",
+        "answers": [
+            "La propiedad de salvaguardar la exactitud y completitud de los activos",
+            "La capacidad de proteger los datos contra accesos no autorizados",
+            "La disponibilidad de los datos cuando sean necesarios",
+            "La seguridad de que los datos estarán cifrados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es una vulnerabilidad?",
+        "answers": [
+            "Una debilidad de un activo o grupo de activos que puede ser explotada por una o más amenazas",
+            "Una causa potencial de un incidente no deseado",
+            "La falta de políticas de seguridad en la organización",
+            "Un error en el sistema que afecta la disponibilidad de la información"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un activo de información?",
+        "answers": [
+            "Cualquier información valiosa para la organización en cualquier medio de almacenamiento",
+            "Una herramienta de análisis utilizada en procesos internos",
+            "Un sistema informático que protege datos confidenciales",
+            "Una aplicación utilizada para gestionar riesgos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes son responsables de definir y mantener la clasificación de la información y el nivel de seguridad requerido?",
+        "answers": [
+            "Dueños de la información",
+            "Usuarios finales",
+            "Auditores de seguridad",
+            "Personal de TI"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué deben hacer los usuarios finales respecto a la información?",
+        "answers": [
+            "Cumplir con los requisitos de seguridad vigentes y mantener la confidencialidad, integridad y disponibilidad de la información",
+            "Revisar y actualizar la política de seguridad de manera periódica",
+            "Realizar auditorías internas de los sistemas de información",
+            "Clasificar los activos de información y definir sus niveles de seguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de activo es la imagen y reputación de una organización?",
+        "answers": [
+            "Intangible",
+            "Tangible",
+            "Confidencial",
+            "Físico"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de activo son los datos personales?",
+        "answers": [
+            "Tangible",
+            "Intangible",
+            "Físico",
+            "Digital"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué significan los derechos ARCO?",
+        "answers": [
+            "Acceso, Revocación, Cancelación y Oposición",
+            "Acceso, Rectificación, Cancelación y Observación",
+            "Autorización, Regulación, Control y Observación",
+            "Acceso, Revisión, Control y Orden"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué debe hacer un empleado para ejercer sus derechos ARCO?",
+        "answers": [
+            "Enviar un correo electrónico a la dirección datospersonalesrh@telcel.com",
+            "Contactar al departamento de TI para solicitar acceso a sus datos",
+            "Completar un formulario en línea disponible en el portal de Telcel",
+            "Notificar a su supervisor directo sobre su intención de ejercer los derechos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué condiciones y características garantiza la seguridad informática?",
+        "answers": [
+            "Las condiciones y características de seguridad de los sistemas de procesamiento y almacenamiento de datos",
+            "El diseño y desarrollo de sistemas operativos avanzados",
+            "La conexión constante y eficiente a internet",
+            "La encriptación de datos únicamente en redes locales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Selecciona 3 dominios de controles de seguridad de la información que cuenta Telcel:",
+        "answers": [
+            "Acceso físico, Adquisición, desarrollo y mantenimiento de sistemas, Gestión de incidentes de seguridad",
+            "Gestión de bases de datos, Monitoreo de redes, Actualización de software",
+            "Soporte técnico, Gestión de accesos, Configuración de hardware",
+            "Control de usuarios, Auditoría financiera, Planificación de proyectos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes son responsables de implantar y cumplir las políticas y estándares de seguridad de la información?",
+        "answers": [
+            "Administradores de sistemas",
+            "Auditores externos",
+            "Usuarios finales",
+            "Gerentes de ventas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de controles utilizan la tecnología como base para controlar el acceso y uso de datos confidenciales?",
+        "answers": [
+            "Técnicos",
+            "Administrativos",
+            "Físicos",
+            "Operacionales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de controles definen los factores humanos de la seguridad?",
+        "answers": [
+            "Administrativos",
+            "Técnicos",
+            "Físicos",
+            "Operativos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la política en Telcel que establece las disposiciones sobre protección de datos personales?",
+        "answers": [
+            "PL-00.00.00.00.00-022 Gestión de Datos Personales de Telcel",
+            "PL-00.01.00.00.00-001 Seguridad de la Información",
+            "PL-00.02.00.00.00-002 Imagen del Personal",
+            "PL-00.00.00.00.00-016 Política de seguridad informática"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son las obligaciones en materia de protección de datos con las que debe cumplir Telcel?",
+        "answers": [
+            "Poner a disposición el aviso de privacidad, establecer medidas de seguridad administrativas, técnicas y físicas, respetar la confidencialidad de los datos",
+            "Garantizar acceso irrestricto a los sistemas, implementar políticas de encriptación únicamente en servidores internos, capacitar a usuarios finales en programación avanzada",
+            "Realizar auditorías semestrales, establecer un equipo dedicado exclusivamente a privacidad, implementar un sistema automatizado de monitoreo",
+            "Proveer acceso público a toda la documentación de seguridad, establecer normas específicas para cada usuario, mantener los datos en servidores locales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles de los siguientes son objetivos del SGSI?",
+        "answers": [
+            "Transición de la norma ISO/IEC 27001:2022 al SGI (fase II), Actualización del proceso de gestión de riesgos y oportunidades del SGI, Mantener el cumplimiento de TELCEL con el marco legal mexicano vigente en materia de datos personales, Cumplir por lo menos con el 85% del estándar de seguridad en Call Center de R1 a R9, Cumplir por lo menos con el 85% del estándar de seguridad física en Centrales de R1 a R9, Cumplir por lo menos con el 80% del estándar de seguridad física en la sala de comunicaciones en CAC´s, CVT´s y CVAT´s de R1 a R9",
+            "Implementación de nuevas estrategias de marketing, Introducción de políticas internas de teletrabajo, Capacitación en sistemas de gestión, Desarrollo de campañas de concienciación sobre ciberseguridad",
+            "Auditorías externas trimestrales, Desarrollo de nuevos procedimientos de recursos humanos, Transición a la norma ISO/IEC 20000:2022, Creación de un portal interno para empleados",
+            "Creación de un sistema de métricas de desempeño, Capacitación en programación avanzada, Desarrollo de nuevos centros de datos, Implementación de estrategias para reducir costos de TI"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo al procedimiento de acciones para la mejora continua, ¿cuál es la finalidad de implementar acciones correctivas y preventivas, y de mejora?",
+        "answers": [
+        "Establecer un programa de auditorías internas de cuyo resultado se informa a cada una de las direcciones",
+        "Reducir costos operativos",
+        "Aumentar la productividad",
+        "Mejorar la satisfacción del cliente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la responsabilidad de la alta dirección cuando se documenta una acción para la mejora?",
+        "answers": [
+        "Facilitar los recursos, supervisar los avances y tomar las acciones correspondientes cuando no haya avances",
+        "Implementar tecnologías innovadoras",
+        "Garantizar la satisfacción del cliente",
+        "Reducir costos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En Telcel, ¿quién puede identificar la necesidad de resolver un problema o mejorar la situación actual?",
+        "answers": [
+        "Todos los empleados",
+        "Solo el gerente",
+        "El equipo de calidad",
+        "El administrador"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Corrección:",
+        "answers": [
+        "Acción tomada para eliminar una no conformidad detectada",
+        "Medida para prevenir una no conformidad",
+        "Proceso para mejorar la calidad",
+        "Evaluación de un problema"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Acción Contenedora o de emergencia:",
+        "answers": [
+        "Acción de contención inmediata para permitir que se continúe trabajando en tanto se elimina la causa raíz",
+        "Medida para mejorar la calidad",
+        "Proceso para implementar tecnologías innovadoras",
+        "Evaluación de un incidente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Procedimiento que describe las actividades para controlar el producto que no cumple con los requisitos:",
+        "answers": [
+        "Atención de Producto No Conforme",
+        "Política de Calidad",
+        "Manual de Calidad",
+        "Red de Procesos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Las No conformidades dentro del sistema de Calidad se pueden clasificar en:",
+        "answers": [
+        "Mayores y Menores",
+        "Internas y Externas",
+        "Críticas y Leves",
+        "Temporales y Permanentes"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es una no conformidad menor?",
+        "answers": [
+        "Un caso aislado. No afecta la satisfacción del cliente ni confiabilidad en el SGI",
+        "Una falla crítica en el sistema",
+        "Un problema recurrente",
+        "Una desviación temporal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es una no conformidad mayor?",
+        "answers": [
+        "La ausencia total del cumplimiento de un requisito del sistema de calidad",
+        "Una pequeña desviación",
+        "Un problema fácilmente solucionable",
+        "Un caso aislado"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Identificación de causa raíz:",
+        "answers": [
+        "Descripción de las causas del problema real o potencial, identificadas con el apoyo de herramientas de calidad (técnicas de análisis como: Los 5 ¿por qué?, Tormenta de Ideas, etc.)",
+        "Evaluación de un problema",
+        "Proceso para mejorar la calidad",
+        "Medida para solucionar un conflicto"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Acción propuesta:",
+        "answers": [
+        "Acción correctiva o preventiva que elimina el problema real o potencial",
+        "Medida para prevenir una no conformidad",
+        "Proceso para evaluar un problema",
+        "Evaluación de un incidente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Tiene como fin cumplir los objetivos o condiciones que estén en riesgo de no alcanzarse:",
+        "answers": [
+        "Acciones preventivas",
+        "Acciones correctivas",
+        "Acciones de mejora",
+        "Evaluaciones de calidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es cliente?",
+        "answers": [
+        "Organización o parte de la organización que recibe un servicio o servicios",
+        "Persona que realiza una compra",
+        "Empleado de la empresa",
+        "Proveedor de servicios"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se define el enfoque al cliente?",
+        "answers": [
+        "Cumplir con los requisitos + exceder las expectativas",
+        "Garantizar precios bajos",
+        "Ofrecer productos de alta calidad",
+        "Implementar tecnologías innovadoras"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el beneficio que obtiene una organización cuando los servicios se entregan de acuerdo con ISO/IEC 20000?",
+        "answers": [
+        "La organización se comporta de una forma socialmente responsable",
+        "Incremento en las ventas",
+        "Reducción de costos",
+        "Mejora en la tecnología"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Son los responsables de autorizar el inicio de acciones correctivas y de mejora, aprobar al líder y la integración de un equipo de trabajo para acciones en el sistema de mejora continua:",
+        "answers": [
+        "Personal perteneciente a la alta dirección: Director, Subdirector o Gerente",
+        "Equipo de calidad",
+        "Empleado responsable",
+        "Proveedor de servicios"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué son las competencias laborales?",
+        "answers": [
+        "Es la capacidad de desempeñar efectivamente una función de trabajo, es decir, una habilidad demostrada para aplicar conocimientos y aptitudes",
+        "Habilidades para gestionar un equipo",
+        "Capacidades para reducir costos",
+        "Aptitudes para mejorar la tecnología"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Es el procedimiento en donde se describen los requisitos y lineamientos para la calificación de auditores del sistema de gestión integrado:",
+        "answers": [
+        "Procedimiento de calificación de auditores del SGI",
+        "Manual de Calidad",
+        "Política de Calidad",
+        "Red de Procesos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un Control?",
+        "answers": [
+        "Cualquier medida de seguridad que definimos para tratar algún riesgo, estas medidas pueden ser administrativas (políticas, procedimientos, guías, etc.), físicas (sistema de acceso biométrico, personal de seguridad, torniquetes, etc.) y tecnológicas (antivirus, políticas del dominio corporativo, etc.)",
+        "Proceso para mejorar la calidad",
+        "Medida para reducir costos",
+        "Evaluación de riesgos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En la norma ISO/IEC 20000-1, ¿cuántos procesos se cuestionan?",
+        "answers": [
+        "13 Procesos",
+        "10 Procesos",
+        "15 Procesos",
+        "12 Procesos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿En qué se basa principalmente la auditoría de certificación ISO/IEC 20000?",
+        "answers": [
+        "Descripción de los procesos",
+        "Evaluación de recursos",
+        "Análisis de resultados",
+        "Revisión de documentación"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es seguridad informática?",
+        "answers": [
+        "Protección de la infraestructura de las tecnologías de la información y comunicación que apoyan a la Organización",
+        "Implementación de firewalls y antivirus",
+        "Control de accesos a los sistemas",
+        "Monitoreo de redes y sistemas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué es el cliente?",
+        "answers": [
+        "Organización o parte de una organización que recibe un servicio",
+        "Persona que utiliza un producto",
+        "Proveedor de servicios",
+        "Usuario final de un sistema"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un proveedor?",
+        "answers": [
+        "Agente externo que provee servicios definidos a través de un contrato para contribuir al diseño, transición, la entrega y la mejora de un servicio o proceso",
+        "Persona que utiliza los servicios",
+        "Empresa que fabrica productos",
+        "Entidad que compra servicios"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO 20000-1, ¿quién es un usuario interno de servicios de TI?",
+        "answers": [
+        "Personas que utilizan los servicios de TI día a día",
+        "Empleados de otras empresas",
+        "Clientes que compran productos de TI",
+        "Proveedores externos de servicios de TI"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué es la alta dirección?",
+        "answers": [
+        "Persona o grupo de personas que dirigen y controlan el proveedor de servicios al más alto nivel",
+        "Gerentes de departamentos",
+        "Supervisores de equipos",
+        "Empleados con alta responsabilidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo a ISO 20000, ¿qué es un servicio de TI?",
+        "answers": [
+        "Combinación de tecnologías de la información, procesos y personas que buscan responder a las necesidades de un usuario",
+        "Software y hardware utilizados en una empresa",
+        "Red de computadoras y servidores",
+        "Plataforma de servicios en la nube"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son las fases del ciclo de vida del servicio?",
+        "answers": [
+        "Planificación, diseño, transición, entrega y mejora del servicio",
+        "Análisis, implementación, mantenimiento, revisión y actualización",
+        "Desarrollo, prueba, implementación, monitoreo y optimización",
+        "Evaluación, diseño, despliegue, operación y soporte"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué es la gestión de servicios de TI?",
+        "answers": [
+        "Conjunto de capacidades y procesos para dirigir y controlar las actividades del proveedor de servicios de TI y recursos para el diseño, transición de entrega y mejora de los servicios para cumplir con los requisitos del cliente",
+        "Proceso de instalación y mantenimiento de sistemas de TI",
+        "Monitoreo y control de redes y servidores",
+        "Implementación de políticas de seguridad informática"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es catálogo de servicios?",
+        "answers": [
+        "Información documentada acerca de servicios que una organización proporciona a sus clientes",
+        "Lista de productos disponibles para la venta",
+        "Resumen de las políticas de la empresa",
+        "Manual de procedimientos internos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué grupo de procesos es el encargado de asegurar que se cuente con los recursos, humanos, financieros y tecnológicos para la prestación del servicio?",
+        "answers": [
+        "Oferta y demanda",
+        "Gestión de recursos",
+        "Planificación estratégica",
+        "Administración de proyectos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué significa incidente?",
+        "answers": [
+        "Interrupción no planificada de un servicio de TI o la reducción en la calidad de un servicio de TI",
+        "Fallo en el hardware",
+        "Problema de software",
+        "Reinicio del sistema"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según ISO/IEC 20000, ¿qué es un error conocido?",
+        "answers": [
+        "Problema que tiene una causa raíz identificada o un método de reducir o eliminar su impacto en un servicio",
+        "Falla temporal en el sistema",
+        "Problema recurrente",
+        "Error de usuario"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué es problema?",
+        "answers": [
+        "Causa de uno o más incidentes potenciales o actuales",
+        "Falla en el sistema",
+        "Error de configuración",
+        "Desviación en el proceso"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Respecto a la norma ISO/IEC 20000-1, ¿qué es la línea base de configuración?",
+        "answers": [
+        "Información de configuración designada formalmente en un momento específico durante la vida de un servicio o servicio del componente",
+        "Manual de configuración del sistema",
+        "Documento de políticas de TI",
+        "Lista de configuraciones aprobadas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Objeto de configuración según la norma 20000-1:",
+        "answers": [
+        "Elemento que requiere ser controlado para entregar un servicio",
+        "Dispositivo de red",
+        "Software de gestión",
+        "Documento de configuración"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Respecto a la norma ISO-IEC 20000-1, ¿qué es la continuidad de servicio?",
+        "answers": [
+        "Capacidad para entregar un servicio sin interrupción o con la disponibilidad que fue acordada. Capacidad para gestionar los riesgos y eventos que podrían afectar gravemente a un servicio con el fin de continuar la prestación de servicios a niveles acordados",
+        "Plan de respaldo de datos",
+        "Redundancia de sistemas",
+        "Monitoreo de servicios"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el grupo de procesos que se encargan de gestionar la restauración del servicio para cumplir el nivel de servicio acordado?",
+        "answers": [
+        "Resolución y cumplimiento (en el apartado gestión de incidentes)",
+        "Planificación y diseño",
+        "Administración de cambios",
+        "Control de calidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo a la norma ISO 20000, ¿qué es la gestión de la capacidad?",
+        "answers": [
+        "Asegurar que las áreas proveedoras de servicios de TI tengan en todo momento la capacidad suficiente para cubrir la demanda acordada actual y futura de las necesidades del negocio",
+        "Evaluar la eficacia de los servicios de TI",
+        "Planificar la infraestructura de TI",
+        "Controlar los costos de TI"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo a la norma ISO 20000, ¿qué es un acuerdo de nivel del servicio?",
+        "answers": [
+        "Es un acuerdo entre el proveedor de servicios de TI y el usuario",
+        "Contrato de servicios",
+        "Acuerdo de calidad",
+        "Documento de políticas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según ISO 20000-1, ¿a qué se refiere disponibilidad?",
+        "answers": [
+        "Capacidad de un servicio o el servicio de componentes para realizar su función requerida en un instante o por acuerdo de un tiempo determinado",
+        "Tasa de respuesta del sistema",
+        "Tiempo de actividad del servicio",
+        "Capacidad de recuperación de fallos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son las tareas que debe realizar el administrador del sistema?",
+        "answers": [
+        "Gestionar cuentas de acceso, configuraciones y bitácoras",
+        "Monitorear el rendimiento del sistema",
+        "Desarrollar software",
+        "Realizar copias de seguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los cambios en la transición de la norma ISO 20000-1:2011 a norma ISO 20000-1:2018?",
+        "answers": [
+        "Alineación de la estructura estándar de ISO, las auditorías internas se pueden hacer por entes externos, uso del ciclo PDCA como referencia del sistema de mejora, cambios en la forma en cómo se hacen las definiciones y términos, mejor distribución de requisitos y procesos, coincide con las principales tendencias en la administración de servicios, mejor gestión de proveedores externos, mayor flexibilidad para el cumplimiento de requisitos, simplificación de la información documentada, los reportes se elaboran por proceso",
+        "Implementación de nuevas tecnologías",
+        "Revisión de políticas internas",
+        "Cambio en los objetivos de calidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo contribuyo la ISO 20000-1:2018 a mantener el conocimiento de la organización?",
+        "answers": [
+        "Contando con procedimientos que lo preservan y alimentando todos los medios de almacenamiento y disposición del conocimiento de Telcel",
+        "Realizando capacitaciones periódicas",
+        "Documentando todas las actividades",
+        "Monitoreando el rendimiento de los empleados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto de la seguridad laboral, ¿qué significa SGSST?",
+        "answers": [
+        "Sistema de Gestión de la Seguridad y Salud en el Trabajo",
+        "Sistema de Gestión de Servicios Tecnológicos",
+        "Sistema General de Salud y Trabajo",
+        "Sistema de Garantía de la Seguridad y Salud"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Respecto a las normas certificadas en el SGI de Telcel, ¿cuál fue la última en integrarse?",
+        "answers": [
+        "ISO 45001-2018",
+        "ISO 9001-2015",
+        "ISO 14001-2015",
+        "ISO 27001-2013"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El enfoque de una norma específica es preservar la seguridad y salud en el trabajo al interior de las organizaciones. ¿Cuál es esta norma?",
+        "answers": [
+        "ISO 45001-2018",
+        "ISO 9001-2015",
+        "ISO 14001-2015",
+        "ISO 27001-2013"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el propósito del Sistema de Gestión de Seguridad y Salud en el Trabajo (SGSST)?",
+        "answers": [
+        "Proporcionar un marco de referencia para gestionar los riesgos y oportunidades para la seguridad y salud en el trabajo (SST)",
+        "Implementar políticas de calidad",
+        "Mejorar la eficiencia operativa",
+        "Reducir costos laborales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Desde qué año cuenta Telcel con la certificación en la norma ISO 45001?",
+        "answers": [
+        "2021",
+        "2019",
+        "2020",
+        "2018"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el marco de la norma ISO 45001, ¿qué requisito fundamental se debe cumplir?",
+        "answers": [
+        "Cumplir con el proceso de consulta y participación",
+        "Implementar un sistema de gestión de calidad",
+        "Garantizar la satisfacción del cliente",
+        "Realizar auditorías internas mensuales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes son los responsables del desarrollo, planificación, evaluación del desempeño y acciones de mejora para la seguridad y salud en el trabajo?",
+        "answers": [
+        "Comité líder especialista de la SST",
+        "Equipo de calidad",
+        "Gerencia de recursos humanos",
+        "Supervisores de áreas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto de la ISO 45001, la organización debe establecer, implementar, mantener y mejorar continuamente un sistema. ¿A qué sistema se refiere?",
+        "answers": [
+        "Sistema de gestión de la SST (seguridad y salud en el trabajo)",
+        "Sistema de gestión de calidad",
+        "Sistema de gestión ambiental",
+        "Sistema de gestión de seguridad de la información"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto de la seguridad y salud en el trabajo, ¿dónde puedes consultar quiénes son los representantes de los trabajadores?",
+        "answers": [
+        "Portal de Calidad",
+        "Manual de Recursos Humanos",
+        "Política de la Empresa",
+        "Red de Procesos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Describe las intenciones y la dirección de Telcel para prevenir lesiones y deterioro de la salud relacionados con el trabajo a los trabajadores, y proporcionar lugares de trabajo seguros y saludables.",
+        "answers": [
+        "Política de la SST",
+        "Manual de Calidad",
+        "Procedimiento de Seguridad",
+        "Plan de Salud"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el marco de la SST, ¿cuál es el código de la política de la SST?",
+        "answers": [
+        "PL-00.00.00.00-00-039",
+        "PL-00.00.00.00-00-001",
+        "PL-00.00.00.00-00-023",
+        "PL-00.00.00.00-00-012"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el alcance de la SST en Telcel?",
+        "answers": [
+        "Aplica a todos los trabajadores internos, externos, así como a los visitantes y clientes que se encuentren en los centros de trabajo, cumpliendo los requisitos legales y de los trabajadores dentro de los procesos de prestación de servicios de telecomunicaciones de Radiomovil DIPSA",
+        "Solo aplica a los empleados internos",
+        "Aplica únicamente a los proveedores de servicios",
+        "Se limita a los centros de trabajo en la Ciudad de México"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto de la SST, ¿cuáles son los dos tipos de cambio que impactan en la seguridad y salud en el trabajo?",
+        "answers": [
+        "Personal y condiciones de trabajo, instalaciones y equipo",
+        "Organizacional y ambiental",
+        "Financiero y tecnológico",
+        "Cultural y estructural"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los compromisos de la empresa con la seguridad y salud en el trabajo?",
+        "answers": [
+        "Ofrecer un lugar de trabajo seguro y saludable, prevenir accidentes y lesiones, prevenir el deterioro de la salud",
+        "Reducir costos operativos",
+        "Mejorar la eficiencia laboral",
+        "Implementar tecnologías innovadoras"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Cinco de las principales causas del deterioro de la salud en México están relacionadas con un factor específico. ¿Cuál es este factor?",
+        "answers": [
+        "La dieta",
+        "La falta de ejercicio",
+        "El estrés laboral",
+        "La contaminación"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el marco de la política de SST, ¿cuál es una afirmación respecto a las medidas de seguridad y salud?",
+        "answers": [
+        "Vigilar que todos los empleados y contratistas cumplan con las medidas de seguridad y salud. En caso de ser necesario, cuestionar y suspender cualquier acto inseguro que observen sin temor a ser sancionados",
+        "Garantizar la satisfacción del cliente a toda costa",
+        "Realizar auditorías internas mensuales",
+        "Implementar un sistema de gestión de calidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes deben respetar las normas de seguridad personal de la empresa?",
+        "answers": [
+        "Todos los colaboradores, representantes, proveedores, distribuidores, contratistas y demás socios comerciales, ya que la seguridad de terceros está en riesgo",
+        "Solo los empleados internos",
+        "Únicamente los supervisores",
+        "Solo los proveedores externos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto de protección civil, ¿qué tipo de agentes perturbadores son sismos, incendios y explosiones?",
+        "answers": [
+        "Programa Interno de protección civil",
+        "Plan de emergencia",
+        "Procedimiento de evacuación",
+        "Protocolo de seguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En cuanto a la norma ISO 45001, ¿con qué se compromete la alta dirección?",
+        "answers": [
+        "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
+        "Implementar políticas de calidad",
+        "Aumentar la productividad",
+        "Reducir costos laborales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo demuestra la alta Dirección su liderazgo y compromiso en el marco de la ISO 45001?",
+        "answers": [
+        "Asumiendo la total responsabilidad y rendición de cuentas para la prevención de las lesiones y el deterioro de la salud relacionada con el trabajo, así como la provisión de actividades y lugares de trabajo seguros y saludables",
+        "Implementando un sistema de gestión de calidad",
+        "Realizando auditorías internas mensuales",
+        "Garantizando la satisfacción del cliente a toda costa"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo con la presentación de ISO 45001, ¿qué se entiende por seguridad?",
+        "answers": [
+        "La ausencia de riesgo",
+        "El cumplimiento de normas",
+        "La implementación de medidas preventivas",
+        "El uso de equipos de protección"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué medidas ayudan a minimizar la ocurrencia del riesgo en el contexto de la ISO 45001?",
+        "answers": [
+        "Capacitaciones, auditorías internas o externas, equipo de protección personal",
+        "Mejoras tecnológicas",
+        "Reducción de costos",
+        "Revisión de políticas internas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo con la presentación de ISO 45001, ¿qué se entiende por salud?",
+        "answers": [
+        "El completo bienestar de los aspectos físico, mental y social",
+        "La ausencia de enfermedades",
+        "El buen estado físico",
+        "La estabilidad emocional"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es deterioro de la salud?",
+        "answers": [
+        "Daño que se presenta en la condición física, mental o cognitiva de una persona de forma progresiva",
+        "Lesión física inmediata",
+        "Discapacidad permanente",
+        "Afección temporal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es lesión en el marco de la ISO 45001?",
+        "answers": [
+        "Daño que se presenta de forma inmediata en la condición física, mental o cognitiva de una persona",
+        "Deterioro progresivo de la salud",
+        "Condición médica crónica",
+        "Afección temporal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué son adicciones en el contexto de la ISO 45001?",
+        "answers": [
+        "Conductas peligrosas que afectan la salud física, mental y social. Se desarrollan por el consumo de sustancias o al realizar de manera desmedida actividades placenteras",
+        "Hábitos saludables",
+        "Comportamientos laborales eficientes",
+        "Tendencias de trabajo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿En qué beneficia reducir riesgos en tu lugar de trabajo?",
+        "answers": [
+        "Prevenir accidentes y enfermedades de trabajo para preservar la salud e integridad física",
+        "Aumentar la productividad",
+        "Reducir costos operativos",
+        "Mejorar la satisfacción del cliente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el marco de la norma ISO 45001, ¿qué se entiende por riesgo?",
+        "answers": [
+        "La probabilidad de encontrarse en peligro",
+        "La exposición a factores dañinos",
+        "El incumplimiento de normas",
+        "La falta de medidas preventivas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de riesgo se presenta en el centro de trabajo o en el trayecto según la ISO 45001?",
+        "answers": [
+        "Riesgo de trabajo",
+        "Riesgo ambiental",
+        "Riesgo financiero",
+        "Riesgo tecnológico"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto de protección civil, ¿qué tipo de agentes perturbadores son sismos, incendios y explosiones?",
+        "answers": [
+        "Programa Interno de protección civil",
+        "Plan de emergencia",
+        "Procedimiento de evacuación",
+        "Protocolo de seguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En cuanto a la norma ISO 45001, ¿con qué se compromete la alta dirección?",
+        "answers": [
+        "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
+        "Implementar políticas de calidad",
+        "Aumentar la productividad",
+        "Reducir costos laborales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo demuestra la alta Dirección su liderazgo y compromiso en el marco de la ISO 45001?",
+        "answers": [
+        "Asumiendo la total responsabilidad y rendición de cuentas para la prevención de las lesiones y el deterioro de la salud relacionada con el trabajo, así como la provisión de actividades y lugares de trabajo seguros y saludables",
+        "Implementando un sistema de gestión de calidad",
+        "Realizando auditorías internas mensuales",
+        "Garantizando la satisfacción del cliente a toda costa"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo con la presentación de ISO 45001, ¿qué se entiende por seguridad?",
+        "answers": [
+        "La ausencia de riesgo",
+        "El cumplimiento de normas",
+        "La implementación de medidas preventivas",
+        "El uso de equipos de protección"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué medidas ayudan a minimizar la ocurrencia del riesgo en el contexto de la ISO 45001?",
+        "answers": [
+        "Capacitaciones, auditorías internas o externas, equipo de protección personal",
+        "Mejoras tecnológicas",
+        "Reducción de costos",
+        "Revisión de políticas internas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo con la presentación de ISO 45001, ¿qué se entiende por salud?",
+        "answers": [
+        "El completo bienestar de los aspectos físico, mental y social",
+        "La ausencia de enfermedades",
+        "El buen estado físico",
+        "La estabilidad emocional"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es deterioro de la salud?",
+        "answers": [
+        "Daño que se presenta en la condición física, mental o cognitiva de una persona de forma progresiva",
+        "Lesión física inmediata",
+        "Discapacidad permanente",
+        "Afección temporal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es lesión en el marco de la ISO 45001?",
+        "answers": [
+        "Daño que se presenta de forma inmediata en la condición física, mental o cognitiva de una persona",
+        "Deterioro progresivo de la salud",
+        "Condición médica crónica",
+        "Afección temporal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué son adicciones en el contexto de la ISO 45001?",
+        "answers": [
+        "Conductas peligrosas que afectan la salud física, mental y social. Se desarrollan por el consumo de sustancias o al realizar de manera desmedida actividades placenteras",
+        "Hábitos saludables",
+        "Comportamientos laborales eficientes",
+        "Tendencias de trabajo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿En qué beneficia reducir riesgos en tu lugar de trabajo?",
+        "answers": [
+        "Prevenir accidentes y enfermedades de trabajo para preservar la salud e integridad física",
+        "Aumentar la productividad",
+        "Reducir costos operativos",
+        "Mejorar la satisfacción del cliente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el marco de la norma ISO 45001, ¿qué se entiende por riesgo?",
+        "answers": [
+        "La probabilidad de encontrarse en peligro",
+        "La exposición a factores dañinos",
+        "El incumplimiento de normas",
+        "La falta de medidas preventivas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de riesgo se presenta en el centro de trabajo o en el trayecto según la ISO 45001?",
+        "answers": [
+        "Riesgo de trabajo",
+        "Riesgo ambiental",
+        "Riesgo financiero",
+        "Riesgo tecnológico"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Es el documento en el que se describen los principales tipos de emergencia que podrían presentarse en los centros de trabajo.",
+        "answers": [
+        "Plan de preparación y respuesta ante emergencias Telcel",
+        "Manual de seguridad",
+        "Política de emergencias",
+        "Protocolo de actuación"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles fueron los principales accidentes a nivel nacional en 2022?",
+        "answers": [
+        "1. Caída en el mismo nivel por desplazamiento, tropezón o traspié; 2. Caída en escalera; 3. Golpe por objeto",
+        "1. Lesión por maquinaria; 2. Quemaduras; 3. Inhalación de sustancias tóxicas",
+        "1. Golpe por objeto; 2. Caída en escalera; 3. Lesión por esfuerzo repetitivo",
+        "1. Inhalación de sustancias tóxicas; 2. Golpe por objeto; 3. Lesión por maquinaria"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles fueron los principales accidentes a nivel nacional en 2023?",
+        "answers": [
+        "1. Caída en el mismo nivel por desplazamiento, tropezón o traspié; 2. Ocupante de automóvil lesionado por colisión con otro automóvil; 3. Caída en o desde escaleras y escalones",
+        "1. Lesión por maquinaria; 2. Quemaduras; 3. Inhalación de sustancias tóxicas",
+        "1. Golpe por objeto; 2. Caída en escalera; 3. Lesión por esfuerzo repetitivo",
+        "1. Inhalación de sustancias tóxicas; 2. Golpe por objeto; 3. Lesión por maquinaria"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Conocer y atender lo descrito en los documentos relacionados al proceso de gestión de cambios con impacto en el desempeño de la SST es responsabilidad de:",
+        "answers": [
+        "Todas las áreas de Telcel que implementen cambios",
+        "El equipo de seguridad",
+        "El supervisor de área",
+        "El gerente de recursos humanos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Son aquellos sucesos que surgen del trabajo o en el transcurso del trabajo, en el que se han producido lesiones.",
+        "answers": [
+        "Incidentes laborales",
+        "Accidentes de tránsito",
+        "Emergencias sanitarias",
+        "Desastres naturales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Es uno de los servicios preventivos de seguridad y salud que Telcel ha implementado en todos los centros de trabajo.",
+        "answers": [
+        "Comité interno de protección civil",
+        "Equipo de seguridad",
+        "Sistema de vigilancia",
+        "Plan de evacuación"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Son los controles a través de los cuales la empresa proporciona condiciones seguras y saludables.",
+        "answers": [
+        "Programas de capacitación en materia de seguridad y salud, establecimiento de procesos y políticas",
+        "Revisión de equipo de protección personal",
+        "Monitoreo del rendimiento de los empleados",
+        "Implementación de nuevas tecnologías"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué integra un programa interno de protección civil?",
+        "answers": [
+        "Se integran los diferentes planes de respuesta ante emergencias",
+        "Se establecen políticas de seguridad",
+        "Se monitorea el cumplimiento de normas",
+        "Se proporcionan equipos de protección"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la finalidad del Plan de protección civil?",
+        "answers": [
+        "Saber cómo actuar en caso de emergencias",
+        "Garantizar la satisfacción del cliente",
+        "Reducir costos operativos",
+        "Mejorar la eficiencia laboral"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el objetivo de las señales de seguridad?",
+        "answers": [
+        "Prevenir accidentes y ayudar a los trabajadores a realizar sus actividades con mayor seguridad",
+        "Indicar la ubicación de equipos",
+        "Proporcionar instrucciones de uso",
+        "Monitorear el rendimiento de los empleados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el contexto del SGSST, ¿cuál es el procedimiento de Consulta y Participación?",
+        "answers": [
+        "P-00.02.01.02.00-002",
+        "P-00.00.00.00.00-005",
+        "P-00.01.01.01.00-003",
+        "P-00.03.02.01.00-004"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Capacitaciones, auditorías internas o externas, equipo de protección personal son medidas que ayudan:",
+        "answers": [
+        "A minimizar la ocurrencia del riesgo",
+        "A mejorar la eficiencia operativa",
+        "A reducir costos",
+        "A incrementar la productividad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Un requisito fundamental que se debe cumplir en la norma ISO 45001 es:",
+        "answers": [
+        "Cumplir con el proceso de consulta y participación",
+        "Implementar un sistema de gestión de calidad",
+        "Garantizar la satisfacción del cliente",
+        "Realizar auditorías internas mensuales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el procedimiento donde se encuentran los lineamientos para la Valoración y tratamiento de riesgos del SGI?",
+        "answers": [
+        "P-00.00.00.00.00-005 Valoración y Tratamiento de Riesgos del SGI",
+        "P-00.01.01.01.00-003 Proceso de Gestión de Cambios",
+        "P-00.02.01.02.00-002 Procedimiento de Consulta y Participación",
+        "P-00.03.02.01.00-004 Procedimiento de Evaluación de Riesgos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Sabes qué es un riesgo?",
+        "answers": [
+        "Efecto de la incertidumbre sobre el logro de los objetivos; considerando las variables a controlar y las salidas de los procesos, el cumplimiento de los servicios, el cumplimiento de los atributos de seguridad, las leyes y regulaciones aplicables",
+        "Una situación de peligro",
+        "Una falla en el sistema",
+        "Una desviación del plan"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se deben registrar los riesgos?",
+        "answers": [
+        "Valoración y Tratamiento de Riesgos de Procesos, Valoración y Tratamiento de Riesgos de Seguridad de la Información, Valoración y Tratamiento de Riesgos de Servicios, Identificación de Peligros y Evaluación de Riesgos para la SST, El análisis de brechas de Datos Personales",
+        "Mediante auditorías internas",
+        "A través de un sistema de gestión",
+        "Con reportes mensuales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un Activo?",
+        "answers": [
+        "Todo lo que tiene valor para la organización: información, procesos, el personal, reputación, imagen",
+        "Una pieza de equipo",
+        "Un software de gestión",
+        "Un documento de políticas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es Vulnerabilidad?",
+        "answers": [
+        "Es una debilidad de un activo o control que puede ser explotado para que ocurra un evento con una consecuencia negativa",
+        "Una falla en el sistema",
+        "Un error de configuración",
+        "Un riesgo potencial"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es la Valoración de Riesgos?",
+        "answers": [
+        "Proceso general de identificación, análisis y evaluación de riesgos",
+        "Monitoreo del desempeño de los empleados",
+        "Revisión de equipo de protección personal",
+        "Implementación de nuevas tecnologías"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son las etapas que se llevan a cabo para la Valoración de Riesgos?",
+        "answers": [
+        "Identificación, análisis y evaluación",
+        "Monitoreo, mitigación y control",
+        "Evaluación, documentación y revisión",
+        "Planificación, implementación y seguimiento"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según el proceso de Gestión de Riesgos y oportunidades del SGI PR-00.00.00.00.00-003, ¿con qué inicia la gestión del riesgo?",
+        "answers": [
+        "Establecer el Contexto",
+        "Identificar los riesgos",
+        "Analizar los riesgos",
+        "Evaluar las opciones de tratamiento"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son las opciones para el tratamiento de un riesgo?",
+        "answers": [
+        "Mitigar, evitar, transferir o compartir, aceptar",
+        "Monitorear, evaluar, documentar, aceptar",
+        "Planificar, implementar, revisar, controlar",
+        "Identificar, analizar, evaluar, mitigar"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes deben de tener conocimiento de la cantidad y nivel de los riesgos en el formato también conocido como “Mapa de Calor”?",
+        "answers": [
+        "Toda la organización",
+        "El equipo de gestión de riesgos",
+        "La alta dirección",
+        "Los supervisores de área"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Los agentes extintores, ¿cómo pueden estar?",
+        "answers": [
+        "Líquidos, sólidos, gases y vapores",
+        "Solo líquidos y sólidos",
+        "Solo gases y vapores",
+        "Solo sólidos y gases"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Igualdad, respeto e integridad de la persona son:",
+        "answers": [
+        "Principios básicos del CODIGO DE ETICA (PL-00.02.00.00.00-001)",
+        "Valores fundamentales de la empresa",
+        "Normas de conducta",
+        "Requisitos legales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Para qué sirve el código de ética?",
+        "answers": [
+        "Guía la toma de decisiones proporcionando los principios de conducta",
+        "Establece reglas de trabajo",
+        "Define los objetivos de la empresa",
+        "Regula las relaciones laborales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Por qué tenemos un código de ética?",
+        "answers": [
+        "Actuar conforme a los valores de la empresa es esencial para la continuidad de nuestras operaciones y como parte de una cultura de integridad",
+        "Para cumplir con las normativas legales",
+        "Para mejorar la eficiencia operativa",
+        "Para reducir los conflictos laborales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Temas generales que se encuentran en el código de ética:",
+        "answers": [
+        "Valores, principios básicos de conducta, conflictos de interés, normas o reglamentos para el buen trato con proveedores",
+        "Políticas de recursos humanos, procedimientos operativos, normativas internas",
+        "Reglas de seguridad, gestión financiera, objetivos corporativos",
+        "Estrategias de marketing, planes de expansión, evaluación de desempeño"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Para quién aplica el código de ética?",
+        "answers": [
+        "Empleados, Directivos y Consejeros",
+        "Clientes y proveedores",
+        "Inversionistas y accionistas",
+        "Solo empleados de alto rango"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Por qué es necesario que proveedores, distribuidores y socios acepten el código de ética?",
+        "answers": [
+        "Para asumir y hacer suyos los principios y valores de Radiomovil DIPSA",
+        "Para cumplir con las normativas legales",
+        "Para garantizar la calidad de los productos",
+        "Para mejorar las relaciones comerciales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quién es responsable de analizar y evaluar toda denuncia o reporte de infracción al código de ética?",
+        "answers": [
+        "La dirección de RH y la dirección del área involucrada",
+        "El supervisor de área",
+        "El comité de ética",
+        "El gerente general"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es un conflicto de interés?",
+        "answers": [
+        "Cuando el cumplimiento de las responsabilidades del empleado se vean influidas o afectadas al tener interés en algún negocio, propiedad u obligaciones con alguna persona",
+        "Una discrepancia entre empleados",
+        "Un desacuerdo con un proveedor",
+        "Un problema legal interno"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De acuerdo con el código de ética, un ejemplo de un adecuado trato al cliente es:",
+        "answers": [
+        "Resolver sus preguntas y problemas de orden general, administrativo y técnico con un personal altamente capacitado y orientado al servicio al cliente",
+        "Ofrecer descuentos y promociones",
+        "Garantizar la satisfacción del cliente",
+        "Mantener una comunicación constante"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El siguiente enunciado “como parte de una comunidad empresarial, todos debemos velar por la imagen de nuestra compañía, que se puede ver seriamente afectada si no cumplimos con estas normas básicas de ética y conducta” hace referencia a:",
+        "answers": [
+        "Código de ética",
+        "Política de calidad",
+        "Normativa interna",
+        "Manual del empleado"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se define la imagen del personal de Telcel?",
+        "answers": [
+        "Se define como la forma en que nos perciben los demás, ya sean clientes, compañeros o externos, por medio de nuestra apariencia, de cómo hablamos, de nuestra postura, gestos, ademanes y en general de nuestro comportamiento",
+        "La manera de vestirse de los empleados",
+        "La presentación de los informes",
+        "La decoración de las oficinas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿A quién aplican las políticas de 'Imagen del personal de Telcel'?",
+        "answers": [
+        "Aplican a todo el personal de la empresa",
+        "Solo a los empleados de alto rango",
+        "Únicamente a los gerentes",
+        "Solo a los representantes de ventas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿A qué se hace acreedor un empleado que falta a la política de imagen de Radiomovil DIPSA (PL-00.02.00.00.00-002)?",
+        "answers": [
+        "A las sanciones que determine el reglamento interior de trabajo o las medidas que la empresa determine",
+        "Una advertencia verbal",
+        "Una suspensión temporal",
+        "Un despido inmediato"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son algunos ejemplos de buena imagen de personal?",
+        "answers": [
+        "La puntualidad, el cumplimiento de normas y la cordialidad, el uso de la credencial de identificación de la empresa",
+        "La apariencia física y la forma de vestir",
+        "La participación en eventos de la empresa",
+        "El uso de dispositivos electrónicos en el lugar de trabajo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál de las siguientes opciones forma parte de la imagen del lugar de trabajo?",
+        "answers": [
+        "Abstenerse de tener o consumir alimentos o bebidas en el lugar de trabajo",
+        "Decorar el espacio de trabajo con objetos personales",
+        "Usar uniforme corporativo",
+        "Mantener el área de trabajo limpia y ordenada"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El perfil de puesto basado en competencias laborales describe la información referente a:",
+        "answers": [
+        "Requisitos mínimos que debe cubrir el ocupante del puesto, competencias generales, sistemas y/o aplicaciones que se utilizan en el puesto",
+        "Responsabilidades diarias del puesto",
+        "Proceso de selección y contratación",
+        "Metas y objetivos del empleado"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la medida de igualdad, respeto e integridad?",
+        "answers": [
+        "Proporcionar iguales oportunidades de empleo, a todas las personas calificadas sin ningún tipo de discriminación",
+        "Ofrecer capacitaciones periódicas",
+        "Implementar políticas de seguridad",
+        "Garantizar la satisfacción del cliente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la definición de honestidad dentro de los valores de Telcel?",
+        "answers": [
+        "Al ser congruente en nuestro pensar y actuar, generamos confianza entre nosotros con nuestros clientes, inversionistas, proveedores y terceros",
+        "Cumplir con las normativas legales",
+        "Actuar con transparencia en todas las operaciones",
+        "Mantener una comunicación abierta y honesta"
+        ],
+        "correct": 0
+    }     
+
 ];
