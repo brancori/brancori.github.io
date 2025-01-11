@@ -1,5 +1,4 @@
 export const questions = [
-
     {
         "question": "Requisito para ser cliente corporativo:",
         "answers": [
@@ -84,12 +83,12 @@ export const questions = [
         "question": "¿Qué es Región con responsabilidad de negociación?",
         "answers": [
             "Región donde se realizan las negociaciones y el cierre de la venta, asociada con las oficinas corporativas del cliente. Es responsable del seguimiento a nivel nacional.",
-            "Región que exclusivamente gestiona cuentas internacionales y clientes premium.",
-            "Región encargada de centralizar las gestiones de pago y cobro de clientes corporativos.",
-            "Región que se dedica únicamente al soporte técnico de líneas regionales."
+            "Región donde se llevan a cabo negociaciones interregionales y se centralizan acuerdos para clientes con líneas en múltiples regiones.",
+            "Región enfocada exclusivamente en la gestión administrativa de contratos y facturación de clientes corporativos.",
+            "Región responsable de la asignación de tarifas y promociones especiales para clientes premium a nivel regional."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué son líneas regionales?",
         "answers": [
@@ -1221,6 +1220,56 @@ export const questions = [
         "correct": 0
     },
     {
+        "question": "¿Cuánto cuesta la llamada al buzón de voz sin límite de tiempo desde cualquier parte del país?",
+        "answers": ["$1.19", "$1.50", "$0.99", "$2.00"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los APN´s que aplican para las empresas?",
+        "answers": ["Dedicados y prediseñados", "Genéricos y personalizados", "Internacionales y locales", "Estándar y avanzado"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué tipo de SMS no están incluidos en los servicios sin límite?",
+        "answers": ["SMS Premium y marcaciones especiales", "SMS internacionales y grupales", "SMS a líneas fijas y grupales", "SMS multimedia y estándar"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se notifica al cliente sobre los beneficios de la facturación electrónica?",
+        "answers": ["A través de un correo de bienvenida", "Mediante un SMS", "Por llamada automática", "Con un mensaje en la factura"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué solución permite convertir tu celular en terminal punto de venta que acepta pagos con tarjeta?",
+        "answers": ["Billpocket", "Aspel NOI", "SmartCar", "Control Móvil Telcel"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué esquema permite la activación de dispositivos IoT?",
+        "answers": ["Prepago y Postpago", "Solo Prepago", "Solo Postpago", "Prepago, Postpago y Mixto"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué velocidad de navegación ofrecen los planes de Internet en tu casa?",
+        "answers": [
+            "5 y 10 Mbps en 4G, 50 y 100 Mbps en 5G",
+            "15 y 25 Mbps en 4G, 60 y 120 Mbps en 5G",
+            "10 y 20 Mbps en 4G, 40 y 80 Mbps en 5G",
+            "20 y 30 Mbps en 4G, 70 y 150 Mbps en 5G"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos días de garantía tiene un iPhone por cambio con costo?",
+        "answers": ["90 días", "30 días", "60 días", "120 días"],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuáles son los componentes de la solución Gestión de Fuerza en Campo powered by Lertek?",
+        "answers": ["Portal web, aplicación móvil, base de datos y módulo de reportes", "Aplicación móvil, servidor dedicado y soporte técnico", "Portal web, soporte técnico y herramienta de análisis", "Base de datos, aplicación web y sistema de mensajería"],
+        "correct": 0
+    },
+    {
         "question": "¿Qué funcionalidades ofrece la gestión de fuerza en campo powered by Lertek?",
         "answers": [
         "Gestionar el personal en campo mediante GPS, asignar tareas al personal en campo, realizar check in y check out, visualizar recorridos, enviar evidencia en tiempo real, creación de puntos de interés y geocercas personalizadas",
@@ -1773,7 +1822,7 @@ export const questions = [
     {
         "question": "¿Quién autoriza bonificación con monto mayor a $5,001.00?",
         "answers": [
-        "CALIDAD Y CULTURA CORPORATIVA",
+        "Jefe de área",
         "El Administrador de la cuenta",
         "El Cliente",
         "Soporte técnico"
@@ -2391,51 +2440,6 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Cuánto cuesta la llamada al buzón de voz sin límite de tiempo desde cualquier parte del país?",
-        "answers": ["$1.19", "$1.50", "$0.99", "$2.00"],
-        "correct": 0
-    },
-    {
-        "question": "¿Cuáles son los APN´s que aplican para las empresas?",
-        "answers": ["Dedicados y prediseñados", "Genéricos y personalizados", "Internacionales y locales", "Estándar y avanzado"],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué tipo de SMS no están incluidos en los servicios sin límite?",
-        "answers": ["SMS Premium y marcaciones especiales", "SMS internacionales y grupales", "SMS a líneas fijas y grupales", "SMS multimedia y estándar"],
-        "correct": 0
-    },
-    {
-        "question": "¿Cómo se notifica al cliente sobre los beneficios de la facturación electrónica?",
-        "answers": ["A través de un correo de bienvenida", "Mediante un SMS", "Por llamada automática", "Con un mensaje en la factura"],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué solución permite convertir tu celular en terminal punto de venta que acepta pagos con tarjeta?",
-        "answers": ["Billpocket", "Aspel NOI", "SmartCar", "Control Móvil Telcel"],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué velocidad de navegación ofrecen los planes de Internet en tu casa en tecnología 4G?",
-        "answers": ["5 y 10 Mbps", "15 y 20 Mbps", "40 y 50 Mbps", "70 y 100 Mbps"],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué esquema permite la activación de dispositivos IoT?",
-        "answers": ["Prepago y Postpago", "Solo Prepago", "Solo Postpago", "Prepago, Postpago y Mixto"],
-        "correct": 0
-    },
-    {
-        "question": "¿Cuántos días de garantía tiene un iPhone por cambio con costo?",
-        "answers": ["90 días", "30 días", "60 días", "120 días"],
-        "correct": 0
-    },
-    {
-        "question": "¿Cuáles son los componentes de la solución Gestión de Fuerza en Campo powered by Lertek?",
-        "answers": ["Portal web, aplicación móvil, base de datos y módulo de reportes", "Aplicación móvil, servidor dedicado y soporte técnico", "Portal web, soporte técnico y herramienta de análisis", "Base de datos, aplicación web y sistema de mensajería"],
-        "correct": 0
-    },
-    {
         "question": "¿Cuál es el objetivo de las acciones preventivas?",
         "answers": ["Cumplir objetivos o condiciones en riesgo de no alcanzarse", "Eliminar problemas reales existentes", "Autorizar auditorías internas", "Implementar políticas correctivas"],
         "correct": 0
@@ -2458,6 +2462,16 @@ export const questions = [
     {
         "question": "¿Qué son las competencias laborales?",
         "answers": ["La capacidad de desempeñar efectivamente una función de trabajo", "Certificaciones profesionales obtenidas en instituciones reconocidas", "Conocimientos académicos adquiridos durante la formación", "Capacidad de innovar dentro de un entorno laboral competitivo"],
+        "correct": 0
+    },
+    {
+        "question": "Es el procedimiento en donde se describen los requisitos y lineamientos para la calificación de auditores del sistema de gestión integrado:",
+        "answers": [
+        "Procedimiento de calificación de auditores del SGI",
+        "Manual de Calidad",
+        "Política de Calidad",
+        "Red de Procesos"
+        ],
         "correct": 0
     },
     {
@@ -2673,30 +2687,20 @@ export const questions = [
     {
         "question": "¿Cuál es un documento común del Sistema de Gestión Integrado (SGI)?",
         "answers": [
-            "Manual de calidad (MC-00.00.00.00.00-001)",
-            "Política de privacidad de datos",
-            "Informe anual de resultados",
-            "Procedimiento de auditorías internas"
+            "Manual de calidad (MC-00.00.00.00.00-001), Código de ética (PL-00.02.00.00.00-001), Imagen del Personal (PL-00.02.00.00.00-002)",
+            "Manual de procedimientos internos (MP-01.01.01.01.01-003), Política de seguridad (PL-00.01.00.00.00-004), Lineamientos corporativos (LC-02.02.00.00.00-005)",
+            "Política de privacidad de datos, Plan de mejora continua, Informe de gestión del SGI",
+            "Informe anual de resultados, Procedimiento de auditorías internas, Guía para evaluación de riesgos"
         ],
         "correct": 0
-    },
+    },    
     {
-        "question": "¿Qué norma se enfoca en la satisfacción del cliente a través de la mejora continua?",
+        "question": "¿Qué normas componen el Sistema de Gestión Integrado (SGI)?",
         "answers": [
-            "ISO 9001:2015",
-            "ISO/IEC 20000-1:2018",
-            "ISO/IEC 27001:2013",
-            "ISO 450001:2018"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué norma define los requerimientos para preservar la confidencialidad, integridad y disponibilidad de la información?",
-        "answers": [
-            "ISO/IEC 27001:2013",
-            "ISO 9001:2015",
-            "ISO 450001:2018",
-            "ISO/IEC 20000-1:2018"
+            "ISO 9001:2015 (enfoque a la satisfacción del cliente a través de la mejora continua), ISO/IEC 20000-1:2018 (fortalecimiento de los servicios de TI mediante la definición de procesos), ISO IEC 27001:2013 (preservar la confidencialidad, integridad y disponibilidad de la información), ISO 450001:2018 (Seguridad y salud en el trabajo)",
+            "ISO 14001:2015 (Gestión ambiental), ISO 50001:2018 (Gestión de la energía), ISO 31000:2018 (Gestión del riesgo)",
+            "ISO 22301:2019 (Gestión de continuidad del negocio), ISO 37001:2016 (Gestión contra sobornos), ISO 26000:2010 (Responsabilidad social)",
+            "ISO 13485:2016 (Gestión de calidad en dispositivos médicos), ISO/TS 16949:2009 (Calidad en la industria automotriz), ISO 19011:2018 (Auditorías de sistemas de gestión)"
         ],
         "correct": 0
     },
@@ -2907,6 +2911,16 @@ export const questions = [
             "Intangible",
             "Físico",
             "Digital"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es Vulnerabilidad?",
+        "answers": [
+        "Es una debilidad de un activo o control que puede ser explotado para que ocurra un evento con una consecuencia negativa",
+        "Una falla en el sistema",
+        "Un error de configuración",
+        "Un riesgo potencial"
         ],
         "correct": 0
     },
@@ -3167,26 +3181,6 @@ export const questions = [
         "Equipo de calidad",
         "Empleado responsable",
         "Proveedor de servicios"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué son las competencias laborales?",
-        "answers": [
-        "Es la capacidad de desempeñar efectivamente una función de trabajo, es decir, una habilidad demostrada para aplicar conocimientos y aptitudes",
-        "Habilidades para gestionar un equipo",
-        "Capacidades para reducir costos",
-        "Aptitudes para mejorar la tecnología"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "Es el procedimiento en donde se describen los requisitos y lineamientos para la calificación de auditores del sistema de gestión integrado:",
-        "answers": [
-        "Procedimiento de calificación de auditores del SGI",
-        "Manual de Calidad",
-        "Política de Calidad",
-        "Red de Procesos"
         ],
         "correct": 0
     },
@@ -3741,126 +3735,6 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "En el contexto de protección civil, ¿qué tipo de agentes perturbadores son sismos, incendios y explosiones?",
-        "answers": [
-        "Programa Interno de protección civil",
-        "Plan de emergencia",
-        "Procedimiento de evacuación",
-        "Protocolo de seguridad"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "En cuanto a la norma ISO 45001, ¿con qué se compromete la alta dirección?",
-        "answers": [
-        "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
-        "Implementar políticas de calidad",
-        "Aumentar la productividad",
-        "Reducir costos laborales"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Cómo demuestra la alta Dirección su liderazgo y compromiso en el marco de la ISO 45001?",
-        "answers": [
-        "Asumiendo la total responsabilidad y rendición de cuentas para la prevención de las lesiones y el deterioro de la salud relacionada con el trabajo, así como la provisión de actividades y lugares de trabajo seguros y saludables",
-        "Implementando un sistema de gestión de calidad",
-        "Realizando auditorías internas mensuales",
-        "Garantizando la satisfacción del cliente a toda costa"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "De acuerdo con la presentación de ISO 45001, ¿qué se entiende por seguridad?",
-        "answers": [
-        "La ausencia de riesgo",
-        "El cumplimiento de normas",
-        "La implementación de medidas preventivas",
-        "El uso de equipos de protección"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué medidas ayudan a minimizar la ocurrencia del riesgo en el contexto de la ISO 45001?",
-        "answers": [
-        "Capacitaciones, auditorías internas o externas, equipo de protección personal",
-        "Mejoras tecnológicas",
-        "Reducción de costos",
-        "Revisión de políticas internas"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "De acuerdo con la presentación de ISO 45001, ¿qué se entiende por salud?",
-        "answers": [
-        "El completo bienestar de los aspectos físico, mental y social",
-        "La ausencia de enfermedades",
-        "El buen estado físico",
-        "La estabilidad emocional"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué es deterioro de la salud?",
-        "answers": [
-        "Daño que se presenta en la condición física, mental o cognitiva de una persona de forma progresiva",
-        "Lesión física inmediata",
-        "Discapacidad permanente",
-        "Afección temporal"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué es lesión en el marco de la ISO 45001?",
-        "answers": [
-        "Daño que se presenta de forma inmediata en la condición física, mental o cognitiva de una persona",
-        "Deterioro progresivo de la salud",
-        "Condición médica crónica",
-        "Afección temporal"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué son adicciones en el contexto de la ISO 45001?",
-        "answers": [
-        "Conductas peligrosas que afectan la salud física, mental y social. Se desarrollan por el consumo de sustancias o al realizar de manera desmedida actividades placenteras",
-        "Hábitos saludables",
-        "Comportamientos laborales eficientes",
-        "Tendencias de trabajo"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿En qué beneficia reducir riesgos en tu lugar de trabajo?",
-        "answers": [
-        "Prevenir accidentes y enfermedades de trabajo para preservar la salud e integridad física",
-        "Aumentar la productividad",
-        "Reducir costos operativos",
-        "Mejorar la satisfacción del cliente"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "En el marco de la norma ISO 45001, ¿qué se entiende por riesgo?",
-        "answers": [
-        "La probabilidad de encontrarse en peligro",
-        "La exposición a factores dañinos",
-        "El incumplimiento de normas",
-        "La falta de medidas preventivas"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué tipo de riesgo se presenta en el centro de trabajo o en el trayecto según la ISO 45001?",
-        "answers": [
-        "Riesgo de trabajo",
-        "Riesgo ambiental",
-        "Riesgo financiero",
-        "Riesgo tecnológico"
-        ],
-        "correct": 0
-    },
-    {
         "question": "Es el documento en el que se describen los principales tipos de emergencia que podrían presentarse en los centros de trabajo.",
         "answers": [
         "Plan de preparación y respuesta ante emergencias Telcel",
@@ -4021,22 +3895,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Qué es un Activo?",
+        "question": "¿Qué es un Activo de acuerdo a la ISO 45000-1?",
         "answers": [
         "Todo lo que tiene valor para la organización: información, procesos, el personal, reputación, imagen",
         "Una pieza de equipo",
         "Un software de gestión",
         "Un documento de políticas"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué es Vulnerabilidad?",
-        "answers": [
-        "Es una debilidad de un activo o control que puede ser explotado para que ocurra un evento con una consecuencia negativa",
-        "Una falla en el sistema",
-        "Un error de configuración",
-        "Un riesgo potencial"
         ],
         "correct": 0
     },
@@ -4252,11 +4116,7 @@ export const questions = [
     },
     {
         "question": "El perfil de puesto basado en competencias laborales describe la información referente a:",
-        "answers": [
-        "Requisitos mínimos que debe cubrir el ocupante del puesto, competencias generales, sistemas y/o aplicaciones que se utilizan en el puesto",
-        "Responsabilidades diarias del puesto",
-        "Proceso de selección y contratación",
-        "Metas y objetivos del empleado"
+        "answers": ["Requisitos mínimos que debe cubrir el ocupante del puesto, competencias generales, sistemas y/o aplicaciones que se utilizan en el puesto","Responsabilidades diarias del puesto", "Proceso de selección y contratación", "Metas y objetivos del empleado"
         ],
         "correct": 0
     },
@@ -4279,7 +4139,5 @@ export const questions = [
         "Mantener una comunicación abierta y honesta"
         ],
         "correct": 0
-    }  
-    
-
+    }
 ];
