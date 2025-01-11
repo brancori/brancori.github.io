@@ -176,17 +176,32 @@ export const questions = [
     },
     {
         "question": "¿Qué sucede con las líneas empleado corporativo si la empresa relacionada con este servicio cancela las líneas con Telcel?",
-        "answers": ["Los empleados parientes o familiares relacionados pierden la tarifa empresarial, por lo que sus planes se cambiarán al plan homólogo de mercado masivo con tarifas de mercado masivo", "Las líneas se mantienen activas pero con una tarifa diferente", "Los empleados pueden optar por mantener la tarifa empresarial", "Las líneas se cancelan automáticamente"],
+        "answers": [
+            "Los empleados parientes o familiares relacionados pierden la tarifa empresarial, y sus planes se migran al plan homólogo de mercado masivo con tarifas de mercado masivo.",
+            "Las líneas se mantienen activas, pero pasan automáticamente a un plan con una tarifa estándar para clientes residenciales.",
+            "Los empleados tienen la opción de conservar la tarifa empresarial a través de un acuerdo directo con Telcel.",
+            "Las líneas quedan suspendidas temporalmente hasta que el empleado regularice el contrato con una tarifa individual."
+        ],
         "correct": 0
     },
     {
         "question": "Si una persona física acude a CAC a solicitar cesión de derechos para persona moral ¿Quién debe hacer el trámite?",
-        "answers": ["Las cesiones de derecho de un cliente masivo a un cliente corporativo y viceversa debe hacerlas el asesor corporativo de la región que atienda la cuenta al momento del trámite, ya que requieren cambio de ciclo y cuenta para el cual está facultado.", "El asesor de servicio al cliente", "El gerente regional", "El departamento de ventas"],
+        "answers": [
+            "Las cesiones de derecho de un cliente masivo a un cliente corporativo y viceversa deben ser realizadas por el asesor corporativo de la región que administra la cuenta, ya que requieren cambios de ciclo y cuenta específicos para los cuales está facultado.",
+            "El asesor de servicio al cliente, quien validará la solicitud y procederá con los ajustes en el sistema.",
+            "El gerente regional, quien autoriza y supervisa los cambios en las cuentas relacionadas.",
+            "El departamento de ventas, encargado de gestionar las solicitudes de este tipo de cambios entre clientes masivos y corporativos."
+        ],
         "correct": 0
-    },
+    },    
     {
-        "question": "¿Cuantas líneas con adeudo puede tener una empresa a la que se le requiere ceder una línea?",
-        "answers": ["No se tramita cesión de derechos si la persona física o moral que recibe la cuenta tiene alguna cuenta suspendida o cancelada por morosidad.", "Puede tener hasta 5 líneas con adeudo", "No puede tener más de 2 líneas con adeudo", "Puede tener cualquier cantidad de líneas con adeudo"],
+        "question": "¿Cuántas líneas con adeudo puede tener una empresa a la que se le requiere ceder una línea?",
+        "answers": [
+            "No se permite tramitar cesión de derechos si la persona física o moral que recibe la cuenta tiene cuentas suspendidas, canceladas por morosidad o adeudos pendientes.",
+            "Puede tener hasta un máximo de 5 líneas con adeudo, siempre que el monto total no supere un límite específico.",
+            "No se permite tener más de 2 líneas con adeudo activo al momento de la cesión, sin importar el estado del resto de las líneas.",
+            "Puede tener cualquier cantidad de líneas con adeudo, siempre que tenga una antigüedad mayor a 12 meses en sus contratos activos."
+        ],
         "correct": 0
     },
     {
@@ -216,7 +231,12 @@ export const questions = [
     },
     {
         "question": "Los servicios adicionales solo son bonificados por el asesor de servicio a clientes cuando:",
-        "answers": ["Han sido facturados en un periodo no mayor a 3 meses y no existe comentario en M2K pantalla COMNT de algún asesor donde indique que el cliente lo solicitó", "El cliente lo solicita al momento", "Han sido facturados en un periodo mayor a 3 meses", "Hay un comentario en M2K pantalla COMNT"],
+        "answers": [
+            "Han sido facturados en un periodo no mayor a 3 meses y no existe comentario en M2K pantalla COMNT de algún asesor donde indique que el cliente lo solicitó",
+            "El cliente presenta una reclamación dentro del periodo de facturación actual y no hay un registro previo en M2K pantalla COMNT",
+            "Han sido facturados en un periodo mayor a 3 meses, pero existe una excepción aprobada por el gerente regional",
+            "El cliente demuestra que nunca solicitó el servicio adicional y hay evidencia registrada en M2K pantalla COMNT que lo respalde"
+        ],
         "correct": 0
     },
     {
@@ -235,10 +255,15 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "Cuál es la función de VPN Cost Control?",
-        "answers": ["Control del límite de crédito en la línea, comunicación entre las líneas de la cuenta, control de consumos en la línea, abono de saldos, bloqueo de servicios, convivencia con SMS y servicios de datos", "Control de datos móviles", "Control de llamadas internacionales", "Bloqueo de mensajes de texto"],
+        "question": "¿Cuál es la función de VPN Cost Control?",
+        "answers": [
+            "Control del límite de crédito en la línea, comunicación entre las líneas de la cuenta, control de consumos en la línea, abono de saldos, bloqueo de servicios, convivencia con SMS y servicios de datos",
+            "Gestión de líneas con enfoque en evitar sobregiros, incluyendo alertas automáticas para consumos excesivos y bloqueo temporal de servicios",
+            "Administración centralizada de líneas corporativas con restricciones específicas para servicios no esenciales, optimizando costos de telecomunicaciones",
+            "Configuración de parámetros personalizados para el uso de servicios de datos y voz, incluyendo la integración de herramientas de reporte en tiempo real"
+        ],
         "correct": 0
-    },
+    },    
     {
         "question": "Marcación de Red Privada Telcel:",
         "answers": ["*876", "*123", "*456", "*789"],
@@ -4139,5 +4164,387 @@ export const questions = [
         "Mantener una comunicación abierta y honesta"
         ],
         "correct": 0
-    }
+    },
+    {
+        "question": "Ciclos de Facturación para clientes corporativos regionales R1 a 8:",
+        "answers": [
+            "31 y 32",
+            "30 y 33",
+            "31 y 34",
+            "32 y 35"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se identifica a un cliente precorporativo?",
+        "answers": [
+            "PC",
+            "PR",
+            "PP",
+            "CR"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En esta pantalla se indica el nivel de facturación (padre o hija) y se agregan cuentas hijas:",
+        "answers": [
+            "CONSL",
+            "FCTNL",
+            "ADMSL",
+            "CNTRL"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Consideraciones de Smartcar:",
+        "answers": [
+            "2GB para compartir hasta con 5 dispositivos, No incluye redes sociales, El Plan no permite consumos a granel",
+            "1GB para compartir hasta con 3 dispositivos, Incluye redes sociales, Consumos adicionales sujetos a tarifas estándar",
+            "5GB para compartir hasta con 5 dispositivos, No incluye redes sociales, Plan con consumos ilimitados",
+            "2GB para compartir hasta con 3 dispositivos, Incluye redes sociales, Plan con tarifas premium"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Es un servicio de geolocalización vehicular que permite conocer la ubicación del auto, en algunos modelos detener el motor y recibir notificaciones entre otras, a través de una Aplicación móvil con plazo forzoso de 24 meses y cuyo costo de instalación va incluido en el costo del equipo:",
+        "answers": [
+            "Zeek my auto",
+            "TrackCar 360",
+            "Locate Auto Pro",
+            "SmartCar Locator"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Costo de instalación de Zeek mi auto empresarial:",
+        "answers": [
+            "$699 con IVA",
+            "$799 con IVA",
+            "$599 con IVA",
+            "$899 con IVA"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos vehículos puedes visualizar con Zeek mi auto?",
+        "answers": [
+            "24 vehículos",
+            "12 vehículos",
+            "18 vehículos",
+            "30 vehículos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Características de Video a Bordo:",
+        "answers": [
+            "Visibilidad interior y exterior de la unidad, alerta por voz al conductor por malos hábitos de manejo, grabación en HD y modo nocturno, sistema DMS (manual) y ADAS (con inteligencia artificial) para reconocer peligros y riesgos y alertar",
+            "Visibilidad interior de la unidad, alertas automatizadas por voz, grabación en resolución estándar y sistema ADMS para reconocimiento básico de peligros",
+            "Visibilidad exterior de la unidad, grabación en HD sin alertas, sistema DMS para manejo manual y detección de riesgos mínimos",
+            "Visibilidad interior y exterior de la unidad, sistema básico de grabación, alerta por malos hábitos del conductor sin detección automática de riesgos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Diferencia entre alertas DMS y ADAS de video a bordo:",
+        "answers": [
+            "En DMS quien monitorea la unidad puede ver si el conductor incurre en un mal hábito o peligro e indicarle por voz (sueño, uso de celular). En ADAS la inteligencia artificial detecta riesgos o malos hábitos (salida de carril, peatón)",
+            "En DMS las alertas se generan automáticamente por inteligencia artificial, mientras que en ADAS son manuales",
+            "DMS se enfoca exclusivamente en el monitoreo del conductor, mientras que ADAS supervisa el entorno del vehículo",
+            "En DMS se generan alertas básicas sin intervención manual, mientras que ADAS utiliza inteligencia artificial para alertas avanzadas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Video a bordo es un servicio adicional o un plan?",
+        "answers": [
+            "Es un plan",
+            "Es un servicio adicional",
+            "Es un módulo complementario",
+            "Es una funcionalidad integrada"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos planes de video a bordo se comercializan?",
+        "answers": [
+            "4 ($699, $999, $1299 y $1599)",
+            "3 ($799, $1099 y $1499)",
+            "5 ($599, $799, $999, $1299 y $1599)",
+            "2 ($699 y $999)"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Aplicación para reserva de números:",
+        "answers": [
+            "SIANTEL",
+            "NUMRES",
+            "TELSAFE",
+            "RESVNUM"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Paquete que no aplica para planes de datos (con canal de voz abierto o cerrado), Redes Sociales ni Telcel Sin Frontera:",
+        "answers": [
+            "Planes de datos puros sin beneficios adicionales",
+            "Planes mixtos con tarifa corporativa",
+            "Paquetes ilimitados con roaming nacional",
+            "Planes básicos con redes sociales incluidas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Al realizar una retención de un cliente corporativo, ¿hasta qué nivel puede escalar?",
+        "answers": [
+            "Hasta DEUR",
+            "Hasta el Gerente de Ventas Regional",
+            "Hasta el Departamento de Atención al Cliente",
+            "Hasta el área de Cuentas Estratégicas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Cambio de equipo a los 12 meses y protección de equipo celular:",
+        "answers": [
+            "TELCEL UP",
+            "TELCEL PROTECT",
+            "EQUIP UP",
+            "TELCEL SWAP"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el tiempo límite para la contratación de TELCEL UP en una línea posterior a su renovación o activación?",
+        "answers": [
+            "30 días naturales",
+            "15 días naturales",
+            "45 días naturales",
+            "60 días naturales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El producto Telcel Sin Límite aplica para planes empresariales en modalidades:",
+        "answers": [
+            "VPN y VPNCC",
+            "Datos puros y sin fronteras",
+            "Ilimitado y compartido",
+            "Regional y corporativo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El producto Telcel Sin Límite puede usarse:",
+        "answers": [
+            "En planes empresariales para convertir los minutos y SMS nacionales incluidos en ilimitados",
+            "Para convertir datos internacionales en ilimitados",
+            "Para ampliar el límite de crédito en planes regionales",
+            "Para combinar los servicios nacionales y de roaming"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En el servicio Sin Límite, los MB de los planes de datos puros aplican para:",
+        "answers": [
+            "EU, México y Canadá",
+            "México y Latinoamérica",
+            "EU y México",
+            "Canadá y México"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El servicio Telcel Sin Frontera Empresarial no es compatible con:",
+        "answers": [
+            "Otros esquemas de tarifa preferente en EU o Canadá. Uso en cobertura marítima",
+            "Planes ilimitados con roaming internacional",
+            "Servicios de voz exclusivos para Latinoamérica",
+            "Planes de datos puros con redes sociales incluidas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El servicio Telcel Sin Frontera aplica para uso de datos en:",
+        "answers": [
+            "México, USA y Canadá",
+            "México, Europa y Canadá",
+            "USA, Canadá y Latinoamérica",
+            "México, Latinoamérica y Europa"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El producto Telcel Sin Límite puede usarse:",
+        "answers": [
+            "Para consumo de llamadas y SMS hacia todo destino nacional (México)",
+            "Para el uso exclusivo de datos nacionales",
+            "Para llamadas internacionales con tarifa fija",
+            "Para la combinación de datos y llamadas regionales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Menciona una de las consideraciones que se deben notificar a los clientes para asegurar el uso justo de los servicios incluidos en los planes Telcel Max Sin Límite Empresarial:",
+        "answers": [
+            "No debe usar la línea celular y los servicios incluidos para un fin distinto a la comunicación interpersonal",
+            "Debe evitar el uso de datos en redes sociales fuera de la región",
+            "No puede compartir datos entre dispositivos de diferentes usuarios",
+            "Debe respetar un límite máximo de consumo mensual en datos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo aplica el límite de crédito en planes de datos empresariales?",
+        "answers": [
+            "Solo aplica a los servicios incluidos en el plan",
+            "Aplica únicamente al consumo de datos internacionales",
+            "Se distribuye proporcionalmente entre las líneas de la cuenta",
+            "Se ajusta automáticamente según el historial de consumo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Al realizar un cambio de región en una línea con FINEQ activo, ¿qué tiene que hacer el titular para poder migrar la línea?",
+        "answers": [
+            "Tendrá que pagar el FINEQ activo en esa región, para ceder la línea a la nueva región sin adeudo",
+            "Solicitar un permiso especial del DEUR para completar el cambio",
+            "Esperar el término del contrato actual antes de realizar la migración",
+            "Completar el proceso en la región de origen y en la nueva región simultáneamente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Aplicación Claro Drive:",
+        "answers": [
+            "La manera más fácil, segura y confiable de guardar tus archivos y tenerlos disponibles en todo momento",
+            "Una herramienta avanzada para compartir documentos corporativos en tiempo real",
+            "Una aplicación para el almacenamiento exclusivo de datos empresariales",
+            "Un sistema de respaldo automático con seguridad encriptada"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos GB te ofrece el servicio de Claro Drive?",
+        "answers": [
+            "100 GB",
+            "50 GB",
+            "150 GB",
+            "200 GB"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos dispositivos distintos se pueden vincular a una cuenta de Claro Video para disfrutar el contenido?",
+        "answers": [
+            "5",
+            "3",
+            "7",
+            "10"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Desde dónde podemos cancelar o dar de baja Claro Video?",
+        "answers": [
+            "Vía TEL 018002529999 y www.clarovideo.com. El usuario ingresa a Claro Video y selecciona 'Mi Cuenta' > 'Suscripciones' > 'Cancelar'",
+            "Directamente en un Centro de Atención a Clientes",
+            "Llamando al servicio de soporte técnico",
+            "Mediante la aplicación móvil Claro Video en la sección de ajustes"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es el costo de MB adicional en planes de datos empresariales?",
+        "answers": [
+            "$0.25 a partir de 500 MB hasta 100 GB",
+            "$0.30 a partir de 1 GB",
+            "$0.50 a partir de 250 MB hasta 50 GB",
+            "$0.10 a partir de 1 GB hasta 10 GB"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Para qué planes aplica el paquete SMS?",
+        "answers": [
+            "Planes GSM excepto MIX",
+            "Todos los planes de datos puros",
+            "Planes regionales con tarifas corporativas",
+            "Planes GSM ilimitados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué sucede cuando una línea MIX ilimitada presenta adeudo de una factura?",
+        "answers": [
+            "No se abona el saldo mensual",
+            "La línea se suspende automáticamente",
+            "El saldo mensual se reduce al 50%",
+            "Se emite una notificación de cobro al cliente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Para qué sirve el pool de datos?",
+        "answers": [
+            "Contabilizar los KB incluidos en los planes tarifarios solo de datos de cada una de las líneas que tenga contratado un cliente e ir asignándolos dependiendo de la fecha y hora",
+            "Centralizar los datos compartidos entre cuentas corporativas",
+            "Monitorear el uso de datos en tiempo real para ajustar el límite de crédito",
+            "Permitir la transferencia de datos entre líneas dentro de la misma cuenta"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿A partir de cuántas líneas se pueden financiar?",
+        "answers": [
+            "1",
+            "2",
+            "5",
+            "10"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué pantalla de M2K se utiliza para alta de financiamiento de equipo?",
+        "answers": [
+            "FINEQ",
+            "FINCTRL",
+            "EQUIPFIN",
+            "DATFIN"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿A cuánto baja la velocidad cuando entra la política de uso justo?",
+        "answers": [
+            "La velocidad de navegación será reducida a 128kbps",
+            "La velocidad se reducirá a 256kbps",
+            "La velocidad será limitada a 512kbps",
+            "La navegación será pausada hasta el próximo ciclo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quién está autorizado para solicitar una cancelación?",
+        "answers": [
+            "El contacto por medio de correo electrónico con previa autorización del representante legal",
+            "El gerente de la cuenta corporativa",
+            "Cualquier usuario con acceso a la cuenta",
+            "El asesor del Centro de Atención a Clientes sin autorización adicional"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué servicios no son compatibles con VoLTE?",
+        "answers": [
+            "DOL, Telcel Directo (PTT), Producto: No MMS (Mensajes multimedia), Family & Friends, Videoconferencia, Productos BlackBerry, Productos: elimina voz y no GPRS y Banda Ancha. Estos servicios no cuentan con la infraestructura necesaria para operar bajo VoLTE.",
+            "Planes ilimitados con roaming internacional, especialmente aquellos que incluyen servicios marítimos y de aeronaves. La funcionalidad VoLTE puede estar restringida por incompatibilidades de red.",
+            "Servicios de voz en redes 3G que no han sido actualizados a plataformas compatibles con redes LTE avanzadas. Esto incluye líneas con configuraciones regionales antiguas.",
+            "Aplicaciones de mensajería instantánea sin soporte nativo para comunicación mediante redes VoLTE, como aquellas que dependen exclusivamente de redes de datos tradicionales."
+        ],
+        "correct": 0
+    }    
+
+
 ];

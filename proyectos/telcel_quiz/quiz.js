@@ -43,8 +43,13 @@ toggleCorrectQuestionsButton.addEventListener('click', () => {
 });
 
 document.getElementById('start-quiz').addEventListener('click', () => {
+    // Restaurar la visibilidad de los botones de respuesta
+    answerButtons.forEach(button => button.style.display = 'block');
     optionsContainer.style.display = 'none';
     quizContainer.style.display = 'block';
+    resultContainer.style.display = 'none'; // Asegurar que los resultados estén ocultos
+    questionContainer.style.display = 'block'; // Mostrar el contenedor de preguntas
+    questionCounter.style.display = 'block'; // Mostrar el contador
     startQuiz();
 });
 
@@ -138,7 +143,7 @@ function startQuiz() {
         !correctIndices.includes(index) && !incorrectIndices.includes(index)
     );
     
-    const numRemaining = Math.max(25 - selectedIncorrectQuestions.length, 0);
+    const numRemaining = Math.max(40 - selectedIncorrectQuestions.length, 0);
     const newQuestions = getRandomQuestions(availableQuestions, numRemaining);
     
     selectedQuestions = [...selectedIncorrectQuestions, ...newQuestions];
@@ -161,8 +166,23 @@ function showQuestion() {
     questionCounter.innerText = `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
     questionContainer.innerText = currentQuestion.question;
     
-    const shuffledAnswers = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
-    shuffledAnswers.forEach((answer, index) => {
+    // Crear array de todas las respuestas
+    const allAnswers = [...currentQuestion.answers];
+    const correctAnswer = allAnswers[currentQuestion.correct];
+    
+    // Remover la respuesta correcta del array
+    allAnswers.splice(currentQuestion.correct, 1);
+    
+    // Mezclar las respuestas incorrectas
+    const shuffledWrongAnswers = allAnswers.sort(() => Math.random() - 0.5);
+    
+    // Insertar la respuesta correcta en una posición aleatoria
+    const randomPosition = Math.floor(Math.random() * 4);
+    const finalAnswers = [...shuffledWrongAnswers];
+    finalAnswers.splice(randomPosition, 0, correctAnswer);
+    
+    // Asignar respuestas a los botones
+    finalAnswers.forEach((answer, index) => {
         const button = answerButtons[index];
         button.innerText = answer;
         button.disabled = false;
@@ -254,12 +274,12 @@ function markRemainingQuestionsIncorrect() {
     }
 }
 
+// Modificar la función showResults
 function showResults() {
-    clearInterval(timerInterval); // Clear the timer when showing results
-    quizContainer.style.display = 'none'; // Ocultar el contenedor del quiz
+    clearInterval(timerInterval);
+    quizContainer.style.display = 'none';
     questionContainer.style.display = 'none';
     questionCounter.style.display = 'none';
-    answerButtons.forEach(button => button.style.display = 'none');
     resultContainer.style.display = 'block';
     scoreDisplay.innerText = `TU PUNTUACIÓN: ${score}/${selectedQuestions.length}`;
     
