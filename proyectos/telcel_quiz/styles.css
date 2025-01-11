@@ -1,6 +1,27 @@
+:root {
+    /* Colores principales */
+    --color-primary: #052659;
+    --color-secondary: #5483b3;
+    --color-accent: #7da0ca;
+    --color-background: #ffffff;
+    --color-text-dark: #021024;
+    
+    /* Colores de estados */
+    --color-correct: #45a049;
+    --color-incorrect: rgb(150, 0, 0);
+    --color-error: #5e0600;
+    
+    /* Colores de UI */
+    --color-white: white;
+    --color-gray-light: #e2e2e2;
+    --color-gray: #666;
+    --color-border: #ccc;
+    --color-shadow: rgba(2, 16, 36, 0.1);
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #fffce2;
+    background-color: var(--color-background);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,43 +37,45 @@ ul {
 }
 .question-item{
     margin: 5px 0;
-    color: #000270;
+    color: var(--color-text-dark);
     text-align: left;
-    background-color: #e2e2e2;
+    background-color: var(--color-accent);
     padding: 10px;
     border-radius: 7px;
 }
 .answer-section{
-    background-color: #ececec;
+    background-color: var(--color-background);
     padding: 12px;
     border-radius: 12px;
     margin-top: 6px;
 }
+.answer-section p{
+    margin: 5px;
+}
 #quiz-container {
-    background-color: white;
+    background-color: var(--color-white);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px var(--color-shadow);
     max-width: 600px;
-    width: 100%;
+    width: 90vw;
     text-align: center;
     padding: 50px;
     box-sizing: border-box;
-    overflow-y: auto; /* Añadido para la barra de desplazamiento */
 }
 #toggle-correct-questions{
     margin-top: 15px;
-    background-color: #45a049;
+    background-color: var(--color-primary);
     height: 30px;
-    border-radius: 12px;
-    width: 80vw;
+    border-radius: 8px;
+    width: 90vw;
     text-align: center;
     align-items: center;
 }
 .btn{
     border: none;
     font-weight: bold;
-    color: white;
+    color: rgb(85, 85, 85);
     align-items: center;
     text-align: center;    
 }
@@ -70,7 +93,8 @@ ul {
     width: 100%;
     margin: 5px 0;
     padding: 10px;
-    background-color: #e7e7e7;
+    background-color: var(--color-accent);
+    color: var(--color-text-dark);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -79,7 +103,8 @@ ul {
 }
 
 .answer-button:hover {
-    background-color: #d7d7d7;
+    background-color: var(--color-secondary);
+    color: var(--color-white);
 }
 
 #next-button {
@@ -88,13 +113,13 @@ ul {
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     cursor: pointer;
 }
 
 #next-button:hover {
-    background-color: #45a049;
+    background-color: var(--color-secondary);
 }
 
 #result-container {
@@ -103,8 +128,8 @@ ul {
 }
 
 #correct-questions li {
-    color: navy;
-    border: 1px solid rgb(80, 80, 121);
+    color: var(--color-primary);
+    border: 1px solid var(--color-secondary);
     padding: 5px;
     font-size: 12px;
     margin: 5px 0;
@@ -118,14 +143,14 @@ ul {
     display: block;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #45a049;
+    color: var(--color-correct);
     text-align: right;
 }
 
 #incorrect-questions li {
     
-    color: rgb(255, 255, 255) !important;
-    background-color: rgb(150, 0, 0);
+    color: var(--color-white) !important;
+    background-color: var(--color-incorrect);
     padding: 5px;
     margin: 5px 0;
     border-radius: 6px;
@@ -206,7 +231,7 @@ ul {
 /* ...existing code... */
 
 #login-container {
-    background-color: rgba(0, 0, 139, 0.8); /* Royal blue with transparency */
+    background-color: rgba(5, 38, 89, 0.9); /* Royal blue with transparency */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -241,17 +266,18 @@ ul {
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background-color: #4169E1; /* Royal blue */
-    color: white;
+    background-color: var(--color-secondary); /* Royal blue */
+    color: var(--color-white);
     cursor: pointer;
     font-weight: bold;
 }
 
 #loginForm button:hover {
-    background-color: #27408B; /* Darker royal blue */
+    background-color: var(--color-primary); /* Darker royal blue */
 }
-.start-timer{
+#start-timer{
     width: 90vw;
+    max-width: 400px;
 }
 
 /* ...existing code... */
@@ -261,8 +287,8 @@ ul {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #f44336;
-    color: white;
+    background-color: var(--color-error);
+    color: var(--color-white);
     padding: 1rem;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -272,8 +298,8 @@ ul {
 /* ...existing code... */
 
 .btn.light-gray {
-    background-color: #000270;
-    color: rgb(255, 255, 255);
+    background-color: var(--color-primary);
+    color: var(--color-white);
     margin: 10px 0;
     width: 90vw;
     height: 35px;
@@ -330,18 +356,77 @@ ul {
 
 .progress-bar {
     height: 100%;
-    background-color: #000270; /* Blue color */
+    background-color: var(--color-secondary); /* Blue color */
     transition: width 0.3s ease;
 }
 
 .progress-text {
     font-size: 14px;
-    color: #666;
+    color: var(--color-gray);
     text-align: center;
     margin-bottom: 15px;
 }
 
+/* ...existing code... */
 
+#options-container {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
 
+#options-container h2 {
+    color: var(--color-primary);
+    margin-bottom: 20px;
+}
+
+/* ...existing code... */
+
+#error-ranking-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(2, 16, 36, 0.1);
+    max-width: 600px;
+    width: 90vw;
+    text-align: center;
+}
+
+#error-ranking-list .question-item {
+    margin: 10px 0;
+    padding: 15px;
+    background-color: var(--color-accent);
+    color: var(--color-text-dark);
+    border-radius: 8px;
+    text-align: left;
+}
+
+#error-ranking-list .question-header strong {
+    display: block;
+    margin-bottom: 5px;
+    margin-left: 7px;
+}
+
+/* ...existing code... */
+
+.error-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 15px 0px;
+    padding: 7px;
+}
+
+#error-ranking-list .question-header {
+    display: flex;
+    align-items: center;
+}
 
 /* ...existing code... */

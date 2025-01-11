@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html >
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -20,9 +20,12 @@
         </form>
     </div>
     <div id="options-container" style="display: none;">
+        <h2>Panel Principal</h2>
         <button id="start-quiz" class="btn light-gray">Iniciar Examen</button>
         <button id="view-questions" class="btn light-gray">Ver Preguntas</button>
         <button id="view-incorrect" class="btn light-gray">Ver Preguntas Incorrectas</button>
+        <button id="view-error-ranking" class="btn light-gray">Mi Top de Errores</button>
+        <button id="main-clear-memory" class="btn light-gray">Borrar Memoria</button>
     </div>
     <div id="quiz-container" style="display: none;">
         <div class="progress-bar-container">
@@ -62,8 +65,13 @@
         <div id="incorrect-questions"></div>
         <button id="retry-quiz" class="btn light-gray">Realizar de nuevo</button>
         <button id="clear-memory" class="btn light-gray">Borrar memoria</button>
+        <button id="back-to-main" class="btn light-gray">Panel Principal</button>
     </div>
-
+    <div id="error-ranking-container" style="display: none;">
+        <h2>Top de Errores Frecuentes</h2>
+        <button id="back-from-ranking" class="btn light-gray">Volver</button>
+        <div id="error-ranking-list"></div>
+    </div>
     <script src="quiz.js" type="module"></script>
 
 </body>

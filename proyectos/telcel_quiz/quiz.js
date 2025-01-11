@@ -32,6 +32,8 @@ const searchBar = document.getElementById('search-bar');
 const toggleCorrectQuestionsButton = document.getElementById('toggle-correct-questions');
 const correctQuestionsContainer = document.getElementById('correct-questions');
 
+const errorRankingContainer = document.getElementById('error-ranking-container');
+
 toggleCorrectQuestionsButton.addEventListener('click', () => {
     if (correctQuestionsContainer.style.display === 'none') {
         correctQuestionsContainer.style.display = 'block';
@@ -107,13 +109,47 @@ function startQuiz() {
     incorrectAnswers = [];
     const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
     const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+    const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
     
-    // Prioritize incorrect questions and add remaining questions
-    const incorrectQuestions = questions.filter((_, index) => incorrectIndices.includes(index));
-    const remainingQuestions = questions.filter((_, index) => !correctIndices.includes(index) && !incorrectIndices.includes(index));
-    const numRemaining = Math.max(35 - incorrectQuestions.length, 0);
+    // Obtener las 5 preguntas más frecuentes de errorCounts
+    const topErrorQuestions = Object.entries(errorCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5)
+        .map(([index]) => parseInt(index));
     
-    selectedQuestions = [...incorrectQuestions, ...getRandomQuestions(remainingQuestions, numRemaining)];
+    // Filtrar preguntas incorrectas priorizando las del top de errores
+    const priorityIncorrectQuestions = questions.filter((_, index) => 
+        topErrorQuestions.includes(index) && incorrectIndices.includes(index)
+    );
+    
+    // Si no hay suficientes preguntas del top, agregar otras incorrectas hasta llegar a 5
+    const remainingIncorrectQuestions = questions.filter((_, index) => 
+        !topErrorQuestions.includes(index) && incorrectIndices.includes(index)
+    );
+    
+    // Combinar preguntas prioritarias y completar hasta 5 con otras incorrectas
+    const selectedIncorrectQuestions = [
+        ...priorityIncorrectQuestions,
+        ...getRandomQuestions(remainingIncorrectQuestions, Math.max(0, 5 - priorityIncorrectQuestions.length))
+    ];
+    
+    // Obtener preguntas que no están ni en correctas ni en incorrectas
+    const availableQuestions = questions.filter((_, index) => 
+        !correctIndices.includes(index) && !incorrectIndices.includes(index)
+    );
+    
+    const numRemaining = Math.max(25 - selectedIncorrectQuestions.length, 0);
+    const newQuestions = getRandomQuestions(availableQuestions, numRemaining);
+    
+    selectedQuestions = [...selectedIncorrectQuestions, ...newQuestions];
+    
+    if (selectedQuestions.length === 0) {
+        showPopup('Es necesario borrar la memoria para volver a mostrar las preguntas');
+        quizContainer.style.display = 'none';
+        optionsContainer.style.display = 'block';
+        return;
+    }
+
     datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`;
     showQuestion();
 }
@@ -166,8 +202,10 @@ function selectAnswer(selectedIndex) {
             incorrectAnswers.push(currentQuestion.question);
             // Store incorrect answer index in localStorage
             const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-            incorrectIndices.push(questions.indexOf(currentQuestion));
+            const questionIndex = questions.indexOf(currentQuestion);
+            incorrectIndices.push(questionIndex);
             localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+            updateErrorCount(questionIndex); // Agregar esta línea
         }
     }
     currentQuestionIndex++;
@@ -238,12 +276,11 @@ function showResults() {
     });
 
     document.getElementById('clear-memory').addEventListener('click', () => {
-        const confirmMessage = 'Memoria borrada correctamente';
         const confirmPopup = document.createElement('div');
         confirmPopup.className = 'popup confirmation';
         confirmPopup.innerHTML = `
-            <p>¿Estás seguro que deseas borrar toda la memoria?</p>
-            <p class="popup-warning">Esta acción no se puede deshacer y perderás el registro de todas las preguntas respondidas.</p>
+            <p>¿Estás seguro que deseas borrar el registro de respuestas?</p>
+            <p class="popup-warning">Esta acción no se puede deshacer y perderás el registro de preguntas correctas e incorrectas.</p>
             <div class="popup-buttons">
                 <button class="btn confirm">Confirmar</button>
                 <button class="btn cancel">Cancelar</button>
@@ -252,16 +289,50 @@ function showResults() {
         document.body.appendChild(confirmPopup);
 
         confirmPopup.querySelector('.confirm').onclick = () => {
-            localStorage.clear();
+            // Solo eliminar los índices de respuestas
+            localStorage.removeItem('correctIndices');
+            localStorage.removeItem('incorrectIndices');
             confirmPopup.remove();
-            showPopup('Memoria borrada correctamente');
+            showPopup('Registro de respuestas borrado correctamente');
         };
 
         confirmPopup.querySelector('.cancel').onclick = () => {
             confirmPopup.remove();
         };
     });
+
+    document.getElementById('back-to-main').addEventListener('click', () => {
+        resultContainer.style.display = 'none';
+        optionsContainer.style.display = 'block';
+    });
 }
+
+// Add this after the other event listeners
+document.getElementById('main-clear-memory').addEventListener('click', () => {
+    const confirmPopup = document.createElement('div');
+    confirmPopup.className = 'popup confirmation';
+    confirmPopup.innerHTML = `
+        <p>¿Estás seguro que deseas borrar el registro de respuestas?</p>
+        <p class="popup-warning">Esta acción no se puede deshacer y perderás el registro de preguntas correctas e incorrectas.</p>
+        <div class="popup-buttons">
+            <button class="btn confirm">Confirmar</button>
+            <button class="btn cancel">Cancelar</button>
+        </div>
+    `;
+    document.body.appendChild(confirmPopup);
+
+    confirmPopup.querySelector('.confirm').onclick = () => {
+        // Solo eliminar los índices de respuestas
+        localStorage.removeItem('correctIndices');
+        localStorage.removeItem('incorrectIndices');
+        confirmPopup.remove();
+        showPopup('Registro de respuestas borrado correctamente');
+    };
+
+    confirmPopup.querySelector('.cancel').onclick = () => {
+        confirmPopup.remove();
+    };
+});
 
 // Function to handle login redirection
 function handleLogin() {
@@ -393,6 +464,75 @@ function handleSwipe() {
             selectAnswer(-1); // Mark as incorrect if unanswered
         }
     }
+}
+window.addEventListener('error', (event) => {
+    if (event.message.includes('message port closed')) {
+        // Ignorar este error específico
+        event.stopPropagation();
+        return;
+    }
+});
+
+async function someAsyncOperation() {
+    try {
+        // operación asíncrona
+    } catch (error) {
+        if (!error.message.includes('message port closed')) {
+            console.error(error);
+        }
+    }
+}
+
+function updateErrorCount(questionIndex) {
+    const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
+    errorCounts[questionIndex] = (errorCounts[questionIndex] || 0) + 1;
+    localStorage.setItem('errorCounts', JSON.stringify(errorCounts));
+}
+
+document.getElementById('view-error-ranking').addEventListener('click', () => {
+    optionsContainer.style.display = 'none';
+    errorRankingContainer.style.display = 'block';
+    displayErrorRanking();
+});
+
+document.getElementById('back-from-ranking').addEventListener('click', () => {
+    errorRankingContainer.style.display = 'none';
+    optionsContainer.style.display = 'block';
+});
+
+function displayErrorRanking() {
+    const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
+    const sortedErrors = Object.entries(errorCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 15)
+        .map(([index, count]) => ({
+            question: questions[index],
+            count: count,
+            index: parseInt(index)
+        }));
+
+    const rankingList = document.getElementById('error-ranking-list');
+    rankingList.innerHTML = '';
+
+    sortedErrors.forEach((error) => {
+        const errorItem = document.createElement('div');
+        errorItem.classList.add('question-item');
+        errorItem.innerHTML = `
+            <div class="question-header" style="cursor: pointer;">
+                <span class="error-count">${error.count}</span>
+                <strong>${error.question.question}</strong>
+            </div>
+            <div class="answer-section" style="display: none;">
+                <p>${error.question.answers[error.question.correct]}</p>
+            </div>`;
+        
+        errorItem.querySelector('.question-header').addEventListener('click', () => {
+            const answerSection = errorItem.querySelector('.answer-section');
+            answerSection.style.display = answerSection.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        rankingList.appendChild(errorItem);
+    });
 }
 
 

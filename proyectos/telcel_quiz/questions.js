@@ -1,78 +1,153 @@
 export const questions = [
+
     {
         "question": "Requisito para ser cliente corporativo:",
-        "answers": ["Mínimo de 10 líneas en una sola región", "Máximo de 5 líneas en una región", "Al menos 20 líneas en dos regiones", "Sin límite de líneas"],
+        "answers": [
+            "Poseer un mínimo de 10 líneas activas en una misma región",
+            "Contar con al menos 8 líneas activas y consumo mensual superior a $10,000",
+            "Tener más de 5 líneas activas distribuidas en al menos dos regiones",
+            "No tener límite de líneas pero demostrar un consumo anual superior a $120,000"
+        ],
         "correct": 0
     },
     {
         "question": "¿Qué requisitos se necesitan para incluir a un cliente corporativo sin tener 10 líneas activas?",
-        "answers": ["Consumo promedio de $10,000 o más en un periodo de 6 meses", "Consumo promedio de $5,000 o más en un periodo de 3 meses", "Tener al menos 5 líneas activas", "Cumplir con un mínimo de 15 líneas en total"],
+        "answers": [
+            "Mantener un consumo promedio mensual de $10,000 o más durante 6 meses consecutivos",
+            "Tener un consumo promedio mensual de $7,500 durante 3 meses consecutivos",
+            "Cumplir con al menos 8 líneas activas en una misma región",
+            "Registrar un consumo acumulado superior a $60,000 en un periodo de un año"
+        ],
         "correct": 0
     },
     {
         "question": "Un cliente corporativo puede tener:",
-        "answers": ["Tarifas corporativas y adendum a 12, 18 y 24 meses", "Tarifas residenciales y adendum a 6, 12 y 18 meses", "Tarifas mixtas y adendum a 3, 6 y 9 meses", "Tarifas únicas y adendum a 12 y 24 meses"],
+        "answers": [
+            "Acceso a tarifas corporativas y contratos adendum a plazos de 12, 18 y 24 meses",
+            "Opción de tarifas empresariales y contratos adendum a plazos de 6, 12 y 18 meses",
+            "Tarifas personalizadas y contratos adendum a plazos de 3, 9 y 12 meses",
+            "Tarifas estándar sin adendum y contratos a plazos de 12 y 24 meses"
+        ],
         "correct": 0
     },
     {
         "question": "¿Quiénes son Clientes corporativos regionales?",
-        "answers": ["Clientes de 10 líneas en adelante son atendidos por asesores internos o especialistas de atención empresarial. Se identifican en el sistema de facturación como tipo de cuenta CM o MG y su ciclo de facturación puede ser 31 ó 32", "Clientes de 5 líneas en adelante son atendidos por asesores externos. Se identifican en el sistema de facturación como tipo de cuenta CR y su ciclo de facturación puede ser 30 ó 33", "Clientes con más de 20 líneas son atendidos por especialistas regionales. Se identifican en el sistema como tipo de cuenta RG y su ciclo de facturación es 31", "Clientes con menos de 10 líneas son atendidos por asesores internos y se identifican en el sistema de facturación como tipo de cuenta IR"],
+        "answers": [
+            "Clientes con 10 o más líneas, atendidos por asesores internos o especialistas. Se identifican en el sistema como tipo de cuenta CM o MG con ciclos de facturación 31 o 32",
+            "Clientes con al menos 8 líneas y un consumo superior a $15,000. Se identifican como tipo de cuenta CR con ciclo de facturación 30",
+            "Clientes con más de 20 líneas que requieren atención especializada. Se identifican como tipo de cuenta RG con ciclos de facturación 29 o 30",
+            "Clientes con menos de 10 líneas son atendidos únicamente por asesores internos. Su tipo de cuenta es IR con ciclo de facturación 33"
+        ],
         "correct": 0
     },
     {
         "question": "¿Qué clientes se consideran segmento corporativo CM?",
-        "answers": ["Clientes de 10 a 49 líneas o consumos de 10 a 30 mil pesos", "Clientes de 5 a 9 líneas o consumos de 5 a 10 mil pesos", "Clientes de 50 a 99 líneas o consumos de 30 a 50 mil pesos", "Clientes de 1 a 9 líneas o consumos de menos de 10 mil pesos"],
+        "answers": [
+            "Clientes con entre 10 y 49 líneas o consumos mensuales entre $10,000 y $30,000",
+            "Clientes con 5 a 9 líneas o consumos entre $5,000 y $15,000",
+            "Clientes con 50 a 99 líneas o consumos superiores a $30,000 pero menores a $50,000",
+            "Clientes con menos de 10 líneas y consumos inferiores a $10,000"
+        ],
         "correct": 0
     },
     {
         "question": "¿Qué clientes se consideran segmento corporativo MG?",
-        "answers": ["Clientes de 50 líneas en adelante y/o consumos de más de $30,000", "Clientes de 20 a 49 líneas y/o consumos de $20,000 a $30,000", "Clientes de 10 a 19 líneas y/o consumos de $10,000 a $20,000", "Clientes de 1 a 9 líneas y/o consumos de menos de $10,000"],
+        "answers": [
+            "Clientes con 50 líneas o más y consumos superiores a $30,000",
+            "Clientes con entre 25 y 49 líneas y consumos de $20,000 a $29,999",
+            "Clientes con entre 15 y 24 líneas y consumos superiores a $10,000",
+            "Clientes con entre 10 y 14 líneas o consumos menores a $20,000"
+        ],
         "correct": 0
     },
     {
         "question": "Son los clientes con consumos de $200,000 o más y que tienen responsabilidad de pago y negociación en R9, ciclo de facturación 20 y puede ser CO o MG:",
-        "answers": ["Cliente corporativo R9", "Cliente regional R8", "Cliente local R7", "Cliente empresarial R6"],
+        "answers": [
+            "Cliente corporativo tipo R9 con consumo alto",
+            "Cliente regional R8 con alta negociación",
+            "Cliente local R7 con ciclo especial",
+            "Cliente empresarial R6 con tarifas especiales"
+        ],
         "correct": 0
     },
     {
         "question": "¿Cuáles son las características de un cliente empresarial R9?",
-        "answers": ["Ciclo 60 o 61, responsabilidad de pago R9", "Ciclo 50 o 51, responsabilidad de pago R8", "Ciclo 40 o 41, responsabilidad de pago R7", "Ciclo 30 o 31, responsabilidad de pago R6"],
+        "answers": [
+            "Ciclo 60 o 61, responsabilidad de pago en R9 y consumos superiores a $200,000",
+            "Ciclo 50 o 51, responsabilidad de pago en R8 y consumos superiores a $100,000",
+            "Ciclo 40 o 41, responsabilidad de pago en R7 y consumos superiores a $50,000",
+            "Ciclo 30 o 31, responsabilidad de pago en R6 y consumos superiores a $20,000"
+        ],
         "correct": 0
-    }
-    ,
+    },
     {
         "question": "¿Qué es Región con responsabilidad de negociación?",
-        "answers": ["Región donde se realizan las negociaciones y el cierre de la venta, la cual tiene la relación con el contacto del cliente. Como regla general es la región donde se encuentren las oficinas corporativas del cliente. Es la región responsable de mantener y darle seguimiento a las líneas que se encuentren a nivel nacional.", "Región donde se gestionan las cuentas internacionales.", "Región que maneja exclusivamente los clientes premium.", "Región que se dedica a la gestión de pagos."],
+        "answers": [
+            "Región donde se realizan las negociaciones y el cierre de la venta, asociada con las oficinas corporativas del cliente. Es responsable del seguimiento a nivel nacional.",
+            "Región que exclusivamente gestiona cuentas internacionales y clientes premium.",
+            "Región encargada de centralizar las gestiones de pago y cobro de clientes corporativos.",
+            "Región que se dedica únicamente al soporte técnico de líneas regionales."
+        ],
         "correct": 0
     },
     {
         "question": "¿Qué son líneas regionales?",
-        "answers": ["Líneas CM y MG con número de la región que les reporta la responsabilidad de pago y negociación están en la misma región.", "Líneas con tarifas reducidas para clientes locales.", "Líneas utilizadas para comunicación interregional.", "Líneas especializadas en servicios internacionales."],
+        "answers": [
+            "Líneas CM y MG que tienen el mismo número de región que reporta la responsabilidad de pago y negociación.",
+            "Líneas que ofrecen tarifas diferenciadas exclusivamente para clientes de pequeñas empresas.",
+            "Líneas diseñadas para facilitar la comunicación dentro de la misma región geográfica.",
+            "Líneas asignadas a clientes con alta movilidad entre diferentes regiones."
+        ],
         "correct": 0
     },
     {
         "question": "¿Qué son líneas interregionales?",
-        "answers": ["Líneas CM y MG con número de región diferente a la que les reporta, pero responsabilidad de pago y negociación están en la región que les atiende.", "Líneas utilizadas exclusivamente para clientes internacionales.", "Líneas que no tienen asignación regional.", "Líneas utilizadas para la gestión interna de la empresa."],
+        "answers": [
+            "Líneas CM y MG con número de región diferente a la que les reporta, pero con responsabilidad de pago en la región que las atiende.",
+            "Líneas internacionales asignadas a clientes con operaciones en varios países.",
+            "Líneas utilizadas para comunicación entre regiones geográficas distintas.",
+            "Líneas reservadas para uso exclusivo en oficinas corporativas."
+        ],
         "correct": 0
     },
     {
         "question": "Son líneas MG, CM, 31 o 32 activadas con números de la región que las reporta pero que son atendidas y tienen responsabilidad de pago y negociación en una región distinta.",
-        "answers": ["Líneas foráneas", "Líneas locales", "Líneas residenciales", "Líneas corporativas internas"],
+        "answers": [
+            "Líneas foráneas",
+            "Líneas internacionales",
+            "Líneas corporativas avanzadas",
+            "Líneas empresariales locales"
+        ],
         "correct": 0
     },
     {
         "question": "Verificar que el cliente no tenga líneas canceladas en abogado, afianzadoras o deducción fiscal (ciclos 97, 98 o 99) ni con saldos a más de 60 días son:",
-        "answers": ["Acciones que debe tomar el asesor de servicio a clientes al recibir líneas nuevas", "Acciones que debe tomar el cliente para activar nuevas líneas", "Requisitos para la contratación de servicios adicionales", "Pasos para la reactivación de líneas suspendidas"],
+        "answers": [
+            "Acciones obligatorias del asesor antes de activar líneas nuevas para el cliente.",
+            "Requisitos indispensables que el cliente debe cumplir para contratar servicios adicionales.",
+            "Normas para la evaluación del historial de pagos en clientes corporativos.",
+            "Pasos previos para la reactivación de líneas suspendidas por falta de pago."
+        ],
         "correct": 0
     },
     {
         "question": "¿Qué clase de crédito deben tener los clientes corporativos, salvo autorización de la DEUR?",
-        "answers": ["RP en cuentas padre, BU si la RP es en las hijas. En ctas. no consolidadas BU.", "Crédito estándar en todas las cuentas.", "Crédito limitado en cuentas hijas.", "Crédito especial en cuentas consolidadas."],
+        "answers": [
+            "RP en cuentas padre, BU si la RP es en las hijas. En cuentas no consolidadas BU.",
+            "Crédito estándar con limitaciones en cuentas hijas no consolidadas.",
+            "Crédito avanzado en cuentas hijas, siempre que las cuentas padre estén en RP.",
+            "Crédito especial asignado exclusivamente a cuentas con consumos mayores a $100,000."
+        ],
         "correct": 0
     },
     {
-        "question": "Clave que indica el ciclo de facturación de una línea pospago",
-        "answers": ["BILLING CYCLE", "PAYMENT CYCLE", "INVOICE CYCLE", "ACCOUNT CYCLE"],
+        "question": "Clave que indica el ciclo de facturación de una línea pospago:",
+        "answers": [
+            "BILLING CYCLE, asignado al momento de la activación.",
+            "PAYMENT CYCLE, ajustado según el consumo mensual.",
+            "INVOICE CYCLE, configurado para clientes corporativos.",
+            "ACCOUNT CYCLE, relacionado con la región de activación."
+        ],
         "correct": 0
     },
     {
