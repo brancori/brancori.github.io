@@ -188,12 +188,12 @@ export const questions = [
         "question": "Si una persona física acude a CAC a solicitar cesión de derechos para persona moral ¿Quién debe hacer el trámite?",
         "answers": [
             "Las cesiones de derecho de un cliente masivo a un cliente corporativo y viceversa deben ser realizadas por el asesor corporativo de la región que administra la cuenta, ya que requieren cambios de ciclo y cuenta específicos para los cuales está facultado.",
-            "El asesor de servicio al cliente, quien validará la solicitud y procederá con los ajustes en el sistema.",
-            "El gerente regional, quien autoriza y supervisa los cambios en las cuentas relacionadas.",
-            "El departamento de ventas, encargado de gestionar las solicitudes de este tipo de cambios entre clientes masivos y corporativos."
+            "La cesión debe ser gestionada por el asesor de servicio al cliente, quien validará la solicitud y realizará los ajustes necesarios en el sistema para completar el trámite.",
+            "Este tipo de solicitudes son responsabilidad del gerente regional, quien autoriza y supervisa los cambios en las cuentas para asegurar su correcta ejecución.",
+            "El departamento de ventas es el encargado de gestionar las solicitudes de cesión de derechos entre clientes masivos y corporativos, asegurándose de que se realicen los cambios necesarios en el sistema."
         ],
         "correct": 0
-    },    
+    },
     {
         "question": "¿Cuántas líneas con adeudo puede tener una empresa a la que se le requiere ceder una línea?",
         "answers": [
