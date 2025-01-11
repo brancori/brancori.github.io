@@ -4544,7 +4544,416 @@ export const questions = [
             "Aplicaciones de mensajería instantánea sin soporte nativo para comunicación mediante redes VoLTE, como aquellas que dependen exclusivamente de redes de datos tradicionales."
         ],
         "correct": 0
-    }    
-
+    },
+    {
+        "question": "Menciona dos servicios que obtienes al tener MOVETIME MT40S.",
+        "answers": [
+        "Recordatorio de medicamento, botón SOS, mensajes y videollamadas",
+        "Seguimiento de actividad física y monitoreo del sueño",
+        "Control remoto de dispositivos y alertas de seguridad",
+        "Asistente de voz y navegación GPS"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Este tipo de APNs ofrecen a las empresas la posibilidad de comunicarse hasta sus propios sistemas y aplicaciones; en términos prácticos, significa extender las aplicaciones y servicios de una empresa hacia un ambiente móvil.",
+        "answers": [
+        "APN Dedicados",
+        "APN Públicos",
+        "APN Privados",
+        "APN Híbridos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Las tres partes que componen proformas Verum.",
+        "answers": [
+        "APP, Portal WEB y Soporte técnico y comercial",
+        "Software de gestión, Plataforma de pagos y Servicio al cliente",
+        "Aplicación móvil, Plataforma de monitoreo y Centro de asistencia",
+        "Sistema de gestión, Base de datos y Red de soporte"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Principales características de Billpocket.",
+        "answers": [
+        "Acepta pagos con visa, mastercard, american express, carnet, si vale y sodexo, funciona con datos móviles o wifi, disponible para ios y Android, se conecta vía bluetooth. 3.5%+ iva de comisión y pagos en 24 horas hábiles",
+        "Solo acepta pagos con visa y mastercard, funciona únicamente con wifi, disponible solo para Android, se conecta vía USB. 2% de comisión y pagos en 48 horas hábiles",
+        "Acepta pagos con todas las tarjetas, funciona con datos móviles, wifi y Bluetooth, disponible para iOS, Android y Windows. 4%+ iva de comisión y pagos en 12 horas hábiles",
+        "Acepta pagos con tarjetas de crédito y débito, funciona con datos móviles o wifi, disponible solo para iOS, se conecta vía NFC. 2.5%+ iva de comisión y pagos en 72 horas hábiles"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Internet en casa sugerido para 2 usuarios.",
+        "answers": [
+        "INTERNET EN TU CASA PLUS 2",
+        "INTERNET BÁSICO",
+        "INTERNET AVANZADO",
+        "INTERNET FAMILIAR"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Administra desde dispositivos móviles los procesos de nómina y lleva un control de asistencias.",
+        "answers": [
+        "Aspel NOI asistente",
+        "SAP HRM",
+        "Oracle HCM",
+        "Microsoft Dynamics 365"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿En qué consiste el servicio Global Gateway para tGG?",
+        "answers": [
+        "El usuario acepta que le envíen mensajes de texto (SMS) de manera individual sin confirmación (via web service), solicitada por el usuario, via portal web o carga masiva a través de un registro",
+        "El usuario recibe correos electrónicos masivos",
+        "El usuario puede realizar llamadas internacionales a bajo costo",
+        "El usuario accede a un portal de servicios en línea"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Concepto de Eficiencia Energética.",
+        "answers": [
+        "Esta solución consta de un monitoreo que ayuda a la administración óptima de los consumos de energía eléctrica, agua y gas, con el fin de reducir el costo recurrente de facturación a partir de la identificación y detección oportuna de malas prácticas, fallas o fugas, a través de alertas y tableros analíticos que llevan a tomar medidas preventivas y acciones correctivas oportunas",
+        "Es un sistema para medir la eficiencia de los electrodomésticos",
+        "Es una política de ahorro energético",
+        "Es un programa gubernamental para reducir el consumo de energía"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Consideraciones de Claro Connect.",
+        "answers": [
+        "Disponibles en versión abierta, sin redirect y cuentan con claves especiales con Pool y sin Pool de Datos",
+        "Solo disponibles en versión cerrada",
+        "No cuentan con claves especiales",
+        "Solo se pueden usar con redirect"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "El liderazgo y compromiso de la alta Dirección es fundamental para:",
+        "answers": [
+        "La implementación y mantenimiento de un Sistema de Gestión exitoso",
+        "La satisfacción del cliente",
+        "El crecimiento financiero",
+        "La innovación tecnológica"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "La implementación de controles:",
+        "answers": [
+        "Mantiene el riesgo por debajo del nivel permitido sin que esto implique impactos mayores a la organización",
+        "Elimina completamente el riesgo",
+        "Aumenta la complejidad del sistema",
+        "Reduce los costos operativos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Es el efecto que la incertidumbre tiene en el logro de los objetivos.",
+        "answers": [
+        "Riesgo",
+        "Problema",
+        "Amenaza",
+        "Vulnerabilidad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "En Telcel la prevención la realizamos:",
+        "answers": [
+        "Gestionando riesgos",
+        "Implementando controles",
+        "Realizando auditorías",
+        "Capacitando al personal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "La gestión de riesgo es:",
+        "answers": [
+        "Revisar periódicamente los riesgos que pueden ocasionar el incumplimiento de los objetivos",
+        "Eliminar los riesgos identificados",
+        "Monitorear continuamente el desempeño",
+        "Evaluar el impacto de los riesgos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Quiénes constituyen la alta Dirección?",
+        "answers": [
+        "Gerente, Subdirectores y Directores",
+        "Supervisores y Gerentes",
+        "Jefes de departamento y Coordinadores",
+        "Personal administrativo y de apoyo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Son 2 formas de evidenciar el compromiso de la Alta Dirección con el SGI.",
+        "answers": [
+        "Estableciendo el rumbo y compromiso del SGI / Promoviendo el cumplimiento de las políticas y objetivos del SGI",
+        "Realizando auditorías internas / Implementando controles de calidad",
+        "Capacitando al personal / Monitoreando el desempeño",
+        "Revisando los procesos / Evaluando los resultados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué debemos conocer de la valoración y tratamiento de riesgos del SGI?",
+        "answers": [
+        "Establecer el contexto e identificar los riesgos",
+        "Implementar controles y evaluar su eficacia",
+        "Monitorear los riesgos y revisarlos periódicamente",
+        "Capacitar al personal y gestionar los incidentes"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es ISO/IEC 27001:2013?",
+        "answers": [
+        "Un estándar internacional que define los requerimientos para el establecimiento, implementación, mantenimiento y mejora continua de un SGSI",
+        "Una normativa para la gestión de calidad",
+        "Un sistema de gestión ambiental",
+        "Un marco para la continuidad del negocio"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es la confidencialidad de la información?",
+        "answers": [
+        "La propiedad de la información de no revelarse o encontrarse a disposición de individuos, organizaciones o procesos no autorizados",
+        "La capacidad de acceder a la información en todo momento",
+        "La integridad de los datos almacenados",
+        "La disponibilidad de los servicios de información"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Es un ejemplo de activo de información.",
+        "answers": [
+        "Datos personales de clientes y empleados",
+        "Equipos de cómputo",
+        "Instalaciones físicas",
+        "Licencias de software"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Los derechos ARCO se refieren a:",
+        "answers": [
+        "Revocación del consentimiento y/o limitación del uso o divulgación de datos personales",
+        "Acceso y rectificación de datos personales",
+        "Oposición al tratamiento de datos",
+        "Cancelación de los datos personales"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Menciona un beneficio de la norma ISO 20000.",
+        "answers": [
+        "Aumentar la eficiencia en los servicios de TI",
+        "Garantizar la satisfacción del cliente",
+        "Reducir los costos operativos",
+        "Mejorar la seguridad de la información"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la función de la norma ISO 20000?",
+        "answers": [
+        "Gestionar servicios a través de un conjunto de procesos diseñados para ayudar a hacerlos más eficaces",
+        "Regular las operaciones internas de la empresa para mejorar la eficiencia",
+        "Garantizar la seguridad de la información en todas las áreas de la organización",
+        "Evaluar el desempeño de los empleados y establecer objetivos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la versión más reciente de la norma 20000-1?",
+        "answers": [
+        "2018",
+        "2015",
+        "2020",
+        "2019"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "De la familia ISO 20000, ¿cuál es la norma que se certifica?",
+        "answers": [
+        "ISO/IEC 20000-1-2018",
+        "ISO/IEC 20000-2-2018",
+        "ISO/IEC 20000-3-2018",
+        "ISO/IEC 20000-4-2018"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué servicios se gestionaron en la transición de la norma ISO 20000?",
+        "answers": [
+        "TEMIP, remedy círculo azul y SICATEL",
+        "SAP, Oracle y Salesforce",
+        "ServiceNow, Jira y Zendesk",
+        "Office 365, Google Workspace y Slack"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Con base en ISO/IEC 20000, ¿qué son los procesos?",
+        "answers": [
+        "Conjunto de actividades mutuamente relacionadas o que interactúan las cuales transforman elementos de entrada en resultados",
+        "Procedimientos estandarizados para gestionar tareas operativas",
+        "Acciones sistemáticas para monitorear el rendimiento",
+        "Planes estratégicos para alcanzar objetivos corporativos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Por qué son necesarios los procesos?",
+        "answers": [
+        "Para asegurar que no surjan problemas con el servicio",
+        "Para mejorar la eficiencia operativa",
+        "Para reducir los costos de producción",
+        "Para garantizar la satisfacción del cliente"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuántos procesos cubre la norma ISO/IEC 20000:1-2018 (sistema de gestión de servicios)?",
+        "answers": [
+        "21",
+        "18",
+        "25",
+        "30"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es peligro para la norma 45001?",
+        "answers": [
+        "Fuente con un potencial para causar lesiones y deterioro de la salud. Cualquier evento que pueda afectar la salud",
+        "Un riesgo que debe ser mitigado a través de controles",
+        "Una condición insegura que requiere atención inmediata",
+        "Una amenaza para la seguridad del entorno laboral"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es accidente de trabajo?",
+        "answers": [
+        "Toda lesión orgánica o perturbación funcional, inmediata o posterior, o la muerte, producida repentinamente en ejercicio o con motivo del trabajo, cualesquiera que sean el lugar y tiempo en que ocurra",
+        "Una condición médica preexistente agravada por el trabajo",
+        "Un incidente menor sin consecuencias graves",
+        "Un evento planificado para evaluar la seguridad"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la responsabilidad de los trabajadores en cuanto a la seguridad y salud en el trabajo?",
+        "answers": [
+        "Realizar sus funciones de manera segura apegándose a los lineamientos establecidos por la organización, informar sobre situaciones peligrosas de manera que se puedan tomar acciones",
+        "Asistir a todas las reuniones de seguridad",
+        "Supervisar el cumplimiento de las normativas",
+        "Implementar mejoras en los procesos operativos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cuál es la labor de la comisión de seguridad e higiene?",
+        "answers": [
+        "Apoyar en la preservación de lugares de trabajo seguros y saludables, a través de la identificación de actos y condiciones inseguras para prevenir accidentes y daños a la salud",
+        "Monitorear el rendimiento de los empleados",
+        "Realizar auditorías internas mensuales",
+        "Proporcionar equipos de protección personal"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Tips de Autocuidado.",
+        "answers": [
+        "Ser precavido en la calle, cuidar higiene postural, realizar pausas activas",
+        "Usar siempre el cinturón de seguridad",
+        "Comer saludablemente",
+        "Dormir al menos 8 horas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Recomendaciones para prevenir accidentes.",
+        "answers": [
+        "Evitar usar el celular, identificar obstáculos en tu camino, cerrar puertas y cajones después de usarlos",
+        "Usar equipo de protección personal",
+        "Asistir a capacitaciones periódicas",
+        "Seguir las instrucciones del supervisor"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Definir, difundir, monitorear y en caso de ser necesario replantear y/o tomar acciones para la mejora a los objetivos particulares del área a su cargo, así como mantener informado al personal, es responsabilidad de:",
+        "answers": [
+        "La ALTA DIRECCION",
+        "El comité de seguridad",
+        "El equipo de recursos humanos",
+        "El supervisor de cada área"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se compromete la alta dirección en la política de la SST?",
+        "answers": [
+        "Proporcionando condiciones seguras y saludables para la prevención de lesiones y el deterioro de la salud de los empleados derivado de las actividades laborales que realizan para Telcel",
+        "Implementando programas de bienestar y salud",
+        "Realizando auditorías periódicas de seguridad",
+        "Proporcionando equipo de protección personal a todos los empleados"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Cómo se describen los objetivos para implementar los controles para la atención de los peligros y riesgos institucionales para la SST?",
+        "answers": [
+        "Previniendo la ocurrencia o recurrencia de accidentes de trabajo en las instalaciones de Telcel a nivel nacional y mantener la meta de cero fatalidades",
+        "Garantizando la seguridad en el entorno laboral",
+        "Reduciendo la probabilidad de incidentes",
+        "Estableciendo políticas de seguridad y salud"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Todos somos responsables de la seguridad y salud de los trabajadores pero en esta tarea:",
+        "answers": [
+        "Tú eres el actor principal",
+        "La alta dirección es la principal responsable",
+        "El equipo de seguridad lleva la mayor responsabilidad",
+        "El departamento de recursos humanos se encarga de todo"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Evita peligros, mantente física y emocionalmente saludable, conoce como actuar en caso de emergencia:",
+        "answers": [
+        "Toma de conciencia",
+        "Capacitación continua",
+        "Monitoreo constante",
+        "Cumplimiento de normativas"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es la Valoración de Riesgos?",
+        "answers": [
+        "Proceso general de identificación, análisis y evaluación de riesgos",
+        "Implementación de controles de seguridad",
+        "Monitoreo y revisión de riesgos existentes",
+        "Evaluación de la efectividad de las medidas preventivas"
+        ],
+        "correct": 0
+    } 
 
 ];
