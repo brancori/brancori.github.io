@@ -60,4 +60,6 @@ describe('Quiz Functionality', () => {
         const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices'));
         expect(incorrectIndices.includes(0)).toBe(true);
     });
+
+
 });
