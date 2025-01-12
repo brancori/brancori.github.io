@@ -516,16 +516,11 @@ export const questions = [
     },
     {
         "question": "¿Qué es Smart Car Empresarial?",
-        "answers": ["Monitorea en tiempo real el rendimiento, el estado, la actividad y la ubicación del automóvil, brindándole al usuario información útil sobre conductas de manejo, mantenimiento preventivo y problemas del auto, transformando el vehículo en un automóvil inteligente utilizando solamente una App y un equipo GPS que no requiere instalación", "Monitorea solo la ubicación del automóvil", "Monitorea solo el rendimiento del automóvil", "Monitorea solo la actividad del automóvil"],
-        "correct": 0
-    },
-    {
-        "question": "¿Qué es Smart Car Empresarial?",
         "answers": [
             "Monitorea en tiempo real el rendimiento, el estado, la actividad y la ubicación del automóvil, brindándole al usuario información útil sobre conductas de manejo, mantenimiento preventivo y problemas del auto, transformando el vehículo en un automóvil inteligente utilizando solamente una app y un equipo GPS que no requiere instalación.",
-            "Sistema enfocado únicamente en la localización del vehículo.",
-            "Servicio especializado en analizar la eficiencia del uso del automóvil.",
-            "Plataforma centrada en la evaluación de actividades vehiculares básicas."
+            "Plataforma que se limita a generar reportes históricos de ubicación del vehículo en base a los datos del GPS.",
+            "Sistema diseñado para analizar patrones de uso del automóvil, sin contemplar monitoreo en tiempo real.",
+            "Servicio especializado en brindar únicamente información básica sobre el rendimiento del automóvil."
         ],
         "correct": 0
     },
@@ -818,9 +813,9 @@ export const questions = [
         "question": "¿Qué porcentaje se le sube al equipo en financiamiento?",
         "answers": [
             "Del 10 al 35% del financiamiento otorgado, de acuerdo al plazo y plan, con base en boletín 222",
-            "Del 5 al 20% dependiendo del tipo de cliente",
-            "Un 15% adicional fijo para todos los planes",
-            "Del 10 al 20% dependiendo del monto del equipo"
+            "Del 5 al 25% basado exclusivamente en el tipo de contrato y condiciones específicas del cliente",
+            "Un incremento variable que depende exclusivamente de la política interna de cada trimestre fiscal",
+            "Un 12-30% determinado por un análisis de rentabilidad aplicado al momento de la venta"
         ],
         "correct": 0
     },
@@ -2277,10 +2272,10 @@ export const questions = [
     {
         "question": "Definición del Problema:",
         "answers": [
-        "Descripción del problema real o potencial basándose en datos, mediciones o estadísticas, de hechos reales y medibles",
-        "Análisis de una situación problemática",
-        "Proceso para solucionar un conflicto",
-        "Evaluación de un incidente"
+            "Descripción del problema real o potencial basándose en datos, mediciones o estadísticas, de hechos reales y medibles",
+            "Identificación subjetiva de dificultades o conflictos percibidos por el personal",
+            "Desarrollo de un análisis cualitativo basado en la experiencia del equipo",
+            "Revisión preliminar de los factores que puedan influir en un resultado negativo"
         ],
         "correct": 0
     },
@@ -2307,10 +2302,10 @@ export const questions = [
     {
         "question": "Acción de Mejora:",
         "answers": [
-        "Acción definida para cambiar una situación actual por una nueva condición que brinda beneficios. Una acción que decide emprender la Alta Dirección una vez que se han logrado los objetivos, a fin de alcanzar nuevos niveles de eficacia e incorporar mejores prácticas, tecnologías o innovaciones",
-        "Acción para eliminar una no conformidad",
-        "Medida para solucionar un conflicto",
-        "Proceso para evaluar un problema"
+            "Acción definida para cambiar una situación actual por una nueva condición que brinda beneficios. Una acción que decide emprender la Alta Dirección una vez que se han logrado los objetivos, a fin de alcanzar nuevos niveles de eficacia e incorporar mejores prácticas, tecnologías o innovaciones",
+            "Medida temporal para reducir riesgos inmediatos sin impactar los procesos centrales",
+            "Implementación de un procedimiento estándar para mitigar problemas identificados en auditorías internas",
+            "Revisión periódica de los indicadores clave de desempeño para ajustar estrategias existentes"
         ],
         "correct": 0
     },
@@ -2415,32 +2410,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Qué es una no conformidad menor?",
-        "answers": [
-        "Un caso aislado. No afecta la satisfacción del cliente ni la confiabilidad en el SGI",
-        "Un problema grave",
-        "Una falla repetitiva",
-        "Una no conformidad crítica"
-        ],
-        "correct": 0
-    },
-    {
         "question": "¿Qué es una no conformidad mayor?",
         "answers": [
             "La ausencia total del cumplimiento de un requisito del sistema de calidad.",
             "Un error detectado en auditorías que no afecta directamente la calidad general.",
             "Un incumplimiento menor que no pone en riesgo el sistema operativo.",
             "Un desvío aislado registrado como parte de observaciones internas."
-        ],
-        "correct": 0
-    },
-    {
-        "question": "Identificación de causa raíz:",
-        "answers": [
-        "Descripción de las causas del problema real o potencial, identificadas con el apoyo de herramientas de calidad (técnicas de análisis como: Los 5 ¿por qué?, Tormenta de Ideas, etc.)",
-        "Evaluación del problema",
-        "Proceso para solucionar un conflicto",
-        "Análisis de los datos"
         ],
         "correct": 0
     },
@@ -3100,16 +3075,6 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Cuál es la responsabilidad de la alta dirección cuando se documenta una acción para la mejora?",
-        "answers": [
-        "Facilitar los recursos, supervisar los avances y tomar las acciones correspondientes cuando no haya avances",
-        "Implementar tecnologías innovadoras",
-        "Garantizar la satisfacción del cliente",
-        "Reducir costos"
-        ],
-        "correct": 0
-    },
-    {
         "question": "En Telcel, ¿quién puede identificar la necesidad de resolver un problema o mejorar la situación actual?",
         "answers": [
         "Todos los empleados",
@@ -3162,10 +3127,10 @@ export const questions = [
     {
         "question": "¿Qué es una no conformidad menor?",
         "answers": [
-        "Un caso aislado. No afecta la satisfacción del cliente ni confiabilidad en el SGI",
-        "Una falla crítica en el sistema",
-        "Un problema recurrente",
-        "Una desviación temporal"
+            "Un caso aislado. No afecta la satisfacción del cliente ni la confiabilidad en el SGI",
+            "Un incidente que requiere una intervención inmediata debido a su impacto significativo en los procesos",
+            "Una discrepancia continua que genera retrasos importantes en las operaciones clave de la organización",
+            "Un defecto crítico que compromete la calidad total del producto o servicio entregado"
         ],
         "correct": 0
     },
@@ -3252,10 +3217,10 @@ export const questions = [
     {
         "question": "¿Qué es un Control?",
         "answers": [
-        "Cualquier medida de seguridad que definimos para tratar algún riesgo, estas medidas pueden ser administrativas (políticas, procedimientos, guías, etc.), físicas (sistema de acceso biométrico, personal de seguridad, torniquetes, etc.) y tecnológicas (antivirus, políticas del dominio corporativo, etc.)",
-        "Proceso para mejorar la calidad",
-        "Medida para reducir costos",
-        "Evaluación de riesgos"
+            "Cualquier medida de seguridad que definimos para tratar algún riesgo, estas medidas pueden ser administrativas (políticas, procedimientos, guías, etc.), físicas (sistema de acceso biométrico, personal de seguridad, torniquetes, etc.) y tecnológicas (antivirus, políticas del dominio corporativo, etc.)",
+            "Un conjunto integrado de salvaguardas y contramedidas diseñadas para mitigar amenazas específicas a través de la implementación de barreras preventivas, detectivas y correctivas en múltiples niveles organizacionales",
+            "Sistema comprehensivo de medidas preventivas y reactivas que incluye protocolos de seguridad física, lógica y administrativa, diseñado para proteger activos críticos y procesos organizacionales",
+            "Marco estructurado de políticas, procedimientos y herramientas tecnológicas que establece barreras de protección multinivel para salvaguardar la integridad operacional de la organización"
         ],
         "correct": 0
     },
@@ -3282,10 +3247,10 @@ export const questions = [
     {
         "question": "¿Qué es seguridad informática?",
         "answers": [
-        "Protección de la infraestructura de las tecnologías de la información y comunicación que apoyan a la Organización",
-        "Implementación de firewalls y antivirus",
-        "Control de accesos a los sistemas",
-        "Monitoreo de redes y sistemas"
+            "Protección de la infraestructura de las tecnologías de la información y comunicación que apoyan a la Organización",
+            "Estrategia enfocada únicamente en la encriptación de datos sensibles para evitar accesos no autorizados",
+            "Diseño y control de políticas de acceso físico a las salas de servidores y dispositivos de red",
+            "Gestión de protocolos básicos para mitigar amenazas cibernéticas de menor impacto"
         ],
         "correct": 0
     },
@@ -3376,16 +3341,6 @@ export const questions = [
         "Gestión de recursos",
         "Planificación estratégica",
         "Administración de proyectos"
-        ],
-        "correct": 0
-    },
-    {
-        "question": "Según la norma ISO/IEC 20000-1, ¿qué significa incidente?",
-        "answers": [
-        "Interrupción no planificada de un servicio de TI o la reducción en la calidad de un servicio de TI",
-        "Fallo en el hardware",
-        "Problema de software",
-        "Reinicio del sistema"
         ],
         "correct": 0
     },
@@ -3692,10 +3647,10 @@ export const questions = [
     {
         "question": "En cuanto a la norma ISO 45001, ¿con qué se compromete la alta dirección?",
         "answers": [
-        "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
-        "Implementar políticas de calidad",
-        "Aumentar la productividad",
-        "Reducir costos laborales"
+            "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
+            "Establecer y mantener un sistema integral de gestión de seguridad ocupacional que garantice la identificación proactiva de riesgos y la implementación de controles efectivos en todos los niveles operativos",
+            "Desarrollar e implementar un programa comprehensivo de salud y seguridad laboral que incluya evaluación continua de riesgos, capacitación especializada y sistemas de respuesta a emergencias",
+            "Instituir un marco de referencia robusto para la gestión de la seguridad ocupacional que integre las mejores prácticas internacionales con los requisitos específicos de la organización"
         ],
         "correct": 0
     },
@@ -3952,10 +3907,10 @@ export const questions = [
     {
         "question": "¿Cómo se deben registrar los riesgos?",
         "answers": [
-        "Valoración y Tratamiento de Riesgos de Procesos, Valoración y Tratamiento de Riesgos de Seguridad de la Información, Valoración y Tratamiento de Riesgos de Servicios, Identificación de Peligros y Evaluación de Riesgos para la SST, El análisis de brechas de Datos Personales",
-        "Mediante auditorías internas",
-        "A través de un sistema de gestión",
-        "Con reportes mensuales"
+            "Valoración y Tratamiento de Riesgos de Procesos, Valoración y Tratamiento de Riesgos de Seguridad de la Información, Valoración y Tratamiento de Riesgos de Servicios, Identificación de Peligros y Evaluación de Riesgos para la SST, El análisis de brechas de Datos Personales",
+            "Elaboración de matrices específicas que contemplen solo riesgos operativos y financieros",
+            "Implementación de un software de gestión para centralizar exclusivamente los riesgos críticos",
+            "Redacción de informes por área que se presentan de manera trimestral para evaluación"
         ],
         "correct": 0
     },
