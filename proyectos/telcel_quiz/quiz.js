@@ -37,7 +37,7 @@ let score = 0;
 
 // Agregar nueva variable para el timer de pregunta
 let questionTimer;
-const QUESTION_TIME_LIMIT = 25; // 15 segundos por pregunta
+const QUESTION_TIME_LIMIT = 45; // 15 segundos por pregunta
 
 const questionContainer = document.getElementById('question');
 const questionCounter = document.getElementById('question-counter');
