@@ -2,11 +2,30 @@ import { questions } from './questions.js'; // Importar las preguntas desde el a
 import { studySession } from './studySession.js';
 import { ProgressUI } from './progressUI.js';
 
+// Validación inicial de dependencias
+if (!questions || !Array.isArray(questions) || questions.length === 0) {
+    console.error('Error: No se pudieron cargar las preguntas correctamente');
+    throw new Error('Questions not loaded');
+}
+
+if (!studySession) {
+    console.error('Error: StudySession no está definida');
+    throw new Error('StudySession not loaded');
+}
+
+if (!ProgressUI) {
+    console.error('Error: ProgressUI no está definido');
+    throw new Error('ProgressUI not loaded');
+}
+
 const totalQuestions = questions.length; // Contador del total de preguntas del dataset
 
 function getRandomQuestions(questions, num) {
-    const shuffled = questions.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, num);
+    // Crear una copia del array antes de ordenarlo
+    const questionsCopy = [...questions];
+    return questionsCopy
+        .sort(() => Math.random() - 0.5)
+        .slice(0, num);
 }
 
 let selectedQuestions = [];
@@ -305,154 +324,159 @@ document.head.appendChild(style);
 
 let questionStartTime; // Agregar esta variable al inicio del archivo
 
-function showQuestion() {
-    questionStartTime = new Date(); // Agregar esta línea
-    resetState();
-    updateProgress();
-    clearTimeout(questionTimer); // Limpiar el timer anterior
+// Agregar esta función antes de showQuestion()
+function resetState() {
+    // Restablecer el estado de los botones de respuesta
+    answerButtons.forEach(button => {
+        button.style.display = 'block';
+        button.disabled = false;
+        button.classList.remove('selected', 'correct', 'incorrect');
+    });
 
-    const currentQuestion = selectedQuestions[currentQuestionIndex];
-    questionCounter.innerText = `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
-    questionContainer.innerText = currentQuestion.question;
+    // Limpiar el temporizador si existe
+    if (questionTimer) {
+        clearInterval(questionTimer);
+    }
+}
+
+// Agregar esta función antes de showQuestion()
+function updateQuestionTimer(seconds) {
+    // Buscar o crear el elemento del timer
+    let timerElement = document.getElementById('question-timer');
+    if (!timerElement) {
+        // Crear contenedor del timer si no existe
+        const timerContainer = document.createElement('div');
+        timerContainer.className = 'quiz-header-info';
+        
+        // Crear elemento del timer
+        timerElement = document.createElement('div');
+        timerElement.id = 'question-timer';
+        timerContainer.appendChild(timerElement);
+        
+        // Insertar antes del contenedor de preguntas
+        questionContainer.parentNode.insertBefore(timerContainer, questionContainer);
+    }
+
+    // Actualizar el tiempo
+    timerElement.textContent = `${seconds}s`;
     
-    // Iniciar el timer para esta pregunta
-    let timeLeft = QUESTION_TIME_LIMIT;
-    updateQuestionTimer(timeLeft);
-    
-    questionTimer = setInterval(() => {
-        timeLeft--;
+    // Aplicar clases según el tiempo restante
+    timerElement.className = 'question-timer';
+    if (seconds <= 5) {
+        timerElement.classList.add('danger');
+    } else if (seconds <= 10) {
+        timerElement.classList.add('warning');
+    }
+}
+
+// Modificar las funciones principales para incluir validaciones
+function showQuestion() {
+    try {
+        if (!selectedQuestions || currentQuestionIndex >= selectedQuestions.length) {
+            console.error('Error: No hay más preguntas disponibles');
+            showResults();
+            return;
+        }
+
+        const currentQuestion = selectedQuestions[currentQuestionIndex];
+        if (!validateQuestion(currentQuestion)) {
+            console.error('Error: Pregunta inválida, saltando a la siguiente');
+            currentQuestionIndex++;
+            showQuestion();
+            return;
+        }
+
+        resetState(); // Ahora esta función existe
+        questionStartTime = new Date();
+        updateProgress();
+
+        // Actualizar interfaz
+        questionCounter.innerText = `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
+        questionContainer.innerText = currentQuestion.question;
+        
+        // Configurar temporizador
+        let timeLeft = QUESTION_TIME_LIMIT;
         updateQuestionTimer(timeLeft);
         
-        if (timeLeft <= 0) {
-            clearInterval(questionTimer);
-            selectAnswer(-1); // Marcar como incorrecta si se acaba el tiempo
-        }
-    }, 1000);
+        // Iniciar nuevo temporizador
+        questionTimer = setInterval(() => {
+            timeLeft--;
+            updateQuestionTimer(timeLeft);
+            
+            if (timeLeft <= 0) {
+                clearInterval(questionTimer);
+                selectAnswer(-1); // Marca como incorrecta si se acaba el tiempo
+            }
+        }, 1000);
 
-    // Crear array de todas las respuestas
-    const allAnswers = [...currentQuestion.answers];
-    const correctAnswer = allAnswers[currentQuestion.correct];
-    
-    // Remover la respuesta correcta del array
-    allAnswers.splice(currentQuestion.correct, 1);
-    
-    // Mezclar las respuestas incorrectas
-    const shuffledWrongAnswers = allAnswers.sort(() => Math.random() - 0.5);
-    
-    // Insertar la respuesta correcta en una posición aleatoria
-    const randomPosition = Math.floor(Math.random() * 4);
-    const finalAnswers = [...shuffledWrongAnswers];
-    finalAnswers.splice(randomPosition, 0, correctAnswer);
-    
-    // Asignar respuestas a los botones
-    finalAnswers.forEach((answer, index) => {
-        const button = answerButtons[index];
-        button.innerText = answer;
-        button.disabled = false;
-        button.classList.remove('selected');
-        button.onclick = () => selectAnswer(currentQuestion.answers.indexOf(answer));
-    });
-}
-
-// Agregar función para actualizar el timer visual
-function updateQuestionTimer(seconds) {
-    const timerElement = document.getElementById('question-timer');
-    if (!timerElement) {
-        const quizHeaderInfo = document.createElement('div');
-        quizHeaderInfo.className = 'quiz-header-info';
+        // Preparar y mostrar respuestas
+        const allAnswers = [...currentQuestion.answers];
+        const correctAnswer = allAnswers[currentQuestion.correct];
+        allAnswers.splice(currentQuestion.correct, 1);
+        const shuffledWrongAnswers = allAnswers.sort(() => Math.random() - 0.5);
+        const finalAnswers = [...shuffledWrongAnswers];
+        finalAnswers.splice(Math.floor(Math.random() * 4), 0, correctAnswer);
         
-        // Mover el datasetCounter al contenedor quiz-header-info
-        const datasetCounterElement = document.getElementById('dataset-counter');
-        if (datasetCounterElement) {
-            quizHeaderInfo.appendChild(datasetCounterElement);
-        }
-        
-        const timer = document.createElement('div');
-        timer.id = 'question-timer';
-        quizHeaderInfo.appendChild(timer);
-        
-        // Insertar el contenedor antes del questionContainer
-        questionContainer.parentNode.insertBefore(quizHeaderInfo, questionContainer);
+        // Actualizar botones
+        answerButtons.forEach((button, index) => {
+            button.innerText = finalAnswers[index];
+            button.disabled = false;
+            button.classList.remove('selected');
+            button.onclick = () => selectAnswer(currentQuestion.answers.indexOf(finalAnswers[index]));
+            button.style.display = 'block';
+        });
+    } catch (error) {
+        console.error('Error en showQuestion:', error);
+        showResults();
     }
-
-    const timer = document.getElementById('question-timer');
-    timer.textContent = `${seconds}s`;
-    
-    // Actualizar clases según el tiempo restante
-    timer.className = 'question-timer';
-    if (seconds <= 5) {
-        timer.classList.add('danger');
-    } else if (seconds <= 10) {
-        timer.classList.add('warning');
-    }
-}
-
-function resetState() {
-    answerButtons.forEach(button => {
-        button.disabled = false;
-        button.classList.remove('selected');
-    });
 }
 
 function selectAnswer(selectedIndex) {
-    const currentQuestion = selectedQuestions[currentQuestionIndex];
-    const responseTime = (new Date() - questionStartTime) / 1000;
-    
-    // Detener el timer y actualizar métricas
-    clearInterval(questionTimer);
-    studySession.updateMetrics({
-        isCorrect: selectedIndex === currentQuestion.correct,
-        responseTime: responseTime
-    });
-    ProgressUI.updateDashboard(studySession.metrics);
-
-    // Procesar la respuesta
-    const questionIndex = questions.indexOf(currentQuestion);
-    answerButtons.forEach(button => button.disabled = true);
-
-    // Manejar respuesta correcta/incorrecta
-    if (selectedIndex === currentQuestion.correct) {
-        handleCorrectAnswer(currentQuestion, questionIndex);
-    } else {
-        handleIncorrectAnswer(currentQuestion, questionIndex);
-    }
-
-    // Avanzar a la siguiente pregunta o mostrar resultados
-    currentQuestionIndex++;
-    
-    // Verificar si hemos terminado el quiz
-    if (currentQuestionIndex >= selectedQuestions.length) {
-        setTimeout(() => showResults(), 500); // Pequeña pausa antes de mostrar resultados
-    } else {
-        setTimeout(() => showQuestion(), 500); // Pequeña pausa antes de la siguiente pregunta
-    }
-}
-
-function handleCorrectAnswer(question, questionIndex) {
-    score++;
-    if (!correctAnswers.includes(question.question)) {
-        correctAnswers.push(question.question);
-        const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
-        correctIndices.push(questionIndex);
-        localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
-        
-        // Remover de incorrectIndices si estaba previamente incorrecta
-        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-        const indexToRemove = incorrectIndices.indexOf(questionIndex);
-        if (indexToRemove > -1) {
-            incorrectIndices.splice(indexToRemove, 1);
-            localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+    try {
+        if (typeof selectedIndex !== 'number') {
+            console.error('Error: Índice de respuesta inválido');
+            return;
         }
-    }
-}
 
-function handleIncorrectAnswer(question, questionIndex) {
-    if (!incorrectAnswers.includes(question.question)) {
-        incorrectAnswers.push(question.question);
-        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-        incorrectIndices.push(questionIndex);
-        localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
-        updateErrorCount(questionIndex);
+        // Prevenir múltiples selecciones o selecciones después de que el tiempo se acabó
+        if (answerButtons[0].disabled || !questionTimer) {
+            return;
+        }
+
+        // Detener el temporizador
+        clearInterval(questionTimer);
+        
+        const currentQuestion = selectedQuestions[currentQuestionIndex];
+        const responseTime = (new Date() - questionStartTime) / 1000;
+        
+        // Deshabilitar botones inmediatamente
+        answerButtons.forEach(button => button.disabled = true);
+        
+        // Procesar respuesta
+        const questionIndex = questions.indexOf(currentQuestion);
+        const isCorrect = selectedIndex === currentQuestion.correct;
+
+        // Actualizar métricas
+        studySession.updateMetrics({
+            isCorrect: isCorrect,
+            responseTime: responseTime
+        });
+        
+        // Manejar respuesta
+        if (isCorrect) {
+            handleCorrectAnswer(currentQuestion, questionIndex);
+        } else {
+            handleIncorrectAnswer(currentQuestion, questionIndex);
+        }
+
+        // Avanzar a la siguiente pregunta después de un breve retraso
+        setTimeout(() => {
+            currentQuestionIndex++;
+            showQuestion();
+        }, 1000);
+    } catch (error) {
+        console.error('Error en selectAnswer:', error);
+        showResults();
     }
 }
 
@@ -493,30 +517,45 @@ function markRemainingQuestionsIncorrect() {
 
 // Modificar la función showResults
 function showResults() {
-    studySession.endSession();
-    clearInterval(timerInterval);
+    try {
+        if (studySession) {
+            studySession.endSession();
+        }
+        
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
 
-    // Ocultar elementos del quiz
-    quizContainer.style.display = 'none';
-    questionContainer.style.display = 'none';
-    questionCounter.style.display = 'none';
+        // Validar que los contadores sean números válidos
+        const finalScore = typeof score === 'number' ? score : 0;
+        const totalQuestions = selectedQuestions ? selectedQuestions.length : 0;
 
-    // Mostrar resultados
-    resultContainer.style.display = 'block';
-    scoreDisplay.innerText = `TU PUNTUACIÓN: ${score}/${selectedQuestions.length}`;
-    
-    // Actualizar listas de preguntas
-    correctQuestionsDisplay.innerHTML = `
-        <h3>Preguntas Correctas</h3>
-        <ul>${correctAnswers.map(q => `<li>${q}</li>`).join('')}</ul>`;
-    
-    incorrectQuestionsDisplay.innerHTML = `
-        <h3>Preguntas Incorrectas</h3>
-        <ul>${incorrectAnswers.map(q => `<li class="incorrect">${q}</li>`).join('')}</ul>`;
+        // Ocultar elementos del quiz
+        quizContainer.style.display = 'none';
+        questionContainer.style.display = 'none';
+        questionCounter.style.display = 'none';
 
-    // Mostrar reporte de progreso
-    const progressReport = studySession.getProgressReport();
-    ProgressUI.updateDashboard(studySession.metrics);
+        // Mostrar resultados
+        resultContainer.style.display = 'block';
+        scoreDisplay.innerText = `TU PUNTUACIÓN: ${finalScore}/${totalQuestions}`;
+        
+        // Actualizar listas de preguntas
+        correctQuestionsDisplay.innerHTML = `
+            <h3>Preguntas Correctas</h3>
+            <ul>${correctAnswers.map(q => `<li>${q}</li>`).join('')}</ul>`;
+        
+        incorrectQuestionsDisplay.innerHTML = `
+            <h3>Preguntas Incorrectas</h3>
+            <ul>${incorrectAnswers.map(q => `<li class="incorrect">${q}</li>`).join('')}</ul>`;
+
+        // Mostrar reporte de progreso
+        const progressReport = studySession.getProgressReport();
+        ProgressUI.updateDashboard(studySession.metrics);
+    } catch (error) {
+        console.error('Error en showResults:', error);
+        // Mostrar un mensaje de error al usuario
+        displayError('Ha ocurrido un error al mostrar los resultados');
+    }
 }
 
 // Remove the nextButton event listener and element
@@ -802,6 +841,81 @@ timerStyle.textContent = `
     }
 `;
 document.head.appendChild(timerStyle);
+
+function handleCorrectAnswer(question, questionIndex) {
+    score++;
+    if (!correctAnswers.includes(question.question)) {
+        correctAnswers.push(question.question);
+        const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
+        correctIndices.push(questionIndex);
+        localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
+        
+        // Remover de incorrectIndices si estaba previamente incorrecta
+        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+        const indexToRemove = incorrectIndices.indexOf(questionIndex);
+        if (indexToRemove > -1) {
+            incorrectIndices.splice(indexToRemove, 1);
+            localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+        }
+    }
+}
+
+function handleIncorrectAnswer(question, questionIndex) {
+    if (!incorrectAnswers.includes(question.question)) {
+        incorrectAnswers.push(question.question);
+        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+        incorrectIndices.push(questionIndex);
+        localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+        updateErrorCount(questionIndex);
+    }
+}
+
+// Validación de elementos del DOM
+function validateDOMElements() {
+    const requiredElements = {
+        'question': questionContainer,
+        'question-counter': questionCounter,
+        'dataset-counter': datasetCounter,
+        'answer-buttons': answerButtons,
+        'result-container': resultContainer,
+        'score': scoreDisplay,
+        'quiz-container': quizContainer,
+        'options-container': optionsContainer
+    };
+
+    for (const [name, element] of Object.entries(requiredElements)) {
+        if (!element) {
+            console.error(`Error: Elemento '${name}' no encontrado en el DOM`);
+            throw new Error(`Required DOM element '${name}' not found`);
+        }
+    }
+}
+
+// Validación de funciones críticas
+function validateQuestion(question) {
+    if (!question || !question.question || !Array.isArray(question.answers) || 
+        typeof question.correct !== 'number' || question.correct >= question.answers.length) {
+        console.error('Error: Pregunta inválida:', question);
+        return false;
+    }
+    return true;
+}
+
+// Función auxiliar para mostrar errores al usuario
+function displayError(message) {
+    showPopup(message);
+    console.error(message);
+}
+
+// Inicialización con validaciones
+try {
+    validateDOMElements();
+    handleLogin();
+    // No inicializar el quiz automáticamente, esperar al login
+} catch (error) {
+    console.error('Error durante la inicialización:', error);
+    displayError('Error al cargar la aplicación');
+}
 
 
 
