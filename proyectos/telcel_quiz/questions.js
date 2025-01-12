@@ -270,8 +270,13 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "Qué servicios no son compatibles con VPN Cost Control?",
-        "answers": ["Pools, Productos de bloqueo, Scan Telcel y Gps Telcel, contestone, tarifas fronterizas, paquete de videollamada", "Solo Pools", "Solo contestone", "Solo tarifas fronterizas"],
+        "question": "¿Qué servicios no son compatibles con VPN Cost Control?",
+        "answers": [
+            "Pools, Productos de bloqueo, Scan Telcel y Gps Telcel, contestone, tarifas fronterizas, paquete de videollamada.",
+            "Los servicios no compatibles incluyen solo Pools, lo que limita el acceso a opciones de agrupación de datos y recursos compartidos.",
+            "Solo contestone no es compatible con VPN Cost Control, lo que afecta la personalización de tonos de llamada para usuarios individuales.",
+            "Los servicios de tarifas fronterizas no son compatibles, restringiendo la disponibilidad de planes de comunicación en áreas limítrofes y fronterizas."
+        ],
         "correct": 0
     },
     {
@@ -296,7 +301,12 @@ export const questions = [
     },
     {
         "question": "En el servicio de mensajería MET, ¿quiénes pertenecen a la lista negra?",
-        "answers": ["Números pertenecientes a la lista blanca bloqueados para enviar y recibir mensajería", "Números bloqueados por el administrador", "Números desconocidos", "Números internacionales"],
+        "answers": [
+            "Números pertenecientes a la lista blanca bloqueados para enviar y recibir mensajería.",
+            "Números bloqueados por el administrador debido a comportamiento sospechoso o actividad no autorizada, asegurando la seguridad del servicio.",
+            "Números desconocidos que no están registrados en la lista de contactos aprobados y por lo tanto son restringidos automáticamente.",
+            "Números internacionales que no cumplen con las normativas locales de mensajería y son filtrados para evitar posibles fraudes."
+        ],
         "correct": 0
     },
     {
@@ -331,9 +341,14 @@ export const questions = [
     },
     {
         "question": "¿Qué actividades permite el límite de uso de 5G para WhatsApp?",
-        "answers": ["Envío/Recepción de mensajes de texto, imágenes, fotos, video, notas de voz, contactos de agenda y notificaciones", "Solo envío de mensajes de texto", "Solo envío de imágenes", "Solo recepción de mensajes de texto"],
+        "answers": [
+            "Envío/Recepción de mensajes de texto, imágenes, fotos, video, notas de voz, contactos de agenda y notificaciones.",
+            "El límite de uso de 5G permite solo el envío de mensajes de texto, restringiendo otras funcionalidades como el envío de archivos multimedia y notas de voz.",
+            "Con el límite de uso de 5G, solo se permite el envío de imágenes, lo que limita la capacidad de enviar mensajes de texto y otros tipos de contenido.",
+            "El límite de uso de 5G permite únicamente la recepción de mensajes de texto, lo que restringe la posibilidad de enviar mensajes o archivos multimedia a otros contactos."
+        ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Se pueden combinar paquetes de roaming internacional, masivos y corporativos?",
         "answers": ["Sí, con restricciones", "No", "Sí, sin restricciones", "Solo para ciertos usuarios"],
@@ -341,7 +356,12 @@ export const questions = [
     },
     {
         "question": "¿El paquete de Roaming Internacional de Voz para qué llamadas aplica?",
-        "answers": ["Llamadas entrantes y salientes con destino al propio país visitado, hacia México, EUA o América Latina", "Solo llamadas entrantes", "Solo llamadas salientes", "Llamadas internas dentro del país visitado"],
+        "answers": [
+            "Llamadas entrantes y salientes con destino al propio país visitado, hacia México, EUA o América Latina",
+            "Servicio exclusivo para la recepción de llamadas mientras el usuario se encuentra en el extranjero, con cobertura en múltiples destinos internacionales",
+            "Cobertura únicamente para realizar llamadas salientes desde el país visitado hacia cualquier destino internacional incluido en el plan",
+            "Servicio limitado a comunicaciones realizadas dentro del territorio del país visitado entre usuarios del mismo operador local"
+        ],
         "correct": 0
     },
     {
@@ -376,9 +396,14 @@ export const questions = [
     },
     {
         "question": "¿Cuándo entra una sim en garantía?",
-        "answers": ["Cuando tiene menos de un año de facturada, no presenta daños físicos ni derrame de líquidos, ni está quemada (sim rechazada o puk bloqueado)", "Cuando tiene menos de dos años de facturada", "Cuando no presenta daños físicos", "Cuando no presenta derrame de líquidos"],
+        "answers": [
+            "Cuando tiene menos de un año de facturada, no presenta daños físicos ni derrame de líquidos, ni está quemada (sim rechazada o puk bloqueado).",
+            "La SIM entra en garantía cuando tiene menos de dos años de facturada, sin importar si presenta daños físicos o derrames de líquidos.",
+            "Entra en garantía cuando no presenta daños físicos visibles, independientemente del tiempo de facturación y estado de líquidos.",
+            "La garantía aplica cuando no presenta derrame de líquidos, quemaduras u otros daños físicos visibles, sin importar el tiempo desde su facturación."
+        ],
         "correct": 0
-    },
+    },    
     {
         "question": "Es el servicio que permite realizar pagos móviles, transferencias de dinero y consultas en tiempo real las 24 horas del día desde tu celular a través de mensajes de texto SMS:",
         "answers": ["Transfer", "Banca móvil", "Pagos móviles", "Mensajería financiera"],
@@ -431,9 +456,14 @@ export const questions = [
     },
     {
         "question": "¿Para qué sirve el sistema GPS?",
-        "answers": ["Permite determinar una posición en cualquier lugar a través de satélites y señal GPS", "Para enviar mensajes de texto", "Para realizar llamadas", "Para acceder a internet"],
+        "answers": [
+            "Permite determinar una posición en cualquier lugar a través de satélites y señal GPS, proporcionando datos precisos de ubicación para diversas aplicaciones.",
+            "El sistema GPS se utiliza para enviar mensajes de texto de forma rápida y eficiente, garantizando una comunicación constante.",
+            "GPS es una herramienta esencial para realizar llamadas, conectando a usuarios en cualquier parte del mundo con alta calidad.",
+            "Se emplea para acceder a internet, brindando una conexión estable y rápida en dispositivos móviles y otros equipos."
+        ],
         "correct": 0
-    },
+    },    
     {
         "question": "Es un servicio diseñado para localizar, rastrear y monitorear los vehículos de una empresa mediante GPS y LBS:",
         "answers": ["Gestión Vehicular Telcel GVT", "Telemetría avanzada", "Monitorización vehicular", "Control de flota"],
@@ -527,23 +557,23 @@ export const questions = [
     {
         "question": "¿Qué es Video a Bordo?",
         "answers": [
-            "Es una solución que brinda información de video en tiempo real de las diferentes perspectivas de una unidad, como cabina, exterior o dentro de las cajas",
-            "Es una herramienta para grabar video únicamente del interior de la cabina",
-            "Es un servicio de transmisión de video para flotas de transporte pesado",
-            "Es una app que muestra videos educativos para conductores"
+            "Es una solución que brinda información de video en tiempo real de las diferentes perspectivas de una unidad, como cabina, exterior o dentro de las cajas.",
+            "Es una herramienta para grabar video únicamente del interior de la cabina, proporcionando seguridad y monitoreo constante de lo que ocurre dentro del espacio de conducción.",
+            "Es un servicio de transmisión de video para flotas de transporte pesado, ofreciendo una vista en vivo de las rutas y condiciones del tráfico para una gestión más eficiente.",
+            "Es una app que muestra videos educativos para conductores, incluyendo tutoriales sobre seguridad vial y técnicas de conducción para mejorar el desempeño y reducir riesgos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué beneficios tiene Video a Bordo?",
         "answers": [
-            "App móvil para monitoreo de las unidades, alertas de hasta 14 eventos en tiempo real, grabación por evento, permite descargar video y foto, reporte histórico de 400 días",
-            "Permite visualizar grabaciones de hasta 7 días únicamente",
-            "Incluye reportes básicos de eventos de manejo, pero sin alertas",
-            "No permite descarga de videos, pero genera reportes históricos"
+            "App móvil para monitoreo de las unidades, alertas de hasta 14 eventos en tiempo real, grabación por evento, permite descargar video y foto, reporte histórico de 400 días.",
+            "Permite visualizar grabaciones de hasta 7 días únicamente, ofreciendo una visión limitada de los eventos recientes pero sin proporcionar almacenamiento a largo plazo.",
+            "Incluye reportes básicos de eventos de manejo, pero sin alertas en tiempo real ni funcionalidades avanzadas como la descarga de videos o fotos.",
+            "No permite descarga de videos, pero genera reportes históricos detallados que abarcan un periodo de tiempo significativo para el análisis de datos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es la funcionalidad del sistema DMS de Video a Bordo?",
         "answers": [
@@ -1067,23 +1097,23 @@ export const questions = [
     {
         "question": "¿Con qué servicios es compatible VoLTE?",
         "answers": [
-            "Buzón de voz MIO y VIVOM, mensajes de dos vías (SMS), mensajes multimedia (MMS), productos de redes sociales, servicios Fonyou, llamada por cobrar, buzón de voz por cobrar, transferencia de llamada (solo iPhone), identificador de llamadas, llamadas tripartitas en Postpago (de voz tradicional), llamadas en espera, productos de datos, bloqueos/desbloqueo de larga distancia, conferencia Telcel, Contestone",
-            "Solo con servicios de voz y mensajería básica",
-            "Exclusivamente con videollamadas en alta calidad",
-            "Con servicios de datos ilimitados únicamente"
+            "Buzón de voz MIO y VIVOM, mensajes de dos vías (SMS), mensajes multimedia (MMS), productos de redes sociales, servicios Fonyou, llamada por cobrar, buzón de voz por cobrar, transferencia de llamada (solo iPhone), identificador de llamadas, llamadas tripartitas en Postpago (de voz tradicional), llamadas en espera, productos de datos, bloqueos/desbloqueo de larga distancia, conferencia Telcel, Contestone.",
+            "VoLTE es compatible solo con servicios de voz y mensajería básica, permitiendo a los usuarios realizar y recibir llamadas de alta calidad y enviar mensajes de texto estándar, además de acceso a aplicaciones de entretenimiento y servicios de emergencia, garantizando una experiencia de comunicación más completa.",
+            "Exclusivamente con videollamadas en alta calidad, permitiendo una experiencia de comunicación visual clara y sin interrupciones a través de la red móvil, también incluye servicios de realidad virtual y aumentada para una experiencia inmersiva.",
+            "Con servicios de datos ilimitados únicamente, ofreciendo a los usuarios acceso continuo a internet sin restricciones en el uso de aplicaciones y navegación web, además de soporte para aplicaciones empresariales y servicios de seguridad en línea."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué es 5G?",
         "answers": [
-            "Es la quinta generación de tecnología móvil que permite un mejor acceso a servicios y aplicaciones de realidad aumentada, realidad virtual y de entretenimiento, ofreciendo una experiencia mucho más ágil y avanzada, hasta 20 veces más rápida que 4G",
-            "Es una tecnología que optimiza las conexiones LTE existentes para mayor alcance",
-            "Es un software que mejora el rendimiento de los equipos móviles",
-            "Es un sistema exclusivo para dispositivos de gama alta"
+            "Es la quinta generación de tecnología móvil que permite un mejor acceso a servicios y aplicaciones de realidad aumentada, realidad virtual y de entretenimiento, ofreciendo una experiencia mucho más ágil y avanzada, hasta 20 veces más rápida que 4G.",
+            "Es una tecnología que optimiza las conexiones LTE existentes para proporcionar un mayor alcance y velocidad en la red móvil.",
+            "Es un software avanzado que se utiliza para mejorar el rendimiento de los equipos móviles a través de actualizaciones.",
+            "Es un sistema exclusivo diseñado para dispositivos de gama alta que requieren mayor potencia y eficiencia en la conexión."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son los requisitos para navegar en 5G?",
         "answers": [
@@ -4113,9 +4143,9 @@ export const questions = [
         "question": "¿A qué se hace acreedor un empleado que falta a la política de imagen de Radiomovil DIPSA (PL-00.02.00.00.00-002)?",
         "answers": [
         "A las sanciones que determine el reglamento interior de trabajo o las medidas que la empresa determine",
-        "Una advertencia verbal",
-        "Una suspensión temporal",
-        "Un despido inmediato"
+        "A una amonestación verbal inicial seguida de un proceso disciplinario progresivo según la frecuencia y gravedad de la falta",
+        "A una suspensión temporal sin goce de sueldo que puede extenderse de acuerdo a la gravedad de la infracción cometida",
+        "A la terminación inmediata de la relación laboral conforme a las políticas internas de la empresa y la normatividad vigente"
         ],
         "correct": 0
     },
@@ -4123,9 +4153,9 @@ export const questions = [
         "question": "¿Cuáles son algunos ejemplos de buena imagen de personal?",
         "answers": [
         "La puntualidad, el cumplimiento de normas y la cordialidad, el uso de la credencial de identificación de la empresa",
-        "La apariencia física y la forma de vestir",
-        "La participación en eventos de la empresa",
-        "El uso de dispositivos electrónicos en el lugar de trabajo"
+        "La presentación personal adecuada que incluye vestimenta formal, higiene personal y cumplimiento del código de vestimenta establecido por la organización",
+        "La participación activa en eventos corporativos, capacitaciones y actividades de integración que promueven el desarrollo profesional dentro de la empresa",
+        "El uso responsable y profesional de equipos y dispositivos electrónicos durante la jornada laboral, siguiendo los protocolos establecidos"
         ],
         "correct": 0
     },
@@ -4141,7 +4171,11 @@ export const questions = [
     },
     {
         "question": "El perfil de puesto basado en competencias laborales describe la información referente a:",
-        "answers": ["Requisitos mínimos que debe cubrir el ocupante del puesto, competencias generales, sistemas y/o aplicaciones que se utilizan en el puesto","Responsabilidades diarias del puesto", "Proceso de selección y contratación", "Metas y objetivos del empleado"
+        "answers": [
+            "Requisitos mínimos que debe cubrir el ocupante del puesto, competencias generales, sistemas y/o aplicaciones que se utilizan en el puesto",
+            "Las responsabilidades diarias del puesto, incluyendo las tareas específicas y las expectativas de rendimiento",
+            "El proceso de selección y contratación, desde la publicación de la vacante hasta la incorporación del nuevo empleado",
+            "Las metas y objetivos del empleado, detallando los logros esperados y los indicadores de desempeño"
         ],
         "correct": 0
     },
@@ -4149,19 +4183,19 @@ export const questions = [
         "question": "¿Cuál es la medida de igualdad, respeto e integridad?",
         "answers": [
         "Proporcionar iguales oportunidades de empleo, a todas las personas calificadas sin ningún tipo de discriminación",
-        "Ofrecer capacitaciones periódicas",
-        "Implementar políticas de seguridad",
-        "Garantizar la satisfacción del cliente"
+        "Ofrecer programas continuos de capacitación y desarrollo profesional que promuevan el crecimiento equitativo de todos los colaboradores en la organización",
+        "Implementar políticas y protocolos de seguridad que garanticen un ambiente laboral seguro y respetuoso para todos los miembros del equipo",
+        "Establecer estándares y métricas de servicio que aseguren la satisfacción del cliente manteniendo los valores corporativos de equidad y respeto"
         ],
         "correct": 0
     },
     {
         "question": "¿Cuál es la definición de honestidad dentro de los valores de Telcel?",
         "answers": [
-        "Al ser congruente en nuestro pensar y actuar, generamos confianza entre nosotros con nuestros clientes, inversionistas, proveedores y terceros",
-        "Cumplir con las normativas legales",
-        "Actuar con transparencia en todas las operaciones",
-        "Mantener una comunicación abierta y honesta"
+            "Al ser congruente en nuestro pensar y actuar, generamos confianza entre nosotros con nuestros clientes, inversionistas, proveedores y terceros",
+            "Garantizar el cumplimiento integral de todas las normativas legales y regulaciones corporativas en cada aspecto de nuestras operaciones diarias",
+            "Mantener la transparencia en todas las operaciones comerciales y administrativas, asegurando la integridad en cada proceso empresarial",
+            "Establecer y mantener canales de comunicación abiertos y honestos con todos los stakeholders de la organización"
         ],
         "correct": 0
     },
@@ -4449,9 +4483,9 @@ export const questions = [
         "question": "¿Desde dónde podemos cancelar o dar de baja Claro Video?",
         "answers": [
             "Vía TEL 018002529999 y www.clarovideo.com. El usuario ingresa a Claro Video y selecciona 'Mi Cuenta' > 'Suscripciones' > 'Cancelar'",
-            "Directamente en un Centro de Atención a Clientes",
-            "Llamando al servicio de soporte técnico",
-            "Mediante la aplicación móvil Claro Video en la sección de ajustes"
+            "A través de cualquier Centro de Atención a Clientes autorizado, donde un asesor especializado procesará la solicitud de cancelación siguiendo los protocolos establecidos",
+            "Mediante comunicación directa con el equipo de soporte técnico especializado, quienes gestionan el proceso de cancelación siguiendo los procedimientos oficiales",
+            "Utilizando las opciones de configuración avanzada disponibles en la aplicación móvil de Claro Video, siguiendo la ruta de cancelación en el menú de preferencias"
         ],
         "correct": 0
     },
@@ -4489,9 +4523,9 @@ export const questions = [
         "question": "¿Para qué sirve el pool de datos?",
         "answers": [
             "Contabilizar los KB incluidos en los planes tarifarios solo de datos de cada una de las líneas que tenga contratado un cliente e ir asignándolos dependiendo de la fecha y hora",
-            "Centralizar los datos compartidos entre cuentas corporativas",
-            "Monitorear el uso de datos en tiempo real para ajustar el límite de crédito",
-            "Permitir la transferencia de datos entre líneas dentro de la misma cuenta"
+            "Administrar y distribuir de manera centralizada los recursos de datos compartidos entre diferentes cuentas corporativas, optimizando su uso y asignación",
+            "Realizar un seguimiento detallado del consumo de datos en tiempo real para ajustar dinámicamente los límites de crédito según los patrones de uso",
+            "Facilitar la transferencia y redistribución eficiente de datos entre múltiples líneas asociadas a una misma cuenta, maximizando el aprovechamiento del servicio"
         ],
         "correct": 0
     },
@@ -4608,10 +4642,10 @@ export const questions = [
     {
         "question": "¿En qué consiste el servicio Global Gateway para tGG?",
         "answers": [
-        "El usuario acepta que le envíen mensajes de texto (SMS) de manera individual sin confirmación (via web service), solicitada por el usuario, via portal web o carga masiva a través de un registro",
-        "El usuario recibe correos electrónicos masivos",
-        "El usuario puede realizar llamadas internacionales a bajo costo",
-        "El usuario accede a un portal de servicios en línea"
+            "El usuario acepta que le envíen mensajes de texto (SMS) de manera individual sin confirmación (via web service), solicitada por el usuario, via portal web o carga masiva a través de un registro.",
+            "El servicio Global Gateway permite al usuario recibir correos electrónicos masivos de manera automatizada y gestionar sus suscripciones mediante una plataforma centralizada para optimizar la comunicación.",
+            "El usuario puede realizar llamadas internacionales a bajo costo utilizando una aplicación especializada que ofrece tarifas competitivas y una conexión de alta calidad, garantizando una experiencia de comunicación eficiente.",
+            "El usuario accede a un portal de servicios en línea donde puede gestionar diversas funcionalidades, incluyendo el monitoreo de su consumo de datos y la configuración de sus preferencias de comunicación."
         ],
         "correct": 0
     },
@@ -4619,9 +4653,9 @@ export const questions = [
         "question": "Concepto de Eficiencia Energética.",
         "answers": [
         "Esta solución consta de un monitoreo que ayuda a la administración óptima de los consumos de energía eléctrica, agua y gas, con el fin de reducir el costo recurrente de facturación a partir de la identificación y detección oportuna de malas prácticas, fallas o fugas, a través de alertas y tableros analíticos que llevan a tomar medidas preventivas y acciones correctivas oportunas",
-        "Es un sistema para medir la eficiencia de los electrodomésticos",
-        "Es una política de ahorro energético",
-        "Es un programa gubernamental para reducir el consumo de energía"
+        "Es un sistema integral de gestión y control que permite evaluar y optimizar el consumo energético en edificios y empresas mediante la implementación de tecnologías avanzadas de medición y análisis de datos para identificar patrones de consumo ineficientes",
+        "Es una estrategia corporativa que busca implementar prácticas y tecnologías para maximizar el aprovechamiento de los recursos energéticos, reduciendo costos operativos mientras se mantiene o mejora la calidad del servicio y la productividad",
+        "Es un conjunto de metodologías y procedimientos diseñados para optimizar el uso de recursos energéticos en instalaciones industriales y comerciales, incorporando tecnologías de monitoreo y control para garantizar la sostenibilidad operativa"
         ],
         "correct": 0
     },
@@ -4629,29 +4663,29 @@ export const questions = [
         "question": "Consideraciones de Claro Connect.",
         "answers": [
         "Disponibles en versión abierta, sin redirect y cuentan con claves especiales con Pool y sin Pool de Datos",
-        "Solo disponibles en versión cerrada",
-        "No cuentan con claves especiales",
-        "Solo se pueden usar con redirect"
+        "Los servicios están limitados exclusivamente a la versión cerrada del sistema, con restricciones específicas en la gestión y administración de las funcionalidades",
+        "El sistema opera sin implementación de claves especiales, utilizando únicamente los protocolos estándar de autenticación y gestión de recursos",
+        "La plataforma está configurada para funcionar exclusivamente con el sistema de redirección, limitando las opciones de conectividad directa"
         ],
         "correct": 0
     },
     {
         "question": "El liderazgo y compromiso de la alta Dirección es fundamental para:",
         "answers": [
-        "La implementación y mantenimiento de un Sistema de Gestión exitoso",
-        "La satisfacción del cliente",
-        "El crecimiento financiero",
-        "La innovación tecnológica"
+            "La implementación y mantenimiento de un Sistema de Gestión exitoso",
+            "La implementación de estrategias integrales para maximizar la satisfacción del cliente y garantizar la calidad en todos los niveles de servicio",
+            "El desarrollo sostenible del crecimiento financiero mediante la optimización de recursos y la gestión eficiente de los activos organizacionales",
+            "El impulso continuo de la innovación tecnológica para mantener la competitividad y adaptabilidad en un mercado cambiante"
         ],
         "correct": 0
     },
     {
         "question": "La implementación de controles:",
         "answers": [
-        "Mantiene el riesgo por debajo del nivel permitido sin que esto implique impactos mayores a la organización",
-        "Elimina completamente el riesgo",
-        "Aumenta la complejidad del sistema",
-        "Reduce los costos operativos"
+            "Mantiene el riesgo por debajo del nivel permitido sin que esto implique impactos mayores a la organización",
+            "Asegura la eliminación total y permanente de todos los riesgos identificados en los procesos organizacionales y operativos",
+            "Incrementa la complejidad del sistema mediante la incorporación de múltiples capas de verificación y validación de procesos",
+            "Optimiza la estructura de costos operativos a través de la automatización y estandarización de procesos de control"
         ],
         "correct": 0
     },
@@ -4678,10 +4712,10 @@ export const questions = [
     {
         "question": "La gestión de riesgo es:",
         "answers": [
-        "Revisar periódicamente los riesgos que pueden ocasionar el incumplimiento de los objetivos",
-        "Eliminar los riesgos identificados",
-        "Monitorear continuamente el desempeño",
-        "Evaluar el impacto de los riesgos"
+            "Revisar periódicamente los riesgos que pueden ocasionar el incumplimiento de los objetivos",
+            "Implementar estrategias y metodologías sistemáticas para la eliminación completa de los riesgos identificados en la organización",
+            "Establecer un sistema integral de monitoreo continuo para evaluar el desempeño y la efectividad de los controles implementados",
+            "Desarrollar análisis exhaustivos del impacto potencial de los riesgos en los objetivos estratégicos de la organización"
         ],
         "correct": 0
     },
@@ -4718,10 +4752,10 @@ export const questions = [
     {
         "question": "¿Qué es ISO/IEC 27001:2013?",
         "answers": [
-        "Un estándar internacional que define los requerimientos para el establecimiento, implementación, mantenimiento y mejora continua de un SGSI",
-        "Una normativa para la gestión de calidad",
-        "Un sistema de gestión ambiental",
-        "Un marco para la continuidad del negocio"
+            "Un estándar internacional que define los requerimientos para el establecimiento, implementación, mantenimiento y mejora continua de un SGSI",
+            "Un conjunto integral de normas y directrices diseñadas para establecer y mantener sistemas de gestión de calidad en organizaciones de todos los tamaños",
+            "Una estructura completa de políticas y procedimientos para la implementación y mantenimiento de sistemas de gestión ambiental empresarial",
+            "Un framework comprehensivo que establece las mejores prácticas para asegurar la continuidad operativa y la resiliencia organizacional"
         ],
         "correct": 0
     },
@@ -4808,10 +4842,10 @@ export const questions = [
     {
         "question": "Con base en ISO/IEC 20000, ¿qué son los procesos?",
         "answers": [
-        "Conjunto de actividades mutuamente relacionadas o que interactúan las cuales transforman elementos de entrada en resultados",
-        "Procedimientos estandarizados para gestionar tareas operativas",
-        "Acciones sistemáticas para monitorear el rendimiento",
-        "Planes estratégicos para alcanzar objetivos corporativos"
+            "Conjunto de actividades mutuamente relacionadas o que interactúan las cuales transforman elementos de entrada en resultados",
+            "Sistema estructurado de procedimientos y metodologías estandarizadas que garantizan la eficiente ejecución de las tareas operativas en la organización",
+            "Conjunto integrado de acciones y mecanismos sistemáticos diseñados para monitorear y evaluar continuamente el rendimiento organizacional",
+            "Marco estratégico de planificación y ejecución diseñado para alcanzar los objetivos corporativos a través de la optimización de recursos"
         ],
         "correct": 0
     },
@@ -4848,30 +4882,30 @@ export const questions = [
     {
         "question": "¿Qué es accidente de trabajo?",
         "answers": [
-        "Toda lesión orgánica o perturbación funcional, inmediata o posterior, o la muerte, producida repentinamente en ejercicio o con motivo del trabajo, cualesquiera que sean el lugar y tiempo en que ocurra",
-        "Una condición médica preexistente agravada por el trabajo",
-        "Un incidente menor sin consecuencias graves",
-        "Un evento planificado para evaluar la seguridad"
+            "Toda lesión orgánica o perturbación funcional, inmediata o posterior, o la muerte, producida repentinamente en ejercicio o con motivo del trabajo, cualesquiera que sean el lugar y tiempo en que ocurra",
+            "Una condición médica preexistente que se ve agravada por las condiciones laborales y actividades realizadas en el entorno de trabajo, requiriendo atención médica inmediata",
+            "Un evento no planificado que ocurre en el lugar de trabajo sin causar lesiones graves pero que requiere documentación y análisis para prevención futura",
+            "Una simulación programada para evaluar los protocolos de seguridad y la respuesta del personal ante situaciones de emergencia en el entorno laboral"
         ],
         "correct": 0
     },
     {
         "question": "¿Cuál es la responsabilidad de los trabajadores en cuanto a la seguridad y salud en el trabajo?",
         "answers": [
-        "Realizar sus funciones de manera segura apegándose a los lineamientos establecidos por la organización, informar sobre situaciones peligrosas de manera que se puedan tomar acciones",
-        "Asistir a todas las reuniones de seguridad",
-        "Supervisar el cumplimiento de las normativas",
-        "Implementar mejoras en los procesos operativos"
+            "Realizar sus funciones de manera segura apegándose a los lineamientos establecidos por la organización, informar sobre situaciones peligrosas de manera que se puedan tomar acciones",
+            "Participar activamente en todas las reuniones y capacitaciones de seguridad, documentando y compartiendo las mejores prácticas con el equipo de trabajo",
+            "Monitorear y verificar el cumplimiento continuo de todas las normativas y procedimientos de seguridad establecidos por la organización",
+            "Desarrollar e implementar mejoras continuas en los procesos operativos para garantizar la seguridad y eficiencia en el lugar de trabajo"
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es la labor de la comisión de seguridad e higiene?",
         "answers": [
-        "Apoyar en la preservación de lugares de trabajo seguros y saludables, a través de la identificación de actos y condiciones inseguras para prevenir accidentes y daños a la salud",
-        "Monitorear el rendimiento de los empleados",
-        "Realizar auditorías internas mensuales",
-        "Proporcionar equipos de protección personal"
+            "Apoyar en la preservación de lugares de trabajo seguros y saludables, a través de la identificación de actos y condiciones inseguras para prevenir accidentes y daños a la salud",
+            "Implementar sistemas integrales de monitoreo y evaluación del desempeño laboral para garantizar el cumplimiento de los estándares de seguridad",
+            "Ejecutar un programa comprensivo de auditorías internas mensuales para verificar el cumplimiento de las normas de seguridad establecidas",
+            "Gestionar la adquisición, distribución y mantenimiento de equipos de protección personal según las necesidades específicas de cada área"
         ],
         "correct": 0
     },
@@ -4908,20 +4942,20 @@ export const questions = [
     {
         "question": "¿Cómo se compromete la alta dirección en la política de la SST?",
         "answers": [
-        "Proporcionando condiciones seguras y saludables para la prevención de lesiones y el deterioro de la salud de los empleados derivado de las actividades laborales que realizan para Telcel",
-        "Implementando programas de bienestar y salud",
-        "Realizando auditorías periódicas de seguridad",
-        "Proporcionando equipo de protección personal a todos los empleados"
+            "Proporcionando condiciones seguras y saludables para la prevención de lesiones y el deterioro de la salud de los empleados derivado de las actividades laborales que realizan para Telcel",
+            "Desarrollando e implementando programas integrales de bienestar y salud ocupacional que promuevan un ambiente laboral seguro y productivo",
+            "Estableciendo un sistema riguroso de auditorías periódicas de seguridad para identificar y mitigar riesgos potenciales en el entorno laboral",
+            "Garantizando la disponibilidad y mantenimiento continuo de equipos de protección personal de alta calidad para todo el personal"
         ],
         "correct": 0
     },
     {
         "question": "¿Cómo se describen los objetivos para implementar los controles para la atención de los peligros y riesgos institucionales para la SST?",
         "answers": [
-        "Previniendo la ocurrencia o recurrencia de accidentes de trabajo en las instalaciones de Telcel a nivel nacional y mantener la meta de cero fatalidades",
-        "Garantizando la seguridad en el entorno laboral",
-        "Reduciendo la probabilidad de incidentes",
-        "Estableciendo políticas de seguridad y salud"
+            "Previniendo la ocurrencia o recurrencia de accidentes de trabajo en las instalaciones de Telcel a nivel nacional y mantener la meta de cero fatalidades",
+            "Implementando medidas integrales de seguridad para garantizar un entorno laboral protegido y minimizar los riesgos en todas las operaciones",
+            "Estableciendo sistemas proactivos para reducir significativamente la probabilidad de incidentes mediante la identificación temprana de riesgos",
+            "Desarrollando y actualizando continuamente las políticas de seguridad y salud ocupacional según los estándares internacionales"
         ],
         "correct": 0
     },

@@ -78,8 +78,10 @@ ul {
     color: rgb(85, 85, 85);
     align-items: center;
     text-align: center; 
-    max-width: 600px;   
+    max-width: 600px;
+    z-index: 1000;   
 }
+
 .flecha{
     height: 15px;
     padding: 0 10px;
@@ -426,7 +428,7 @@ ul {
 
 #error-ranking-list .question-header {
     display: flex;
-    align-items: center;
+    align-items: center; 
 }
 
 /* ...existing code... */
