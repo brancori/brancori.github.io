@@ -148,7 +148,7 @@ function startQuiz() {
     correctAnswers = [];
     incorrectAnswers = [];
     
-    const QUESTIONS_PER_QUIZ = 30; // Número fijo de preguntas por quiz
+    const QUESTIONS_PER_QUIZ = 31; // Número fijo de preguntas por quiz
     const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
     const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
     const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
@@ -372,8 +372,16 @@ function updateQuestionTimer(seconds) {
 // Modificar las funciones principales para incluir validaciones
 function showQuestion() {
     try {
-        if (!selectedQuestions || currentQuestionIndex >= selectedQuestions.length) {
-            console.error('Error: No hay más preguntas disponibles');
+        // Verificar si hay preguntas disponibles
+        if (!selectedQuestions || !Array.isArray(selectedQuestions) || selectedQuestions.length === 0) {
+            console.error('Error: No hay preguntas seleccionadas');
+            showResults();
+            return;
+        }
+
+        // Verificar si hemos llegado al final
+        if (currentQuestionIndex >= selectedQuestions.length) {
+            console.log('Quiz completado, mostrando resultados');
             showResults();
             return;
         }
@@ -518,17 +526,17 @@ function markRemainingQuestionsIncorrect() {
 // Modificar la función showResults
 function showResults() {
     try {
-        if (studySession) {
-            studySession.endSession();
+        if (questionTimer) {
+            clearInterval(questionTimer);
         }
         
         if (timerInterval) {
             clearInterval(timerInterval);
         }
 
-        // Validar que los contadores sean números válidos
-        const finalScore = typeof score === 'number' ? score : 0;
-        const totalQuestions = selectedQuestions ? selectedQuestions.length : 0;
+        if (studySession) {
+            studySession.endSession();
+        }
 
         // Ocultar elementos del quiz
         quizContainer.style.display = 'none';
@@ -537,8 +545,17 @@ function showResults() {
 
         // Mostrar resultados
         resultContainer.style.display = 'block';
-        scoreDisplay.innerText = `TU PUNTUACIÓN: ${finalScore}/${totalQuestions}`;
+        scoreDisplay.innerText = `TU PUNTUACIÓN: ${score}/${selectedQuestions.length}`;
         
+        // Actualizar métricas y dashboard
+        if (studySession && studySession.metrics) {
+            try {
+                ProgressUI.updateDashboard(studySession.metrics);
+            } catch (error) {
+                console.error('Error al actualizar el dashboard:', error);
+            }
+        }
+
         // Actualizar listas de preguntas
         correctQuestionsDisplay.innerHTML = `
             <h3>Preguntas Correctas</h3>
@@ -553,7 +570,6 @@ function showResults() {
         ProgressUI.updateDashboard(studySession.metrics);
     } catch (error) {
         console.error('Error en showResults:', error);
-        // Mostrar un mensaje de error al usuario
         displayError('Ha ocurrido un error al mostrar los resultados');
     }
 }

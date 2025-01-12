@@ -1,3 +1,5 @@
+import { studySession } from './studySession.js';
+
 export class ProgressUI {
     static createProgressDashboard() {
         return `
@@ -22,10 +24,19 @@ export class ProgressUI {
         </div>`;
     }
 
-    static updateDashboard(currentMetrics) {
-        this.updateCurrentSession(currentMetrics);
-        this.updateOverallProgress();
-        this.updateTimers(currentMetrics);
+    static updateDashboard(metrics) {
+        try {
+            if (!metrics) {
+                console.error('Error: No se proporcionaron métricas válidas');
+                return;
+            }
+            
+            this.updateCurrentSession(metrics);
+            this.updateOverallProgress();
+            this.updateTimers(metrics);
+        } catch (error) {
+            console.error('Error al actualizar el dashboard:', error);
+        }
     }
 
     static updateCurrentSession(metrics) {
@@ -82,18 +93,25 @@ export class ProgressUI {
     }
 
     static updateTimers(metrics) {
-        // Actualizar tiempo actual
-        const currentTimeElement = document.getElementById('current-time');
-        if (currentTimeElement) {
-            const currentSeconds = Math.round((new Date() - metrics.quizStartTime) / 1000);
-            currentTimeElement.textContent = this.formatTime(currentSeconds);
-        }
+        try {
+            // Actualizar tiempo actual
+            const currentTimeElement = document.getElementById('current-time');
+            if (currentTimeElement && metrics.quizStartTime) {
+                const currentSeconds = Math.round((new Date() - metrics.quizStartTime) / 1000);
+                currentTimeElement.textContent = this.formatTime(currentSeconds);
+            }
 
-        // Actualizar tiempo promedio histórico
-        const avgTimeElement = document.getElementById('avg-quiz-time');
-        if (avgTimeElement) {
-            const avgSeconds = Math.round(studySession.getAverageQuizTime());
-            avgTimeElement.textContent = this.formatTime(avgSeconds);
+            // Actualizar tiempo promedio histórico
+            const avgTimeElement = document.getElementById('avg-quiz-time');
+            if (avgTimeElement) {
+                const quizTimes = JSON.parse(localStorage.getItem('quizTimes')) || [];
+                const avgSeconds = quizTimes.length > 0 
+                    ? Math.round(quizTimes.reduce((a, b) => a + b, 0) / quizTimes.length)
+                    : 0;
+                avgTimeElement.textContent = this.formatTime(avgSeconds);
+            }
+        } catch (error) {
+            console.error('Error al actualizar los tiempos:', error);
         }
     }
 
