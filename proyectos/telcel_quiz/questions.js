@@ -226,7 +226,12 @@ export const questions = [
     },
     {
         "question": "El alta de servicios adicionales con costo: Se programa:",
-        "answers": ["Un día después de la fecha de corte a menos que el usuario lo solicite al momento", "El mismo día del corte", "Una semana después de la fecha de corte", "El mismo día"],
+        "answers": [
+            "Un día después de la fecha de corte a menos que el usuario lo solicite al momento.",
+            "Con base en la disponibilidad inmediata del sistema al cierre de mes.",
+            "De acuerdo con el calendario interno de asignaciones técnicas.",
+            "Bajo un protocolo establecido para activación en periodos predeterminados."
+        ],
         "correct": 0
     },
     {
@@ -371,7 +376,12 @@ export const questions = [
     },
     {
         "question": "Al activar el producto de Siroi en una línea Cost Control, ¿qué paquetes se pueden dar de alta?",
-        "answers": ["Paquetes de datos y minutos roaming internacional", "Solo paquetes de datos", "Solo paquetes de minutos", "Paquetes nacionales"],
+        "answers": [
+            "Paquetes de datos y minutos roaming internacional.",
+            "Opciones limitadas a datos para navegación básica en la red.",
+            "Solo paquetes destinados a llamadas locales.",
+            "Combinación de servicios nacionales sin roaming incluido."
+        ],
         "correct": 0
     },
     {
@@ -510,12 +520,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Cuáles son los beneficios principales de Smart Car Empresarial?",
+        "question": "¿Qué es Smart Car Empresarial?",
         "answers": [
-            "El vehículo no pierde garantías, instalación no invasiva; Activación sencilla por el usuario; Un equipo se puede usar en diferentes vehículos; Internet a bordo listo para compartir",
-            "Permite monitorear el estado del automóvil; Internet a bordo listo para compartir; Un equipo por vehículo",
-            "Activación complicada; Instalación requiere soporte técnico; Equipo fijo en un solo vehículo",
-            "Internet a bordo limitado a un dispositivo; Instalación compleja; Activación realizada por Telcel"
+            "Monitorea en tiempo real el rendimiento, el estado, la actividad y la ubicación del automóvil, brindándole al usuario información útil sobre conductas de manejo, mantenimiento preventivo y problemas del auto, transformando el vehículo en un automóvil inteligente utilizando solamente una app y un equipo GPS que no requiere instalación.",
+            "Sistema enfocado únicamente en la localización del vehículo.",
+            "Servicio especializado en analizar la eficiencia del uso del automóvil.",
+            "Plataforma centrada en la evaluación de actividades vehiculares básicas."
         ],
         "correct": 0
     },
@@ -987,13 +997,13 @@ export const questions = [
     {
         "question": "¿Qué es Airwatch?",
         "answers": [
-            "Es una plataforma de administración de movilidad empresarial que se integra con los sistemas de la empresa y permite administrar todos los dispositivos móviles de la empresa desde una consola central",
-            "Es un software de protección de datos corporativos en la nube",
-            "Es una herramienta para realizar copias de seguridad automáticas",
-            "Es un sistema exclusivo para monitoreo de redes empresariales"
+            "Es una plataforma de administración de movilidad empresarial que se integra con los sistemas de la empresa y permite administrar todos los dispositivos móviles de la empresa desde una consola central.",
+            "Airwatch es un software de protección de datos corporativos en la nube, diseñado para garantizar la seguridad y privacidad de la información almacenada en dispositivos móviles y servidores.",
+            "Es una herramienta avanzada que permite realizar copias de seguridad automáticas de todos los datos empresariales, asegurando su disponibilidad y recuperación en caso de pérdida o fallo del sistema.",
+            "Airwatch es un sistema exclusivo para el monitoreo de redes empresariales, proporcionando análisis detallados y alertas en tiempo real sobre el estado de la infraestructura tecnológica de la empresa."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son 3 características de Airwatch?",
         "answers": [
@@ -1017,13 +1027,13 @@ export const questions = [
     {
         "question": "¿Qué es Workspace One?",
         "answers": [
-            "Es una plataforma de espacio de trabajo digital que permite suministrar y administrar de manera simple y segura cualquier aplicación en cualquier dispositivo",
-            "Es una herramienta para realizar copias de seguridad en la nube",
-            "Es un software exclusivo para administración de redes empresariales",
-            "Es una aplicación para gestionar dispositivos móviles de forma remota"
+            "Es una plataforma de espacio de trabajo digital que permite suministrar y administrar de manera simple y segura cualquier aplicación en cualquier dispositivo.",
+            "Workspace One es una herramienta avanzada que permite realizar copias de seguridad en la nube, garantizando la protección y recuperación de datos empresariales críticos.",
+            "Es un software exclusivo diseñado para la administración de redes empresariales, proporcionando herramientas de monitoreo y gestión de la infraestructura de TI.",
+            "Workspace One es una aplicación que facilita la gestión de dispositivos móviles de forma remota, asegurando que las políticas de seguridad y las aplicaciones se apliquen consistentemente en toda la organización."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es el costo de Airwatch?",
         "answers": [
@@ -1047,13 +1057,13 @@ export const questions = [
     {
         "question": "¿Cuáles son los beneficios del cambio de SIM a 4G?",
         "answers": [
-            "Permite navegar a la máxima velocidad de red 4G, mejora la satisfacción de nuestros clientes, mejora la experiencia en redes sociales, descarga rápida de aplicaciones, reproducción de medios a una mejor velocidad",
-            "Ofrece acceso a planes exclusivos, brinda soporte técnico mejorado y permite conectividad en zonas rurales",
-            "Aumenta la vida útil del equipo, mejora la calidad de las llamadas y reduce los costos de datos",
-            "Permite navegar en 5G, aumenta el almacenamiento interno y mejora la resolución de pantalla"
+            "Permite navegar a la máxima velocidad de red 4G, mejora la satisfacción de nuestros clientes, mejora la experiencia en redes sociales, descarga rápida de aplicaciones, reproducción de medios a una mejor velocidad.",
+            "Ofrece acceso a planes exclusivos, brinda soporte técnico mejorado y permite conectividad en zonas rurales, proporcionando una mejor experiencia de usuario y garantizando la disponibilidad de servicios en áreas remotas.",
+            "Aumenta la vida útil del equipo, mejora la calidad de las llamadas y reduce los costos de datos, lo que resulta en una mayor eficiencia y ahorro para los usuarios.",
+            "Permite navegar en 5G, aumenta el almacenamiento interno y mejora la resolución de pantalla, ofreciendo una experiencia de usuario superior con tecnologías avanzadas."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son las principales ventajas de la tecnología 4G LTE?",
         "answers": [
@@ -1087,13 +1097,13 @@ export const questions = [
     {
         "question": "¿Qué es VoLTE?",
         "answers": [
-            "Es la siguiente generación de llamadas de voz en alta definición y video mejorado. Voice Over LTE es una red de alta velocidad que permite garantizar una mayor calidad de servicio",
-            "Es un sistema de conectividad exclusivo para videoconferencias en alta calidad",
-            "Es una plataforma que mejora el rendimiento de aplicaciones en red LTE",
-            "Es un software que habilita la conexión entre dispositivos a través de Bluetooth"
+            "Es la siguiente generación de llamadas de voz en alta definición y video mejorado. Voice Over LTE es una red de alta velocidad que permite garantizar una mayor calidad de servicio.",
+            "VoLTE es un sistema de conectividad exclusivo para videoconferencias en alta calidad, permitiendo a los usuarios mantener reuniones virtuales con una claridad y estabilidad excepcionales.",
+            "Es una plataforma diseñada para mejorar el rendimiento de aplicaciones en red LTE, optimizando la velocidad y la eficiencia de transmisión de datos móviles.",
+            "VoLTE es un software avanzado que habilita la conexión entre dispositivos a través de Bluetooth, facilitando la transferencia de archivos y la comunicación entre diferentes equipos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Con qué servicios es compatible VoLTE?",
         "answers": [
@@ -1147,10 +1157,10 @@ export const questions = [
     {
         "question": "¿Qué es el Internet de las Cosas?",
         "answers": [
-            "Se refiere a la interconexión digital de todo tipo de objetos cotidianos a través de la Red",
-            "Es la conectividad entre dispositivos electrónicos de una empresa",
-            "Es un sistema que optimiza el uso de aplicaciones móviles",
-            "Es una tecnología que conecta dispositivos solo en redes 5G"
+            "Se refiere a la interconexión digital de todo tipo de objetos cotidianos a través de la red.",
+            "Es un ecosistema en el que dispositivos electrónicos comparten información de manera local.",
+            "Un conjunto de tecnologías que permiten la comunicación entre aparatos inteligentes con funcionalidad limitada.",
+            "Un sistema diseñado para vincular dispositivos de manera exclusiva en infraestructuras avanzadas."
         ],
         "correct": 0
     },
@@ -1187,23 +1197,23 @@ export const questions = [
     {
         "question": "¿En qué consiste el Servicio Samsung Knox?",
         "answers": [
-            "Es un conjunto de soluciones de movilidad empresarial que mejoran la productividad y mantienen la información segura en los dispositivos móviles",
-            "Es un software exclusivo para la gestión remota de equipos móviles",
-            "Es una aplicación para realizar copias de seguridad en dispositivos Samsung",
-            "Es una herramienta que optimiza el rendimiento de las redes empresariales"
+            "Es un conjunto de soluciones de movilidad empresarial que mejoran la productividad y mantienen la información segura en los dispositivos móviles, integrando capacidades de gestión y seguridad avanzadas para proteger los datos corporativos.",
+            "Samsung Knox es un software exclusivo para la gestión remota de equipos móviles, permitiendo a los administradores controlar y configurar dispositivos desde cualquier ubicación.",
+            "Es una aplicación diseñada para realizar copias de seguridad en dispositivos Samsung, garantizando la preservación de datos importantes y facilitando la recuperación en caso de pérdida o fallo.",
+            "Samsung Knox es una herramienta que optimiza el rendimiento de las redes empresariales, ofreciendo análisis detallados y monitoreo en tiempo real para asegurar la eficiencia operativa."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué es Telcel Cloud?",
         "answers": [
-            "Conjunto de servicios SaaS alojados en la nube que permite contratar y gestionar soluciones sin invertir en infraestructura como Office 365, Aspel, Google Workspace, venta de dominios y Claro Drive Negocios",
-            "Es una plataforma exclusiva para almacenamiento en la nube para empresas",
-            "Es un servicio para administrar redes empresariales de manera remota",
-            "Es un software que mejora el rendimiento de las conexiones LTE"
+            "Conjunto de servicios SaaS alojados en la nube que permite contratar y gestionar soluciones sin invertir en infraestructura como Office 365, Aspel, Google Workspace, venta de dominios y Claro Drive Negocios, facilitando la accesibilidad y la gestión de recursos tecnológicos.",
+            "Telcel Cloud es una plataforma exclusiva para el almacenamiento en la nube dirigida a empresas, ofreciendo soluciones personalizadas de gestión de datos y aplicaciones.",
+            "Es un servicio avanzado que permite administrar redes empresariales de manera remota, optimizando la conectividad y la eficiencia de los sistemas de TI.",
+            "Telcel Cloud es un software diseñado para mejorar el rendimiento de las conexiones LTE, proporcionando una mejor experiencia de uso a través de la red móvil."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué solución permite controlar dispositivos Android para obtener reportes de uso y consumo de aplicaciones?",
         "answers": [
@@ -1217,33 +1227,33 @@ export const questions = [
     {
         "question": "¿Qué es Control Móvil Telcel?",
         "answers": [
-            "Es una solución que permite tener el control sobre dispositivos Android para obtener reportes de uso y consumo de aplicaciones",
-            "Es un software para optimizar redes empresariales",
-            "Es una aplicación para la gestión remota de dispositivos Samsung",
-            "Es un sistema exclusivo para empresas que necesitan seguridad avanzada"
+            "Es una solución avanzada que permite tener el control sobre dispositivos Android para obtener reportes detallados de uso y consumo de aplicaciones, optimizando la productividad y protegiendo la información sensible de la empresa.",
+            "Es un software especializado para optimizar redes empresariales, proporcionando herramientas avanzadas de monitoreo y gestión de la infraestructura de TI.",
+            "Es una aplicación integral para la gestión remota de dispositivos Samsung, permitiendo a los administradores configurar y supervisar equipos desde cualquier ubicación.",
+            "Es un sistema exclusivo para empresas que necesitan seguridad avanzada, ofreciendo funciones como borrado remoto, bloqueo en modo seguro y geolocalización de dispositivos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son los beneficios de Control Móvil Telcel?",
         "answers": [
-            "Optimiza tiempo y costos de trabajo, protege información con borrado remoto y bloqueo seguro, incluye geolocalización en tiempo real",
-            "Brinda acceso a redes empresariales seguras y mejora la conectividad",
-            "Aumenta la productividad mediante reportes automáticos y mayor alcance de red",
-            "Reduce costos en servicios móviles y optimiza la transmisión de datos"
+            "Optimiza tiempo y costos de trabajo mediante el monitoreo y administración centralizada de dispositivos, protege información con funcionalidades avanzadas como borrado remoto y bloqueo seguro en caso de pérdida o robo, incluye geolocalización en tiempo real para rastreo de activos y personal, y proporciona alertas de seguridad proactivas para prevenir brechas.",
+            "Control Móvil Telcel brinda acceso a redes empresariales seguras, mejora la conectividad mediante el balanceo de carga entre redes móviles y Wi-Fi, permite el control granular de aplicaciones y contenidos permitidos en dispositivos, y asegura el cumplimiento de políticas corporativas de uso de tecnología móvil.",
+            "Aumenta la productividad empresarial a través de la generación de reportes automáticos detallados sobre el uso de aplicaciones y datos, extiende el alcance de la red con soluciones de conectividad redundante, permite la asignación eficiente de recursos de red según las necesidades de cada usuario y ofrece herramientas de colaboración integradas.",
+            "Reduce costos en servicios móviles mediante la optimización de planes de datos y minutos de llamada, permite la priorización de tráfico de datos esencial, optimiza la transmisión de datos con compresión y tecnologías avanzadas de reducción de latencia, y proporciona análisis detallados de consumo para la toma de decisiones estratégicas."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Para qué planes aplica Control Móvil Telcel?",
         "answers": [
-            "Abiertos, controlados, CPP, MPP (controlados con cargo a factura). El consumo de datos se debita de los MB incluidos del plan",
-            "Solo para planes empresariales y de alta gama",
-            "Para líneas prepago con acceso a redes 4G",
-            "Para líneas con tecnología LTE únicamente"
+            "Control Móvil Telcel aplica para planes abiertos, controlados, CPP y MPP, donde el consumo de datos se debita de los MB incluidos en el plan, permitiendo una gestión eficiente y controlada del uso de dispositivos móviles.",
+            "Es aplicable exclusivamente para planes empresariales y de alta gama, proporcionando herramientas avanzadas de gestión y seguridad para grandes organizaciones.",
+            "Control Móvil Telcel está disponible para líneas prepago con acceso a redes 4G, asegurando la conectividad y seguridad en dispositivos móviles.",
+            "Es compatible con líneas que utilizan tecnología LTE, optimizando el rendimiento y la gestión de dispositivos en redes de alta velocidad."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es el costo y clave de activación de Control Móvil Telcel avanzado?",
         "answers": [
@@ -1327,13 +1337,13 @@ export const questions = [
     {
         "question": "¿Qué funcionalidades ofrece la gestión de fuerza en campo powered by Lertek?",
         "answers": [
-        "Gestionar el personal en campo mediante GPS, asignar tareas al personal en campo, realizar check in y check out, visualizar recorridos, enviar evidencia en tiempo real, creación de puntos de interés y geocercas personalizadas",
-        "Solo gestionar el personal en campo mediante GPS",
-        "Solo asignar tareas al personal en campo",
-        "Solo realizar check in y check out"
+            "Gestionar el personal en campo mediante GPS, asignar tareas al personal en campo, realizar check in y check out, visualizar recorridos, enviar evidencia en tiempo real, creación de puntos de interés y geocercas personalizadas, recibir informes detallados y alertas automáticas sobre el desempeño y la ubicación del personal, y generar reportes de eficiencia operativa.",
+            "Gestionar el personal en campo mediante GPS, optimizando la localización y seguimiento de cada miembro del equipo en tiempo real, y permitiendo ajustes de rutas para una mayor eficiencia.",
+            "Asignar tareas al personal en campo, facilitando la distribución equitativa y seguimiento del cumplimiento de actividades, y generando alertas de tareas pendientes.",
+            "Realizar check in y check out, proporcionando un registro preciso y automatizado de los horarios de entrada y salida del personal, y permitiendo el monitoreo de la asistencia y puntualidad."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué solución ofrece la funcionalidad de gestión de compras y ventas para comercios minoristas?",
         "answers": [
@@ -1417,13 +1427,13 @@ export const questions = [
     {
         "question": "¿Qué es el concepto de GVT CTTMX?",
         "answers": [
-        "Un servicio de geolocalización que brinda soluciones especializadas en operación, logística, rastreo, temperatura y de combustible",
-        "Una aplicación móvil",
-        "Un software de facturación",
-        "Un servicio de atención al cliente"
+            "GVT CTTMX es un servicio de geolocalización que brinda soluciones especializadas en operación, logística, rastreo, temperatura y de combustible, permitiendo la gestión eficiente de vehículos y la optimización de recursos.",
+            "Es una aplicación móvil que permite la gestión y monitoreo de vehículos en tiempo real, proporcionando datos precisos y análisis detallados para mejorar la eficiencia operativa.",
+            "Es un software de facturación que facilita la gestión de facturas y pagos relacionados con el uso de vehículos, asegurando un control financiero eficiente.",
+            "Es un servicio de atención al cliente que ofrece soporte técnico y asistencia para la resolución de problemas relacionados con la gestión de vehículos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son algunas funcionalidades de GVT CTTMX?",
         "answers": [
@@ -1437,13 +1447,13 @@ export const questions = [
     {
         "question": "¿Cuáles son algunas funcionalidades de la Red Privada Telcel?",
         "answers": [
-        "Recolección comunicación, Cobertura garantizada y acceso a la red, Conmutación y transmisión de información, Productividad Comunicación y Seguridad, Toma de decisión oportuna",
-        "Solo recolección comunicación",
-        "Solo cobertura garantizada y acceso a la red",
-        "Solo conmutación y transmisión de información"
+            "Recolección de datos en tiempo real y comunicación constante con dispositivos IoT. Cobertura garantizada y acceso prioritario a la red, conmutación y transmisión de información de alta velocidad. Productividad mejorada mediante comunicación y seguridad optimizadas, y toma de decisiones oportuna basada en análisis predictivo de datos.",
+            "Recolección de datos y comunicación eficiente entre dispositivos, optimizando la coordinación en tiempo real y mejorando la eficiencia operativa.",
+            "Cobertura garantizada y acceso prioritario a la red, asegurando la disponibilidad constante de servicios críticos para la empresa y facilitando la gestión de recursos.",
+            "Conmutación y transmisión de información de alta velocidad, permitiendo el intercambio eficiente y seguro de datos a través de la red, mejorando la conectividad y el rendimiento."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es el costo por cambio de lugar en el servicio de Internet en tu casa?",
         "answers": [
@@ -1487,23 +1497,23 @@ export const questions = [
     {
         "question": "¿Cuál es la vigencia de cotización para cambio de equipo con renovación?",
         "answers": [
-        "15 días siempre y cuando no haya cambiado la versión de la tabla de precios; en caso de actualización, deberán de cotizar nuevamente los equipos",
-        "10 días siempre y cuando no haya cambiado la versión de la tabla de precios",
-        "5 días siempre y cuando no haya cambiado la versión de la tabla de precios",
-        "20 días siempre y cuando no haya cambiado la versión de la tabla de precios"
+            "La vigencia de la cotización es de 15 días siempre y cuando no haya cambiado la versión de la tabla de precios; en caso de actualización, deberán de cotizar nuevamente los equipos para asegurar la precisión de los precios.",
+            "La vigencia de la cotización es de 10 días siempre y cuando no haya cambiado la versión de la tabla de precios, permitiendo una ventana más limitada para la adquisición de equipos a los precios cotizados.",
+            "La vigencia de la cotización es de 5 días siempre y cuando no haya cambiado la versión de la tabla de precios, proporcionando el periodo más breve para confirmar la compra de equipos con precios actualizados.",
+            "La vigencia de la cotización es de 20 días siempre y cuando no haya cambiado la versión de la tabla de precios, ofreciendo el periodo más extenso para realizar la adquisición a los precios cotizados."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son los lineamientos para Pool de Datos?",
         "answers": [
-        "Aplica únicamente entre planes y servicios adicionales de datos con la misma cantidad de MB incluidos. El pool de datos únicamente aplica para planes sin redirect",
-        "Aplica solo entre planes de voz",
-        "Aplica solo para servicios de datos",
-        "Aplica para todos los servicios"
+            "El Pool de Datos aplica únicamente entre planes y servicios adicionales de datos con la misma cantidad de MB incluidos. Además, el pool de datos únicamente aplica para planes sin redirect, garantizando una administración eficiente del uso de datos dentro de los límites establecidos.",
+            "El Pool de Datos aplica entre planes de voz, permitiendo la distribución de datos entre diferentes líneas de voz dentro de la misma empresa, optimizando el uso de los recursos disponibles.",
+            "El Pool de Datos aplica exclusivamente para servicios de datos, facilitando la administración centralizada y el uso compartido de datos entre diversas suscripciones de datos dentro de la organización.",
+            "El Pool de Datos aplica para todos los servicios, ofreciendo una solución integral para la gestión y distribución de datos, voz y otros servicios adicionales de manera eficiente y flexible."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es el límite de crédito al que se le puede incrementar una línea que tiene menos de 3 meses en Telcel sin dejar depga?",
         "answers": [
@@ -1687,13 +1697,13 @@ export const questions = [
     {
         "question": "¿Bajo qué condiciones un asesor puede dar más de 1 PPA en un periodo?",
         "answers": [
-        "Cuando el motivo sea imputable a Telcel y la promesa de pago dada previamente no haya sido suficiente para regularizar la cuenta",
-        "Cuando el usuario lo solicite",
-        "Cuando la cuenta tenga más de 3 meses",
-        "Cuando se cambie de plan"
+            "Un asesor puede otorgar más de 1 PPA en un periodo cuando el motivo sea imputable a Telcel y la promesa de pago dada previamente no haya sido suficiente para regularizar la cuenta, garantizando así la continuidad del servicio sin interrupciones para el cliente.",
+            "Cuando el usuario lo solicite, siempre y cuando cumpla con los requisitos establecidos por la política de Telcel, permitiendo una mayor flexibilidad en la gestión de pagos.",
+            "Cuando la cuenta tenga más de 3 meses de antigüedad y se haya demostrado un historial de pagos consistente, asegurando una mayor confianza en la capacidad del cliente para cumplir con sus obligaciones financieras.",
+            "Cuando se cambie de plan, permitiendo una reestructuración de los pagos para adaptarse a las nuevas condiciones contractuales y facilitar la transición para el cliente."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es el límite de crédito de un asesor corporativo?",
         "answers": [
@@ -1767,13 +1777,13 @@ export const questions = [
     {
         "question": "A los clientes activos se les puede incrementar un 25% del límite de crédito original cada 6 meses, siempre y cuando cumplan con:",
         "answers": [
-        "Tener 6 meses activo, no tener saldos vencidos en ninguna de sus líneas, no haber sido suspendido más de 2 veces por morosidad durante los últimos 6 meses",
-        "Tener 3 meses activo, no tener saldos vencidos",
-        "Tener 12 meses activo, no tener morosidad",
-        "Tener 6 meses activo, tener al menos una línea sin saldo vencido"
+            "Tener 6 meses activo, no tener saldos vencidos en ninguna de sus líneas, no haber sido suspendido más de 2 veces por morosidad durante los últimos 6 meses, y mantener un historial de pagos consistente y confiable.",
+            "Tener 3 meses activo, no tener saldos vencidos, y demostrar un buen comportamiento de pago durante este periodo.",
+            "Tener 12 meses activo, no tener morosidad, y mostrar un historial de crédito limpio y sin problemas financieros.",
+            "Tener 6 meses activo, tener al menos una línea sin saldo vencido, y cumplir con las políticas de crédito establecidas por la empresa."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "Se considera una aclaración de pago cuando ya transcurrieron más de 3 días hábiles después del mismo y no aparece aplicado. Transcurrido ese tiempo, ¿quién está en posibilidades de tramitar la aclaración?",
         "answers": [
@@ -1837,10 +1847,10 @@ export const questions = [
     {
         "question": "¿Qué es SIPAB?",
         "answers": [
-        "SISTEMA INTEGRAL DE PAGOS, AJUSTES Y BONIFICACIONES",
-        "Sistema de Información y Pago Bancario",
-        "Sistema de Integración de Pagos",
-        "Servicio Integral de Pagos y Beneficios"
+            "Sistema integral de pagos, ajustes y bonificaciones.",
+            "Sistema de información y pago bancario.",
+            "Sistema de integración de pagos.",
+            "Servicio integral de pagos y beneficios."
         ],
         "correct": 0
     },
@@ -1867,10 +1877,10 @@ export const questions = [
     {
         "question": "¿Qué significa RAP?",
         "answers": [
-        "LINEA DE CAPTURA UTILIZADA POR EL BANCO HSBC PARA LA APLICACIÓN DE PAGOS EN LAS CUENTAS DE LOS CLIENTES TELCEL",
-        "Red de Aplicación de Pagos",
-        "Reporte de Ajustes y Pagos",
-        "Registro de Aplicación de Pagos"
+            "Línea de captura utilizada por el banco HSBC para la aplicación de pagos en las cuentas de los clientes Telcel.",
+            "Sistema automatizado para el control de pagos en tiempo real.",
+            "Mecanismo utilizado para reportar ajustes y cobros pendientes.",
+            "Proceso que regula la asignación de recursos en cuentas activas."
         ],
         "correct": 0
     },
@@ -1965,12 +1975,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Qué forman parte de la Cultura Corporativa de Telcel?",
+        "question": "¿Qué forman parte de la cultura corporativa de Telcel?",
         "answers": [
-        "MISIÓN, VISIÓN, VALORES Y OBJETIVOS INSTITUCIONALES",
-        "Calidad, innovación y servicio",
-        "Rentabilidad, liderazgo y tecnología",
-        "Expansión, desarrollo humano y eficiencia"
+            "Misión, visión, valores y objetivos institucionales.",
+            "Aspectos operativos como calidad, eficiencia y atención al cliente.",
+            "Pilares estratégicos que incluyen innovación, liderazgo y resultados financieros.",
+            "Ejes de crecimiento relacionados con desarrollo humano, sostenibilidad y expansión tecnológica."
         ],
         "correct": 0
     },
@@ -2097,10 +2107,10 @@ export const questions = [
     {
         "question": "¿Por qué es importante llevar a cabo la revisión por la Dirección al SGI?",
         "answers": [
-        "Porque con ella se asume la total responsabilidad y rendición de cuentas a la efectividad del sistema",
-        "Para mejorar los procesos",
-        "Para garantizar la satisfacción del cliente",
-        "Para reducir costos"
+            "Porque con ella se asume la total responsabilidad y rendición de cuentas a la efectividad del sistema.",
+            "Estrategia clave para fortalecer la planeación organizacional.",
+            "Enfoque en la mejora continua de procesos esenciales.",
+            "Mecanismo que ayuda a optimizar el uso de recursos internos."
         ],
         "correct": 0
     },
@@ -2137,13 +2147,13 @@ export const questions = [
     {
         "question": "¿Quién revisa el Manual de Calidad?",
         "answers": [
-        "El Comité de Implementación del Sistema de Calidad de RADIOMÓVIL DIPSA S.A. DE C.V.",
-        "El Administrador de la cuenta",
-        "El Cliente",
-        "Soporte técnico"
+            "El Comité de Implementación del Sistema de Calidad de RADIOMÓVIL DIPSA S.A. DE C.V.",
+            "El Administrador de la cuenta, responsable de verificar la correcta implementación y cumplimiento de los procedimientos establecidos.",
+            "El Cliente, quien tiene derecho a revisar los documentos de calidad para garantizar que los servicios cumplen con los estándares acordados.",
+            "Soporte técnico, encargado de asegurar que todos los procedimientos técnicos estén alineados con las normativas de calidad de la empresa."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "Documento donde se encuentra la descripción de los procesos estratégicos orientados al negocio, cliente y soporte de Telcel.",
         "answers": [
@@ -2177,10 +2187,10 @@ export const questions = [
     {
         "question": "¿Cuál es la principal forma de almacenamiento del conocimiento de la organización?",
         "answers": [
-        "Son los procedimientos que especifican cómo se realizan las actividades cotidianas, se encuentra en el sistema @doc",
-        "Son los manuales de calidad",
-        "Es el portal de calidad",
-        "Es la red de procesos"
+            "Son los procedimientos que especifican cómo se realizan las actividades cotidianas, se encuentra en el sistema @doc.",
+            "Se registra y actualiza en el portal de comunicación interna para consulta permanente.",
+            "Se organiza en manuales operativos diseñados para capacitación continua.",
+            "Se distribuye mediante herramientas digitales que facilitan el acceso y la colaboración."
         ],
         "correct": 0
     },
@@ -2285,12 +2295,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "Acción Correctiva:",
+        "question": "Acción correctiva:",
         "answers": [
-        "Acción tomada para eliminar la causa raíz de una no conformidad u otra situación indeseable que se presente en determinada circunstancia, a fin de prevenir su recurrencia. Acciones con el objeto de solucionar problemas sistemáticos relevantes a los procesos por medio del análisis de la información que revisen periódicamente o como resultado de no conformidades",
-        "Acción para mejorar la calidad",
-        "Medida para solucionar un conflicto",
-        "Proceso para implementar tecnologías innovadoras"
+            "Acción tomada para eliminar la causa raíz de una no conformidad u otra situación indeseable que se presente en determinada circunstancia, a fin de prevenir su recurrencia. Acciones con el objeto de solucionar problemas sistemáticos relevantes a los procesos por medio del análisis de la información que revisen periódicamente o como resultado de no conformidades.",
+            "Iniciativa estratégica orientada a la gestión de mejoras.",
+            "Medida adoptada para resolver conflictos de manera efectiva.",
+            "Proyecto enfocado en la implementación de avances tecnológicos."
         ],
         "correct": 0
     },
@@ -2337,23 +2347,23 @@ export const questions = [
     {
         "question": "De acuerdo al procedimiento de acciones para la mejora continua, ¿cuál es la finalidad de implementar acciones correctivas y preventivas, y de mejora?",
         "answers": [
-        "Establecer un programa de auditorías internas de cuyo resultado se informa a cada una de las direcciones",
-        "Mejorar la calidad del servicio",
-        "Aumentar la eficiencia",
-        "Garantizar la satisfacción del cliente"
+            "Establecer un programa de auditorías internas de cuyo resultado se informa a cada una de las direcciones.",
+            "Asegurar el cumplimiento de estándares de calidad definidos por la organización.",
+            "Fortalecer las capacidades operativas para prevenir fallas futuras.",
+            "Crear un entorno organizacional orientado a la innovación y la mejora continua."
         ],
         "correct": 0
     },
     {
         "question": "¿Cuál es la responsabilidad de la alta dirección cuando se documenta una acción para la mejora?",
         "answers": [
-        "Facilitar, los recursos, supervisar los avances y tomar las acciones correspondientes cuando no haya avances",
-        "Revisar el manual de calidad",
-        "Implementar nuevas tecnologías",
-        "Garantizar la satisfacción del cliente"
+            "Facilitar los recursos necesarios, supervisar los avances de manera constante, y tomar las acciones correctivas correspondientes cuando no se observen progresos, asegurando así el cumplimiento de los objetivos de mejora continua.",
+            "Revisar el manual de calidad para asegurar que todas las políticas y procedimientos estén actualizados y sean efectivamente implementados en todas las áreas de la organización.",
+            "Implementar nuevas tecnologías que contribuyan a la optimización de procesos y a la mejora de la eficiencia operativa dentro de la empresa.",
+            "Garantizar la satisfacción del cliente mediante la implementación de acciones que mejoren la calidad de los productos y servicios ofrecidos, basándose en el feedback recibido de los clientes."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "En Telcel, ¿quién puede identificar la necesidad de resolver un problema o mejorar la situación actual?",
         "answers": [
@@ -2387,10 +2397,10 @@ export const questions = [
     {
         "question": "Procedimiento que describe las actividades para controlar el producto que no cumple con los requisitos:",
         "answers": [
-        "Atención de Producto No Conforme",
-        "Manual de Calidad",
-        "Política de Calidad",
-        "Red de procesos"
+            "Atención de producto no conforme.",
+            "Guía específica para asegurar la calidad.",
+            "Manual con políticas generales de mejora continua.",
+            "Estructura de procesos con protocolos definidos."
         ],
         "correct": 0
     },
@@ -2417,10 +2427,10 @@ export const questions = [
     {
         "question": "¿Qué es una no conformidad mayor?",
         "answers": [
-        "La ausencia total del cumplimiento de un requisito del sistema de calidad",
-        "Una falla aislada",
-        "Un problema menor",
-        "Una no conformidad secundaria"
+            "La ausencia total del cumplimiento de un requisito del sistema de calidad.",
+            "Un error detectado en auditorías que no afecta directamente la calidad general.",
+            "Un incumplimiento menor que no pone en riesgo el sistema operativo.",
+            "Un desvío aislado registrado como parte de observaciones internas."
         ],
         "correct": 0
     },
@@ -2457,10 +2467,10 @@ export const questions = [
     {
         "question": "¿Qué es cliente?",
         "answers": [
-        "Organización o parte de la organización que recibe un servicio o servicios",
-        "Persona que compra un producto",
-        "Usuario final de un servicio",
-        "Empresa que contrata servicios"
+            "Organización o parte de la organización que recibe un servicio o servicios.",
+            "Persona que adquiere un producto con la intención de utilizarlo directamente.",
+            "Usuario que interactúa con el servicio contratado a nivel operativo.",
+            "Entidad comercial que mantiene un acuerdo de prestación de servicios con el proveedor."
         ],
         "correct": 0
     },
@@ -2484,16 +2494,16 @@ export const questions = [
         ],
         "correct": 0
     },
-    {
-        "question": "Son los responsables de autorizar el inicio de acciones correctivas y de mejora, aprobar al líder y la integración de un equipo de trabajo para acciones en el sistema de mejora continua:",
-        "answers": [
-        "Personal perteneciente a la alta dirección: Director, Subdirector o Gerente",
-        "El administrador de la cuenta",
-        "El cliente",
-        "Soporte técnico"
-        ],
-        "correct": 0
-    },
+{
+            "question": "Son los responsables de autorizar el inicio de acciones correctivas y de mejora, aprobar al líder y la integración de un equipo de trabajo para acciones en el sistema de mejora continua:",
+            "answers": [
+                "Personal perteneciente a la alta dirección: director, subdirector o gerente.",
+                "El administrador de la cuenta, responsable de las comunicaciones internas y externas relacionadas con los procesos de mejora.",
+                "El cliente, como receptor directo de los beneficios derivados de las acciones correctivas y de mejora.",
+                "Soporte técnico, cuya responsabilidad principal es gestionar las implementaciones necesarias en el sistema."
+            ],
+            "correct": 0
+        },
     {
         "question": "¿Cuál es el objetivo de las acciones preventivas?",
         "answers": ["Cumplir objetivos o condiciones en riesgo de no alcanzarse", "Eliminar problemas reales existentes", "Autorizar auditorías internas", "Implementar políticas correctivas"],
@@ -2842,10 +2852,10 @@ export const questions = [
     {
         "question": "Según la norma ISO 27001:2013, ¿qué es una amenaza?",
         "answers": [
-            "Una causa potencial de un incidente no deseado que puede causar daño a un sistema u organización",
-            "La posibilidad de que un usuario no autorizado acceda a datos",
-            "Una debilidad en el sistema que puede ser explotada",
-            "Un error en los procedimientos de seguridad"
+            "Una causa potencial de un incidente no deseado que puede causar daño a un sistema u organización.",
+            "Cualquier actividad externa que busque vulnerar la seguridad del sistema.",
+            "Un posible intento de acceso no autorizado que comprometa la información.",
+            "Condición que expone los procesos internos a riesgos de seguridad."
         ],
         "correct": 0
     },
@@ -2922,10 +2932,10 @@ export const questions = [
     {
         "question": "¿Qué es un activo de información?",
         "answers": [
-            "Cualquier información valiosa para la organización en cualquier medio de almacenamiento",
-            "Una herramienta de análisis utilizada en procesos internos",
-            "Un sistema informático que protege datos confidenciales",
-            "Una aplicación utilizada para gestionar riesgos"
+            "Cualquier información valiosa para la organización en cualquier medio de almacenamiento.",
+            "Recurso técnico que permite optimizar procesos internos mediante herramientas digitales.",
+            "Elemento clave del sistema que protege la confidencialidad de los datos.",
+            "Componente del sistema de gestión de riesgos, diseñado para mitigar impactos en la operación."
         ],
         "correct": 0
     },
@@ -2970,12 +2980,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "¿Qué es Vulnerabilidad?",
+        "question": "¿Qué es vulnerabilidad?",
         "answers": [
-        "Es una debilidad de un activo o control que puede ser explotado para que ocurra un evento con una consecuencia negativa",
-        "Una falla en el sistema",
-        "Un error de configuración",
-        "Un riesgo potencial"
+            "Es una debilidad de un activo o control que puede ser explotado para que ocurra un evento con una consecuencia negativa.",
+            "Una configuración inadecuada que compromete la estabilidad de la operación.",
+            "Error no intencionado que reduce la eficacia de las medidas de seguridad.",
+            "Un factor de riesgo asociado a posibles fallas estructurales en el sistema."
         ],
         "correct": 0
     },
@@ -3002,10 +3012,10 @@ export const questions = [
     {
         "question": "¿Qué condiciones y características garantiza la seguridad informática?",
         "answers": [
-            "Las condiciones y características de seguridad de los sistemas de procesamiento y almacenamiento de datos",
-            "El diseño y desarrollo de sistemas operativos avanzados",
-            "La conexión constante y eficiente a internet",
-            "La encriptación de datos únicamente en redes locales"
+            "Las condiciones y características de seguridad de los sistemas de procesamiento y almacenamiento de datos.",
+            "La configuración adecuada de las redes internas para un entorno de operación seguro.",
+            "La disponibilidad constante de los servicios y herramientas en línea.",
+            "La implementación de sistemas de encriptación avanzada en entornos digitales."
         ],
         "correct": 0
     },
@@ -3120,12 +3130,12 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "Acción Contenedora o de emergencia:",
+        "question": "Acción contenedora o de emergencia:",
         "answers": [
-        "Acción de contención inmediata para permitir que se continúe trabajando en tanto se elimina la causa raíz",
-        "Medida para mejorar la calidad",
-        "Proceso para implementar tecnologías innovadoras",
-        "Evaluación de un incidente"
+            "Acción de contención inmediata para permitir que se continúe trabajando en tanto se elimina la causa raíz.",
+            "Procedimiento preliminar orientado a mitigar impactos hasta la resolución completa.",
+            "Técnica aplicada en casos excepcionales para mantener la estabilidad temporal.",
+            "Estrategia inicial utilizada mientras se determina la causa del problema."
         ],
         "correct": 0
     },
@@ -3172,10 +3182,10 @@ export const questions = [
     {
         "question": "Identificación de causa raíz:",
         "answers": [
-        "Descripción de las causas del problema real o potencial, identificadas con el apoyo de herramientas de calidad (técnicas de análisis como: Los 5 ¿por qué?, Tormenta de Ideas, etc.)",
-        "Evaluación de un problema",
-        "Proceso para mejorar la calidad",
-        "Medida para solucionar un conflicto"
+            "Descripción de las causas del problema real o potencial, identificadas con el apoyo de herramientas de calidad (técnicas de análisis como: los 5 ¿por qué?, tormenta de ideas, etc.).",
+            "Estudio preliminar de un problema basado en datos recolectados durante un periodo específico.",
+            "Análisis del sistema operativo para garantizar la calidad en procesos futuros.",
+            "Definición de una estrategia de mitigación basada en observaciones inmediatas."
         ],
         "correct": 0
     },
@@ -3232,10 +3242,10 @@ export const questions = [
     {
         "question": "Son los responsables de autorizar el inicio de acciones correctivas y de mejora, aprobar al líder y la integración de un equipo de trabajo para acciones en el sistema de mejora continua:",
         "answers": [
-        "Personal perteneciente a la alta dirección: Director, Subdirector o Gerente",
-        "Equipo de calidad",
-        "Empleado responsable",
-        "Proveedor de servicios"
+            "Personal perteneciente a la alta dirección: director, subdirector o gerente.",
+            "El administrador de la cuenta, responsable de las comunicaciones internas y externas relacionadas con los procesos de mejora.",
+            "El cliente, como receptor directo de los beneficios derivados de las acciones correctivas y de mejora.",
+            "Soporte técnico, cuya responsabilidad principal es gestionar las implementaciones necesarias en el sistema."
         ],
         "correct": 0
     },
@@ -3280,25 +3290,25 @@ export const questions = [
         "correct": 0
     },
     {
-        "question": "Según la norma ISO/IEC 20000-1, ¿qué es el cliente?",
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué significa incidente?",
         "answers": [
-        "Organización o parte de una organización que recibe un servicio",
-        "Persona que utiliza un producto",
-        "Proveedor de servicios",
-        "Usuario final de un sistema"
+            "Interrupción no planificada de un servicio de TI o la reducción en la calidad de un servicio de TI.",
+            "Evento adverso que afecta la estabilidad de los servicios informáticos en tiempo real.",
+            "Desafío técnico relacionado con la operación de sistemas de información.",
+            "Situación que requiere un análisis detallado para la continuidad de las operaciones."
         ],
         "correct": 0
     },
     {
         "question": "¿Qué es un proveedor?",
         "answers": [
-        "Agente externo que provee servicios definidos a través de un contrato para contribuir al diseño, transición, la entrega y la mejora de un servicio o proceso",
-        "Persona que utiliza los servicios",
-        "Empresa que fabrica productos",
-        "Entidad que compra servicios"
+            "Agente externo que provee servicios definidos a través de un contrato para contribuir al diseño, transición, la entrega y la mejora de un servicio o proceso.",
+            "Persona que utiliza los servicios ofrecidos por una empresa para satisfacer sus necesidades y expectativas específicas.",
+            "Empresa que fabrica productos destinados a ser comercializados en el mercado nacional o internacional.",
+            "Entidad que compra servicios para integrar en su propio negocio y mejorar la calidad de sus operaciones."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "Según la norma ISO 20000-1, ¿quién es un usuario interno de servicios de TI?",
         "answers": [
@@ -3322,13 +3332,13 @@ export const questions = [
     {
         "question": "De acuerdo a ISO 20000, ¿qué es un servicio de TI?",
         "answers": [
-        "Combinación de tecnologías de la información, procesos y personas que buscan responder a las necesidades de un usuario",
-        "Software y hardware utilizados en una empresa",
-        "Red de computadoras y servidores",
-        "Plataforma de servicios en la nube"
+            "Un servicio de TI es una combinación de tecnologías de la información, procesos y personas que buscan responder a las necesidades de un usuario, proporcionando valor a través del uso adecuado de recursos tecnológicos y la entrega de resultados específicos que satisfacen los requerimientos del negocio.",
+            "Un servicio de TI comprende el software y hardware utilizados en una empresa para soportar las operaciones diarias y garantizar el funcionamiento eficiente de los sistemas de información.",
+            "Un servicio de TI se refiere a la red de computadoras y servidores que facilitan la comunicación y el intercambio de datos dentro de una organización, asegurando la conectividad y el acceso a los recursos informáticos.",
+            "Un servicio de TI incluye una plataforma de servicios en la nube que permite el almacenamiento, procesamiento y acceso a datos y aplicaciones desde cualquier lugar, optimizando la flexibilidad y escalabilidad de los recursos tecnológicos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuáles son las fases del ciclo de vida del servicio?",
         "answers": [
@@ -3382,10 +3392,10 @@ export const questions = [
     {
         "question": "Según ISO/IEC 20000, ¿qué es un error conocido?",
         "answers": [
-        "Problema que tiene una causa raíz identificada o un método de reducir o eliminar su impacto en un servicio",
-        "Falla temporal en el sistema",
-        "Problema recurrente",
-        "Error de usuario"
+            "Problema que tiene una causa raíz identificada o un método de reducir o eliminar su impacto en un servicio.",
+            "Anomalía detectada en un sistema operativo que requiere actualización inmediata.",
+            "Situación recurrente documentada como parte de los procedimientos técnicos.",
+            "Fallo reportado por usuarios finales en situaciones específicas de uso."
         ],
         "correct": 0
     },
@@ -3402,10 +3412,10 @@ export const questions = [
     {
         "question": "Respecto a la norma ISO/IEC 20000-1, ¿qué es la línea base de configuración?",
         "answers": [
-        "Información de configuración designada formalmente en un momento específico durante la vida de un servicio o servicio del componente",
-        "Manual de configuración del sistema",
-        "Documento de políticas de TI",
-        "Lista de configuraciones aprobadas"
+            "Información de configuración designada formalmente en un momento específico durante la vida de un servicio o servicio del componente.",
+            "Referencia documentada para la gestión de cambios estructurales durante la vida de un servicio o servicio del componente.",
+            "Listado técnico que define ajustes en los sistemas.",
+            "Documentación asociada a la validación de políticas operativas."
         ],
         "correct": 0
     },
@@ -3422,13 +3432,13 @@ export const questions = [
     {
         "question": "Respecto a la norma ISO-IEC 20000-1, ¿qué es la continuidad de servicio?",
         "answers": [
-        "Capacidad para entregar un servicio sin interrupción o con la disponibilidad que fue acordada. Capacidad para gestionar los riesgos y eventos que podrían afectar gravemente a un servicio con el fin de continuar la prestación de servicios a niveles acordados",
-        "Plan de respaldo de datos",
-        "Redundancia de sistemas",
-        "Monitoreo de servicios"
+            "Capacidad para entregar un servicio sin interrupción o con la disponibilidad que fue acordada. Capacidad para gestionar los riesgos y eventos que podrían afectar gravemente a un servicio con el fin de continuar la prestación de servicios a niveles acordados.",
+            "La continuidad de servicio implica un plan de respaldo de datos que asegura la integridad y disponibilidad de la información en caso de fallos.",
+            "Se refiere a la redundancia de sistemas que permite mantener la operatividad del servicio mediante la duplicación de componentes críticos.",
+            "Monitoreo de servicios es parte integral de la continuidad de servicio, asegurando la detección temprana de fallos y la respuesta rápida para minimizar el impacto en los usuarios."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cuál es el grupo de procesos que se encargan de gestionar la restauración del servicio para cumplir el nivel de servicio acordado?",
         "answers": [
@@ -3442,20 +3452,20 @@ export const questions = [
     {
         "question": "De acuerdo a la norma ISO 20000, ¿qué es la gestión de la capacidad?",
         "answers": [
-        "Asegurar que las áreas proveedoras de servicios de TI tengan en todo momento la capacidad suficiente para cubrir la demanda acordada actual y futura de las necesidades del negocio",
-        "Evaluar la eficacia de los servicios de TI",
-        "Planificar la infraestructura de TI",
-        "Controlar los costos de TI"
+            "La gestión de la capacidad asegura que las áreas proveedoras de servicios de TI tengan en todo momento la capacidad suficiente para cubrir la demanda acordada actual y futura de las necesidades del negocio, garantizando un rendimiento óptimo y evitando cuellos de botella.",
+            "La gestión de la capacidad evalúa la eficacia de los servicios de TI, midiendo el rendimiento y asegurando que se cumplan los niveles de servicio acordados.",
+            "La gestión de la capacidad implica planificar la infraestructura de TI, asegurando que los recursos necesarios estén disponibles y alineados con los objetivos estratégicos de la organización.",
+            "La gestión de la capacidad se enfoca en controlar los costos de TI, optimizando el uso de recursos y garantizando la rentabilidad de las operaciones de TI."
         ],
         "correct": 0
     },
     {
         "question": "De acuerdo a la norma ISO 20000, ¿qué es un acuerdo de nivel del servicio?",
         "answers": [
-        "Es un acuerdo entre el proveedor de servicios de TI y el usuario",
-        "Contrato de servicios",
-        "Acuerdo de calidad",
-        "Documento de políticas"
+            "Es un acuerdo entre el proveedor de servicios de TI y el usuario.",
+            "Documento que especifica las condiciones de calidad y respuesta esperadas.",
+            "Contraprestación formal definida entre las partes interesadas para la prestación de servicios.",
+            "Instrumento que describe las métricas y objetivos para la evaluación del rendimiento."
         ],
         "correct": 0
     },
@@ -3632,10 +3642,10 @@ export const questions = [
     {
         "question": "¿Cuáles son los compromisos de la empresa con la seguridad y salud en el trabajo?",
         "answers": [
-        "Ofrecer un lugar de trabajo seguro y saludable, prevenir accidentes y lesiones, prevenir el deterioro de la salud",
-        "Reducir costos operativos",
-        "Mejorar la eficiencia laboral",
-        "Implementar tecnologías innovadoras"
+            "Ofrecer un lugar de trabajo seguro y saludable, prevenir accidentes y lesiones, prevenir el deterioro de la salud.",
+            "Implementar estrategias que promuevan la sostenibilidad de los procesos internos.",
+            "Fomentar el desarrollo de habilidades técnicas del personal operativo.",
+            "Asegurar el cumplimiento de las normativas de seguridad en proyectos específicos."
         ],
         "correct": 0
     },
@@ -3762,10 +3772,10 @@ export const questions = [
     {
         "question": "¿En qué beneficia reducir riesgos en tu lugar de trabajo?",
         "answers": [
-        "Prevenir accidentes y enfermedades de trabajo para preservar la salud e integridad física",
-        "Aumentar la productividad",
-        "Reducir costos operativos",
-        "Mejorar la satisfacción del cliente"
+            "Prevenir accidentes y enfermedades de trabajo para preservar la salud e integridad física.",
+            "Optimizar el rendimiento de los equipos operativos mediante un entorno más seguro.",
+            "Minimizar pérdidas financieras asociadas a interrupciones en las operaciones.",
+            "Promover un ambiente laboral más eficiente y colaborativo."
         ],
         "correct": 0
     },
@@ -3812,13 +3822,13 @@ export const questions = [
     {
         "question": "¿Cuáles fueron los principales accidentes a nivel nacional en 2023?",
         "answers": [
-        "1. Caída en el mismo nivel por desplazamiento, tropezón o traspié; 2. Ocupante de automóvil lesionado por colisión con otro automóvil; 3. Caída en o desde escaleras y escalones",
-        "1. Lesión por maquinaria; 2. Quemaduras; 3. Inhalación de sustancias tóxicas",
-        "1. Golpe por objeto; 2. Caída en escalera; 3. Lesión por esfuerzo repetitivo",
-        "1. Inhalación de sustancias tóxicas; 2. Golpe por objeto; 3. Lesión por maquinaria"
+            "1. Caída en el mismo nivel por desplazamiento, tropezón o traspié; 2. Ocupante de automóvil lesionado por colisión con otro automóvil; 3. Caída en o desde escaleras y escalones",
+            "1. Lesión por maquinaria; 2. Quemaduras; 3. Inhalación de sustancias tóxicas",
+            "1. Golpe por objeto; 2. Ocupante de automóvil lesionado por colisión con otro automóvil; 3. Caída en o desde escaleras y escalones; 3. Lesión por esfuerzo repetitivo",
+            "1. Inhalación de sustancias tóxicas; 2. Golpe por objeto; 3. Ocupante de automóvil lesionado por colisión con otro automóvil; 3. Caída en o desde escaleras y escalones"
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "Conocer y atender lo descrito en los documentos relacionados al proceso de gestión de cambios con impacto en el desempeño de la SST es responsabilidad de:",
         "answers": [
@@ -3932,13 +3942,13 @@ export const questions = [
     {
         "question": "¿Sabes qué es un riesgo?",
         "answers": [
-        "Efecto de la incertidumbre sobre el logro de los objetivos; considerando las variables a controlar y las salidas de los procesos, el cumplimiento de los servicios, el cumplimiento de los atributos de seguridad, las leyes y regulaciones aplicables",
-        "Una situación de peligro",
-        "Una falla en el sistema",
-        "Una desviación del plan"
+            "Efecto de la incertidumbre sobre el logro de los objetivos; considerando las variables a controlar y las salidas de los procesos, el cumplimiento de los servicios, el cumplimiento de los atributos de seguridad, las leyes y regulaciones aplicables.",
+            "Una situación de peligro que puede afectar negativamente el cumplimiento de los objetivos y requiere medidas de control adecuadas.",
+            "Una falla en el sistema que puede provocar interrupciones en los procesos y afectar la calidad del servicio prestado.",
+            "Una desviación del plan original que puede comprometer la consecución de los objetivos establecidos y necesita ser gestionada correctamente."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Cómo se deben registrar los riesgos?",
         "answers": [
@@ -4082,30 +4092,30 @@ export const questions = [
     {
         "question": "¿Quién es responsable de analizar y evaluar toda denuncia o reporte de infracción al código de ética?",
         "answers": [
-        "La dirección de RH y la dirección del área involucrada",
-        "El supervisor de área",
-        "El comité de ética",
-        "El gerente general"
+            "La dirección de RH y la dirección del área involucrada, encargadas de asegurar que las denuncias se manejen de acuerdo con los procedimientos establecidos y se tomen las acciones correctivas necesarias.",
+            "El supervisor de área, quien debe revisar las denuncias relacionadas con su equipo y garantizar el cumplimiento de las normativas éticas.",
+            "El comité de ética, un grupo dedicado a supervisar las infracciones al código de ética y tomar decisiones sobre las medidas disciplinarias pertinentes.",
+            "El gerente general, responsable de evaluar las denuncias de infracción y coordinar con otros departamentos para resolver los problemas éticos."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "¿Qué es un conflicto de interés?",
         "answers": [
-        "Cuando el cumplimiento de las responsabilidades del empleado se vean influidas o afectadas al tener interés en algún negocio, propiedad u obligaciones con alguna persona",
-        "Una discrepancia entre empleados",
-        "Un desacuerdo con un proveedor",
-        "Un problema legal interno"
+            "Cuando el cumplimiento de las responsabilidades del empleado se vean influidas o afectadas al tener interés en algún negocio, propiedad u obligaciones con alguna persona, lo que puede comprometer la objetividad y la toma de decisiones imparcial.",
+            "Una discrepancia entre empleados que puede afectar la armonía y la cooperación dentro del equipo de trabajo, requiriendo una intervención para resolver el problema.",
+            "Un desacuerdo con un proveedor sobre términos contractuales o la calidad de los servicios/productos entregados, lo que puede impactar la relación comercial.",
+            "Un problema legal interno que surge de la interpretación y aplicación de las políticas y normativas de la empresa, y que necesita ser resuelto para evitar consecuencias mayores."
         ],
         "correct": 0
-    },
+    },    
     {
         "question": "De acuerdo con el código de ética, un ejemplo de un adecuado trato al cliente es:",
         "answers": [
-        "Resolver sus preguntas y problemas de orden general, administrativo y técnico con un personal altamente capacitado y orientado al servicio al cliente",
-        "Ofrecer descuentos y promociones",
-        "Garantizar la satisfacción del cliente",
-        "Mantener una comunicación constante"
+            "Resolver sus preguntas y problemas de orden general, administrativo y técnico con un personal altamente capacitado y orientado al servicio al cliente.",
+            "Ofrecer un nivel de servicio que cumpla con estándares internacionales de calidad.",
+            "Asegurar respuestas rápidas y precisas dentro de los tiempos establecidos.",
+            "Establecer una relación de confianza basada en comunicación efectiva y personalizada."
         ],
         "correct": 0
     },
