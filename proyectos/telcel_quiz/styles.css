@@ -5,18 +5,31 @@
     --color-accent: #7da0ca;
     --color-background: #ffffff;
     --color-text-dark: #021024;
-    
-    /* Colores de estados */
     --color-correct: #45a049;
     --color-incorrect: rgb(150, 0, 0);
     --color-error: #5e0600;
-    
-    /* Colores de UI */
     --color-white: white;
     --color-gray-light: #e2e2e2;
     --color-gray: #666;
     --color-border: #ccc;
     --color-shadow: rgba(2, 16, 36, 0.1);
+
+    /* Espaciado común */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 25px;
+    
+    /* Bordes y sombras */
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    --box-shadow-default: 0 0 10px var(--color-shadow);
+    
+    /* Tamaños comunes */
+    --container-width: 90vw;
+    --max-container-width: 600px;
 }
 
 body {
@@ -52,7 +65,7 @@ ul {
 .answer-section p{
     margin: 5px;
 }
-#quiz-container {
+#quiz-container, #login-container, #error-ranking-container {
     background-color: var(--color-white);
     padding: 20px;
     border-radius: 8px;
@@ -91,7 +104,7 @@ ul {
     text-align: center;
 }
 
-.answer-button {
+.answer-button, #next-button, #loginForm button {
     display: block;
     width: 100%;
     margin: 5px 0;
@@ -99,6 +112,7 @@ ul {
     background-color: var(--color-accent);
     color: var(--color-text-dark);
     border: none;
+    margin-top: 12px;
     border-radius: 4px;
     cursor: pointer;
     box-sizing: border-box;
@@ -130,7 +144,7 @@ ul {
     margin: 25px 15px;
 }
 
-#correct-questions li {
+#correct-questions li, #incorrect-questions li {
     color: var(--color-primary);
     border: 1px solid var(--color-secondary);
     padding: 5px;
@@ -168,8 +182,6 @@ ul {
     text-align: center;
 }
 
-
-/* Media Queries for Responsive Design */
 @media (max-width: 600px) {
     body {
         padding: 10px;
@@ -231,8 +243,6 @@ ul {
     }
 }
 
-/* ...existing code... */
-
 #login-container {
     background-color: rgba(5, 38, 89, 0.9); /* Royal blue with transparency */
     padding: 20px;
@@ -283,8 +293,6 @@ ul {
     max-width: 400px;
 }
 
-/* ...existing code... */
-
 .popup {
     position: fixed;
     top: 20px;
@@ -298,8 +306,6 @@ ul {
     z-index: 1000;
 }
 
-/* ...existing code... */
-
 .btn.light-gray {
     background-color: var(--color-primary);
     color: var(--color-white);
@@ -309,7 +315,6 @@ ul {
     border-radius: 6px;
 }
 
-/* ...existing code... */
 
 #timer-display {
     margin-top: 20px;
@@ -318,8 +323,6 @@ ul {
     color: #ff0000;
 }
 
-/* ...existing code... */
-
 .search-bar {
     width: 90vw;
     padding: 10px;
@@ -327,8 +330,6 @@ ul {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
-/* ...existing code... */
 
 .profile-image {
     width: 100px;
@@ -345,8 +346,6 @@ ul {
     height: 100%;
     object-fit: cover;
 }
-
-/* ...existing code... */
 
 .progress-bar-container {
     width: 100%;
@@ -370,8 +369,6 @@ ul {
     margin-bottom: 15px;
 }
 
-/* ...existing code... */
-
 #options-container {
     text-align: center;
     width: 100%;
@@ -382,8 +379,6 @@ ul {
     color: var(--color-primary);
     margin-bottom: 20px;
 }
-
-/* ...existing code... */
 
 #error-ranking-container {
     background-color: white;
@@ -410,8 +405,6 @@ ul {
     margin-left: 7px;
 }
 
-/* ...existing code... */
-
 .error-count {
     display: inline-flex;
     align-items: center;
@@ -431,4 +424,95 @@ ul {
     align-items: center; 
 }
 
-/* ...existing code... */
+/* Utilidades de espaciado */
+.margin-bottom-sm { margin-bottom: var(--spacing-sm); }
+.margin-bottom-md { margin-bottom: var(--spacing-md); }
+.margin-bottom-lg { margin-bottom: var(--spacing-lg); }
+.padding-default { padding: var(--spacing-lg); }
+
+/* Diseños de contenedor comunes */
+.container-base {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-default);
+    width: var(--container-width);
+    max-width: var(--max-container-width);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Estilos de botón base */
+.button-base {
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilos de lista base */
+.list-item-base {
+    padding: var(--spacing-xs);
+    margin: var(--spacing-xs) 0;
+    border-radius: var(--border-radius-md);
+    list-style: none;
+}
+
+/* Aplicar las nuevas clases */
+#quiz-container, #login-container, #error-ranking-container {
+    @extend .container-base;
+}
+
+.answer-button, #next-button, #loginForm button {
+    @extend .button-base;
+}
+
+#correct-questions li, #incorrect-questions li {
+    @extend .list-item-base;
+}
+
+#question-timer {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    transition: color 0.3s ease;
+    width: 100px;
+}
+
+.quiz-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 5px 10px;
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-sm);
+    font-size: 12px;
+}
+
+#question-timer {
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    transition: all 0.3s ease;
+    font-size: 12px;
+}
+
+#question-timer.warning {
+    background-color: #ffa500;
+}
+
+#question-timer.danger {
+    background-color: var(--color-incorrect);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}

@@ -14,6 +14,10 @@ let correctAnswers = [];
 let incorrectAnswers = [];
 let score = 0;
 
+// Agregar nueva variable para el timer de pregunta
+let questionTimer;
+const QUESTION_TIME_LIMIT = 25; // 15 segundos por pregunta
+
 const questionContainer = document.getElementById('question');
 const questionCounter = document.getElementById('question-counter');
 const datasetCounter = document.getElementById('dataset-counter'); // Nuevo contador del dataset
@@ -108,64 +112,213 @@ function filterQuestions(searchTerm) {
 }
 
 function startQuiz() {
+    // Incrementar contador de intentos
+    let quizAttempts = parseInt(localStorage.getItem('quizAttempts') || '0');
+    quizAttempts++;
+    localStorage.setItem('quizAttempts', quizAttempts);
+
     currentQuestionIndex = 0;
     score = 0;
     correctAnswers = [];
     incorrectAnswers = [];
+    
+    const QUESTIONS_PER_QUIZ = 30; // Número fijo de preguntas por quiz
     const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
     const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
     const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
-    
-    // Obtener las 5 preguntas más frecuentes de errorCounts
-    const topErrorQuestions = Object.entries(errorCounts)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 5)
-        .map(([index]) => parseInt(index));
-    
-    // Filtrar preguntas incorrectas priorizando las del top de errores
-    const priorityIncorrectQuestions = questions.filter((_, index) => 
-        topErrorQuestions.includes(index) && incorrectIndices.includes(index)
-    );
-    
-    // Si no hay suficientes preguntas del top, agregar otras incorrectas hasta llegar a 5
-    const remainingIncorrectQuestions = questions.filter((_, index) => 
-        !topErrorQuestions.includes(index) && incorrectIndices.includes(index)
-    );
-    
-    // Combinar preguntas prioritarias y completar hasta 5 con otras incorrectas
-    const selectedIncorrectQuestions = [
-        ...priorityIncorrectQuestions,
-        ...getRandomQuestions(remainingIncorrectQuestions, Math.max(0, 5 - priorityIncorrectQuestions.length))
-    ];
-    
-    // Obtener preguntas que no están ni en correctas ni en incorrectas
-    const availableQuestions = questions.filter((_, index) => 
-        !correctIndices.includes(index) && !incorrectIndices.includes(index)
-    );
-    
-    const numRemaining = Math.max(40 - selectedIncorrectQuestions.length, 0);
-    const newQuestions = getRandomQuestions(availableQuestions, numRemaining);
-    
-    selectedQuestions = [...selectedIncorrectQuestions, ...newQuestions];
-    
-    if (selectedQuestions.length === 0) {
-        showPopup('Es necesario borrar la memoria para volver a mostrar las preguntas');
+
+    // Calcular preguntas disponibles (no están en correctIndices)
+    const availableQuestions = questions.filter((_, index) => !correctIndices.includes(index));
+
+    // Verificar si todas las preguntas están completadas
+    if (availableQuestions.length === 0) {
+        showCompletionMessage();
+        return;
+    }
+
+    if (availableQuestions.length === 0) {
+        showPopup('¡Has completado todas las preguntas correctamente! Por favor, borra la memoria para reiniciar.');
         quizContainer.style.display = 'none';
         optionsContainer.style.display = 'block';
         return;
+    }
+
+    // Si es el intento número 12, incluir todas las preguntas del ranking de errores
+    if (quizAttempts % 12 === 0) {
+        const errorQuestions = Object.entries(errorCounts)
+            .sort(([,a], [,b]) => b - a)
+            .map(([index]) => parseInt(index))
+            .filter(index => !correctIndices.includes(index)); // Solo incluir las que no están correctas
+
+        // Seleccionar preguntas del ranking de errores disponibles
+        const errorRankingQuestions = questions.filter((_, index) => 
+            errorQuestions.includes(index)
+        );
+
+        // Completar con preguntas aleatorias disponibles si es necesario
+        const remainingCount = QUESTIONS_PER_QUIZ - errorRankingQuestions.length;
+        const remainingQuestions = availableQuestions.filter(q => 
+            !errorRankingQuestions.includes(q)
+        );
+        
+        const randomQuestions = getRandomQuestions(remainingQuestions, remainingCount);
+        selectedQuestions = [...errorRankingQuestions, ...randomQuestions];
+
+        showPopup('Quiz especial: Incluye todas tus preguntas con errores frecuentes');
+    } else {
+        // Quiz normal
+        const topErrorQuestions = Object.entries(errorCounts)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 5)
+            .map(([index]) => parseInt(index))
+            .filter(index => !correctIndices.includes(index)); // Solo incluir las que no están correctas
+
+        // Seleccionar preguntas prioritarias de errores
+        const priorityQuestions = questions.filter((_, index) => 
+            topErrorQuestions.includes(index)
+        );
+
+        // Calcular cuántas preguntas adicionales necesitamos
+        const remainingCount = QUESTIONS_PER_QUIZ - priorityQuestions.length;
+        
+        // Obtener preguntas aleatorias de las disponibles
+        const remainingQuestions = availableQuestions.filter(q => 
+            !priorityQuestions.includes(q)
+        );
+        
+        const randomQuestions = getRandomQuestions(remainingQuestions, remainingCount);
+        selectedQuestions = [...priorityQuestions, ...randomQuestions];
+    }
+
+    // Asegurar que tenemos exactamente QUESTIONS_PER_QUIZ preguntas
+    selectedQuestions = selectedQuestions.slice(0, QUESTIONS_PER_QUIZ);
+
+    // Si no tenemos suficientes preguntas, mostrar advertencia
+    if (selectedQuestions.length < QUESTIONS_PER_QUIZ) {
+        showPopup(`Atención: Solo hay ${selectedQuestions.length} preguntas disponibles`);
     }
 
     datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`;
     showQuestion();
 }
 
+// Nueva función para manejar la finalización del quiz
+function showCompletionMessage() {
+    // Ocultar elementos innecesarios
+    quizContainer.style.display = 'none';
+    resultContainer.style.display = 'none';
+    questionContainer.style.display = 'none';
+    questionCounter.style.display = 'none';
+
+    // Mostrar mensaje de felicitación en el contenedor de opciones
+    optionsContainer.style.display = 'block';
+    
+    // Crear mensaje de felicitación
+    const completionMessage = document.createElement('div');
+    completionMessage.className = 'completion-message';
+    completionMessage.innerHTML = `
+        <h2>¡Felicidades!</h2>
+        <p>Bien hecho, repitelo de nuevo que solo los que se esfuerzan pasan sus examenes.</p>
+        <p>Para continuar practicando, puedes:</p>
+        <ul>
+            <li>Ver todas las preguntas</li>
+            <li>Reiniciar tu progreso</li>
+            <li>Ver el ranking de errores histórico</li>
+        </ul>
+    `;
+    
+    // Limpiar y agregar el mensaje al contenedor de opciones
+    while (optionsContainer.firstChild) {
+        optionsContainer.firstChild.remove();
+    }
+    
+    optionsContainer.appendChild(completionMessage);
+    
+    // Agregar botones de acción
+    const actionButtons = document.createElement('div');
+    actionButtons.className = 'action-buttons';
+    actionButtons.innerHTML = `
+        <button id="view-all-completed" class="btn light-gray">Ver todas las preguntas</button>
+        <button id="reset-progress-completed" class="btn light-gray">Reiniciar progreso</button>
+        <button id="view-ranking-completed" class="btn light-gray">Ver ranking de errores</button>
+    `;
+    
+    optionsContainer.appendChild(actionButtons);
+
+    // Agregar event listeners para los nuevos botones
+    document.getElementById('view-all-completed').addEventListener('click', () => {
+        optionsContainer.style.display = 'none';
+        questionsContainer.style.display = 'block';
+        displayQuestions();
+    });
+
+    document.getElementById('reset-progress-completed').addEventListener('click', () => {
+        const confirmReset = window.confirm('¿Estás seguro de que quieres reiniciar todo tu progreso?');
+        if (confirmReset) {
+            localStorage.clear();
+            location.reload();
+        }
+    });
+
+    document.getElementById('view-ranking-completed').addEventListener('click', () => {
+        optionsContainer.style.display = 'none';
+        errorRankingContainer.style.display = 'block';
+        displayErrorRanking();
+    });
+}
+
+// Agregar estilos necesarios dinámicamente
+const style = document.createElement('style');
+style.textContent = `
+    .completion-message {
+        text-align: center;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    .completion-message h2 {
+        color: var(--color-primary);
+        margin-bottom: 15px;
+    }
+    .completion-message ul {
+        text-align: left;
+        margin: 15px 0;
+        padding-left: 20px;
+    }
+    .completion-message ul li {
+        margin: 5px 0;
+    }
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+`;
+document.head.appendChild(style);
+
 function showQuestion() {
     resetState();
     updateProgress();
+    clearTimeout(questionTimer); // Limpiar el timer anterior
+
     const currentQuestion = selectedQuestions[currentQuestionIndex];
     questionCounter.innerText = `Pregunta ${currentQuestionIndex + 1} de ${selectedQuestions.length}`;
     questionContainer.innerText = currentQuestion.question;
     
+    // Iniciar el timer para esta pregunta
+    let timeLeft = QUESTION_TIME_LIMIT;
+    updateQuestionTimer(timeLeft);
+    
+    questionTimer = setInterval(() => {
+        timeLeft--;
+        updateQuestionTimer(timeLeft);
+        
+        if (timeLeft <= 0) {
+            clearInterval(questionTimer);
+            selectAnswer(-1); // Marcar como incorrecta si se acaba el tiempo
+        }
+    }, 1000);
+
     // Crear array de todas las respuestas
     const allAnswers = [...currentQuestion.answers];
     const correctAnswer = allAnswers[currentQuestion.correct];
@@ -191,6 +344,39 @@ function showQuestion() {
     });
 }
 
+// Agregar función para actualizar el timer visual
+function updateQuestionTimer(seconds) {
+    const timerElement = document.getElementById('question-timer');
+    if (!timerElement) {
+        const quizHeaderInfo = document.createElement('div');
+        quizHeaderInfo.className = 'quiz-header-info';
+        
+        // Mover el datasetCounter al contenedor quiz-header-info
+        const datasetCounterElement = document.getElementById('dataset-counter');
+        if (datasetCounterElement) {
+            quizHeaderInfo.appendChild(datasetCounterElement);
+        }
+        
+        const timer = document.createElement('div');
+        timer.id = 'question-timer';
+        quizHeaderInfo.appendChild(timer);
+        
+        // Insertar el contenedor antes del questionContainer
+        questionContainer.parentNode.insertBefore(quizHeaderInfo, questionContainer);
+    }
+
+    const timer = document.getElementById('question-timer');
+    timer.textContent = `${seconds}s`;
+    
+    // Actualizar clases según el tiempo restante
+    timer.className = 'question-timer';
+    if (seconds <= 5) {
+        timer.classList.add('danger');
+    } else if (seconds <= 10) {
+        timer.classList.add('warning');
+    }
+}
+
 function resetState() {
     answerButtons.forEach(button => {
         button.disabled = false;
@@ -199,10 +385,30 @@ function resetState() {
 }
 
 function selectAnswer(selectedIndex) {
+    clearInterval(questionTimer); // Limpiar el timer cuando se selecciona una respuesta
+
     const currentQuestion = selectedQuestions[currentQuestionIndex];
+    const questionIndex = questions.indexOf(currentQuestion);
+    
     answerButtons.forEach(button => button.disabled = true);
     if (selectedIndex === currentQuestion.correct) {
         score++;
+        // Si la respuesta es correcta y estamos en un quiz especial (intento 12)
+        const quizAttempts = parseInt(localStorage.getItem('quizAttempts') || '0');
+        if (quizAttempts % 12 === 0) {
+            // Eliminar la pregunta del ranking de errores
+            const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
+            delete errorCounts[questionIndex];
+            localStorage.setItem('errorCounts', JSON.stringify(errorCounts));
+            
+            // Eliminar de incorrectIndices
+            const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+            const indexToRemove = incorrectIndices.indexOf(questionIndex);
+            if (indexToRemove > -1) {
+                incorrectIndices.splice(indexToRemove, 1);
+                localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+            }
+        }
         if (!correctAnswers.includes(currentQuestion.question)) {
             correctAnswers.push(currentQuestion.question);
             const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
@@ -554,6 +760,19 @@ function displayErrorRanking() {
         rankingList.appendChild(errorItem);
     });
 }
+
+// Agregar estilos para el timer
+const timerStyle = document.createElement('style');
+timerStyle.textContent = `
+    #question-timer {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+        transition: color 0.3s ease;
+    }
+`;
+document.head.appendChild(timerStyle);
 
 
 
