@@ -557,6 +557,7 @@ ul {
     color: var(--color-primary);
 }
 
+
 .focus-meter {
     --progress: 0%;
     height: 8px;

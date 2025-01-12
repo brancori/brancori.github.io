@@ -21,6 +21,7 @@ class StudySession {
             (this.metrics.averageResponseTime * (this.metrics.questionsAnswered - 1) + 
              questionData.responseTime) / this.metrics.questionsAnswered;
     }
+    
 
     calculateFocusScore() {
         const consistencyFactor = this.metrics.averageResponseTime < 30 ? 1 : 0.8;

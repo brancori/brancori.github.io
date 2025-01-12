@@ -23,6 +23,7 @@ export class ProgressUI {
             </div>
         </div>`;
     }
+    
 
     static updateDashboard(metrics) {
         try {
@@ -59,6 +60,7 @@ export class ProgressUI {
             }
         }
     }
+
 
     static updateOverallProgress() {
         // Obtener historial completo
