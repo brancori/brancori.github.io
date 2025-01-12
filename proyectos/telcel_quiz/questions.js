@@ -122,7 +122,7 @@ export const questions = [
     {
         "question": "Verificar que el cliente no tenga líneas canceladas en abogado, afianzadoras o deducción fiscal (ciclos 97, 98 o 99) ni con saldos a más de 60 días son:",
         "answers": [
-            "Acciones obligatorias del asesor antes de activar líneas nuevas para el cliente.",
+            "Acciones que debe tomar el asesor de servicio a clientes al recibir líneas nuevas",
             "Requisitos indispensables que el cliente debe cumplir para contratar servicios adicionales.",
             "Normas para la evaluación del historial de pagos en clientes corporativos.",
             "Pasos previos para la reactivación de líneas suspendidas por falta de pago."

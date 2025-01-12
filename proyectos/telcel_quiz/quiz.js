@@ -135,8 +135,14 @@ function filterQuestions(searchTerm) {
 function startQuiz() {
     const studyDashboard = document.getElementById('study-dashboard');
     if (studyDashboard) {
-        studyDashboard.innerHTML = ProgressUI.createProgressDashboard();
+        // Crear el dashboard si no existe
+        if (!studyDashboard.innerHTML.trim()) {
+            studyDashboard.innerHTML = ProgressUI.createProgressDashboard();
+        }
+        // Actualizar métricas existentes
+        ProgressUI.updateDashboard(studySession.metrics);
     }
+    studySession.startQuiz(); // Inicializar quizStartTime al iniciar el quiz
     studySession.startTime = new Date();
     // Incrementar contador de intentos
     let quizAttempts = parseInt(localStorage.getItem('quizAttempts') || '0');
@@ -174,7 +180,8 @@ function startQuiz() {
         const errorQuestions = Object.entries(errorCounts)
             .sort(([,a], [,b]) => b - a)
             .map(([index]) => parseInt(index))
-            .filter(index => !correctIndices.includes(index)); // Solo incluir las que no están correctas
+            .filter(index => !correctIndices.includes(index)) // Filtrar preguntas ya correctas
+            .filter(index => incorrectIndices.includes(index)); // Solo incluir las que están en incorrectIndices
 
         // Seleccionar preguntas del ranking de errores disponibles
         const errorRankingQuestions = questions.filter((_, index) => 
@@ -469,6 +476,14 @@ function selectAnswer(selectedIndex) {
             isCorrect: isCorrect,
             responseTime: responseTime
         });
+
+        // Guardar tiempo de respuesta en localStorage
+        const responseTimes = JSON.parse(localStorage.getItem('responseTimes')) || {};
+        if (!Array.isArray(responseTimes[questionIndex])) {
+            responseTimes[questionIndex] = [];
+        }
+        responseTimes[questionIndex].push(responseTime);
+        localStorage.setItem('responseTimes', JSON.stringify(responseTimes));
         
         // Manejar respuesta
         if (isCorrect) {
@@ -862,27 +877,27 @@ function handleCorrectAnswer(question, questionIndex) {
     score++;
     if (!correctAnswers.includes(question.question)) {
         correctAnswers.push(question.question);
+        
+        // Actualizar correctIndices
         const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
         correctIndices.push(questionIndex);
         localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
         
-        // Remover de incorrectIndices si estaba previamente incorrecta
+        // Remover de incorrectIndices
         const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
         const indexToRemove = incorrectIndices.indexOf(questionIndex);
         if (indexToRemove > -1) {
             incorrectIndices.splice(indexToRemove, 1);
             localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+            
+            // Remover del ranking de errores solo si es el quiz especial
+            let quizAttempts = parseInt(localStorage.getItem('quizAttempts') || '0');
+            if (quizAttempts % 12 === 0) {
+                const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
+                delete errorCounts[questionIndex];
+                localStorage.setItem('errorCounts', JSON.stringify(errorCounts));
+            }
         }
-    }
-}
-
-function handleIncorrectAnswer(question, questionIndex) {
-    if (!incorrectAnswers.includes(question.question)) {
-        incorrectAnswers.push(question.question);
-        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-        incorrectIndices.push(questionIndex);
-        localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
-        updateErrorCount(questionIndex);
     }
 }
 
@@ -931,6 +946,47 @@ try {
 } catch (error) {
     console.error('Error durante la inicialización:', error);
     displayError('Error al cargar la aplicación');
+}
+
+function handleIncorrectAnswer(question, questionIndex) {
+    if (!incorrectAnswers.includes(question.question)) {
+        incorrectAnswers.push(question.question);
+        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+        incorrectIndices.push(questionIndex);
+        localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+        updateErrorCount(questionIndex);
+    }
+}
+
+document.getElementById('view-slow-questions').addEventListener('click', () => {
+    optionsContainer.style.display = 'none';
+    quizContainer.style.display = 'block';
+    startSlowQuestionsQuiz();
+});
+
+function startSlowQuestionsQuiz() {
+    const QUESTIONS_PER_QUIZ = 31; // Número fijo de preguntas por quiz
+    const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
+    const responseTimes = JSON.parse(localStorage.getItem('responseTimes')) || {};
+
+    // Obtener preguntas con los tiempos de respuesta promedio más largos
+    const slowQuestions = Object.entries(responseTimes)
+        .map(([index, times]) => [parseInt(index), times.reduce((a, b) => a + b, 0) / times.length])
+        .sort(([,a], [,b]) => b - a)
+        .map(([index]) => index)
+        .filter(index => !correctIndices.includes(index)) // Filtrar preguntas ya correctas
+        .slice(0, QUESTIONS_PER_QUIZ);
+
+    // Seleccionar preguntas del ranking de tiempos de respuesta
+    selectedQuestions = questions.filter((_, index) => slowQuestions.includes(index));
+
+    // Si no tenemos suficientes preguntas, mostrar advertencia
+    if (selectedQuestions.length < QUESTIONS_PER_QUIZ) {
+        showPopup(`Atención: Solo hay ${selectedQuestions.length} preguntas disponibles`);
+    }
+
+    datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`;
+    showQuestion();
 }
 
 

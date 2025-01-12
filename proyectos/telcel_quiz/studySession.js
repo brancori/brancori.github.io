@@ -8,10 +8,14 @@ class StudySession {
             totalStudyTime: 0,
             focusScore: 0,
             breaksTaken: 0,
-            quizStartTime: new Date(),
+            quizStartTime: null, // Inicializar como null
             quizDuration: 0
         };
         this.sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
+    }
+
+    startQuiz() {
+        this.metrics.quizStartTime = new Date(); // Inicializar quizStartTime al iniciar el quiz
     }
 
     updateMetrics(questionData) {
@@ -20,8 +24,10 @@ class StudySession {
         this.metrics.averageResponseTime = 
             (this.metrics.averageResponseTime * (this.metrics.questionsAnswered - 1) + 
              questionData.responseTime) / this.metrics.questionsAnswered;
+
+        // Guardar tiempo promedio de respuesta en localStorage
+        localStorage.setItem('averageResponseTime', this.metrics.averageResponseTime);
     }
-    
 
     calculateFocusScore() {
         const consistencyFactor = this.metrics.averageResponseTime < 30 ? 1 : 0.8;
@@ -31,7 +37,9 @@ class StudySession {
 
     endSession() {
         this.metrics.totalStudyTime = (new Date() - this.startTime) / 1000 / 60; // en minutos
-        this.metrics.quizDuration = (new Date() - this.metrics.quizStartTime) / 1000;
+        if (this.metrics.quizStartTime) {
+            this.metrics.quizDuration = (new Date() - this.metrics.quizStartTime) / 1000;
+        }
         this.calculateFocusScore();
         
         // Guardar tiempo promedio histórico

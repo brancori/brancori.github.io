@@ -11,6 +11,7 @@ export class ProgressUI {
                     <p>Preguntas Correctas: <span id="correct-count">0</span>/<span id="total-questions">0</span></p>
                     <p>Porcentaje: <span id="accuracy-rate">0</span>%</p>
                     <p>Tiempo Quiz: <span id="current-time">0:00</span></p>
+                    <p>Tiempo Promedio de Respuesta: <span id="avg-response-time">0:00</span></p>
                 </div>
                 <div class="metric-card">
                     <h3>Progreso General</h3>
@@ -23,18 +24,20 @@ export class ProgressUI {
             </div>
         </div>`;
     }
-    
 
     static updateDashboard(metrics) {
         try {
             if (!metrics) {
-                console.error('Error: No se proporcionaron métricas válidas');
                 return;
             }
             
-            this.updateCurrentSession(metrics);
+            // Cargar datos almacenados
+            const sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
+            const lastSession = sessionHistory[sessionHistory.length - 1] || metrics;
+            
+            this.updateCurrentSession(lastSession);
             this.updateOverallProgress();
-            this.updateTimers(metrics);
+            this.updateTimers(lastSession);
         } catch (error) {
             console.error('Error al actualizar el dashboard:', error);
         }
@@ -44,6 +47,7 @@ export class ProgressUI {
         const correctCount = document.getElementById('correct-count');
         const totalQuestions = document.getElementById('total-questions');
         const accuracyRate = document.getElementById('accuracy-rate');
+        const avgResponseTime = document.getElementById('avg-response-time');
 
         if (correctCount) correctCount.textContent = metrics.correctAnswers;
         if (totalQuestions) totalQuestions.textContent = metrics.questionsAnswered;
@@ -59,8 +63,12 @@ export class ProgressUI {
                 focusMeter.style.setProperty('--progress', `${rate}%`);
             }
         }
-    }
 
+        if (avgResponseTime) {
+            const avgTime = localStorage.getItem('averageResponseTime') || 0;
+            avgResponseTime.textContent = this.formatTime(Math.round(avgTime));
+        }
+    }
 
     static updateOverallProgress() {
         // Obtener historial completo
@@ -99,7 +107,7 @@ export class ProgressUI {
             // Actualizar tiempo actual
             const currentTimeElement = document.getElementById('current-time');
             if (currentTimeElement && metrics.quizStartTime) {
-                const currentSeconds = Math.round((new Date() - metrics.quizStartTime) / 1000);
+                const currentSeconds = Math.round((new Date() - new Date(metrics.quizStartTime)) / 1000);
                 currentTimeElement.textContent = this.formatTime(currentSeconds);
             }
 
