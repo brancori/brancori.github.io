@@ -1,4 +1,6 @@
 import { questions } from './questions.js'; // Importar las preguntas desde el archivo externo
+import { studySession } from './studySession.js';
+import { ProgressUI } from './progressUI.js';
 
 const totalQuestions = questions.length; // Contador del total de preguntas del dataset
 
@@ -112,6 +114,11 @@ function filterQuestions(searchTerm) {
 }
 
 function startQuiz() {
+    const studyDashboard = document.getElementById('study-dashboard');
+    if (studyDashboard) {
+        studyDashboard.innerHTML = ProgressUI.createProgressDashboard();
+    }
+    studySession.startTime = new Date();
     // Incrementar contador de intentos
     let quizAttempts = parseInt(localStorage.getItem('quizAttempts') || '0');
     quizAttempts++;
@@ -164,7 +171,7 @@ function startQuiz() {
         const randomQuestions = getRandomQuestions(remainingQuestions, remainingCount);
         selectedQuestions = [...errorRankingQuestions, ...randomQuestions];
 
-        showPopup('Quiz especial: Incluye todas tus preguntas con errores frecuentes');
+        showPopup('Ahora si te vas a probar con los errores mas frecuentes, ¡suerte!');
     } else {
         // Quiz normal
         const topErrorQuestions = Object.entries(errorCounts)
@@ -218,7 +225,7 @@ function showCompletionMessage() {
     completionMessage.className = 'completion-message';
     completionMessage.innerHTML = `
         <h2>¡Felicidades!</h2>
-        <p>Bien hecho, repitelo de nuevo que solo los que se esfuerzan pasan sus examenes.</p>
+        <p>Bien hecho, repitelo de nuevo, que solo los que se esfuerzan pasan sus examenes.</p>
         <p>Para continuar practicando, puedes:</p>
         <ul>
             <li>Ver todas las preguntas</li>
@@ -296,7 +303,10 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+let questionStartTime; // Agregar esta variable al inicio del archivo
+
 function showQuestion() {
+    questionStartTime = new Date(); // Agregar esta línea
     resetState();
     updateProgress();
     clearTimeout(questionTimer); // Limpiar el timer anterior
@@ -385,65 +395,66 @@ function resetState() {
 }
 
 function selectAnswer(selectedIndex) {
-    clearInterval(questionTimer); // Limpiar el timer cuando se selecciona una respuesta
-
     const currentQuestion = selectedQuestions[currentQuestionIndex];
-    const questionIndex = questions.indexOf(currentQuestion);
+    const responseTime = (new Date() - questionStartTime) / 1000;
     
+    // Detener el timer y actualizar métricas
+    clearInterval(questionTimer);
+    studySession.updateMetrics({
+        isCorrect: selectedIndex === currentQuestion.correct,
+        responseTime: responseTime
+    });
+    ProgressUI.updateDashboard(studySession.metrics);
+
+    // Procesar la respuesta
+    const questionIndex = questions.indexOf(currentQuestion);
     answerButtons.forEach(button => button.disabled = true);
+
+    // Manejar respuesta correcta/incorrecta
     if (selectedIndex === currentQuestion.correct) {
-        score++;
-        // Si la respuesta es correcta y estamos en un quiz especial (intento 12)
-        const quizAttempts = parseInt(localStorage.getItem('quizAttempts') || '0');
-        if (quizAttempts % 12 === 0) {
-            // Eliminar la pregunta del ranking de errores
-            const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
-            delete errorCounts[questionIndex];
-            localStorage.setItem('errorCounts', JSON.stringify(errorCounts));
-            
-            // Eliminar de incorrectIndices
-            const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-            const indexToRemove = incorrectIndices.indexOf(questionIndex);
-            if (indexToRemove > -1) {
-                incorrectIndices.splice(indexToRemove, 1);
-                localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
-            }
-        }
-        if (!correctAnswers.includes(currentQuestion.question)) {
-            correctAnswers.push(currentQuestion.question);
-            const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
-            correctIndices.push(questions.indexOf(currentQuestion));
-            localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
-            
-            // Remove from incorrectIndices if it was previously incorrect
-            const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-            const indexToRemove = incorrectIndices.indexOf(questions.indexOf(currentQuestion));
-            if (indexToRemove > -1) {
-                incorrectIndices.splice(indexToRemove, 1);
-                localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
-            }
-        }
+        handleCorrectAnswer(currentQuestion, questionIndex);
     } else {
-        if (!incorrectAnswers.includes(currentQuestion.question)) {
-            incorrectAnswers.push(currentQuestion.question);
-            // Store incorrect answer index in localStorage
-            const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
-            const questionIndex = questions.indexOf(currentQuestion);
-            incorrectIndices.push(questionIndex);
-            localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
-            updateErrorCount(questionIndex); // Agregar esta línea
-        }
+        handleIncorrectAnswer(currentQuestion, questionIndex);
     }
+
+    // Avanzar a la siguiente pregunta o mostrar resultados
     currentQuestionIndex++;
-    if (currentQuestionIndex < selectedQuestions.length) {
-        showQuestion();
+    
+    // Verificar si hemos terminado el quiz
+    if (currentQuestionIndex >= selectedQuestions.length) {
+        setTimeout(() => showResults(), 500); // Pequeña pausa antes de mostrar resultados
     } else {
-        showResults();
+        setTimeout(() => showQuestion(), 500); // Pequeña pausa antes de la siguiente pregunta
     }
 }
 
-// Remove the nextButton event listener and element
-nextButton.remove();
+function handleCorrectAnswer(question, questionIndex) {
+    score++;
+    if (!correctAnswers.includes(question.question)) {
+        correctAnswers.push(question.question);
+        const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
+        correctIndices.push(questionIndex);
+        localStorage.setItem('correctIndices', JSON.stringify(correctIndices));
+        
+        // Remover de incorrectIndices si estaba previamente incorrecta
+        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+        const indexToRemove = incorrectIndices.indexOf(questionIndex);
+        if (indexToRemove > -1) {
+            incorrectIndices.splice(indexToRemove, 1);
+            localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+        }
+    }
+}
+
+function handleIncorrectAnswer(question, questionIndex) {
+    if (!incorrectAnswers.includes(question.question)) {
+        incorrectAnswers.push(question.question);
+        const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
+        incorrectIndices.push(questionIndex);
+        localStorage.setItem('incorrectIndices', JSON.stringify(incorrectIndices));
+        updateErrorCount(questionIndex);
+    }
+}
 
 let timerInterval;
 
@@ -482,56 +493,74 @@ function markRemainingQuestionsIncorrect() {
 
 // Modificar la función showResults
 function showResults() {
+    studySession.endSession();
     clearInterval(timerInterval);
+
+    // Ocultar elementos del quiz
     quizContainer.style.display = 'none';
     questionContainer.style.display = 'none';
     questionCounter.style.display = 'none';
+
+    // Mostrar resultados
     resultContainer.style.display = 'block';
     scoreDisplay.innerText = `TU PUNTUACIÓN: ${score}/${selectedQuestions.length}`;
     
-    correctQuestionsDisplay.innerHTML = `<h3>Preguntas Correctas</h3><ul>${correctAnswers.map(question => `<li>${question}</li>`).join('')}</ul>`;
-    incorrectQuestionsDisplay.innerHTML = `<h3>Preguntas Incorrectas</h3><ul>${incorrectAnswers.map(question => `<li class="incorrect">${question}</li>`).join('')}</ul>`;
+    // Actualizar listas de preguntas
+    correctQuestionsDisplay.innerHTML = `
+        <h3>Preguntas Correctas</h3>
+        <ul>${correctAnswers.map(q => `<li>${q}</li>`).join('')}</ul>`;
     
-    document.getElementById('retry-quiz').addEventListener('click', () => {
-        resultContainer.style.display = 'none';
-        quizContainer.style.display = 'block';
-        questionContainer.style.display = 'block';
-        questionCounter.style.display = 'block';
-        answerButtons.forEach(button => button.style.display = 'block');
-        startQuiz();
-    });
+    incorrectQuestionsDisplay.innerHTML = `
+        <h3>Preguntas Incorrectas</h3>
+        <ul>${incorrectAnswers.map(q => `<li class="incorrect">${q}</li>`).join('')}</ul>`;
 
-    document.getElementById('clear-memory').addEventListener('click', () => {
-        const confirmPopup = document.createElement('div');
-        confirmPopup.className = 'popup confirmation';
-        confirmPopup.innerHTML = `
-            <p>¿Estás seguro que deseas borrar el registro de respuestas?</p>
-            <p class="popup-warning">Esta acción no se puede deshacer y perderás el registro de preguntas correctas e incorrectas.</p>
-            <div class="popup-buttons">
-                <button class="btn confirm">Confirmar</button>
-                <button class="btn cancel">Cancelar</button>
-            </div>
-        `;
-        document.body.appendChild(confirmPopup);
-
-        confirmPopup.querySelector('.confirm').onclick = () => {
-            // Solo eliminar los índices de respuestas
-            localStorage.removeItem('correctIndices');
-            localStorage.removeItem('incorrectIndices');
-            confirmPopup.remove();
-            showPopup('Registro de respuestas borrado correctamente');
-        };
-
-        confirmPopup.querySelector('.cancel').onclick = () => {
-            confirmPopup.remove();
-        };
-    });
-
-    document.getElementById('back-to-main').addEventListener('click', () => {
-        resultContainer.style.display = 'none';
-        optionsContainer.style.display = 'block';
-    });
+    // Mostrar reporte de progreso
+    const progressReport = studySession.getProgressReport();
+    ProgressUI.updateDashboard(studySession.metrics);
 }
+
+// Remove the nextButton event listener and element
+nextButton.remove();
+
+document.getElementById('retry-quiz').addEventListener('click', () => {
+    resultContainer.style.display = 'none';
+    quizContainer.style.display = 'block';
+    questionContainer.style.display = 'block';
+    questionCounter.style.display = 'block';
+    answerButtons.forEach(button => button.style.display = 'block');
+    startQuiz();
+});
+
+document.getElementById('clear-memory').addEventListener('click', () => {
+    const confirmPopup = document.createElement('div');
+    confirmPopup.className = 'popup confirmation';
+    confirmPopup.innerHTML = `
+        <p>¿Estás seguro que deseas borrar el registro de respuestas?</p>
+        <p class="popup-warning">Esta acción no se puede deshacer y perderás el registro de preguntas correctas e incorrectas.</p>
+        <div class="popup-buttons">
+            <button class="btn confirm">Confirmar</button>
+            <button class="btn cancel">Cancelar</button>
+        </div>
+    `;
+    document.body.appendChild(confirmPopup);
+
+    confirmPopup.querySelector('.confirm').onclick = () => {
+        // Solo eliminar los índices de respuestas
+        localStorage.removeItem('correctIndices');
+        localStorage.removeItem('incorrectIndices');
+        confirmPopup.remove();
+        showPopup('Registro de respuestas borrado correctamente');
+    };
+
+    confirmPopup.querySelector('.cancel').onclick = () => {
+        confirmPopup.remove();
+    };
+});
+
+document.getElementById('back-to-main').addEventListener('click', () => {
+    resultContainer.style.display = 'none';
+    optionsContainer.style.display = 'block';
+});
 
 // Add this after the other event listeners
 document.getElementById('main-clear-memory').addEventListener('click', () => {
