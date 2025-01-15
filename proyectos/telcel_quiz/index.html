@@ -28,6 +28,7 @@
         <button id="view-error-ranking" class="btn light-gray">Mi Top de Errores</button>
         <button id="view-slow-questions" class="btn light-gray">Examen difícil</button> <!-- Nuevo botón -->
         <button id="main-clear-memory" class="btn light-gray">Borrar Memoria</button>
+        <button id="clear-ignored-questions" class="btn light-gray">Borrar Preguntas Ignoradas</button> <!-- New button -->
     </div>
     <div id="quiz-container" style="display: none;">
         <div class="progress-bar-container">
@@ -46,13 +47,14 @@
         <button id="next-button" class="btn">Siguiente</button>
         <button id="start-timer" class="btn light-gray">Iniciar Timer</button> <!-- New button to start the timer -->
         <div id="timer-display" style="display: none;">Tiempo restante: <span id="timer">Iniciar</span></div> <!-- Timer display -->
+        <button id="ignore-question" class="btn ignore-button">Ignorar Pregunta</button> <!-- New ignore button -->
     </div>
     <div id="questions-container" style="display: none;">
         <h2>Base de Datos</h2>
         <input type="text" id="search-bar" placeholder="Buscar preguntas..." class="search-bar">
         <button id="back-to-options" class="btn light-gray">Volver</button>
         <div id="questions-list"></div>
-        
+        <button id="ignore-question-list" class="btn ignore-button">Ignorar Pregunta</button> <!-- New ignore button -->
     </div>
     <div id="incorrect-questions-container" style="display: none;">
         <h2>Preguntas Incorrectas</h2>

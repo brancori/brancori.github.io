@@ -516,11 +516,16 @@ export const questions = [
     },
     {
         "question": "¿Qué es Smart Car Empresarial?",
+        "answers": ["Monitorea en tiempo real el rendimiento, el estado, la actividad y la ubicación del automóvil, brindándole al usuario información útil sobre conductas de manejo, mantenimiento preventivo y problemas del auto, transformando el vehículo en un automóvil inteligente utilizando solamente una App y un equipo GPS que no requiere instalación", "Monitorea solo la ubicación del automóvil", "Monitorea solo el rendimiento del automóvil", "Monitorea solo la actividad del automóvil"],
+        "correct": 0
+    },
+    {
+        "question": "¿Qué es Smart Car Empresarial?",
         "answers": [
             "Monitorea en tiempo real el rendimiento, el estado, la actividad y la ubicación del automóvil, brindándole al usuario información útil sobre conductas de manejo, mantenimiento preventivo y problemas del auto, transformando el vehículo en un automóvil inteligente utilizando solamente una app y un equipo GPS que no requiere instalación.",
-            "Plataforma que se limita a generar reportes históricos de ubicación del vehículo en base a los datos del GPS.",
-            "Sistema diseñado para analizar patrones de uso del automóvil, sin contemplar monitoreo en tiempo real.",
-            "Servicio especializado en brindar únicamente información básica sobre el rendimiento del automóvil."
+            "Sistema enfocado únicamente en la localización del vehículo.",
+            "Servicio especializado en analizar la eficiencia del uso del automóvil.",
+            "Plataforma centrada en la evaluación de actividades vehiculares básicas."
         ],
         "correct": 0
     },
@@ -813,9 +818,9 @@ export const questions = [
         "question": "¿Qué porcentaje se le sube al equipo en financiamiento?",
         "answers": [
             "Del 10 al 35% del financiamiento otorgado, de acuerdo al plazo y plan, con base en boletín 222",
-            "Del 5 al 25% basado exclusivamente en el tipo de contrato y condiciones específicas del cliente",
-            "Un incremento variable que depende exclusivamente de la política interna de cada trimestre fiscal",
-            "Un 12-30% determinado por un análisis de rentabilidad aplicado al momento de la venta"
+            "Del 5 al 20% dependiendo del tipo de cliente",
+            "Un 15% adicional fijo para todos los planes",
+            "Del 10 al 20% dependiendo del monto del equipo"
         ],
         "correct": 0
     },
@@ -1432,10 +1437,10 @@ export const questions = [
     {
         "question": "¿Cuáles son algunas funcionalidades de GVT CTTMX?",
         "answers": [
-            "Básicas, avanzadas, telemetría, temperatura y combustible",
-            "Monitoreo integral de flotas incluyendo geolocalización en tiempo real, análisis predictivo de mantenimiento y gestión automatizada de rutas",
-            "Sistema comprehensivo de tracking vehicular con capacidades de diagnóstico remoto, optimización de rutas y análisis de comportamiento de conductor",
-            "Plataforma integrada de gestión vehicular con funciones de monitoreo continuo, reportes analíticos y alertas predictivas de mantenimiento"
+        "Básicas, avanzadas, telemetría, temperatura y combustible",
+        "Solo básicas",
+        "Solo avanzadas",
+        "Solo telemetría"
         ],
         "correct": 0
     },
@@ -1742,10 +1747,10 @@ export const questions = [
     {
         "question": "Si un cliente corporativo se encuentra en AR y solicita aumento de límite de consumo, ¿cuánto se le da y cuánto necesita?",
         "answers": [
-            "4 veces el límite original de su límite de consumo y depga igual a la diferencia en límite requerido y el original del plan",
-            "Incremento escalonado del límite de consumo basado en el historial crediticio, con un máximo de 400% sobre el límite base y requisitos de garantía proporcionales",
-            "Ampliación del límite crediticio hasta cuadruplicar el monto original, sujeto a evaluación financiera y depósito en garantía equivalente al diferencial",
-            "Extensión del límite de consumo según política corporativa de gestión de riesgo, con incremento máximo del 400% y garantías correspondientes"
+        "4 veces el límite original de su límite de consumo y depga igual a la diferencia en límite requerido y el original del plan",
+        "3 veces el límite original de su límite de consumo",
+        "2 veces el límite original de su límite de consumo",
+        "El mismo límite original de su plan"
         ],
         "correct": 0
     },
@@ -1932,10 +1937,10 @@ export const questions = [
     {
         "question": "¿Qué incluye la MISIÓN de Telcel?",
         "answers": [
-            "Brindamos la mejor experiencia de servicio a través de las más avanzadas soluciones de comunicación, tecnología de información y contenido digital para acelerar el desarrollo de los países donde operamos y promover la igualdad de oportunidades entre la gente",
-            "Proporcionar servicios de telecomunicaciones innovadores que transforman la conectividad digital y potencian el desarrollo socioeconómico en nuestras áreas de operación",
-            "Liderar la revolución digital en Latinoamérica mediante la implementación de tecnologías de vanguardia y servicios que mejoran la calidad de vida de nuestros usuarios",
-            "Crear una infraestructura de comunicaciones robusta que impulse la transformación digital y promueva la inclusión tecnológica en todos los sectores sociales"
+        "Brindamos la mejor experiencia de servicio a través de las más avanzadas soluciones de comunicación, tecnología de información y contenido digital para acelerar el desarrollo de los países donde operamos y promover la igualdad de oportunidades entre la gente",
+        "Ofrecer planes de telefonía móvil económicos",
+        "Ser el mayor proveedor de servicios de telecomunicación en Latinoamérica",
+        "Implementar tecnologías innovadoras en todas las áreas de negocio"
         ],
         "correct": 0
     },
@@ -2132,10 +2137,10 @@ export const questions = [
     {
         "question": "¿Cuál es el objetivo del manual del sistema de gestión integrado?",
         "answers": [
-            "Que se pueda comprender la Organización, los procesos y la interpretación particular de RADIOMÓVIL DIPSA S.A. DE C.V., hacia los requisitos establecidos por la norma ISO 9001:2008",
-            "Establecer los lineamientos y metodologías para la implementación efectiva de los sistemas de gestión de calidad, seguridad y medio ambiente según las normas ISO vigentes",
-            "Proporcionar un marco de referencia para la integración de los procesos operativos y administrativos con los estándares internacionales de calidad y mejora continua",
-            "Documentar los procedimientos y protocolos necesarios para asegurar la conformidad con los requisitos de las normas ISO y la satisfacción de las partes interesadas"
+        "Que se pueda comprender la Organización, los procesos y la interpretación particular de RADIOMÓVIL DIPSA S.A. DE C.V., hacia los requisitos establecidos por la norma ISO 9001:2008",
+        "Desarrollar normas de calidad",
+        "Implementar tecnologías innovadoras",
+        "Garantizar la satisfacción del cliente"
         ],
         "correct": 0
     },
@@ -2262,20 +2267,20 @@ export const questions = [
     {
         "question": "Según la norma ISO, ¿qué es un procedimiento?",
         "answers": [
-            "Es el modo de ejecutar determinadas acciones que suelen realizarse de la misma forma. Son una serie común de pasos claramente definidos. Forma específica de llevar a cabo una actividad o proceso",
-            "Es un conjunto estructurado de actividades documentadas que establecen la secuencia lógica para ejecutar tareas específicas según los estándares de calidad establecidos",
-            "Es una metodología sistemática que define la interacción entre procesos y especifica los criterios de medición para asegurar resultados consistentes",
-            "Es un documento controlado que establece los parámetros y criterios para la ejecución estandarizada de actividades críticas del sistema de gestión"
+        "Es el modo de ejecutar determinadas acciones que suelen realizarse de la misma forma. Son una serie común de pasos claramente definidos. Forma específica de llevar a cabo una actividad o proceso",
+        "Es un documento de políticas",
+        "Es un manual de calidad",
+        "Es una política de calidad"
         ],
         "correct": 0
     },
     {
         "question": "Definición del Problema:",
         "answers": [
-            "Descripción del problema real o potencial basándose en datos, mediciones o estadísticas, de hechos reales y medibles",
-            "Identificación subjetiva de dificultades o conflictos percibidos por el personal",
-            "Desarrollo de un análisis cualitativo basado en la experiencia del equipo",
-            "Revisión preliminar de los factores que puedan influir en un resultado negativo"
+        "Descripción del problema real o potencial basándose en datos, mediciones o estadísticas, de hechos reales y medibles",
+        "Análisis de una situación problemática",
+        "Proceso para solucionar un conflicto",
+        "Evaluación de un incidente"
         ],
         "correct": 0
     },
@@ -2302,10 +2307,10 @@ export const questions = [
     {
         "question": "Acción de Mejora:",
         "answers": [
-            "Acción definida para cambiar una situación actual por una nueva condición que brinda beneficios. Una acción que decide emprender la Alta Dirección una vez que se han logrado los objetivos, a fin de alcanzar nuevos niveles de eficacia e incorporar mejores prácticas, tecnologías o innovaciones",
-            "Medida temporal para reducir riesgos inmediatos sin impactar los procesos centrales",
-            "Implementación de un procedimiento estándar para mitigar problemas identificados en auditorías internas",
-            "Revisión periódica de los indicadores clave de desempeño para ajustar estrategias existentes"
+        "Acción definida para cambiar una situación actual por una nueva condición que brinda beneficios. Una acción que decide emprender la Alta Dirección una vez que se han logrado los objetivos, a fin de alcanzar nuevos niveles de eficacia e incorporar mejores prácticas, tecnologías o innovaciones",
+        "Acción para eliminar una no conformidad",
+        "Medida para solucionar un conflicto",
+        "Proceso para evaluar un problema"
         ],
         "correct": 0
     },
@@ -2410,12 +2415,32 @@ export const questions = [
         "correct": 0
     },
     {
+        "question": "¿Qué es una no conformidad menor?",
+        "answers": [
+        "Un caso aislado. No afecta la satisfacción del cliente ni la confiabilidad en el SGI",
+        "Un problema grave",
+        "Una falla repetitiva",
+        "Una no conformidad crítica"
+        ],
+        "correct": 0
+    },
+    {
         "question": "¿Qué es una no conformidad mayor?",
         "answers": [
             "La ausencia total del cumplimiento de un requisito del sistema de calidad.",
             "Un error detectado en auditorías que no afecta directamente la calidad general.",
             "Un incumplimiento menor que no pone en riesgo el sistema operativo.",
             "Un desvío aislado registrado como parte de observaciones internas."
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Identificación de causa raíz:",
+        "answers": [
+        "Descripción de las causas del problema real o potencial, identificadas con el apoyo de herramientas de calidad (técnicas de análisis como: Los 5 ¿por qué?, Tormenta de Ideas, etc.)",
+        "Evaluación del problema",
+        "Proceso para solucionar un conflicto",
+        "Análisis de los datos"
         ],
         "correct": 0
     },
@@ -3075,6 +3100,16 @@ export const questions = [
         "correct": 0
     },
     {
+        "question": "¿Cuál es la responsabilidad de la alta dirección cuando se documenta una acción para la mejora?",
+        "answers": [
+        "Facilitar los recursos, supervisar los avances y tomar las acciones correspondientes cuando no haya avances",
+        "Implementar tecnologías innovadoras",
+        "Garantizar la satisfacción del cliente",
+        "Reducir costos"
+        ],
+        "correct": 0
+    },
+    {
         "question": "En Telcel, ¿quién puede identificar la necesidad de resolver un problema o mejorar la situación actual?",
         "answers": [
         "Todos los empleados",
@@ -3127,10 +3162,10 @@ export const questions = [
     {
         "question": "¿Qué es una no conformidad menor?",
         "answers": [
-            "Un caso aislado. No afecta la satisfacción del cliente ni la confiabilidad en el SGI",
-            "Un incidente que requiere una intervención inmediata debido a su impacto significativo en los procesos",
-            "Una discrepancia continua que genera retrasos importantes en las operaciones clave de la organización",
-            "Un defecto crítico que compromete la calidad total del producto o servicio entregado"
+        "Un caso aislado. No afecta la satisfacción del cliente ni confiabilidad en el SGI",
+        "Una falla crítica en el sistema",
+        "Un problema recurrente",
+        "Una desviación temporal"
         ],
         "correct": 0
     },
@@ -3217,10 +3252,10 @@ export const questions = [
     {
         "question": "¿Qué es un Control?",
         "answers": [
-            "Cualquier medida de seguridad que definimos para tratar algún riesgo, estas medidas pueden ser administrativas (políticas, procedimientos, guías, etc.), físicas (sistema de acceso biométrico, personal de seguridad, torniquetes, etc.) y tecnológicas (antivirus, políticas del dominio corporativo, etc.)",
-            "Un conjunto integrado de salvaguardas y contramedidas diseñadas para mitigar amenazas específicas a través de la implementación de barreras preventivas, detectivas y correctivas en múltiples niveles organizacionales",
-            "Sistema comprehensivo de medidas preventivas y reactivas que incluye protocolos de seguridad física, lógica y administrativa, diseñado para proteger activos críticos y procesos organizacionales",
-            "Marco estructurado de políticas, procedimientos y herramientas tecnológicas que establece barreras de protección multinivel para salvaguardar la integridad operacional de la organización"
+        "Cualquier medida de seguridad que definimos para tratar algún riesgo, estas medidas pueden ser administrativas (políticas, procedimientos, guías, etc.), físicas (sistema de acceso biométrico, personal de seguridad, torniquetes, etc.) y tecnológicas (antivirus, políticas del dominio corporativo, etc.)",
+        "Proceso para mejorar la calidad",
+        "Medida para reducir costos",
+        "Evaluación de riesgos"
         ],
         "correct": 0
     },
@@ -3247,10 +3282,10 @@ export const questions = [
     {
         "question": "¿Qué es seguridad informática?",
         "answers": [
-            "Protección de la infraestructura de las tecnologías de la información y comunicación que apoyan a la Organización",
-            "Estrategia enfocada únicamente en la encriptación de datos sensibles para evitar accesos no autorizados",
-            "Diseño y control de políticas de acceso físico a las salas de servidores y dispositivos de red",
-            "Gestión de protocolos básicos para mitigar amenazas cibernéticas de menor impacto"
+        "Protección de la infraestructura de las tecnologías de la información y comunicación que apoyan a la Organización",
+        "Implementación de firewalls y antivirus",
+        "Control de accesos a los sistemas",
+        "Monitoreo de redes y sistemas"
         ],
         "correct": 0
     },
@@ -3341,6 +3376,16 @@ export const questions = [
         "Gestión de recursos",
         "Planificación estratégica",
         "Administración de proyectos"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "Según la norma ISO/IEC 20000-1, ¿qué significa incidente?",
+        "answers": [
+        "Interrupción no planificada de un servicio de TI o la reducción en la calidad de un servicio de TI",
+        "Fallo en el hardware",
+        "Problema de software",
+        "Reinicio del sistema"
         ],
         "correct": 0
     },
@@ -3447,10 +3492,10 @@ export const questions = [
     {
         "question": "¿Cuáles son los cambios en la transición de la norma ISO 20000-1:2011 a norma ISO 20000-1:2018?",
         "answers": [
-            "Alineación de la estructura estándar de ISO, las auditorías internas se pueden hacer por entes externos, uso del ciclo PDCA como referencia del sistema de mejora, cambios en la forma en cómo se hacen las definiciones y términos, mejor distribución de requisitos y procesos, coincide con las principales tendencias en la administración de servicios, mejor gestión de proveedores externos, mayor flexibilidad para el cumplimiento de requisitos, simplificación de la información documentada, los reportes se elaboran por proceso",
-            "Actualización integral del marco de referencia incluyendo la implementación de arquitecturas de servicios basadas en la nube, integración de metodologías ágiles en la gestión de servicios, y restructuración del modelo de madurez de procesos",
-            "Renovación completa del sistema de gestión documental, incorporación de requisitos para la transformación digital, adopción de marcos de trabajo DevOps, y establecimiento de indicadores de desempeño basados en análisis predictivo",
-            "Modernización de los protocolos de gestión de servicios, inclusión de requisitos para la ciberseguridad, actualización de los métodos de evaluación de riesgos y oportunidades, y adaptación a las nuevas tecnologías emergentes"
+        "Alineación de la estructura estándar de ISO, las auditorías internas se pueden hacer por entes externos, uso del ciclo PDCA como referencia del sistema de mejora, cambios en la forma en cómo se hacen las definiciones y términos, mejor distribución de requisitos y procesos, coincide con las principales tendencias en la administración de servicios, mejor gestión de proveedores externos, mayor flexibilidad para el cumplimiento de requisitos, simplificación de la información documentada, los reportes se elaboran por proceso",
+        "Implementación de nuevas tecnologías",
+        "Revisión de políticas internas",
+        "Cambio en los objetivos de calidad"
         ],
         "correct": 0
     },
@@ -3497,10 +3542,10 @@ export const questions = [
     {
         "question": "¿Cuál es el propósito del Sistema de Gestión de Seguridad y Salud en el Trabajo (SGSST)?",
         "answers": [
-            "Proporcionar un marco de referencia para gestionar los riesgos y oportunidades para la seguridad y salud en el trabajo (SST)",
-            "Establecer una estructura sistemática para la identificación, evaluación y control de riesgos laborales que garantice la integridad física y mental de los trabajadores",
-            "Implementar un sistema integral que asegure el cumplimiento de estándares internacionales de seguridad y promueva una cultura de prevención en el entorno laboral",
-            "Desarrollar un framework comprehensivo para la gestión proactiva de la seguridad ocupacional alineado con las mejores prácticas de la industria"
+        "Proporcionar un marco de referencia para gestionar los riesgos y oportunidades para la seguridad y salud en el trabajo (SST)",
+        "Implementar políticas de calidad",
+        "Mejorar la eficiencia operativa",
+        "Reducir costos laborales"
         ],
         "correct": 0
     },
@@ -3617,20 +3662,20 @@ export const questions = [
     {
         "question": "En el marco de la política de SST, ¿cuál es una afirmación respecto a las medidas de seguridad y salud?",
         "answers": [
-            "Vigilar que todos los empleados y contratistas cumplan con las medidas de seguridad y salud. En caso de ser necesario, cuestionar y suspender cualquier acto inseguro que observen sin temor a ser sancionados",
-            "Establecer y mantener un sistema integral de monitoreo y control que asegure el cumplimiento estricto de los protocolos de seguridad, permitiendo la identificación temprana de riesgos potenciales",
-            "Implementar un programa comprehensivo de vigilancia ocupacional que incluya evaluaciones periódicas de riesgos y medidas preventivas adaptadas a cada área de trabajo",
-            "Desarrollar y ejecutar un plan estratégico de seguridad que integre las mejores prácticas internacionales con los requisitos específicos de la organización"
+        "Vigilar que todos los empleados y contratistas cumplan con las medidas de seguridad y salud. En caso de ser necesario, cuestionar y suspender cualquier acto inseguro que observen sin temor a ser sancionados",
+        "Garantizar la satisfacción del cliente a toda costa",
+        "Realizar auditorías internas mensuales",
+        "Implementar un sistema de gestión de calidad"
         ],
         "correct": 0
     },
     {
         "question": "¿Quiénes deben respetar las normas de seguridad personal de la empresa?",
         "answers": [
-            "Todos los colaboradores, representantes, proveedores, distribuidores, contratistas y demás socios comerciales, ya que la seguridad de terceros está en riesgo",
-            "Todo el personal interno y externo que tenga acceso a las instalaciones de la empresa, incluyendo visitantes temporales y consultores, excluyendo a los socios comerciales que operan fuera de las instalaciones",
-            "Los empleados directos e indirectos que realizan actividades dentro de las instalaciones de la empresa, así como los contratistas que ejecutan trabajos de alto riesgo",
-            "El personal operativo, administrativo y gerencial que tiene contacto directo con los procesos críticos de la organización, junto con los proveedores de servicios esenciales"
+        "Todos los colaboradores, representantes, proveedores, distribuidores, contratistas y demás socios comerciales, ya que la seguridad de terceros está en riesgo",
+        "Solo los empleados internos",
+        "Únicamente los supervisores",
+        "Solo los proveedores externos"
         ],
         "correct": 0
     },
@@ -3647,20 +3692,20 @@ export const questions = [
     {
         "question": "En cuanto a la norma ISO 45001, ¿con qué se compromete la alta dirección?",
         "answers": [
-            "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
-            "Establecer y mantener un sistema integral de gestión de seguridad ocupacional que garantice la identificación proactiva de riesgos y la implementación de controles efectivos en todos los niveles operativos",
-            "Desarrollar e implementar un programa comprehensivo de salud y seguridad laboral que incluya evaluación continua de riesgos, capacitación especializada y sistemas de respuesta a emergencias",
-            "Instituir un marco de referencia robusto para la gestión de la seguridad ocupacional que integre las mejores prácticas internacionales con los requisitos específicos de la organización"
+        "Promover una cultura preventiva de seguridad y salud dentro de la organización, con el fin de eliminar los peligros y reducir los riesgos en la materia, incluidos los psicosociales, así como cumplir con nuestro objetivo de cero fatalidades y otros objetivos internos en materia de seguridad",
+        "Implementar políticas de calidad",
+        "Aumentar la productividad",
+        "Reducir costos laborales"
         ],
         "correct": 0
     },
     {
         "question": "¿Cómo demuestra la alta Dirección su liderazgo y compromiso en el marco de la ISO 45001?",
         "answers": [
-            "Asumiendo la total responsabilidad y rendición de cuentas para la prevención de las lesiones y el deterioro de la salud relacionada con el trabajo, así como la provisión de actividades y lugares de trabajo seguros y saludables",
-            "Estableciendo políticas integrales de seguridad y salud ocupacional que aseguren el cumplimiento de los requisitos legales y normativos, mientras se promueve una cultura de prevención",
-            "Implementando un sistema de gestión que integre los aspectos de seguridad y salud en el trabajo con los objetivos estratégicos de la organización",
-            "Desarrollando programas comprehensivos de capacitación y mejora continua que garanticen la participación activa de todos los niveles de la organización"
+        "Asumiendo la total responsabilidad y rendición de cuentas para la prevención de las lesiones y el deterioro de la salud relacionada con el trabajo, así como la provisión de actividades y lugares de trabajo seguros y saludables",
+        "Implementando un sistema de gestión de calidad",
+        "Realizando auditorías internas mensuales",
+        "Garantizando la satisfacción del cliente a toda costa"
         ],
         "correct": 0
     },
@@ -3697,10 +3742,10 @@ export const questions = [
     {
         "question": "¿Qué es deterioro de la salud?",
         "answers": [
-            "Daño que se presenta en la condición física, mental o cognitiva de una persona de forma progresiva",
-            "Alteración multifactorial en el estado de salud del trabajador que compromete su capacidad laboral y requiere intervención médica especializada según los protocolos de salud ocupacional",
-            "Condición progresiva que afecta el bienestar integral del colaborador, manifestándose a través de indicadores mesurables en las evaluaciones periódicas de salud",
-            "Proceso degenerativo documentado que impacta las capacidades funcionales del trabajador y requiere seguimiento mediante el sistema de vigilancia epidemiológica ocupacional"
+        "Daño que se presenta en la condición física, mental o cognitiva de una persona de forma progresiva",
+        "Lesión física inmediata",
+        "Discapacidad permanente",
+        "Afección temporal"
         ],
         "correct": 0
     },
@@ -3717,10 +3762,10 @@ export const questions = [
     {
         "question": "¿Qué son adicciones en el contexto de la ISO 45001?",
         "answers": [
-            "Conductas peligrosas que afectan la salud física, mental y social. Se desarrollan por el consumo de sustancias o al realizar de manera desmedida actividades placenteras",
-            "Patrones de comportamiento compulsivo que comprometen la seguridad laboral y requieren intervención mediante protocolos específicos del sistema de gestión",
-            "Factores de riesgo psicosocial que impactan el desempeño laboral y requieren medidas preventivas según los estándares de salud ocupacional",
-            "Condiciones que afectan la capacidad del trabajador para cumplir con sus funciones de manera segura y requieren evaluación médica ocupacional"
+        "Conductas peligrosas que afectan la salud física, mental y social. Se desarrollan por el consumo de sustancias o al realizar de manera desmedida actividades placenteras",
+        "Hábitos saludables",
+        "Comportamientos laborales eficientes",
+        "Tendencias de trabajo"
         ],
         "correct": 0
     },
@@ -3907,10 +3952,10 @@ export const questions = [
     {
         "question": "¿Cómo se deben registrar los riesgos?",
         "answers": [
-            "Valoración y Tratamiento de Riesgos de Procesos, Valoración y Tratamiento de Riesgos de Seguridad de la Información, Valoración y Tratamiento de Riesgos de Servicios, Identificación de Peligros y Evaluación de Riesgos para la SST, El análisis de brechas de Datos Personales",
-            "Elaboración de matrices específicas que contemplen solo riesgos operativos y financieros",
-            "Implementación de un software de gestión para centralizar exclusivamente los riesgos críticos",
-            "Redacción de informes por área que se presentan de manera trimestral para evaluación"
+        "Valoración y Tratamiento de Riesgos de Procesos, Valoración y Tratamiento de Riesgos de Seguridad de la Información, Valoración y Tratamiento de Riesgos de Servicios, Identificación de Peligros y Evaluación de Riesgos para la SST, El análisis de brechas de Datos Personales",
+        "Mediante auditorías internas",
+        "A través de un sistema de gestión",
+        "Con reportes mensuales"
         ],
         "correct": 0
     },
@@ -4007,10 +4052,10 @@ export const questions = [
     {
         "question": "¿Por qué tenemos un código de ética?",
         "answers": [
-            "Actuar conforme a los valores de la empresa es esencial para la continuidad de nuestras operaciones y como parte de una cultura de integridad",
-            "Para establecer un marco regulatorio interno que asegure el cumplimiento de estándares profesionales y normativas corporativas en todas las operaciones de la empresa",
-            "Para implementar un sistema integral de gestión que garantice la excelencia operativa y el desarrollo sostenible de la organización a través de prácticas éticas",
-            "Para desarrollar una estructura organizacional basada en principios y valores que promuevan la transparencia y la responsabilidad corporativa"
+        "Actuar conforme a los valores de la empresa es esencial para la continuidad de nuestras operaciones y como parte de una cultura de integridad",
+        "Para cumplir con las normativas legales",
+        "Para mejorar la eficiencia operativa",
+        "Para reducir los conflictos laborales"
         ],
         "correct": 0
     },
@@ -4087,10 +4132,10 @@ export const questions = [
     {
         "question": "¿Cómo se define la imagen del personal de Telcel?",
         "answers": [
-            "Se define como la forma en que nos perciben los demás, ya sean clientes, compañeros o externos, por medio de nuestra apariencia, de cómo hablamos, de nuestra postura, gestos, ademanes y en general de nuestro comportamiento",
-            "Es la manifestación integral de los estándares profesionales que incluye la presentación personal, comunicación efectiva y comportamiento corporativo alineado con los valores institucionales",
-            "Constituye la representación holística del profesionalismo que abarca desde la apariencia física hasta las habilidades de comunicación y protocolos de interacción con stakeholders",
-            "Comprende el conjunto de elementos visuales, conductuales y comunicativos que proyectan la identidad corporativa a través del personal en todos los niveles organizacionales"
+        "Se define como la forma en que nos perciben los demás, ya sean clientes, compañeros o externos, por medio de nuestra apariencia, de cómo hablamos, de nuestra postura, gestos, ademanes y en general de nuestro comportamiento",
+        "La manera de vestirse de los empleados",
+        "La presentación de los informes",
+        "La decoración de las oficinas"
         ],
         "correct": 0
     },

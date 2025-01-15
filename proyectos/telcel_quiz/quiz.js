@@ -59,6 +59,47 @@ const correctQuestionsContainer = document.getElementById('correct-questions');
 
 const errorRankingContainer = document.getElementById('error-ranking-container');
 
+const ignoreButton = document.getElementById('ignore-question');
+const ignoreQuestionListButton = document.getElementById('ignore-question-list');
+const clearIgnoredQuestionsButton = document.getElementById('clear-ignored-questions');
+
+ignoreButton.addEventListener('click', () => {
+    ignoreCurrentQuestion();
+});
+
+ignoreQuestionListButton.addEventListener('click', () => {
+    const questionIndex = parseInt(prompt('Ingrese el índice de la pregunta a ignorar:'));
+    if (!isNaN(questionIndex) && questionIndex >= 0 && questionIndex < questions.length) {
+        ignoreQuestion(questionIndex);
+    } else {
+        showPopup('Índice de pregunta inválido');
+    }
+});
+
+clearIgnoredQuestionsButton.addEventListener('click', () => {
+    const confirmPopup = document.createElement('div');
+    confirmPopup.className = 'popup confirmation';
+    confirmPopup.innerHTML = `
+        <p>¿Estás seguro que deseas borrar las preguntas ignoradas?</p>
+        <p class="popup-warning">Esta acción no se puede deshacer.</p>
+        <div class="popup-buttons">
+            <button class="btn confirm">Confirmar</button>
+            <button class="btn cancel">Cancelar</button>
+        </div>
+    `;
+    document.body.appendChild(confirmPopup);
+
+    confirmPopup.querySelector('.confirm').onclick = () => {
+        localStorage.removeItem('ignoredIndices');
+        confirmPopup.remove();
+        showPopup('Preguntas ignoradas borradas correctamente');
+    };
+
+    confirmPopup.querySelector('.cancel').onclick = () => {
+        confirmPopup.remove();
+    };
+});
+
 toggleCorrectQuestionsButton.addEventListener('click', () => {
     if (correctQuestionsContainer.style.display === 'none') {
         correctQuestionsContainer.style.display = 'block';
@@ -114,6 +155,11 @@ function displayQuestions() {
             } else {
                 answerSection.style.display = 'none';
             }
+            const ignoreButton = document.createElement('button');
+            ignoreButton.className = 'btn ignore-button';
+            ignoreButton.innerText = 'Ignorar';
+            ignoreButton.onclick = () => ignoreQuestion(index);
+            questionItem.appendChild(ignoreButton);
         });
         
         questionsList.appendChild(questionItem);
@@ -158,9 +204,12 @@ function startQuiz() {
     const correctIndices = JSON.parse(localStorage.getItem('correctIndices')) || [];
     const incorrectIndices = JSON.parse(localStorage.getItem('incorrectIndices')) || [];
     const errorCounts = JSON.parse(localStorage.getItem('errorCounts')) || {};
+    const ignoredIndices = JSON.parse(localStorage.getItem('ignoredIndices')) || [];
 
     // Calcular preguntas disponibles (no están en correctIndices)
-    const availableQuestions = questions.filter((_, index) => !correctIndices.includes(index));
+    const availableQuestions = questions.filter((_, index) => 
+        !correctIndices.includes(index) && !ignoredIndices.includes(index)
+    );
 
     // Verificar si todas las preguntas están completadas
     if (availableQuestions.length === 0) {
@@ -987,6 +1036,23 @@ function startSlowQuestionsQuiz() {
 
     datasetCounter.innerText = `Total de preguntas: ${totalQuestions}`;
     showQuestion();
+}
+
+function ignoreCurrentQuestion() {
+    const currentQuestion = selectedQuestions[currentQuestionIndex];
+    const questionIndex = questions.indexOf(currentQuestion);
+    ignoreQuestion(questionIndex);
+    currentQuestionIndex++;
+    showQuestion();
+}
+
+function ignoreQuestion(questionIndex) {
+    const ignoredIndices = JSON.parse(localStorage.getItem('ignoredIndices')) || [];
+    if (!ignoredIndices.includes(questionIndex)) {
+        ignoredIndices.push(questionIndex);
+        localStorage.setItem('ignoredIndices', JSON.stringify(ignoredIndices));
+        showPopup('Pregunta ignorada correctamente');
+    }
 }
 
 

@@ -315,6 +315,36 @@ ul {
     border-radius: 6px;
 }
 
+.ignore-button {
+    background-color: var(--color-error);
+    color: var(--color-white);
+    margin: 10px 0;
+    width: 90vw;
+    height: 35px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.popup.confirmation {
+    background-color: var(--color-background);
+    color: var(--color-text-dark);
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.popup-warning {
+    color: var(--color-error);
+    font-weight: bold;
+}
 
 #timer-display {
     margin-top: 20px;
