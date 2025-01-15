@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./cart.css">
+    <title>Carrito - LOBOCAFE</title>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="back-to-home" onclick="window.location.href='index.html'">
+            <span class="back-arrow">←</span>
+            <span class="back-text">Volver</span>
+        </button>
+        <a href="index.html" class="li-tag">INICIO</a>
+        <a href="index.html#nosotros" class="li-tag">NOSOTROS</a>
+        <a href="index.html#menu" class="li-tag">MENU</a>
+        <a href="cart.html" class="li-tag cart-link active">
+            CARRITO
+            <span class="cart-count">0</span>
+        </a>
+    </nav>
+
+    <main class="cart-page">
+        <div class="products-grid">
+            <h2>Nuestros Productos</h2>
+            <div class="filters-section">
+                <h3>Filtros</h3>
+                <div class="price-filter">
+                    <label>Precio:</label>
+                    <input type="range" min="0" max="500" class="price-range">
+                </div>
+                <div class="category-filter">
+                    <label>Categoría:</label>
+                    <select>
+                        <option>Café Caliente</option>
+                        <option>Café Frío</option>
+                        <option>Especialidades</option>
+                        <option>Postres</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sort-section">
+                <select class="sort-options">
+                    <option>Más Vendidos</option>
+                    <option>Precio: Menor a Mayor</option>
+                    <option>Precio: Mayor a Menor</option>
+                    <option>Más Nuevos</option>
+                </select>
+            </div>
+
+            <div class="products-container">
+                <div class="product-card">
+                    <img src="./ASSETS/IMG/sketch1706132374142.png" alt="Café Mexicano">
+                    <h3>Café Mexicano</h3>
+                    <p class="product-description">Café de altura mexicano, tostado medio, con notas a chocolate y caramelo.</p>
+                    <p class="price">$65.00</p>
+                    <button class="add-to-cart">Agregar al Carrito</button>
+                    <span class="stock-status in-stock">En Stock</span>
+                </div>
+
+                <div class="product-card">
+                    <img src="./ASSETS/IMG/sketch1706132374142.png" alt="Café de Olla">
+                    <h3>Café de Olla</h3>
+                    <p class="product-description">Tradicional café con canela y piloncillo, preparado en olla de barro.</p>
+                    <p class="price">$55.00</p>
+                    <button class="add-to-cart">Agregar al Carrito</button>
+                    <span class="stock-status in-stock">En Stock</span>
+                </div>
+
+                <div class="product-card">
+                    <img src="./ASSETS/IMG/sketch1706132374142.png" alt="Carajillo">
+                    <h3>Carajillo</h3>
+                    <p class="product-description">Espresso con licor 43, servido sobre hielo. Un clásico mexicano moderno.</p>
+                    <p class="price">$95.00</p>
+                    <button class="add-to-cart">Agregar al Carrito</button>
+                    <span class="stock-status low-stock">Pocas Unidades</span>
+                </div>
+
+                <div class="product-card">
+                    <img src="./ASSETS/IMG/sketch1706132374142.png" alt="Café con Canela">
+                    <h3>Café con Canela</h3>
+                    <p class="product-description">Suave café con un toque aromático de canela Ceylon, perfecto para las tardes.</p>
+                    <p class="price">$60.00</p>
+                    <button class="add-to-cart">Agregar al Carrito</button>
+                    <span class="stock-status in-stock">En Stock</span>
+                </div>
+
+                <!-- Agregar el resto de los productos siguiendo el mismo patrón -->
+            </div>
+        </div>
+
+        <div class="cart-sidebar">
+            <div class="cart-handle"></div>
+            <div class="cart-content">
+                <h3>Tu Carrito</h3>
+                <div class="cart-items">
+                    <!-- Items del carrito -->
+                </div>
+                <div class="cart-summary">
+                    <div class="subtotal">Subtotal: $0.00</div>
+                    <div class="shipping">Envío: $50.00</div>
+                    <div class="total">Total: $0.00</div>
+                </div>
+                <button class="checkout-btn">Proceder al Pago</button>
+            </div>
+            <div class="payment-options">
+                <h4>Métodos de Pago</h4>
+                <div class="payment-methods">
+                    <!-- Visa SVG -->
+                    <svg class="payment-icon" viewBox="0 0 38 24" width="38" height="24">
+                        <path fill="#1434CB" d="M34.4 0H3.6C1.6 0 0 1.6 0 3.6v16.8C0 22.4 1.6 24 3.6 24h30.8c2 0 3.6-1.6 3.6-3.6V3.6C38 1.6 36.4 0 34.4 0z"/>
+                        <path fill="#FFF" d="M14 15.4l1.4-8H17l-1.4 8h-1.6zM27 7.6c-.6-.2-1.4-.4-2.2-.4-2.4 0-4.2 1.2-4.2 3 0 1.4 1.2 2 2.2 2.4 1 .4 1.2.6 1.2 1s-.8.8-1.4.8c-.8 0-1.6-.2-2.4-.6l-.4-.2-.4 2.2c.6.2 1.8.4 3 .4 2.8 0 4.4-1.2 4.4-3.2 0-1-.6-1.8-2-2.4-.8-.4-1.4-.6-1.4-1s.4-.8 1.2-.8c.6 0 1.2.2 1.6.2l.2.2.6-2.2zM31.2 7.4h-2l-2.4 6-1.4-6c-.2-.6-.6-1-1.2-1h-3.2l-.2.2c.6.2 1.2.4 1.6.6l2 8h2.4l3.8-8h.6v-.2zM11.6 7.4L8 12.8l-.4-1.8L6.4 8c-.2-.6-.6-1-1.2-1H1l-.2.2c.6.2 1.2.4 1.8.6l3 8h2.4l4.8-8h-1.2z"/>
+                    </svg>
+                    
+                    <!-- Mastercard SVG -->
+                    <svg class="payment-icon" viewBox="0 0 38 24" width="38" height="24">
+                        <path fill="#FF5F00" d="M22.4 4H15.6v16h6.8V4z"/>
+                        <path fill="#EB001B" d="M16 12c0-3.2 1.6-6.4 4-8-4.8-3.2-11.2-2-14.4 2.8S3.6 17.6 8.4 20.8c3.2 2 7.2 2 10.4 0-2.4-1.6-4-4.8-4-8z"/>
+                        <path fill="#F79E1B" d="M34.4 12c0 4.8-4 8.8-8.8 8.8-2 0-4-.8-5.6-2 4.8-3.2 6-9.6 2.8-14.4-.8-1.2-1.6-2-2.8-2.8 4.8-3.2 11.2-2 14.4 2.8 1.2 2 2 4 2 6.4z"/>
+                    </svg>
+                    
+                    <!-- PayPal SVG -->
+                    <svg class="payment-icon" viewBox="0 0 38 24" width="38" height="24">
+                        <path fill="#003087" d="M32.6 7.6c0 2.8-1.6 5.2-4 6.4-.4 2-2 3.6-4 3.6h-4.8L18.6 22h-4l.4-2H8.6l1.2-6H6.6l2-10h8.8c2 0 3.6 1.6 3.6 3.6 0 .4 0 .8-.2 1.2 2-.8 4.4-.4 5.6 1.6.4.8.4 1.6.4 2.4z"/>
+                        <path fill="#009CDE" d="M28.6 14c2.4-1.2 4-3.6 4-6.4 0-.8 0-1.6-.4-2.4-1.2-2-3.6-2.4-5.6-1.6.2-.4.2-.8.2-1.2 0-2-1.6-3.6-3.6-3.6h-8.8l-2 10h3.2l-1.2 6h6.4l1.2-4.8h4.8c2 0 3.6-1.6 4-3.6z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="delivery-options">
+                <h4>Opciones de Envío</h4>
+                <select>
+                    <option>Envío Estándar (2-3 días) - $50</option>
+                    <option>Envío Express (24h) - $100</option>
+                    <option>Recoger en Tienda - Gratis</option>
+                </select>
+            </div>
+        </div>
+        <button class="toggle-cart-btn">🛒</button>
+    </main>
+
+    <section class="recommendations">
+        <h3>También te puede interesar</h3>
+        <div class="recommended-products">
+            <!-- Productos recomendados -->
+        </div>
+    </section>
+    <script src="./cart.js"></script>
+</body>
+</html>

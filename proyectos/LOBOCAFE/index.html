@@ -5,20 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./index.css">
     <title>LOBOCAFE</title>
+    <style>
+        .history {
+            background-image: linear-gradient(rgba(90, 110, 90, 0.9), rgba(90, 110, 90, 0.95)), 
+                            url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80');
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
-        <li class="li-tag">INICIO</li>
-        <li class="li-tag">NOSOTROS</li>
-        <li class="li-tag">MENU</li>
-        <LI class="li-tag">PEDIDOS</LI>
+        <button class="menu-toggle" aria-label="Menú principal" aria-expanded="false">☰</button>
+        <div class="nav-links">
+            <a href="#inicio" class="li-tag">INICIO</a>
+            <a href="#nosotros" class="li-tag">NOSOTROS</a>
+            <a href="#menu" class="li-tag">MENU</a>
+        </div>
+        <a href="cart.html" class="li-tag cart-link">
+            CARRITO
+            <span class="cart-count">0</span>
+        </a>
     </nav>
-    <section class="firt">
-        <img class="coffee" src="./ASSETS/IMG/sketch1706132374142.png" alt="">
-        <p>coffee</p>
-    </section>
-    <section class="second"></section>
-    <footer></footer>
     
+    <section class="menu">
+        <h2>Nuestras Especialidades</h2>
+        <div class="carousel-container">
+            <button class="carousel-arrow prev-arrow">&#10094;</button>
+            <div class="coffee-carousel">
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Café Mexicano">
+                    <p>Café Mexicano</p>
+                    <p class="description">Café de altura mexicano, tostado medio, con notas a chocolate y caramelo.</p>
+                </div>
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Café de Olla">
+                    <p>Café de Olla</p>
+                    <p class="description">Tradicional café con canela y piloncillo, preparado en olla de barro.</p>
+                </div>
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Carajillo">
+                    <p>Carajillo</p>
+                    <p class="description">Espresso con licor 43, servido sobre hielo. Un clásico mexicano moderno.</p>
+                </div>
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Café con Canela">
+                    <p>Café con Canela</p>
+                    <p class="description">Suave café con un toque aromático de canela Ceylon, perfecto para las tardes.</p>
+                </div>
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Café con Leche">
+                    <p>Café con Leche</p>
+                    <p class="description">Espresso con leche cremosa y espuma aterciopelada, un clásico reconfortante.</p>
+                </div>
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Espresso Azteca">
+                    <p>Espresso Azteca</p>
+                    <p class="description">Espresso intenso con un toque de chile y chocolate, inspirado en sabores prehispánicos.</p>
+                </div>
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Moka Maya">
+                    <p>Moka Maya</p>
+                    <p class="description">Blend especial de café con chocolate oaxaqueño y un toque de vainilla.</p>
+                </div>
+                <!-- Duplicar los primeros elementos para lograr el efecto infinito -->
+                <div class="coffee-item">
+                    <img class="coffee-img" src="./ASSETS/IMG/sketch1706132374142.png" alt="Café Mexicano">
+                    <p>Café Mexicano</p>
+                    <p class="description">Café de altura mexicano, tostado medio, con notas a chocolate y caramelo.</p>
+                </div>
+                <!-- ...más elementos duplicados... -->
+            </div>
+            <button class="carousel-arrow next-arrow">&#10095;</button>
+        </div>
+    </section>
+
+    <section class="history">
+        <div class="history-content">
+            <img class="coffee" src="./ASSETS/IMG/sketch1706132374142.png" alt="Coffee Image">
+            <div class="history-text">
+                <h2>La Tradición del Café Mexicano</h2>
+                <p>Desde las montañas de Chiapas hasta su taza, LOBOCAFE representa más de un siglo de tradición cafetalera mexicana. Nuestros granos son cultivados en altitudes superiores a 1,500 metros, donde el microclima y el suelo volcánico crean un café de excepcional calidad.</p>
+                <p>Como marca líder, nos enorgullece mantener relaciones directas con productores locales, garantizando prácticas sostenibles y comercio justo. Cada taza de LOBOCAFE cuenta una historia de pasión, tradición y excelencia mexicana.</p>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Años de Experiencia</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1,000+</span>
+                        <span class="stat-label">Productores Asociados</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5★</span>
+                        <span class="stat-label">Calidad Premium</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-us">
+        <h2>Nosotros</h2>
+        <p>Somos una cafetería con estilo mexicano, ofreciendo los mejores sabores y experiencias.</p>
+    </section>
+    <footer>
+        <p>Contacto: info@lobocafe.com</p>
+        <p>Teléfono: +52 123 456 7890</p>
+        <p>Dirección: Calle Falsa 123, Ciudad de México</p>
+    </footer>
+    <button class="scroll-top" aria-label="Volver arriba">↑</button>
+    <script src="./index.js"></script>
 </body>
 </html>
