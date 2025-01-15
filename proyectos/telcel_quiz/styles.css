@@ -323,6 +323,7 @@ ul {
     height: 35px;
     border-radius: 6px;
     cursor: pointer;
+    max-width: 400px;
 }
 
 .popup.confirmation {

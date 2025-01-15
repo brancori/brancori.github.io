@@ -49,7 +49,7 @@ let total_correct = document.querySelector("#total_correct");
 let next_question = document.querySelector("#next_question");
 if (next_question) {
     next_question.addEventListener("click", () => {
-        if (index !== MCQS.length - 1) {
+        if (index < MCQS.length - 1) {
             index++;
             choice_que.forEach(removeActive => {
                 removeActive.classList.remove("active");
@@ -172,14 +172,35 @@ let UserAns = undefined;
 
 
 //Obtein localStorag
-function obtener_localstorage(){
-    var loco = localStorage.getItem('nombre').toUpperCase();
-    var usuario_ = document.getElementById("username");
-    usuario_.innerText = "USUARIO: " + loco;
-};
+function obtener_localstorage() {
+    var loco = localStorage.getItem('nombre');
+    if (loco) {
+        loco = loco.toUpperCase();
+        var usuario_ = document.getElementById("username");
+        if (usuario_) {
+            usuario_.innerText = "USUARIO: " + loco;
+        } else {
+            console.error('Element with id "username" not found');
+        }
+    } else {
+        console.error('LocalStorage item "nombre" not found');
+    }
+}
 
 obtener_localstorage();
 
+function mostrarBoton() {
+    // Define the function to show the button based on your requirements
+    var hacerCredencial = document.getElementById("haceCredencial");
+    var quit = document.getElementById("quit");
+    if (correct >= 7) { // Assuming 7 is the passing score
+        hacerCredencial.style.display = "block";
+        quit.style.display = "none";
+    } else {
+        hacerCredencial.style.display = "none";
+        quit.style.display = "block";
+    }
+}
 
 //Creating Timer For Quiz Timer Section
 let countDown = ()=>{
@@ -268,14 +289,32 @@ function cambio(){
    document.getElementById("input_ct").innerHTML = cT;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    var element = document.getElementById("someElementId");
-    if (element) {
-        element.addEventListener("click", function() {
-            // ...existing code...
-        });
-    }
-});
+// Update the total_correct and points display
+if (next_question) {
+    next_question.addEventListener("click", () => {
+        if (index < MCQS.length - 1) {
+            index++;
+            choice_que.forEach(removeActive => {
+                removeActive.classList.remove("active");
+            });
+            loadData();
+            total_correct.style.display = "block";
+            total_correct.innerHTML = `${correct} de ${MCQS.length} Preguntas`;
+            clearInterval(interval);
+            interval = setInterval(countDown, 1000);
+        } else {
+            index = 0;
+            clearInterval(interval);
+            quiz.style.display = "none";
+            points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
+            result.style.display = "block";
+            mostrarBoton();
+        }
+        for (i = 0; i <= 3; i++) {
+            choice_que[i].classList.remove("disabled");
+        }
+    });
+}
 
 
 

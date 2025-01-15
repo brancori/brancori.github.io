@@ -152,14 +152,22 @@ function displayQuestions() {
             const answerSection = questionItem.querySelector('.answer-section');
             if (answerSection.style.display === 'none') {
                 answerSection.style.display = 'block';
+                // Add ignore button only if it doesn't exist
+                if (!questionItem.querySelector('.ignore-button')) {
+                    const ignoreButton = document.createElement('button');
+                    ignoreButton.className = 'btn ignore-button';
+                    ignoreButton.innerText = 'Ignorar';
+                    ignoreButton.onclick = () => ignoreQuestion(index);
+                    questionItem.appendChild(ignoreButton);
+                }
             } else {
                 answerSection.style.display = 'none';
+                // Remove ignore button when hiding the answer section
+                const ignoreButton = questionItem.querySelector('.ignore-button');
+                if (ignoreButton) {
+                    ignoreButton.remove();
+                }
             }
-            const ignoreButton = document.createElement('button');
-            ignoreButton.className = 'btn ignore-button';
-            ignoreButton.innerText = 'Ignorar';
-            ignoreButton.onclick = () => ignoreQuestion(index);
-            questionItem.appendChild(ignoreButton);
         });
         
         questionsList.appendChild(questionItem);
