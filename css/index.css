@@ -81,11 +81,15 @@ li{
 }
 .main-description{
     border-left: 3px solid var(--soft-Grey);
+    padding: 0 12px;
+    margin: 0 7px;
+    align-content: center;
 }
-.main-description p{
-    padding: 6px 5px;
-    border-radius: 8px;
-    margin: 0 25px;
+
+.firts-info{
+    padding: 0 12px;
+    margin: 0 12px;
+    text-align: center;
 }
 .firts-info p:nth-child(1){
     background-color: var(--soft-Grey);
@@ -356,6 +360,9 @@ li{
         scroll-snap-type: x proximity;
         justify-content: start;
     }
+    .firts-info{
+        width: 90vw;
+    }
     .container::-webkit-scrollbar {
         display: none;
     }
@@ -417,5 +424,6 @@ li{
     .avatar{
         margin: 0 -80% auto;
     }
+    
 }
 
