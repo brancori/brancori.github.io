@@ -61,6 +61,71 @@ async function compressImage(canvas) {
     return imageData;
 }
 
+// Nueva función compressImage para inputs
+async function compressImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Calcular nuevas dimensiones manteniendo proporción
+                const maxDimension = 300;
+                if (width > height) {
+                    if (width > maxDimension) {
+                        height = Math.round((height * maxDimension) / width);
+                        width = maxDimension;
+                    }
+                } else {
+                    if (height > maxDimension) {
+                        width = Math.round((width * maxDimension) / height);
+                        height = maxDimension;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                let quality = 0.7;
+                let compressed = canvas.toDataURL('image/jpeg', quality);
+                let size = Math.round((compressed.length * 3) / 4);
+
+                // Ajustar calidad hasta obtener tamaño deseado
+                while (size > 49000 && quality > 0.1) {
+                    quality -= 0.1;
+                    compressed = canvas.toDataURL('image/jpeg', quality);
+                    size = Math.round((compressed.length * 3) / 4);
+                }
+
+                console.log('Tamaño final:', Math.round(size / 1024), 'KB');
+                resolve(compressed);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Modificar el procesamiento de imágenes existente
+$("#pp, #LE").on("change", async function() {
+    const imagen = $(this)[0].files[0];
+    if (imagen) {
+        try {
+            const compressedImage = await compressImage(imagen);
+            const targetId = this.id === "pp" ? "#list" : "#list2";
+            $(targetId).html("<img src='" + compressedImage + "'>");
+        } catch (error) {
+            console.error('Error al comprimir la imagen:', error);
+            alert('Error al procesar la imagen. Por favor, intenta con otra.');
+        }
+    }
+});
+
 async function sendCredential() {
     let button;
     try {
