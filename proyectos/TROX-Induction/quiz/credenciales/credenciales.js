@@ -28,41 +28,8 @@ function setVigencia() {
         `VIGENCIA ${formatoFecha(fechaInicio)} - ${formatoFecha(fechaFin)}`;
 }
 
-// Modificar función compressImage para mantener tamaño mínimo
-async function compressImage(canvas) {
-    let quality = 0.9; // Empezar con mejor calidad
-    let imageData = canvas.toDataURL('image/jpeg', quality);
-    let currentSize = Math.round(imageData.length / 1024);
-    
-    // Si la imagen es menor a 30KB, aumentar calidad
-    if (currentSize < 30) {
-        quality = 1.0;
-        imageData = canvas.toDataURL('image/jpeg', quality);
-        currentSize = Math.round(imageData.length / 1024);
-        console.log('Aumentando calidad para alcanzar tamaño mínimo:', currentSize + 'KB');
-    }
-    
-    // Si la imagen es mayor a 49KB, reducir calidad
-    while (currentSize > 49 && quality > 0.3) {
-        quality -= 0.1;
-        imageData = canvas.toDataURL('image/jpeg', quality);
-        currentSize = Math.round(imageData.length / 1024);
-        console.log('Comprimiendo imagen...', {
-            calidad: Math.round(quality * 100) + '%',
-            tamaño: currentSize + 'KB'
-        });
-    }
-
-    // Verificar rango de tamaño
-    if (currentSize < 30 || currentSize > 49) {
-        console.warn(`Advertencia: Tamaño de imagen (${currentSize}KB) fuera del rango deseado (30-49KB)`);
-    }
-
-    return imageData;
-}
-
-// Nueva función compressImage para inputs
-async function compressImage(file) {
+// Función para comprimir imagen desde archivo
+async function compressImageFromFile(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -72,7 +39,7 @@ async function compressImage(file) {
                 let width = img.width;
                 let height = img.height;
                 
-                // Calcular nuevas dimensiones manteniendo proporción
+                // Calcular nuevas dimensiones
                 const maxDimension = 300;
                 if (width > height) {
                     if (width > maxDimension) {
@@ -95,7 +62,6 @@ async function compressImage(file) {
                 let compressed = canvas.toDataURL('image/jpeg', quality);
                 let size = Math.round((compressed.length * 3) / 4);
 
-                // Ajustar calidad hasta obtener tamaño deseado
                 while (size > 49000 && quality > 0.1) {
                     quality -= 0.1;
                     compressed = canvas.toDataURL('image/jpeg', quality);
@@ -111,12 +77,33 @@ async function compressImage(file) {
     });
 }
 
-// Modificar el procesamiento de imágenes existente
+// Función para comprimir imagen desde canvas
+async function compressImageFromCanvas(canvas) {
+    let quality = 0.9;
+    let imageData = canvas.toDataURL('image/jpeg', quality);
+    let currentSize = Math.round(imageData.length / 1024);
+    
+    if (currentSize < 30) {
+        quality = 1.0;
+        imageData = canvas.toDataURL('image/jpeg', quality);
+        currentSize = Math.round(imageData.length / 1024);
+    }
+    
+    while (currentSize > 49 && quality > 0.3) {
+        quality -= 0.1;
+        imageData = canvas.toDataURL('image/jpeg', quality);
+        currentSize = Math.round(imageData.length / 1024);
+    }
+
+    return imageData;
+}
+
+// Actualizar los event listeners para usar la función correcta
 $("#pp, #LE").on("change", async function() {
     const imagen = $(this)[0].files[0];
     if (imagen) {
         try {
-            const compressedImage = await compressImage(imagen);
+            const compressedImage = await compressImageFromFile(imagen);
             const targetId = this.id === "pp" ? "#list" : "#list2";
             $(targetId).html("<img src='" + compressedImage + "'>");
         } catch (error) {
@@ -201,7 +188,7 @@ async function sendCredential() {
         tempContainer.remove();
 
         // Comprimir imagen manteniendo rango 30-49KB
-        const imageData = await compressImage(canvas);
+        const imageData = await compressImageFromCanvas(canvas);
         const finalSizeKB = Math.round(imageData.length / 1024);
         console.log('Tamaño final de la imagen:', finalSizeKB + 'KB');
 
