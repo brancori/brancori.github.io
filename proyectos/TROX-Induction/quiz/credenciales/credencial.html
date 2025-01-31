@@ -8,6 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./estiloscred.css">
     <title>CREDENCIALES</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("bCQM2FcfOF9Lcyk32"); // Tu clave pública
+        })();
+    </script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <pre id="username"></pre>
@@ -80,7 +87,6 @@
                 <label>CI</label><label class="skills_box" id="CI_"></label></label><label>MSP</label><label class="skills_box" id="MSP_"></label>
                 </div>
                 <div id="faltas_Seguridad"><p>Faltas a la Seguridad </p><div class="nfaltas"><span>1ra</span></div><div class="nfaltas"><span>2da</span></div></div>
-                
             </div>
 
             <div id="backcredential" class="credential">
@@ -101,9 +107,99 @@
         </div>
     </section>
 
-    <button>Enviar</button>
+    <button onclick="printView()">Enviar</button>
+    <div class="btn-cont"><button onclick="sendCredential()" class="send-button">Enviar por Correo</button></div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Agregar antes de los demás scripts -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style type="text/css" media="print">
+        @media print {
+            /* Configuración general de impresión */
+            @page {
+                size: letter landscape;
+                margin: 0;
+            }
+            
+            /* Forzar impresión de colores */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            body * {
+                display: none;
+            }
+            
+            #credential_container {
+                display: flex !important;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                justify-content: center;
+                align-items: center;
+                background: white;
+                flex-direction: row;
+            }
+
+            #front_credential, #backcredential {
+                display: inline-block !important;
+                width: 300px !important;
+                margin: 0 10px !important;
+            }
+
+            #front_credential *, #backcredential * {
+                display: block !important;
+            }
+            #skills{
+                display:flex !important;
+            }
+            #faltas_Seguridad {
+                display: grid !important;
+                grid-template-columns: 2fr 1fr 1fr !important;
+                align-items: center !important;
+                place-items: center;
+            }
+            #faltas_Seguridad .nfaltas {
+                background-color: #003C9B !important;
+                border-radius: 50px !important;
+                width: 27px !important;
+                height: 27px !important;
+                color: #fff !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                position: relative !important;
+            }
+
+            /* Asegurar que los spans dentro de nfaltas también tengan color */
+            #faltas_Seguridad .nfaltas span {
+                color: #fff !important;
+                display: block !important;
+            }
+        }
+    </style>
     <script >
+// Agregar este código después de que se carga el documento
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar marca de agua a front_credential
+    const frontWatermark = document.createElement('div');
+    frontWatermark.className = 'watermark';
+    frontWatermark.textContent = 'IMAGEN MUESTRA';
+    document.getElementById('front_credential').appendChild(frontWatermark);
+    
+    // Agregar marca de agua a backcredential
+    const backWatermark = document.createElement('div');
+    backWatermark.className = 'watermark';
+    backWatermark.textContent = 'IMAGEN MUESTRA';
+    document.getElementById('backcredential').appendChild(backWatermark);
+    
+    // Establecer vigencia
+    setVigencia();
+});
+
         $('.toggle').click(function(){
     $('.credential').animate({
         height: "toggle",
@@ -137,8 +233,15 @@ var procesarImagen = function(imagen, callback){
 };
     </script>
     
-
+    <script src="./credenciales.js"></script>
     <script src="/proyectos/TROX-Induction/quiz/scripts.js"></script>
-
+    <form id="emailForm" style="display: none;">
+        <input type="hidden" name="to_name">
+        <input type="hidden" name="from_name">
+        <input type="hidden" name="message">
+        <input type="hidden" name="to_email">
+        <input type="hidden" name="image">
+        <input type="file" name="attachment" id="attachment" style="display: none;">
+    </form>
 </body>
 </html>

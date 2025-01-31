@@ -11,6 +11,8 @@ body{
     font-size: 18px;
     color: #00375F;
     font-weight: 900;
+    max-width: 80vw;
+    padding: 20px;
 }  
 #vigencia{
     display: flex;
@@ -97,7 +99,7 @@ margin: 35px;
     text-align: center;
 }
 #form_container {
-    width:600px;
+    width:95vw;
     background: #fff;
     border-radius: 15px;
     border: 2px solid #003C9B;
@@ -200,12 +202,9 @@ margin: 35px;
     border-radius: 50px;
     width: 27px;
     height: 27px;
-}
-#faltas_Seguridad .nfaltas{
-    position: relative;
-    background: #003C9B;
-    border-radius: 50px;
     color: #fff;
+    border-radius: 50px;
+    position: relative;
 }
 #faltas_Seguridad span{
     top: 3px;
@@ -252,6 +251,36 @@ margin: 35px;
     width: 180px;
     height: 110px;
 }
+.credential {
+    position: relative;
+}
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 48px;
+    opacity: 0.2;
+    color: #003C9B;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.send-button{
+    width: 90vw;
+    height: 45px;
+    background-color: #00375F;
+    color: #fff;
+    font-size: 20px;
+    border-radius: 35px;
+}
+.btn-cont{
+    width: 95vw;
+    padding: 10px;
+}
 
 
 input #TA, #EP, #TE, #OM, #CI, #MSP{
@@ -266,4 +295,17 @@ input #TA, #EP, #TE, #OM, #CI, #MSP{
         flex-direction: column;
         
     }
+    .send-button{
+        width: 90vw;
+        height: 45px;
+        background-color: #00375F;
+        color: #fff;
+        font-size: 20px;
+        border-radius: 25px;
+    }
+    .btn-cont{
+        width: 95vw;
+        padding: 10px;
+    }
+    
  }

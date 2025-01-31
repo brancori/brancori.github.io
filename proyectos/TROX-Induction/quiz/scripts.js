@@ -26,7 +26,7 @@ if (continueBnt) {
         choice_que.forEach(removeActive => {
             removeActive.classList.remove("active");
         });
-        total_correct.innerHTML = `${correct = 0} de ${MCQS.length} Preguntas`;
+        total_correct.innerHTML = `${correct = 1} de ${MCQS.length} Preguntas`;
     });
 }
 
@@ -63,7 +63,7 @@ if (next_question) {
             index = 0;
             clearInterval(interval);
             quiz.style.display = "none";
-            points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
+            points.innerHTML = `Tu Resultado es ${correct -1} de ${MCQS.length}`;
             result.style.display = "block";
             mostrarBoton();
         }
@@ -89,15 +89,15 @@ let hacerCredencial = document.querySelector("#haceCredencial");
 let choice_que = document.querySelectorAll(".choice_que");
 choice_que.forEach((Choices, choiceNo) => {
     Choices.addEventListener("click", () => {
-        Choices.classList.add("active");
-        if (choiceNo === MCQS[index].answer) {
-            correct++;
-        } else {
-            correct += 0;
-        }
-        clearInterval(interval);
-        for (i = 0; i <= 3; i++) {
-            choice_que[i].classList.add("disabled");
+        if (!Choices.classList.contains('disabled')) {
+            Choices.classList.add("active");
+            if (choiceNo === MCQS[index].answer) {
+                correct++;
+            }
+            clearInterval(interval);
+            choice_que.forEach(choice => {
+                choice.classList.add("disabled");
+            });
         }
     });
 });
@@ -164,7 +164,7 @@ function ShowSkills(){
 
 
 // Total points
-let correct = 0;
+let correct = 1;
 
 
 // Store Answer Value
@@ -193,7 +193,7 @@ function mostrarBoton() {
     // Define the function to show the button based on your requirements
     var hacerCredencial = document.getElementById("haceCredencial");
     var quit = document.getElementById("quit");
-    if (correct >= 7) { // Assuming 7 is the passing score
+    if (correct >= 8 + 1 ) { // Assuming 7 is the passing score
         hacerCredencial.style.display = "block";
         quit.style.display = "none";
     } else {
@@ -204,7 +204,7 @@ function mostrarBoton() {
 
 //Creating Timer For Quiz Timer Section
 let countDown = ()=>{
-    if(timer === 5){
+    if(timer === 10){
         clearInterval(interval); 
         next_question.click();
     }
@@ -241,30 +241,6 @@ let loadData = () => {
 
 loadData();
 
-choice_que.forEach((Choices, choiceNo) => {
-    Choices.addEventListener("click", () => {
-        Choices.classList.add("active");
-        //Check answer
-        if(choiceNo === MCQS[index].answer)
-        {
-            correct++;
-        }
-        else
-            {
-                correct += 0;
-            }
-            //Stop Counter
-            clearInterval(interval);
-
-            //disable All Option whe User Select An Option
-            for (i = 0; i <= 3; i++)
-            {
-                choice_que[i].classList.add("disabled");
-            }
-        });
-    });
-
-
 //Inner Text tag P
 function cambio(){
     var NContratista = document.getElementById("NEC").value.toUpperCase();
@@ -287,33 +263,6 @@ function cambio(){
 
    var cT = document.getElementById("cT").value.toUpperCase();
    document.getElementById("input_ct").innerHTML = cT;
-}
-
-// Update the total_correct and points display
-if (next_question) {
-    next_question.addEventListener("click", () => {
-        if (index < MCQS.length - 1) {
-            index++;
-            choice_que.forEach(removeActive => {
-                removeActive.classList.remove("active");
-            });
-            loadData();
-            total_correct.style.display = "block";
-            total_correct.innerHTML = `${correct} de ${MCQS.length} Preguntas`;
-            clearInterval(interval);
-            interval = setInterval(countDown, 1000);
-        } else {
-            index = 0;
-            clearInterval(interval);
-            quiz.style.display = "none";
-            points.innerHTML = `Tu Resultado es ${correct} de ${MCQS.length}`;
-            result.style.display = "block";
-            mostrarBoton();
-        }
-        for (i = 0; i <= 3; i++) {
-            choice_que[i].classList.remove("disabled");
-        }
-    });
 }
 
 
