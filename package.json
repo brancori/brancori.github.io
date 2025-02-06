@@ -1,6 +1,28 @@
 {
-  "dependencies": {
-    "jquery": "^3.6.4",
-    "typed.js": "^2.0.16"
-  }
+"dependencies": {
+  "react": "^18.2.0",
+  "axios": "^1.5.0",
+  "chart.js": "^4.4.0",
+  "react-dom": "^18.2.0",
+  "react-router-dom": "^6.18.0"
+},
+  "name": "brancori.github.io",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brancori/brancori.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brancori/brancori.github.io/issues"
+  },
+  "homepage": "https://github.com/brancori/brancori.github.io#readme",
+  "description": ""
 }
