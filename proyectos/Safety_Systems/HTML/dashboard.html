@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Safety Systems</title>
+    <link rel="stylesheet" href="../CSS/dashboard.css">
+</head>
+<body style="visibility: hidden;">
+    <main id="main_container">
+        <section id="nav_bar_lateral">
+            <label for="" id="date"></label>
+            <div id="User_info">
+                <img src="/" alt="Foto de Perfil" id="user_picture">
+                <h3 id="userName"></h3>
+                <h4 id="userRole"></h4>
+            </div>
+            <div id="blocks">
+                <a href="#profile"><i class="icon-user"></i>Mi Perfil</a>
+                <a href="./access_management.html"><i class="icon-key"></i>Administrador de Usuarios</a>
+                <a href="#workers"><i class="icon-users"></i>Gestor de Trabajadores</a>
+                <a href="#tasks"><i class="icon-tasks"></i>Gestor de Trabajos</a>
+                <a href="#records"><i class="icon-file"></i>Ver Registros</a>
+                <a href="#users" id="adminUsersLink" style="display: none;"><i class="icon-cog"></i>Gestión de Usuarios</a>
+            </div>
+            <button onclick="logout()" class="logout-btn">Cerrar Sesión</button>
+            <img src="./assets/logo_proyección_white.png" alt="Logo" id="logo_company">
+        </section>
+
+        <div class="dashboard-content">
+            <div class="safety-cross">
+                <h2 class="title-box">CRUZ DE SEGURIDAD</h2>
+                <div class="month-navigator">
+                </div>
+                <div class="calendar-header"></div>
+                <div class="safety-grid">
+                    <!-- Days will be populated by JS -->
+                </div>
+                <div class="safety-controls">
+                    <button id="markSafeDay" class="control-btn safe-btn">Marcar Día Seguro</button>
+                    <button id="addRecord" class="control-btn record-btn" onclick="toggleRecordForm()">Agregar Registro</button>
+                </div>
+                <div id="recordFormModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-btn" onclick="toggleRecordForm()">&times;</span>
+                        <h2>Registro de Evento</h2>
+                        <form id="recordForm">
+                            <div class="form-group">
+                                <label for="eventType">Tipo de Evento:</label>
+                                <select id="eventType" name="eventType" required>
+                                    <option value="">Seleccione tipo...</option>
+                                    <option value="accident">Accidente</option>
+                                    <option value="incident">Incidente</option>
+                                    <option value="nearMiss">Near Miss</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventDate">Fecha:</label>
+                                <input type="date" id="eventDate" name="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventTime">Hora:</label>
+                                <input type="time" id="eventTime" name="eventTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Ubicación:</label>
+                                <input type="text" id="location" name="location" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Involucrados:</label>
+                                <input type="text" id="Involucrados" name="Involucrados" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">SSH Responsable:</label>
+                                <input type="text" id="SSH" name="SSH" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Residente responsable:</label>
+                                <input type="text" id="res_res" name="res_res" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Descripción:</label>
+                                <textarea id="description" name="description" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="immediateActions">Acciones Inmediatas:</label>
+                                <textarea id="immediateActions" name="immediateActions" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="preventiveActions">Acciones Preventivas:</label>
+                                <textarea id="preventiveActions" name="preventiveActions" rows="3" required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Guardar Registro</button>
+                                <button type="button" class="cancel-btn" onclick="toggleRecordForm()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="safety-stats">
+                    <div class="stat-card">
+                        <h3>Días sin Accidentes</h3>
+                        <span class="counter" id="accident-free-days">365</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Horas Hombre</h3>
+                        <span class="counter" id="man-hours">12400</span>
+                    </div>
+                </div>
+            </div>
+            <div class="quick-access">
+                <h2 class="title-box">ACCIONES</h2>
+                
+                <div class="button-grid">
+                    <button class="action-button" data-section="permits">
+                        <i class="icon-permit"></i>
+                        Permisos Vigentes
+                    </button>
+                    <button class="action-button" data-section="accidents">
+                        <i class="icon-accident"></i>
+                        Accidentes
+                    </button>
+                    <button class="action-button" data-section="incidents">
+                        <i class="icon-incident"></i>
+                        Incidentes
+                    </button>
+                    <button class="action-button" data-section="near-miss">
+                        <i class="icon-near-miss"></i>
+                        Near Miss
+                    </button>
+                    <button class="action-button" onclick="window.location.href='risk.html'" data-section="risk">
+                        <i class="icon-risk"></i>
+                        Análisis de Riesgo
+                    </button>
+                    <button class="action-button" data-section="equipment">
+                        <i class="icon-equipment"></i>
+                        Maquinaria y Equipo
+                    </button>
+                    <button class="action-button" data-section="reports">
+                        <i class="icon-report"></i>
+                        Reporte de Incidentes
+                    </button>
+                    <button class="action-button" data-section="work-permits">
+                        <i class="icon-work-permit"></i>
+                        Permisos de Trabajo
+                    </button>
+                    <button class="action-button" data-section="org-chart">
+                        <i class="icon-org"></i>
+                        Organigrama
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script type="module">
+        import { auth } from '../js/auth.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (auth.protectRoute()) {
+                document.body.style.visibility = 'visible';
+            }
+            
+            const session = JSON.parse(localStorage.getItem('userSession') || '{}');
+            document.getElementById('userName').textContent = session.username?.toUpperCase() || '';
+            document.getElementById('userRole').textContent = session.role || '';
+            document.getElementById('date').textContent = new Date().toLocaleDateString();
+            
+            // Mostrar enlace de gestión de usuarios solo para administradores
+            if (session.role === 'admin') {
+                document.getElementById('adminUsersLink').style.display = 'block';
+            }
+
+            // Show menu items based on permissions
+            const blocks = document.getElementById('blocks');
+            if (hasPermission('create')) {
+                blocks.innerHTML += '<a href="#create">Crear Registro</a>';
+            }
+            if (hasPermission('read')) {
+                blocks.innerHTML += '<a href="#view">Ver Registros</a>';
+            }
+            if (hasPermission('update')) {
+                blocks.innerHTML += '<a href="#edit">Editar Registros</a>';
+            }
+            if (hasPermission('delete')) {
+                blocks.innerHTML += '<a href="#delete">Eliminar Registros</a>';
+            }
+        });
+    </script>
+</body>
+</html>

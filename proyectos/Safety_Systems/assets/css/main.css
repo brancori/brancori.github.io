@@ -1,0 +1,28 @@
+/* Importar estilos base */
+@import 'layout.css';
+@import 'components/forms.css';
+@import 'components/buttons.css';
+@import 'components/tables.css';
+
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --background-color: #f8f9fa;
+}
+
+/* Estilos globales */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+}
+
+/* Utilidades generales */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}

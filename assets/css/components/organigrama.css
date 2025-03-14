@@ -1,0 +1,79 @@
+.organigrama-content {
+    margin-left: 230px;
+    padding: 2rem;
+}
+
+.organigrama-container {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+.org-controls {
+    margin: 1rem 0;
+    display: flex;
+    gap: 1rem;
+}
+
+.org-chart {
+    margin-top: 2rem;
+    min-height: 500px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+/* Estilos para los nodos del organigrama */
+.org-node {
+    background: var(--secondary-color);
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem;
+    display: inline-block;
+    min-width: 200px;
+    text-align: center;
+    color: var(--text-color);
+    position: relative;
+}
+
+.org-node::before,
+.org-node::after {
+    content: '';
+    position: absolute;
+    background: var(--accent-color);
+}
+
+.org-node-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.org-node-position {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+}
+
+/* Líneas de conexión */
+.org-line {
+    position: absolute;
+    background: var(--accent-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .organigrama-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .org-controls {
+        flex-direction: column;
+    }
+
+    .org-node {
+        min-width: 150px;
+    }
+}

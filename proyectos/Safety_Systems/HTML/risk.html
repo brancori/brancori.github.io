@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permiso de Trabajo y Análisis de Riesgo</title>
+    <link rel="stylesheet" href="./CSS/dashboard.css">
+    <link rel="stylesheet" href="./CSS/risk.css">
+    <!-- ...otros estilos o meta... -->
+</head>
+<body>
+    <header>
+        <h1>ANÁLISIS DE SEGURIDAD EN EL TRABAJO</h1>
+    </header>
+    <main>
+        <form id="riskForm">
+            <!-- Datos Generales -->
+            <fieldset class="general-data_1">
+                <legend>DESCRIPCIÓN DE LA TAREA/ACTIVIDAD</legend>
+                <div class="form-group">
+                    <label for="empresa">Nombre de la compañia:</label>
+                    <input type="text" id="empresa" name="empresa" required>
+                    <label for="subcontrastista">Nombre del subcontrato:</label>
+                    <input type="text" id="subcontrato" name="empresa" required>
+                    <label for="subcontrastista">Elaborado por:</label>
+                    <input type="text" id="elaborado" name="empresa" required>
+                    <label for="subcontrastista">Contacto:</label>
+                    <input type="text" id="contacto" name="empresa" required>
+                    <label for="fecha">Fecha de inicio:</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+                    <label for="fecha">Fecha de termino:</label>
+                    <input type="date" id="fecha_termino" name="fecha_termino" required>
+                    <label for="responsable">Nombre del Supervisor de Seguridad:</label>
+                    <input type="text" id="descripción" name="responsable" required>
+                    <label for="responsable">Nombre del Residente responsable:</label>
+                    <input type="text" id="descripción" name="responsable" required>
+                </div>
+                <div class="descripciondeactividad">
+                    <label for="descripcionActividad">Descripción de la actividad</label>
+                    <textarea id="descripcionActividad" name="descripcionActividad" rows="6" class="activity-textarea" required></textarea>
+                </div>
+                <div class="fieldset-controls">
+                    <button type="button" class="save-btn" onclick="saveFieldset(this)">Guardar</button>
+                    <button type="button" class="edit-btn" onclick="editFieldset(this)" disabled>Editar</button>
+                </div>
+            </fieldset class="analisis_riesgo">
+            <!-- Sección Permiso de Trabajo -->
+            <fieldset class="analsis_riesgo">
+                <legend>Análisis de riesgos</legend>
+                <!-- Nuevo contenedor para los pasos -->
+                <div id="riskStepsContainer">
+                    <div class="risk-step">
+                        <div class="form-group_1">
+                            <label for="pasos_clave">Pasos clave:</label>
+                            <textarea id="pasos_clave" name="pasos_clave" rows="3" required></textarea>
+                            <label for="equipo_herramienta">Equipo y herramientas:</label>
+                            <textarea id="equipo_herramienta" name="equipo_herramienta" rows="3" required></textarea>
+                            <label for="trabajo">Riesgos potenciales:</label>
+                            <textarea id="trabajo" name="trabajo" rows="3" required></textarea>
+                            <div class="risk-potential">
+                                <label for="potencial_inicial">Potencial de riesgo inicial:</label>
+                                <select id="potencial_inicial" name="potencial_inicial" required onchange="updateSelectColor(this)">
+                                    <option value="">Seleccione</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <label for="trabajo">Medidas de seguridad:</label>
+                            <textarea id="trabajo" name="trabajo" rows="3" required></textarea>
+                            <div class="risk-potential">
+                                <label for="potencial_final">Potencial de riesgo después de las medidas:</label>
+                                <select id="potencial_final" name="potencial_final" required onchange="updateSelectColor(this)">
+                                    <option value="">Seleccione</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                        </div>
+ 
+                    </div>
+                </div>
+                <!-- Controles para este fieldset -->
+                <div class="fieldset-controls">
+                    <button type="button" class="save-btn" onclick="saveFieldset(this)">Guardar</button>
+                    <button type="button" class="edit-btn" onclick="editFieldset(this)" disabled>Editar</button>
+                    <!-- Botón para agregar un nuevo paso -->
+                    <button type="button" class="add-step-btn" onclick="addNewStep(this)">&#43;</button>
+                </div>
+            </fieldset>
+            <!-- Sección Análisis de Riesgo -->
+            <fieldset>
+                <legend>Análisis de Riesgo</legend>
+                <div class="form-group">
+                    <label for="riskName">Nombre del Análisis:</label>
+                    <input type="text" id="riskName" name="riskName" required>
+                </div>
+                <div class="form-group">
+                    <label for="riskDescription">Descripción del Riesgo:</label>
+                    <textarea id="riskDescription" name="riskDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="peligros">Identificación de Peligros (NOM STPS):</label>
+                    <textarea id="peligros" name="peligros" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="evaluacion">Evaluación del Riesgo:</label>
+                    <textarea id="evaluacion" name="evaluacion" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="medidas">Medidas de Control y Mitigación:</label>
+                    <textarea id="medidas" name="medidas" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Equipos de Protección y Procedimientos (ver NOM):</label>
+                    <div>
+                        <input type="checkbox" id="epp" name="cumplimiento" value="epp">
+                        <label for="epp">EPP actualizado</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="procedimientos" name="cumplimiento" value="procedimientos">
+                        <label for="procedimientos">Procedimientos de seguridad</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="entrenamiento" name="cumplimiento" value="entrenamiento">
+                        <label for="entrenamiento">Entrenamiento y simulacros</label>
+                    </div>
+                </div>
+                <div class="fieldset-controls">
+                    <button type="button" class="save-btn" onclick="saveFieldset(this)">Guardar</button>
+                    <button type="button" class="edit-btn" onclick="editFieldset(this)" disabled>Editar</button>
+                </div>
+            </fieldset>
+            <button type="submit">Guardar Permiso y Análisis</button>
+        </form>
+        <a href="dashboard.html">Volver al Dashboard</a>
+    </main>
+    <script src="./js/risk.js"></script>
+</body>
+</html>

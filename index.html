@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -154,6 +154,42 @@
 <footer class="footers">
     <p>Copyright© 2022 Brandon Cortes</p>
 </footer>
+
+<script type="module">
+    import { auth } from '/assets/js/auth/auth.js';
+    import { session } from '/assets/js/auth/session.js';
+
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showError('Por favor complete todos los campos');
+                return;
+            }
+
+            const success = await auth.login(username, password);
+            if (success) {
+                window.location.href = '/pages/dashboard.html';
+            } else {
+                showError('Usuario o contraseña incorrectos');
+                document.getElementById('password').value = '';
+            }
+        });
+    }
+
+    function showError(message) {
+        const errorElement = document.getElementById('loginError');
+        if (errorElement) {
+            errorElement.textContent = message;
+            setTimeout(() => errorElement.textContent = '', 3000);
+        }
+    }
+</script>
 
 </body>
 </html>

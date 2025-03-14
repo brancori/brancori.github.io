@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigrama - Safety Systems</title>
+    <link rel="stylesheet" href="../CSS/dashboard.css">
+    <link rel="stylesheet" href="../CSS/organigrama.css">
+</head>
+<body>
+    <nav id="nav_bar_lateral">
+        <div id="blocks">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="organigrama.html" class="active">Organigrama</a>
+        </div>
+    </nav>
+    <script type="module">
+        import { auth } from '../js/auth.js';
+        import { session } from '../js/session.js';
+        
+        session.protect();
+    </script>
+    <script src="../js/organigrama.js"></script>
+</body>
+</html>

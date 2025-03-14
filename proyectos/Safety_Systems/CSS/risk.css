@@ -1,0 +1,107 @@
+:root {
+    --login-bg-primary: #0a192f;
+    --login-bg-secondary: #112240;
+    --login-accent: #64ffda;
+    --text: #ffffff;
+    --login-error: #ff6b6b;
+    --login-input-bg: rgba(255, 255, 255, 0.05);
+    --login-shadow: rgba(0, 0, 0, 0.3);
+    --login-glass: rgba(255, 255, 255, 0.1);
+}
+label, legend{
+    color: var(--text);
+}
+fieldset{
+    padding: 25px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+header{
+    display: flex;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 14px;
+}
+.general-data_1{
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: grid;
+    padding: 25px;
+    grid-template-rows: 2fr 2fr;
+}
+.form-group_1{
+    display: grid;
+    grid-template-row: 1fr 1fr;
+    margin-bottom: 10px;
+}
+.form-group{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 10px;
+}
+.descripciondeactividad{
+    margin: 25px 0;
+    display: grid;
+    margin-bottom: 10px;
+}
+.clas_riesgo{
+    display: flex;
+    justify-content: space-between;
+}
+.risk-potential{
+    display: flex;
+    align-content: center;
+    margin: 15px auto;
+    height: 30px;
+    width: 300px;
+    text-align: center;
+    background-color: #0a192f;
+}
+/* Nueva regla para el textarea de descripción de actividad */
+.activity-textarea {
+    resize: vertical;
+    text-align: left;
+    vertical-align: top;
+}
+/* Clases para indicar el nivel de riesgo */
+.select-green {
+    background-color: #28a745; /* verde */
+}
+.select-yellow {
+    background-color: #ffc107; /* amarillo */
+}
+.select-red {
+    background-color: #dc3545; /* rojo */
+}
+/* Permite posicionar elementos absolutos dentro */
+.risk-step {
+    position: relative;
+}
+/* Posicionar los botones de edición a la derecha */
+.risk-step-buttons {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    gap: 5px;
+}
+/* Asegura espacio para los botones a la derecha */
+.risk-step-header {
+    margin-right: 150px;
+    text-align: left;
+    padding: 10px 0;
+    font-size: 1.1em;
+    color: var(--text);
+}
+/* Estilos específicos para los spans de selección */
+span.plain.select-green,
+span.plain.select-yellow,
+span.plain.select-red {
+    width: 60px;
+    display: inline-block;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    font-weight: bold;
+}

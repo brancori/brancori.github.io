@@ -1,0 +1,82 @@
+s<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigrama - Safety Systems</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components/organigrama.css">
+</head>
+<body>
+    <div id="main_container">
+        <!-- Barra lateral -->
+        <nav id="nav_bar_lateral">
+            <div id="User_info">
+                <img id="user_picture" src="/assets/img/user_default.png" alt="Foto de usuario">
+                <h3 id="username_display"></h3>
+                <h4 id="role_display"></h4>
+            </div>
+            <p id="date"></p>
+            <div id="blocks">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="organigrama.html" class="active">Organigrama</a>
+                <!-- Otros enlaces del menú -->
+            </div>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </nav>
+
+        <!-- Contenido principal -->
+        <div class="organigrama-content">
+            <div class="organigrama-container">
+                <h2>Organigrama Empresarial</h2>
+                
+                <div class="org-controls">
+                    <button class="control-btn" id="addNodeBtn">Agregar Nodo</button>
+                    <button class="control-btn" id="exportBtn">Exportar</button>
+                </div>
+
+                <div class="org-chart" id="orgChart">
+                    <!-- El organigrama se generará aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar nodos -->
+    <div id="nodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3>Agregar/Editar Nodo</h3>
+            <form id="nodeForm">
+                <div class="form-group">
+                    <label for="nodeName">Nombre:</label>
+                    <input type="text" id="nodeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="nodePosition">Cargo:</label>
+                    <input type="text" id="nodePosition" required>
+                </div>
+                <div class="form-group">
+                    <label for="nodeParent">Superior:</label>
+                    <select id="nodeParent">
+                        <option value="">Ninguno (Nodo Raíz)</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Guardar</button>
+                    <button type="button" class="cancel-btn">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from '/assets/js/auth/auth.js';
+        import { session } from '/assets/js/auth/session.js';
+        
+        // Verificar autenticación
+        session.protect();
+    </script>
+    <script src="/assets/js/components/organigrama.js"></script>
+</body>
+</html>
