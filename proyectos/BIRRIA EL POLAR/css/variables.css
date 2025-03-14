@@ -1,0 +1,32 @@
+:root {
+    /* Colors */
+    --primary-color: #DD1C1A;
+    --primary-light: #ff4b48;
+    --primary-dark: #b81816;
+    --white: #ffffff;
+    --black: #000000;
+    --gray-light: #f5f5f5;
+    --gray-dark: #333333;
+    
+    /* Overlays */
+    --overlay-dark: rgba(0, 0, 0, 0.8);
+    --overlay-light: rgba(255, 255, 255, 0.95);
+    --overlay-gradient: rgba(0, 0, 0, 0.4);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 5px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 15px rgba(0,0,0,0.2);
+    --shadow-lg: 0 5px 15px rgba(0,0,0,0.3);
+    
+    /* Layout */
+    --navbar-height: 60px;
+    --content-padding: 20px;
+    --border-radius-sm: 12px;
+    --border-radius-md: 20px;
+    --border-radius-lg: 30px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.6s ease;
+}
