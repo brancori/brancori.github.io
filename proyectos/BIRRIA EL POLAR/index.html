@@ -53,6 +53,7 @@
         <div class="orden_menu" data-category="popular">
             <h3 class="type_order">Kilo de Birria</h3>
             <div class="img_container">
+                <div class="add-item-indicator">+</div>
                 <span class="tap-hint">Toca para ver detalles</span>
                 <div class="price">
                     <span class="currency">$</span>
@@ -63,12 +64,17 @@
                 <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
                 <div class="description_overlay">
                     <p class="description">Tres tacos de birria, acompañados de un consome</p>
+                    <button class="add-to-cart-btn" data-price="60" data-name="Orden de tacos">
+                        <span class="icon">+</span>
+                        Agregar al pedido
+                    </button>
                 </div>
             </div>
         </div>
         <div class="orden_menu">
             <h3 class="type_order">Orden de tacos</h3>
             <div class="img_container">
+                <div class="add-item-indicator">+</div>
                 <span class="tap-hint">Toca para ver detalles</span>
                 <div class="price">
                     <span class="currency">$</span>
@@ -79,12 +85,17 @@
                 <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
                 <div class="description_overlay">
                     <p class="description">Tres tacos de birria, acompañados de un consome</p>
+                    <button class="add-to-cart-btn" data-price="60" data-name="Orden de tacos">
+                        <span class="icon">+</span>
+                        Agregar al pedido
+                    </button>
                 </div>
             </div>
         </div>
         <div class="orden_menu">
             <h3 class="type_order">Orden de tacos</h3>
             <div class="img_container">
+                <div class="add-item-indicator">+</div>
                 <span class="tap-hint">Toca para ver detalles</span>
                 <div class="price">
                     <span class="currency">$</span>
@@ -95,12 +106,17 @@
                 <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
                 <div class="description_overlay">
                     <p class="description">Tres tacos de birria, acompañados de un consome</p>
+                    <button class="add-to-cart-btn" data-price="60" data-name="Orden de tacos">
+                        <span class="icon">+</span>
+                        Agregar al pedido
+                    </button>
                 </div>
             </div>
         </div>
         <div class="orden_menu">
             <h3 class="type_order">Orden de tacos</h3>
             <div class="img_container">
+                <div class="add-item-indicator">+</div>
                 <span class="tap-hint">Toca para ver detalles</span>
                 <div class="price">
                     <span class="currency">$</span>
@@ -111,6 +127,10 @@
                 <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
                 <div class="description_overlay">
                     <p class="description">Tres tacos de birria, acompañados de un consome</p>
+                    <button class="add-to-cart-btn" data-price="60" data-name="Orden de tacos">
+                        <span class="icon">+</span>
+                        Agregar al pedido
+                    </button>
                 </div>
             </div>
         </div>
@@ -140,6 +160,9 @@
         </div>
     </section>
     <div class="contact-float">
+        <button class="cart-button" title="Haz tu pedido por WhatsApp">
+            🛒 Hacer pedido
+        </button>
         <button class="contact-button">
             <img src="./assets/logo/cdnlogo.com_whatsapp-icon.svg" alt="Contacto">
         </button>
@@ -153,6 +176,28 @@
                 <i>📞</i>
             </a>
         </div>
+    </div>
+    <div class="cart-modal">
+        <div class="cart-content">
+            <h3>Tu Pedido</h3>
+            <div class="cart-items"></div>
+            <div class="cart-total">
+                <span>Total:</span>
+                <span class="total-amount">$0.00</span>
+            </div>
+            <button class="order-button" disabled>
+                <img src="./assets/logo/whatsapp-icon.svg" alt="WhatsApp">
+                Enviar pedido por WhatsApp
+            </button>
+            <button class="close-cart">Cerrar</button>
+        </div>
+    </div>
+    <div class="floating-cart">
+        <div class="floating-cart-total">Total: $0.00</div>
+        <button class="floating-cart-button">
+            <img src="./assets/logo/whatsapp-icon.svg" alt="WhatsApp" width="20">
+            Hacer pedido por WhatsApp
+        </button>
     </div>
     <script src="js/app.js"></script>
 </body>

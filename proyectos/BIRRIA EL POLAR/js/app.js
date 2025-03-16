@@ -4,6 +4,8 @@ const imgContainers = document.querySelectorAll('.img_container');
 const verticalIndicator = document.querySelector('.vertical-scroll-indicator');
 const scrollIndicator = document.querySelector('.scroll-indicator');
 const welcomeScreen = document.querySelector('.welcome-screen');
+const filters = document.querySelector('.filters');
+const menuIcon = document.querySelector('.menu-icon');
 
 // Image Container Interactions
 imgContainers.forEach(container => {
@@ -98,5 +100,31 @@ filterBtns.forEach(btn => {
             e.preventDefault();
             btn.click();
         }
+    });
+});
+
+// Menu toggle functionality
+menuIcon.addEventListener('click', () => {
+    filters.classList.toggle('show');
+    menuIcon.innerHTML = filters.classList.contains('show') ? '×' : '☰';
+    // Ajustar el scroll cuando el menú está abierto
+    if (filters.classList.contains('show')) {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+});
+
+// Cerrar el menú al hacer click fuera
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.filters') && !e.target.closest('.menu-icon')) {
+        filters.classList.remove('show');
+        menuIcon.innerHTML = '☰';
+    }
+});
+
+// Cerrar el menú al hacer click en un filtro
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        filters.classList.remove('show');
+        menuIcon.innerHTML = '☰';
     });
 });
