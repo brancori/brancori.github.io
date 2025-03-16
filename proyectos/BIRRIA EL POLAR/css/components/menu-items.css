@@ -6,7 +6,7 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     width: 100vw;
-    padding-top: calc(var(--navbar-height) + 60px);
+    padding-top: calc(var(--navbar-height) + 5px);
     padding-bottom: 180px; /* Espacio para el carrito */
     margin-top: 0;
     height: calc(100vh - var(--navbar-height));

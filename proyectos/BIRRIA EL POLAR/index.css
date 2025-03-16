@@ -69,141 +69,7 @@ body {
 
 .menu-icon:active {
     transform: scale(0.9);
-}
-
-.menu_carrusel {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    width: 100vw;
-    padding-top: calc(var(--navbar-height) + 5px);
-    padding-bottom: 180px; /* Aumentar para dar espacio al carrito */
-    margin-top: 0;
-    height: calc(100vh - var(--navbar-height));
-    box-sizing: border-box;
-    scroll-snap-align: start;
-    min-height: 100vh;
-    position: relative; /* Añadido para contener el scroll-indicator */
-    overflow-y: hidden;  /* Cambiado de overflow: hidden a overflow-y: hidden */
-}
-
-.menu_carrusel::-webkit-scrollbar {
-    height: 8px;
-}
-
-.menu_carrusel::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.menu_carrusel::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.menu_carrusel::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-.orden_menu {
-    flex: 0 0 100%;  /* Asegurar que cada elemento tome el ancho completo */
-    width: 100%;
-    scroll-snap-align: start;
-    opacity: 1;  /* Changed from 0.7 to keep title visible */
-    transition: all 0.3s ease;
-    transform: translateY(20px);
-    padding: var(--content-padding);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: slideUp var(--transition-slow) forwards;
-    opacity: 0;
-}
-
-.orden_menu:nth-child(2) { animation-delay: 0.2s; }
-.orden_menu:nth-child(3) { animation-delay: 0.4s; }
-.orden_menu:nth-child(4) { animation-delay: 0.6s; }
-
-.orden_menu:hover {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.scroll-indicator {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    z-index: 1000;
-    pointer-events: none;
-    animation: fadeInOut 6s forwards;
-}
-
-.scroll-indicator::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none; /* Eliminar el blur */
-}
-
-.arrow {
-    width: 20px;
-    height: 20px;
-    border-right: 3px solid rgba(255, 255, 255, 0.9);
-    border-bottom: 3px solid rgba(255, 255, 255, 0.9);
-    position: relative;
-    z-index: 2;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    animation: arrowSlide 1.5s infinite ease-in-out;
-}
-
-.arrow:first-child {
-    transform: rotate(135deg);
-    animation-name: arrowSlideLeft;
-}
-
-.arrow:last-child {
-    transform: rotate(-45deg);
-    animation-name: arrowSlideRight;
-}
-
-@keyframes arrowSlideLeft {
-    0%, 100% { 
-        transform: rotate(135deg) translate(0);
-        opacity: 0.5;
-    }
-    50% { 
-        transform: rotate(135deg) translate(-5px, -5px);
-        opacity: 1;
-    }
-}
-
-@keyframes arrowSlideRight {
-    0%, 100% { 
-        transform: rotate(-45deg) translate(0);
-        opacity: 0.5;
-    }
-    50% { 
-        transform: rotate(-45deg) translate(5px, 5px);
-        opacity: 1;
-    }
-}
-
-.orden_menu:last-child .scroll-indicator {
-    display: none;
-}
-
+}   
 .vertical-scroll-indicator {
     position: fixed;
     bottom: 40px;
@@ -276,18 +142,6 @@ body {
     opacity: 1;
     transform: translateX(-50%) translateY(-10px);
 }
-
-.img_container {
-    width: 100vw;
-    height: 85vh;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
 .img_menu {
     width: 100%;
     height: 100%;
@@ -451,17 +305,6 @@ body {
     position: relative;
     z-index: 5;
     text-align: center; /* Asegurar centrado del texto */
-}
-
-.type_order {
-    font-size: 1.8rem;
-    color: #DD1C1A;
-    margin: 10px 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    z-index: 3;
-    margin-bottom: 20px;
 }
 
 .info {
