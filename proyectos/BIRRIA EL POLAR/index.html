@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- Optimización para móvil -->
+    <meta name="theme-color" content="#DD1C1A"> <!-- Color de barra de estado para móvil -->
+    <meta name="mobile-web-app-capable" content="yes"> <!-- Para pantalla completa en Android -->
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Para pantalla completa en iOS -->
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>BIRRIA EL POLAR</title>
 </head>
 <body>
@@ -19,17 +23,21 @@
         <div class="logo">
             <h3>Birria El Polar</h3>
         </div>
-        <div class="mode-switch">
-            <label class="switch">
-                <input type="checkbox" id="mode-toggle">
-                <span class="slider round"></span>
-            </label>
-            <span class="mode-label">Modo Compra</span>
-        </div>
         <div class="menu-icon pulse-animation">☰</div>
         <div class="progress-bar"></div>
     </nav>
     
+    <button class="mode-toggle-fab" id="mode-toggle" aria-label="Cambiar modo">
+        <div class="mode-icon menu-mode">
+            <span class="material-icons">restaurant_menu</span>
+        </div>
+        <div class="mode-icon shop-mode">
+            <span class="material-icons">shopping_cart</span>
+        </div>
+        <div class="tooltip">Cambiar a modo compra</div>
+        <div class="mode-label">Haz tu pedido por WhatsApp</div>
+    </button>
+
     <div class="filters">
         <button class="filter-btn active" data-category="all">Todos</button>
         <button class="filter-btn" data-category="popular">Populares</button>

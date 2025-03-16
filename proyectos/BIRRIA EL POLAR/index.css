@@ -12,6 +12,7 @@
     --shadow-md: 0 4px 15px rgba(221, 28, 26, 0.3);
     --border-radius-md: 20px;
     --transition-normal: 0.3s ease;
+    touch-action: manipulation; /* Mejorar rendimiento táctil */
 }
 
 body {
@@ -26,6 +27,8 @@ body {
     position: relative;
     overflow-y: auto;
     scroll-snap-type: y mandatory;
+    -webkit-tap-highlight-color: transparent; /* Eliminar highlight al tocar */
+    overscroll-behavior: contain; /* Prevenir rebotes en iOS */
 }
 
 .navbar {
@@ -610,6 +613,8 @@ body {
     transition: transform 0.3s ease;
     padding: 0;
     overflow: hidden;
+    min-height: 44px; /* Estándar mínimo para área táctil accesible */
+    min-width: 44px;
 }
 
 .contact-button:hover {
@@ -713,6 +718,10 @@ body {
     min-width: auto;
     flex: 0 0 auto;
     position: relative;
+    min-height: 44px; /* Estándar mínimo para área táctil accesible */
+    min-width: 44px;
+    padding: 10px 18px;
+    margin: 0 5px;
 }
 
 .filter-btn::after {
@@ -770,6 +779,7 @@ a:focus-visible {
 /* Ajustar espaciado para los filtros */
 .menu_carrusel {
     padding-top: calc(var(--navbar-height) + 5px);
+    -webkit-overflow-scrolling: touch; /* Para asegurar scroll suave en safari iOS */
 }
 
 .tap-hint,
@@ -830,6 +840,8 @@ a:focus-visible {
     z-index: 1000;
     transform: translateY(150%);
     transition: transform 0.3s ease;
+    padding: 15px 20px;
+    bottom: 30px;
 }
 
 .floating-cart.show {
@@ -839,6 +851,7 @@ a:focus-visible {
 .floating-cart-total {
     font-weight: bold;
     font-size: 1.2rem;
+    font-size: 1.1em;
 }
 
 .floating-cart-button {
@@ -851,18 +864,171 @@ a:focus-visible {
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
 }
 
 /* Modo compra switch */
 .mode-switch {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: none;
 }
 
+/* Nuevo botón flotante de cambio de modo */
+.mode-toggle-fab {
+    position: fixed;
+    bottom: 120px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--white);
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    z-index: 1000;
+    overflow: visible; /* Cambiado de hidden a visible para mostrar el label */
+    padding: 0;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Label permanente para el botón */
 .mode-label {
-    font-size: 0.9rem;
+    position: absolute;
+    left: 70px; /* Posicionado a la derecha del botón */
+    top: 50%;
+    transform: translateY(-50%);
+    background: #25D366; /* Color de WhatsApp */
     color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    opacity: 1;
+    pointer-events: none;
+    display: none; /* Inicialmente oculto */
+}
+
+/* Mostrar el label en modo normal */
+.mode-toggle-fab:hover .mode-label,
+.first-visit .mode-label {
+    display: block;
+}
+
+/* Cambiar el texto del label en modo compra */
+body.shop-mode .mode-label {
+    content: "Pide ahora por WhatsApp";
+    background: #25D366;
+}
+
+/* Diseño para móviles */
+@media (max-width: 768px) {
+    .mode-toggle-fab {
+        left: 15px;
+        width: 56px;
+        height: 56px;
+    }
+    
+    .mode-label {
+        left: 65px;
+        font-size: 12px;
+        padding: 6px 10px;
+        max-width: 130px;
+        text-align: left;
+    }
+    
+    /* Siempre mostrar etiqueta en móvil brevemente al cargar */
+    .mode-label {
+        display: block;
+        animation: fadeOutLabel 5s forwards;
+    }
+    
+    @keyframes fadeOutLabel {
+        0%, 80% { opacity: 1; }
+        100% { opacity: 0; display: none; }
+    }
+    
+    /* Mostrar al tocar */
+    .mode-toggle-fab:active .mode-label {
+        display: block;
+        opacity: 1;
+        animation: none;
+    }
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 14px; /* Texto más grande */
+    padding: 8px 16px;
+}
+
+.mode-toggle-fab:hover .tooltip {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.9;
+}
+
+body.shop-mode .tooltip {
+    content: "Volver a modo menú";
+}
+
+/* Pulsating effect */
+@keyframes pulse-light {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 75, 72, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(255, 75, 72, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 75, 72, 0);
+    }
+}
+
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+/* Primera vez que se carga la página */
+.first-visit .mode-toggle-fab {
+    animation: pulse-light 2s infinite;
+}
+
+body.shop-mode .mode-toggle-fab {
+    animation: pulse-green 2s infinite;
+}
+
+/* Animación al cambiar de modo */
+.mode-change-animation .add-to-cart {
+    animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+@keyframes pop-in {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }
 
 /* The switch - the box around the slider */
@@ -940,6 +1106,13 @@ input:checked + .slider:before {
     transition: all 0.3s ease;
     opacity: 0;
     pointer-events: none;
+    min-height: 44px; /* Estándar mínimo para área táctil accesible */
+    min-width: 44px;
+    width: 54px; /* Más grande */
+    height: 54px; 
+    font-size: 30px;
+    top: 20px;
+    right: 20px;
 }
 
 .shop-only {
@@ -955,5 +1128,35 @@ body.shop-mode .shop-only {
 .add-to-cart:hover {
     transform: scale(1.1);
     background-color: var(--primary-light);
+}
+
+/* Optimizaciones para móviles */
+@media (hover: none) {
+    /* Eliminar todos los efectos hover que podrían causar problemas en móvil */
+    .add-to-cart:hover,
+    .filter-btn:hover,
+    .mode-toggle-fab:hover,
+    .contact-button:hover,
+    .img_container:hover img,
+    .contact-options:hover,
+    .price:hover,
+    .category-tag:hover {
+        transform: none;
+    }
+    
+    /* Hacer tooltip siempre visible brevemente en la activación */
+    .mode-toggle-fab:active .tooltip {
+        transform: translateX(-50%) scale(1);
+        opacity: 0.9;
+        transition-delay: 0s;
+    }
+}
+
+/* Remover animaciones complejas para mejor rendimiento */
+@media (max-width: 768px) {
+    .pulse-animation,
+    .first-visit .mode-toggle-fab {
+        animation: none;
+    }
 }
 

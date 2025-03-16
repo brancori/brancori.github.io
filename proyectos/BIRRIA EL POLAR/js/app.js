@@ -129,22 +129,55 @@ filterBtns.forEach(btn => {
     });
 });
 
-// Mode toggle functionality
+// Mode toggle functionality - Optimizado para móviles
 const modeToggle = document.getElementById('mode-toggle');
 const body = document.body;
+const tooltip = document.querySelector('.tooltip');
+const modeLabel = document.querySelector('.mode-label');
 
-// Check localStorage for saved mode preference
-if (localStorage.getItem('shopMode') === 'true') {
-    body.classList.add('shop-mode');
-    modeToggle.checked = true;
-}
+// No usaremos localStorage para mantener el modo
+localStorage.removeItem('shopMode');
+localStorage.removeItem('hasVisitedBefore');
 
-modeToggle.addEventListener('change', () => {
-    if (modeToggle.checked) {
-        body.classList.add('shop-mode');
-        localStorage.setItem('shopMode', 'true');
-    } else {
-        body.classList.remove('shop-mode');
-        localStorage.setItem('shopMode', 'false');
+// Primera visita siempre activa
+document.body.classList.add('first-visit');
+setTimeout(() => {
+    document.body.classList.remove('first-visit');
+}, 3000); // Reducido a 3s para móviles
+
+modeToggle.addEventListener('click', () => {
+    // Vibración táctil para feedback en móviles
+    if (navigator.vibrate) {
+        navigator.vibrate(50);
     }
+    
+    // Agregar clase de animación temporal
+    document.body.classList.add('mode-change-animation');
+    
+    // Toggle shop mode
+    body.classList.toggle('shop-mode');
+    const isShopMode = body.classList.contains('shop-mode');
+    
+    // Actualizar textos
+    tooltip.textContent = isShopMode ? "Volver a modo menú" : "Cambiar a modo compra";
+    modeLabel.textContent = isShopMode ? "Pide ahora por WhatsApp" : "Haz tu pedido por WhatsApp";
+    
+    // Mostrar etiqueta temporalmente
+    modeLabel.style.display = 'block';
+    modeLabel.style.opacity = 1;
+    
+    // Ocultar tras unos segundos en móvil
+    if (window.innerWidth <= 768) {
+        setTimeout(() => {
+            modeLabel.style.opacity = 0;
+            setTimeout(() => {
+                modeLabel.style.display = 'none';
+            }, 300);
+        }, 3000);
+    }
+    
+    // Eliminar clase de animación después de la transición
+    setTimeout(() => {
+        document.body.classList.remove('mode-change-animation');
+    }, 1000);
 });

@@ -6,24 +6,32 @@ class Cart {
         this.floatingTotal = document.querySelector('.floating-cart-total');
         this.floatingButton = document.querySelector('.floating-cart-button');
         
+        // Borrar el localStorage al iniciar
+        localStorage.removeItem('cartItems');
+        localStorage.removeItem('shopMode');
+        
         this.init();
-        this.loadFromLocalStorage();
     }
 
     init() {
         // Agregar evento para el botón de enviar pedido
         this.floatingButton.addEventListener('click', () => this.sendOrder());
 
-        // Agregar evento a todos los botones de agregar
+        // Agregar evento a todos los botones de agregar (con tamaño mayor para mobile)
         document.querySelectorAll('.add-to-cart').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                e.preventDefault(); // Prevenir comportamiento en móviles
                 const container = btn.closest('.img_container');
                 const price = parseFloat(container.querySelector('.amount').textContent);
                 const name = container.closest('.orden_menu').querySelector('.type_order').textContent;
                 this.addItem({ name, price });
                 
-                // Feedback visual
+                // Feedback visual y vibración para móviles
+                if (navigator.vibrate) {
+                    navigator.vibrate(50); // Pequeña vibración táctil
+                }
+                
                 const originalContent = btn.innerHTML;
                 btn.innerHTML = '✓';
                 btn.style.backgroundColor = '#25D366';
@@ -33,18 +41,6 @@ class Cart {
                 }, 1500);
             });
         });
-    }
-
-    loadFromLocalStorage() {
-        const savedItems = localStorage.getItem('cartItems');
-        if (savedItems) {
-            this.items = JSON.parse(savedItems);
-            this.updateCart();
-        }
-    }
-
-    saveToLocalStorage() {
-        localStorage.setItem('cartItems', JSON.stringify(this.items));
     }
 
     addItem(item) {
@@ -61,7 +57,6 @@ class Cart {
         this.total = this.items.reduce((sum, item) => sum + item.price, 0);
         this.floatingTotal.textContent = `Total: $${this.total.toFixed(2)}`;
         this.floatingCart.classList.toggle('show', this.items.length > 0);
-        this.saveToLocalStorage();
     }
 
     sendOrder() {
