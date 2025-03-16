@@ -78,7 +78,7 @@ body {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     width: 100vw;
-    padding-top: calc(var(--navbar-height) + 60px);
+    padding-top: calc(var(--navbar-height) + 5px);
     padding-bottom: 180px; /* Aumentar para dar espacio al carrito */
     margin-top: 0;
     height: calc(100vh - var(--navbar-height));
@@ -206,7 +206,7 @@ body {
 
 .vertical-scroll-indicator {
     position: fixed;
-    bottom: 60px;
+    bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
