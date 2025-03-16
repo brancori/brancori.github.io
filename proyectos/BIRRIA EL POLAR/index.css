@@ -594,7 +594,7 @@ body {
 /* Botón flotante de contacto */
 .contact-float {
     position: fixed;
-    bottom: 100px; /* Mover arriba del carrito */
+    bottom: 60px; /* Mover arriba del carrito */
     right: 30px;
     z-index: 1000;
 }
@@ -877,7 +877,7 @@ a:focus-visible {
 /* Nuevo botón flotante de cambio de modo */
 .mode-toggle-fab {
     position: fixed;
-    bottom: 120px;
+    bottom: 60px;
     left: 20px;
     width: 60px;
     height: 60px;
