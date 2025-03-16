@@ -104,7 +104,8 @@
     font-weight: bold;
 }
 
-.cart-button {
+/* Eliminar estas clases que ya no se usan */
+/* .cart-button {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -131,6 +132,43 @@
     display: flex;
     align-items: center;
     justify-content: center;
+} */
+
+.floating-cart {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--white);
+    padding: 15px;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+    transform: translateY(150%);
+    transition: transform 0.3s ease;
+}
+
+.floating-cart.show {
+    transform: translateY(0);
+}
+
+.floating-cart-total {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.floating-cart-button {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .cart-modal {

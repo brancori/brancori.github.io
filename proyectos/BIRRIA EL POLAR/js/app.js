@@ -128,3 +128,23 @@ filterBtns.forEach(btn => {
         menuIcon.innerHTML = '☰';
     });
 });
+
+// Mode toggle functionality
+const modeToggle = document.getElementById('mode-toggle');
+const body = document.body;
+
+// Check localStorage for saved mode preference
+if (localStorage.getItem('shopMode') === 'true') {
+    body.classList.add('shop-mode');
+    modeToggle.checked = true;
+}
+
+modeToggle.addEventListener('change', () => {
+    if (modeToggle.checked) {
+        body.classList.add('shop-mode');
+        localStorage.setItem('shopMode', 'true');
+    } else {
+        body.classList.remove('shop-mode');
+        localStorage.setItem('shopMode', 'false');
+    }
+});
