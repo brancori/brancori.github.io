@@ -385,13 +385,12 @@ body {
     transition: transform var(--transition-normal);
     z-index: 4;
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    flex-direction: column; /* Cambiar a column para alinear verticalmente */
+    align-items: center; /* Centrar horizontalmente */
+    justify-content: center; /* Centrar verticalmente */
     transform: translateY(100%);
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
     padding-bottom: 40px;
+    text-align: center; /* Asegurar que el texto esté centrado */
 }
 
 .img_container.active .description_overlay {
@@ -441,8 +440,9 @@ body {
     height: 85vh;
 }
 
+/* Centrar la descripción */
 .description {
-    margin: 0;
+    margin: 0 auto; /* Centra horizontalmente */
     font-size: 1.2rem;
     font-weight: bold;
     color: var(--white);
@@ -450,6 +450,7 @@ body {
     line-height: 1.4;
     position: relative;
     z-index: 5;
+    text-align: center; /* Asegurar centrado del texto */
 }
 
 .type_order {
@@ -1157,6 +1158,114 @@ body.shop-mode .shop-only {
     .pulse-animation,
     .first-visit .mode-toggle-fab {
         animation: none;
+    }
+}
+
+/* Feedback toast notification */
+.feedback-toast {
+    position: fixed;
+    top: 80px; /* Debajo del navbar */
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 2000;
+    box-shadow: var(--shadow-md);
+    max-width: 80%;
+    text-align: center;
+    pointer-events: none;
+}
+
+.feedback-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.feedback-toast.success {
+    background-color: #4CAF50;
+}
+
+.feedback-toast.alert {
+    background-color: var(--primary-color);
+}
+
+.feedback-toast.info {
+    background-color: #2196F3;
+}
+
+/* Animación de pulso única */
+@keyframes pulse-once {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.pulse-once {
+    animation: pulse-once 0.5s ease forwards;
+}
+
+/* Testimonio de clientes */
+.testimonials {
+    padding: 20px 0;
+}
+
+.testimonials h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.testimonials-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.testimonial {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: var(--shadow-sm);
+}
+
+.testimonial-rating {
+    color: #FFD700;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.testimonial-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--gray-dark);
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.testimonial-author {
+    font-size: 13px;
+    font-weight: 500;
+    text-align: right;
+    color: var(--gray-dark);
+}
+
+/* Mejoras para móviles */
+@media (max-width: 768px) {
+    .mode-toggle-fab {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
+    }
+    
+    .floating-cart {
+        border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
+    }
+    
+    .testimonials-container {
+        padding: 0 20px;
     }
 }
 
