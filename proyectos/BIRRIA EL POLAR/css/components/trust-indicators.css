@@ -104,7 +104,7 @@
 
 .tutorial-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .tutorial-skip-btn, .tutorial-next-btn {
@@ -124,6 +124,19 @@
 .tutorial-next-btn {
     background: var(--primary-color);
     color: white;
+}
+
+.tutorial-understood-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--primary-color);
+    color: white;
+    width: 100%;
+    margin-top: 10px;
 }
 
 body.tutorial-active .add-to-cart,

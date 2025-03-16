@@ -158,9 +158,9 @@ modeToggle.addEventListener('click', () => {
     body.classList.toggle('shop-mode');
     const isShopMode = body.classList.contains('shop-mode');
     
-    // Actualizar textos
-    tooltip.textContent = isShopMode ? "Volver a modo menú" : "Cambiar a modo compra";
-    modeLabel.textContent = isShopMode ? "Pide ahora por WhatsApp" : "Haz tu pedido por WhatsApp";
+    // Actualizar textos con versiones más cortas
+    tooltip.textContent = isShopMode ? "Modo menú" : "Modo compra";
+    modeLabel.textContent = isShopMode ? "Hacer pedido" : "Activar compras";
     
     // Mostrar etiqueta temporalmente
     modeLabel.style.display = 'block';

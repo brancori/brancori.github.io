@@ -1,35 +1,71 @@
 class TutorialGuide {
     constructor() {
-        this.tutorialSteps = [
-            {
-                element: '.mode-toggle-fab',
-                title: 'Haz tu pedido fácilmente',
-                text: 'Toca aquí para activar el modo compra',
-                position: 'right'
-            },
-            {
-                element: '.add-to-cart',
-                title: 'Agrega productos',
-                text: 'Toca el "+" para agregar productos a tu pedido',
-                position: 'left'
-            },
-            {
-                element: '.floating-cart',
-                title: 'Envía tu pedido',
-                text: 'Cuando estés listo, toca aquí para enviar tu pedido por WhatsApp',
-                position: 'top'
-            }
-        ];
-        this.currentStep = 0;
+        // Simplificado a un solo paso
+        this.tutorialStep = {
+            element: '.mode-toggle-fab',
+            title: 'Haz tu pedido fácilmente',
+            text: 'Toca aquí para activar el modo compra',
+            position: 'right'
+        };
+        
         this.tutorialOverlay = null;
         this.hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
         
         // Mostrar tutorial solo en la primera visita
         if (!this.hasSeenTutorial) {
             this.createOverlay();
+            
             // Esperar a que se cierre la pantalla de bienvenida
-            setTimeout(() => this.startTutorial(), 3000);
+            this.waitForWelcomeScreenToClose();
         }
+    }
+    
+    waitForWelcomeScreenToClose() {
+        const welcomeScreen = document.querySelector('.welcome-screen');
+        
+        if (!welcomeScreen) {
+            // Si no hay pantalla de bienvenida, mostrar tutorial inmediatamente
+            this.showTutorial();
+            return;
+        }
+        
+        // Comprobar si ya está oculta (puede haberse cerrado anteriormente)
+        if (welcomeScreen.style.display === 'none' || 
+            welcomeScreen.classList.contains('slide-out')) {
+            // Ya está oculta, mostrar el tutorial
+            this.showTutorial();
+            return;
+        }
+        
+        // Crear un observador para detectar cuando la pantalla de bienvenida se oculte
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if ((mutation.type === 'attributes' && 
+                     (mutation.attributeName === 'class' || mutation.attributeName === 'style')) ||
+                    mutation.type === 'childList') {
+                    
+                    // Verificar si ahora está oculta
+                    if (welcomeScreen.style.display === 'none' || 
+                        welcomeScreen.classList.contains('slide-out')) {
+                        
+                        // Mostrar el tutorial después de un pequeño retraso
+                        setTimeout(() => {
+                            this.showTutorial();
+                        }, 800); // Pequeño retraso para dar tiempo a completar la animación
+                        
+                        // Desconectar el observador ya que ya no lo necesitamos
+                        observer.disconnect();
+                    }
+                }
+            });
+        });
+        
+        // Observar cambios en los atributos class y style y en los hijos del elemento
+        observer.observe(welcomeScreen, { 
+            attributes: true, 
+            attributeFilter: ['class', 'style'],
+            childList: true 
+        });
     }
     
     createOverlay() {
@@ -40,8 +76,7 @@ class TutorialGuide {
                 <h3 class="tutorial-title"></h3>
                 <p class="tutorial-text"></p>
                 <div class="tutorial-buttons">
-                    <button class="tutorial-skip-btn">Omitir</button>
-                    <button class="tutorial-next-btn">Siguiente</button>
+                    <button class="tutorial-understood-btn">Entendido</button>
                 </div>
             </div>
             <div class="tutorial-highlight"></div>
@@ -49,35 +84,19 @@ class TutorialGuide {
         
         document.body.appendChild(this.tutorialOverlay);
         
-        // Eventos
-        this.tutorialOverlay.querySelector('.tutorial-skip-btn').addEventListener('click', () => this.endTutorial());
-        this.tutorialOverlay.querySelector('.tutorial-next-btn').addEventListener('click', () => this.nextStep());
+        // Evento para el botón "Entendido"
+        this.tutorialOverlay.querySelector('.tutorial-understood-btn').addEventListener('click', () => this.endTutorial());
     }
     
-    startTutorial() {
-        this.currentStep = 0;
-        this.showStep();
-        document.body.classList.add('tutorial-active');
-    }
-    
-    showStep() {
-        if (this.currentStep >= this.tutorialSteps.length) {
+    showTutorial() {
+        const targetElement = document.querySelector(this.tutorialStep.element);
+        
+        if (!targetElement) {
             this.endTutorial();
             return;
         }
         
-        const step = this.tutorialSteps[this.currentStep];
-        const targetElement = document.querySelector(step.element);
-        
-        if (!targetElement) {
-            this.nextStep();
-            return;
-        }
-        
-        // Activar modo compra si es necesario para mostrar elementos
-        if (this.currentStep === 1 && !document.body.classList.contains('shop-mode')) {
-            document.body.classList.add('shop-mode');
-        }
+        document.body.classList.add('tutorial-active');
         
         const highlight = this.tutorialOverlay.querySelector('.tutorial-highlight');
         const content = this.tutorialOverlay.querySelector('.tutorial-content');
@@ -91,38 +110,13 @@ class TutorialGuide {
         highlight.style.width = `${rect.width + 20}px`;
         highlight.style.height = `${rect.height + 20}px`;
         
-        // Posicionar contenido según la posición especificada
-        switch(step.position) {
-            case 'right':
-                content.style.left = `${rect.right + 20}px`;
-                content.style.top = `${rect.top}px`;
-                break;
-            case 'left':
-                content.style.right = `${window.innerWidth - rect.left + 20}px`;
-                content.style.left = 'auto';
-                content.style.top = `${rect.top}px`;
-                break;
-            case 'top':
-                content.style.left = `${rect.left}px`;
-                content.style.top = `${rect.top - content.offsetHeight - 20}px`;
-                break;
-            default:
-                content.style.left = `${rect.left}px`;
-                content.style.top = `${rect.bottom + 20}px`;
-        }
+        // Posicionar contenido
+        content.style.left = `${rect.right + 20}px`;
+        content.style.top = `${rect.top}px`;
         
         // Actualizar texto
-        this.tutorialOverlay.querySelector('.tutorial-title').textContent = step.title;
-        this.tutorialOverlay.querySelector('.tutorial-text').textContent = step.text;
-        
-        // Actualizar botón
-        const nextBtn = this.tutorialOverlay.querySelector('.tutorial-next-btn');
-        nextBtn.textContent = this.currentStep === this.tutorialSteps.length - 1 ? 'Finalizar' : 'Siguiente';
-    }
-    
-    nextStep() {
-        this.currentStep++;
-        this.showStep();
+        this.tutorialOverlay.querySelector('.tutorial-title').textContent = this.tutorialStep.title;
+        this.tutorialOverlay.querySelector('.tutorial-text').textContent = this.tutorialStep.text;
     }
     
     endTutorial() {
