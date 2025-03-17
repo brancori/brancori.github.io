@@ -15,23 +15,13 @@
     min-height: 90vh;
     position: relative;
     overflow-y: hidden;
+    /* Mejorar la precisión del scroll-snap */
+    scroll-padding: 0 10px;
+    scrollbar-width: none; /* Ocultar scrollbar en Firefox */
 }
 
 .menu_carrusel::-webkit-scrollbar {
-    height: 8px;
-}
-
-.menu_carrusel::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.menu_carrusel::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.menu_carrusel::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    display: none; /* Ocultar scrollbar en Chrome/Safari */
 }
 
 /* Indicadores de scroll */
@@ -111,7 +101,8 @@
 .orden_menu {
     flex: 0 0 100%;
     width: 100%;
-    scroll-snap-align: start;
+    scroll-snap-align: center; /* Cambio a center para mejor alineación */
+    scroll-snap-stop: always; /* Forzar parada en cada elemento */
     opacity: 0;
     transition: all 0.3s ease;
     transform: translateY(20px);
@@ -451,6 +442,142 @@ body.shop-mode .add-to-cart.shop-only {
     pointer-events: auto;
 }
 
+/* Nueva etiqueta de "Agregar producto" - Corregido para mejorar visibilidad */
+.add-product-label {
+    position: absolute;
+    top: 20px;
+    right: 85px; /* Más separado del botón */
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 50; /* Valor muy alto para asegurar visibilidad */
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateX(10px);
+    display: none;
+    animation: blink-effect 1.5s infinite;
+}
+
+/* Simplificar reglas de visualización */
+body.shop-mode .add-product-label {
+    display: none; /* Ocultar por defecto en modo compra */
+}
+
+/* Mostrar cuando tiene la clase active */
+body.shop-mode .add-product-label.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Ocultar solo cuando se ha hecho clic */
+.add-product-label.clicked {
+    opacity: 0;
+    transform: translateX(10px);
+    transition-duration: 0.5s;
+    animation: none !important;
+}
+
+/* Mejorar la visibilidad de la flecha */
+.add-product-label::after {
+    content: '';
+    position: absolute;
+    right: -10px; /* Ligeramente más grande */
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 10px solid var(--primary-color); /* Más grande */
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+/* Ajuste responsivo mejorado - asegurar visibilidad en móviles */
+@media (max-width: 768px) {
+    .add-product-label {
+        right: 80px; /* Más separado en móviles */
+        padding: 8px 15px;
+        font-size: 1rem; /* Tamaño más grande */
+        top: 20px;
+        animation: blink-effect-mobile 1.2s infinite;
+    }
+}
+
+/* Añadir clase para controlar aparición global */
+.add-product-label-shown {
+    opacity: 1;
+    display: block;
+    transform: translateX(0);
+}
+
+/* Ocultar todos excepto el primero en modo compra */
+body.shop-mode .add-product-label {
+    display: none; /* Por defecto, todos ocultos */
+}
+
+/* Solo mostrar el primero cuando está activo el modo compra y no se ha mostrado antes */
+body.shop-mode .add-product-label.active:not(.clicked) {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.add-product-label.clicked,
+.add-product-label.hidden {
+    opacity: 0;
+    transform: translateX(10px);
+    transition-duration: 0.5s;
+    animation: none; /* Detener la animación cuando está oculta */
+}
+
+/* Añadir flecha que apunta al botón */
+.add-product-label::after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 8px solid var(--primary-color);
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+/* Ajuste responsivo mejorado */
+@media (max-width: 768px) {
+    .add-product-label {
+        right: 60px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        top: 20px;
+        /* Aumentar la intensidad del parpadeo en móviles */
+        animation: blink-effect-mobile 1.2s infinite;
+    }
+    
+    /* Animación más llamativa para móviles */
+    @keyframes blink-effect-mobile {
+        0% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        50% {
+            opacity: 0.9;
+            transform: translateX(0) scale(1.15);
+            box-shadow: 0 2px 20px rgba(221, 28, 26, 0.8);
+            background-color: var(--primary-light);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+    }
+}
+
 /* Modo móvil */
 @media (hover: none) {
     .add-to-cart:hover,
@@ -511,4 +638,90 @@ body:has(.spotlight-overlay) .add-to-cart.shop-only {
 body.intro-active .add-to-cart.shop-only,
 body.intro-active.shop-mode .add-to-cart.shop-only {
     /* Eliminar estas reglas */
+}
+
+/* Añadir botones de navegación para el carrusel */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 20;
+    transform: translateY(-50%);
+    pointer-events: none; /* Para que no interfiera con los elementos del carrusel */
+}
+
+.carousel-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    pointer-events: auto; /* Habilitar eventos de puntero para los botones */
+}
+
+.carousel-button:hover {
+    opacity: 1;
+}
+
+.carousel-button.prev {
+    margin-right: auto;
+}
+
+.carousel-button.next {
+    margin-left: auto;
+}
+
+/* Puntos indicadores de navegación */
+.carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 20;
+}
+
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-dot.active {
+    background: var(--primary-color);
+    transform: scale(1.3);
+}
+
+/* Ajuste para dispositivos móviles */
+@media (max-width: 768px) {
+    .carousel-button {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .carousel-indicators {
+        bottom: 15px;
+    }
+    
+    .carousel-dot {
+        width: 8px;
+        height: 8px;
+    }
 }

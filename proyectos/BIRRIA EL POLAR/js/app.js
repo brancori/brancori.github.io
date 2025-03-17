@@ -164,6 +164,57 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.toggle('shop-mode');
         const isShopMode = body.classList.contains('shop-mode');
         
+        // Restaurar estado de las etiquetas "Agregar producto" al cambiar modos
+        if (isShopMode) {
+            // Limpiar el sessionStorage cuando se activa el modo compra
+            // para asegurar que la etiqueta aparezca al menos una vez por sesión
+            if (!body.classList.contains('shown-product-label')) {
+                sessionStorage.removeItem('labelShown');
+                body.classList.add('shown-product-label');
+            }
+            
+            // Verificar si ya se mostró la etiqueta en esta sesión
+            const hasShownLabel = sessionStorage.getItem('labelShown');
+            
+            // Si no se ha mostrado, mostrar la primera etiqueta
+            if (!hasShownLabel) {
+                console.log('Mostrando etiqueta "Agregar producto"'); // Debug
+                const labels = document.querySelectorAll('.add-product-label');
+                
+                // Ocultar todas las etiquetas primero
+                labels.forEach(label => {
+                    label.classList.remove('active');
+                    label.style.display = 'none';
+                    label.style.opacity = '0';
+                });
+                
+                // Mostrar solo la primera etiqueta con delay para mejor efecto
+                if (labels.length > 0) {
+                    const firstLabel = labels[0];
+                    firstLabel.classList.add('active');
+                    
+                    // Asegurar que sea visible
+                    setTimeout(() => {
+                        firstLabel.style.display = 'block';
+                        firstLabel.style.opacity = '1';
+                        firstLabel.style.transform = 'translateX(0)';
+                        firstLabel.style.zIndex = '50';
+                        
+                        // Animación de parpadeo
+                        firstLabel.style.animation = window.innerWidth <= 768 ? 
+                            'blink-effect-mobile 1.2s infinite' : 
+                            'blink-effect 1.5s infinite';
+                    }, 500); // Delay para que aparezca después de la transición del modo
+                }
+            }
+        } else {
+            // Si se desactiva el modo, ocultar todas las etiquetas
+            document.querySelectorAll('.add-product-label').forEach(label => {
+                label.style.display = 'none';
+                label.classList.remove('active');
+            });
+        }
+        
         // Actualizar textos con versiones más cortas
         tooltip.textContent = isShopMode ? "Modo menú" : "Modo compra";
         modeLabel.textContent = isShopMode ? "Hacer pedido" : "Activar compras";
@@ -187,6 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('mode-change-animation');
         }, 1000);
     });
+
+    // Carrusel de menú - navegación elemento por elemento
+    initCarouselNavigation();
 });
 
 // Además, asegurar que la bienvenida no afecte la posición del scroll
@@ -195,3 +249,121 @@ welcomeScreen.addEventListener('transitionend', () => {
         window.scrollTo(0, 0);
     }
 });
+
+// Función para inicializar la navegación del carrusel
+function initCarouselNavigation() {
+    const carousel = document.querySelector('.menu_carrusel');
+    const items = document.querySelectorAll('.orden_menu');
+    
+    // No continuar si no hay elementos suficientes
+    if (!carousel || items.length <= 1) return;
+    
+    // Añadir los botones de navegación
+    const nav = document.createElement('div');
+    nav.className = 'carousel-nav';
+    nav.innerHTML = `
+        <button class="carousel-button prev" aria-label="Anterior">‹</button>
+        <button class="carousel-button next" aria-label="Siguiente">›</button>
+    `;
+    carousel.appendChild(nav);
+    
+    // Añadir puntos indicadores
+    const indicators = document.createElement('div');
+    indicators.className = 'carousel-indicators';
+    
+    items.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.className = 'carousel-dot';
+        if (index === 0) dot.classList.add('active');
+        dot.dataset.index = index;
+        indicators.appendChild(dot);
+    });
+    
+    carousel.appendChild(indicators);
+    
+    // Variables para el seguimiento del carrusel
+    let currentIndex = 0;
+    const dots = document.querySelectorAll('.carousel-dot');
+    
+    // Función para actualizar los indicadores
+    const updateIndicators = (index) => {
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[index]?.classList.add('active');
+    };
+    
+    // Función para ir al elemento específico del carrusel
+    const goToSlide = (index) => {
+        if (index < 0) index = items.length - 1;
+        if (index >= items.length) index = 0;
+        
+        items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        currentIndex = index;
+        updateIndicators(index);
+    };
+    
+    // Evento para botón anterior
+    document.querySelector('.carousel-button.prev').addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+    });
+    
+    // Evento para botón siguiente
+    document.querySelector('.carousel-button.next').addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
+    });
+    
+    // Eventos para los puntos indicadores
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.dataset.index);
+            goToSlide(index);
+        });
+    });
+    
+    // Detectar cambios en el scroll del carrusel
+    carousel.addEventListener('scroll', () => {
+        // Determinar qué elemento es más visible
+        let closestItem = null;
+        let closestDistance = Infinity;
+        
+        items.forEach((item, index) => {
+            const rect = item.getBoundingClientRect();
+            const center = window.innerWidth / 2;
+            const itemCenter = rect.left + rect.width / 2;
+            const distance = Math.abs(center - itemCenter);
+            
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestItem = index;
+            }
+        });
+        
+        if (closestItem !== null && closestItem !== currentIndex) {
+            currentIndex = closestItem;
+            updateIndicators(currentIndex);
+        }
+    });
+    
+    // Detectar gestos de deslizamiento en dispositivos táctiles
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carousel.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleGesture();
+    }, { passive: true });
+    
+    function handleGesture() {
+        // Detectar si el gesto es significativo (más de 50px)
+        if (touchEndX < touchStartX - 50) {
+            // Deslizamiento hacia la izquierda - ir al siguiente
+            goToSlide(currentIndex + 1);
+        } else if (touchEndX > touchStartX + 50) {
+            // Deslizamiento hacia la derecha - ir al anterior
+            goToSlide(currentIndex - 1);
+        }
+    }
+}

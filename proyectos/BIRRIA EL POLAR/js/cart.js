@@ -31,6 +31,16 @@ class Cart {
                 
                 this.addItem({ name, price });
                 
+                // Ocultar la etiqueta "Agregar producto" al hacer clic y guardar estado
+                const label = btn.closest('.img_container').querySelector('.add-product-label');
+                if (label) {
+                    label.classList.add('clicked');
+                    label.classList.remove('active');
+                    
+                    // Guardar en sessionStorage que ya se mostró la etiqueta
+                    sessionStorage.setItem('labelShown', 'true');
+                }
+                
                 // Feedback visual y vibración para móviles
                 if (navigator.vibrate) {
                     navigator.vibrate(50); // Pequeña vibración táctil
