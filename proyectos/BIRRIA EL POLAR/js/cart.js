@@ -48,9 +48,9 @@ class Cart {
             }
         });
         
-        // Listen for cart button click
+        // Listen for cart button click - now shows preview instead of sending directly
         this.floatingButton.addEventListener('click', () => {
-            this.sendOrder();
+            this.showOrderPreview();
         });
     }
     
@@ -78,13 +78,117 @@ class Cart {
         this.floatingCart.classList.add('show');
     }
     
+    // New method to show order preview
+    showOrderPreview() {
+        // Create message content
+        const itemsList = this.items.map(item => 
+            `*${item.name}* ${item.quantity > 1 ? `(x${item.quantity})` : ''} - $${(item.price * item.quantity).toFixed(2)}`
+        ).join('\n');
+        
+        const message = `¡Hola! Me gustaría hacer un pedido:\n\n${itemsList}\n\n*Total: $${this.total.toFixed(2)}*\n\n¿Podrían confirmármelo?`;
+        
+        // Check if preview element exists, create if not
+        let previewElement = document.querySelector('.order-preview');
+        if (!previewElement) {
+            previewElement = document.createElement('div');
+            previewElement.className = 'order-preview';
+            document.body.appendChild(previewElement);
+        }
+        
+        // Create preview content
+        previewElement.innerHTML = `
+            <div class="preview-container">
+                <div class="preview-header">
+                    <h2>Tu pedido</h2>
+                    <button class="preview-close">&times;</button>
+                </div>
+                <div class="preview-content">
+                    <div class="preview-items">
+                        ${this.items.map((item, index) => `
+                            <div class="preview-item">
+                                <div class="preview-item-info">
+                                    <span class="preview-item-name">${item.name}</span>
+                                    <span class="preview-item-price">$${(item.price * item.quantity).toFixed(2)}</span>
+                                </div>
+                                <div class="preview-item-quantity">
+                                    <span class="preview-quantity">${item.quantity > 1 ? `x${item.quantity}` : ''}</span>
+                                    <button class="preview-item-remove" data-index="${index}">−</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="preview-divider"></div>
+                    <div class="preview-message">
+                        <div class="preview-message-label">Mensaje a enviar:</div>
+                        <div class="preview-message-content">${message.replace(/\n/g, '<br>')}</div>
+                    </div>
+                    <div class="preview-total">
+                        <span>Total:</span>
+                        <span>$${this.total.toFixed(2)}</span>
+                    </div>
+                </div>
+                <button class="preview-send-button">
+                    <img src="./assets/logo/cdnlogo.com_whatsapp-icon.svg" alt="WhatsApp" width="24">
+                    Enviar pedido por WhatsApp
+                </button>
+            </div>
+        `;
+        
+        // Show the preview
+        previewElement.classList.add('show');
+        
+        // Add event listeners
+        const closeBtn = previewElement.querySelector('.preview-close');
+        const sendBtn = previewElement.querySelector('.preview-send-button');
+        const removeButtons = previewElement.querySelectorAll('.preview-item-remove');
+        
+        closeBtn.addEventListener('click', () => {
+            previewElement.classList.remove('show');
+        });
+        
+        sendBtn.addEventListener('click', () => {
+            this.sendOrder();
+            previewElement.classList.remove('show');
+        });
+        
+        removeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.getAttribute('data-index'));
+                this.decreaseItemQuantity(index);
+                // Update preview
+                this.showOrderPreview();
+            });
+        });
+    }
+    
+    decreaseItemQuantity(index) {
+        if (this.items[index].quantity > 1) {
+            this.items[index].quantity--;
+        } else {
+            this.items.splice(index, 1);
+            
+            // Hide cart if empty
+            if (this.items.length === 0) {
+                this.floatingCart.classList.remove('show');
+                
+                // Hide preview if open
+                const preview = document.querySelector('.order-preview');
+                if (preview) {
+                    preview.classList.remove('show');
+                }
+            }
+        }
+        
+        this.updateCartDisplay();
+    }
+    
     sendOrder() {
         // Prepare WhatsApp message
         const itemsList = this.items.map(item => 
             `*${item.name}* ${item.quantity > 1 ? `(x${item.quantity})` : ''} - $${(item.price * item.quantity).toFixed(2)}`
         ).join('\n');
         
-        const message = `¡Hola! Me gustaría hacer un pedido:\n\n${itemsList}\n\n*Total: $${this.total.toFixed(2)}*`;
+        const message = `¡Hola! Me gustaría hacer un pedido:\n\n${itemsList}\n\n*Total: $${this.total.toFixed(2)}*\n\n¿Podrían confirmármelo?`;
         
         // Open WhatsApp
         window.open(`https://wa.me/522214442686?text=${encodeURIComponent(message)}`);

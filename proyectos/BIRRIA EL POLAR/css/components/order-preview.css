@@ -1,0 +1,230 @@
+/* Estilos para la vista previa de pedidos */
+.order-preview {
+    position: fixed;
+    width: 95%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Alinear al fondo de la pantalla */
+    opacity: 0;
+    pointer-events: none;
+    /* Quitamos el efecto blur */
+}
+
+.order-preview.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.preview-container {
+    width: 90%;
+    max-width: 500px;
+    background-color: white;
+    border-radius: 15px 15px 0 0; /* Bordes redondeados solo arriba */
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transform: translateY(100%); /* Comienza desde abajo */
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    margin-bottom: 0; /* Aseguramos que esté pegado al fondo */
+    max-height: 85vh; /* Limitamos altura para dispositivos pequeños */
+}
+
+.order-preview.show .preview-container {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.preview-header {
+    background: linear-gradient(135deg, var(--primary-color), #c71a18);
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.preview-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.preview-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.preview-content {
+    padding: 20px;
+    max-height: 50vh; /* Reducimos para asegurar visibilidad en pantallas pequeñas */
+    overflow-y: auto;
+}
+
+.preview-items {
+    margin-bottom: 15px;
+}
+
+.preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.preview-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.preview-item-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.preview-item-price {
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.preview-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preview-quantity {
+    font-size: 0.95rem;
+    color: #777;
+    font-weight: 500;
+    min-width: 30px;
+    text-align: center;
+}
+
+.preview-item-remove {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    color: white;
+    border: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.preview-item-remove:hover {
+    background-color: #e04544;
+    transform: scale(1.05);
+}
+
+.preview-divider {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 15px 0;
+}
+
+.preview-message {
+    background-color: #E2F7CB; /* Color verde claro tipo WhatsApp */
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid #25D366;
+}
+
+.preview-message-label {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 8px;
+}
+
+.preview-message-content {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #333;
+    white-space: pre-line;
+}
+
+.preview-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+.preview-send-button {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 16px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.preview-send-button:hover {
+    background-color: #1dac53;
+}
+
+.preview-send-button img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .preview-container {
+        width: 100%; /* Ancho completo en móviles */
+        border-radius: 15px 15px 0 0; /* Asegurar que solo tenga bordes redondeados arriba */
+    }
+    
+    .preview-content {
+        max-height: 60vh; /* Aseguramos que sea visible en pantallas pequeñas */
+    }
+    
+    .preview-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .preview-send-button {
+        font-size: 1rem;
+        padding: 14px 0;
+    }
+}
