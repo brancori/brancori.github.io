@@ -164,54 +164,28 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.toggle('shop-mode');
         const isShopMode = body.classList.contains('shop-mode');
         
-        // Restaurar estado de las etiquetas "Agregar producto" al cambiar modos
+        // Gestionar las etiquetas "Agregar producto"
         if (isShopMode) {
-            // Limpiar el sessionStorage cuando se activa el modo compra
-            // para asegurar que la etiqueta aparezca al menos una vez por sesión
-            if (!body.classList.contains('shown-product-label')) {
-                sessionStorage.removeItem('labelShown');
-                body.classList.add('shown-product-label');
-            }
-            
-            // Verificar si ya se mostró la etiqueta en esta sesión
-            const hasShownLabel = sessionStorage.getItem('labelShown');
-            
-            // Si no se ha mostrado, mostrar la primera etiqueta
-            if (!hasShownLabel) {
-                console.log('Mostrando etiqueta "Agregar producto"'); // Debug
-                const labels = document.querySelectorAll('.add-product-label');
-                
-                // Ocultar todas las etiquetas primero
-                labels.forEach(label => {
-                    label.classList.remove('active');
-                    label.style.display = 'none';
-                    label.style.opacity = '0';
-                });
-                
-                // Mostrar solo la primera etiqueta con delay para mejor efecto
-                if (labels.length > 0) {
-                    const firstLabel = labels[0];
-                    firstLabel.classList.add('active');
+            // Mostrar las etiquetas en todos los productos
+            document.querySelectorAll('.add-product-label').forEach(label => {
+                // Solo mostrar si no se ha hecho clic anteriormente
+                if (!label.classList.contains('clicked')) {
+                    label.style.display = 'block';
+                    label.style.opacity = '1';
+                    label.style.transform = 'translateX(0)';
+                    label.style.zIndex = '50';
                     
-                    // Asegurar que sea visible
-                    setTimeout(() => {
-                        firstLabel.style.display = 'block';
-                        firstLabel.style.opacity = '1';
-                        firstLabel.style.transform = 'translateX(0)';
-                        firstLabel.style.zIndex = '50';
-                        
-                        // Animación de parpadeo
-                        firstLabel.style.animation = window.innerWidth <= 768 ? 
-                            'blink-effect-mobile 1.2s infinite' : 
-                            'blink-effect 1.5s infinite';
-                    }, 500); // Delay para que aparezca después de la transición del modo
+                    // Aplicar animación de parpadeo
+                    label.style.animation = window.innerWidth <= 768 ? 
+                        'blink-effect-mobile 1.2s infinite' : 
+                        'blink-effect 1.5s infinite';
                 }
-            }
+            });
         } else {
-            // Si se desactiva el modo, ocultar todas las etiquetas
+            // Ocultar todas las etiquetas al desactivar el modo compra
             document.querySelectorAll('.add-product-label').forEach(label => {
                 label.style.display = 'none';
-                label.classList.remove('active');
+                label.style.opacity = '0';
             });
         }
         
@@ -222,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mostrar etiqueta temporalmente
         modeLabel.style.display = 'block';
         modeLabel.style.opacity = 1;
+        modeLabel.classList.remove('animate-fade'); // Eliminar animación cuando se hace clic en el botón
         
         // Ocultar tras unos segundos en móvil
         if (window.innerWidth <= 768) {
@@ -247,6 +222,14 @@ document.addEventListener('DOMContentLoaded', () => {
 welcomeScreen.addEventListener('transitionend', () => {
     if (welcomeScreen.classList.contains('slide-out')) {
         window.scrollTo(0, 0);
+        
+        // Activar la animación fadeOutLabel para mode-label después de que la pantalla de bienvenida desaparezca
+        const modeLabel = document.querySelector('.mode-label');
+        if (modeLabel && window.innerWidth <= 768) {
+            setTimeout(() => {
+                modeLabel.classList.add('animate-fade');
+            }, 1000); // Pequeño delay para asegurar que se active después de que la bienvenida se ha ido completamente
+        }
     }
 });
 
