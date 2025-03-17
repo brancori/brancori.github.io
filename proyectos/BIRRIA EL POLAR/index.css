@@ -868,7 +868,7 @@ input:checked + .slider:before {
         text-align: left;
         line-height: 1.2;
         display: block;
-        animation: fadeOutLabel 5s forwards;
+        animation: fadeOutLabel 10s forwards;
     }
     
     @keyframes fadeOutLabel {
