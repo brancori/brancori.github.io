@@ -233,8 +233,8 @@ welcomeScreen.addEventListener('transitionend', () => {
     }
 });
 
-// Función para inicializar la navegación del carrusel
-function initCarouselNavigation() {
+// Exportamos la función de inicialización del carrusel para poder llamarla desde otros módulos
+export function initCarouselNavigation() {
     const carousel = document.querySelector('.menu_carrusel');
     const items = document.querySelectorAll('.orden_menu');
     
