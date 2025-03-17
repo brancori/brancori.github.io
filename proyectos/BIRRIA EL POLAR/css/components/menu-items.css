@@ -152,6 +152,7 @@
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    z-index: 5; /* Asegurar que esté por encima de otros elementos */
 }
 
 .img_container:hover img {
@@ -172,6 +173,7 @@
 
 .img_container.active {
     height: 85vh;
+    z-index: 50; /* Mayor z-index cuando está activo */
 }
 
 /* Imagen del menú */
@@ -253,23 +255,26 @@
     position: absolute;
     bottom: 0;
     left: 0;
+    width: 100%;
     height: auto;
     min-height: 30%;
-    background: linear-gradient(transparent, var(--overlay-dark));
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
     padding: 20px;
-    transition: transform var(--transition-normal);
-    z-index: 4;
+    transition: transform 0.3s ease;
+    z-index: 10; /* Aumentar z-index */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transform: translateY(100%);
+    transform: translateY(101%); /* Asegurar que esté completamente fuera de vista */
     padding-bottom: 40px;
     text-align: center;
 }
 
 .img_container.active .description_overlay {
     transform: translateY(0);
+    visibility: visible !important; /* Forzar visibilidad */
+    opacity: 1 !important; /* Forzar opacidad */
 }
 
 .description_overlay .description {
@@ -295,32 +300,95 @@
     width: 80%;
     line-height: 1.4;
     position: relative;
-    z-index: 5;
+    z-index: 11; /* Mayor que el overlay */
     text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease 0.1s;
+}
+
+.img_container.active .description {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    display: block !important;
 }
 
 /* Pista táctil */
 .tap-hint {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.75);
     color: white;
     padding: 8px 16px;
     border-radius: 20px;
     font-size: 0.9rem;
     opacity: 1;
-    z-index: 5;
-    transition: all var(--transition-normal);
+    z-index: 15; /* Z-index mayor */
     box-shadow: var(--shadow-sm);
     pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    white-space: nowrap;
     visibility: visible;
+    width: auto;
+    display: flex !important;
+    align-items: center;
+    gap: 5px;
+}
+
+.tap-hint::before {
+    content: '👆';
+    font-size: 14px;
 }
 
 .img_container.active .tap-hint {
-    opacity: 0;
-    visibility: hidden;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Pista táctil mejorada */
+.tap-hint {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    opacity: 1;
+    z-index: 500; /* Aumentar z-index para asegurar visibilidad */
+    box-shadow: var(--shadow-sm);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    white-space: nowrap;
+    visibility: visible;
+    width: auto; /* Asegurar que no tenga ancho fijo */
+    height: auto;
+    min-height: 0; /* Sobreescribir min-height heredado */
+    min-width: 0; /* Sobreescribir min-width heredado */
+    animation: pulseTapHint 2s infinite; /* Añadir animación sutil */
+}
+
+/* Limpiar estilos heredados que puedan causar conflictos */
+.tap-hint:hover, .tap-hint:active {
+    transform: translateX(-50%); /* Mantener la posición centrada */
+}
+
+/* Animación de pulso para el tap hint */
+@keyframes pulseTapHint {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+
+/* Estado activo y hover para el img_container */
+.img_container.active .tap-hint,
+.img_container:hover .tap-hint {
+    opacity: 0 !important;
+    visibility: hidden !important;
     transform: translateX(-50%) translateY(10px);
 }
 
@@ -451,7 +519,7 @@ body.shop-mode .add-to-cart.shop-only {
     color: white;
     padding: 10px 15px;
     border-radius: 20px;
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: 600;
     white-space: nowrap;
     z-index: 50; /* Valor muy alto para asegurar visibilidad */
@@ -484,7 +552,7 @@ body.shop-mode .add-product-label {
 .add-product-label::after {
     content: '';
     position: absolute;
-    right: -10px; /* Ligeramente más grande */
+    right: -20px; /* Ligeramente más grande */
     top: 50%;
     transform: translateY(-50%);
     border-left: 10px solid var(--primary-color); /* Más grande */
@@ -547,7 +615,7 @@ body.shop-mode .add-product-label.active:not(.clicked) {
     .add-product-label {
         right: 60px;
         padding: 6px 10px;
-        font-size: 0.9rem;
+        font-size: 1.3rem;
         top: 20px;
         /* Aumentar la intensidad del parpadeo en móviles */
         animation: blink-effect-mobile 1.2s infinite;

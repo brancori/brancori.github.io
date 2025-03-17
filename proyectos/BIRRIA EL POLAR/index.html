@@ -8,11 +8,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Para pantalla completa en iOS -->
     <!-- Añadir esta meta para controlar el comportamiento de restauración del scroll -->
     <meta name="scroll-restoration" content="none">
+    <link rel="stylesheet" href="css/components/order-preview.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="css/components/trust-indicators.css">
     <link rel="stylesheet" href="css/components/menu-items.css">
-    <link rel="stylesheet" href="css/components/order-preview.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>BIRRIA EL POLAR 2</title>
 </head>
@@ -130,6 +130,10 @@
             Ver mi pedido
         </button>
     </div>
+    
+    <!-- Add a debugging container for the order preview to ensure it's loaded -->
+    <div id="order-preview-container"></div>
+    
     <script src="js/app.js" type="module"></script>
     <script src="js/cart.js" type="module"></script>
     <script src="js/welcome.js" type="module"></script>

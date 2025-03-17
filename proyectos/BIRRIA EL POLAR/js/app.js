@@ -216,6 +216,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carrusel de menú - navegación elemento por elemento
     initCarouselNavigation();
+
+    // Reemplazar la función de interacción con los contenedores de imagen
+    function setupImageContainers() {
+        console.log('Configurando contenedores de imagen para mostrar descripción');
+        const imgContainers = document.querySelectorAll('.img_container');
+        
+        imgContainers.forEach(container => {
+            // Eliminar listeners previos si existen
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+            
+            newContainer.addEventListener('click', (e) => {
+                // No activar si se hizo clic en el botón de agregar al carrito
+                if (e.target.classList.contains('add-to-cart')) {
+                    return;
+                }
+                
+                // Cerrar otros contenedores activos
+                document.querySelectorAll('.img_container.active').forEach(c => {
+                    if (c !== newContainer) {
+                        c.classList.remove('active');
+                    }
+                });
+                
+                // Toggle estado active para este contenedor
+                newContainer.classList.toggle('active');
+                
+                // Debugging
+                console.log('Container clicked, active:', newContainer.classList.contains('active'));
+            });
+            
+            // Agregar mensaje al tap-hint
+            const tapHint = newContainer.querySelector('.tap-hint');
+            if (tapHint && !tapHint.textContent) {
+                tapHint.textContent = 'Toca para ver detalles';
+            }
+        });
+    }
+    
+    // Llamar a la función durante la carga inicial
+    setupImageContainers();
 });
 
 // Además, asegurar que la bienvenida no afecte la posición del scroll
@@ -350,3 +391,75 @@ export function initCarouselNavigation() {
         }
     }
 }
+
+// Función para configurar las interacciones de los contenedores de imagen
+export function setupImageContainers() {
+    console.log('Configurando interacciones de contenedores de imagen');
+    // Seleccionar de nuevo para asegurar que incluya elementos recién creados
+    const imgContainers = document.querySelectorAll('.img_container');
+    
+    imgContainers.forEach(container => {
+        // Asegurar que el contenedor sea clickeable
+        container.style.cursor = 'pointer';
+        
+        // Eliminar listeners anteriores para prevenir duplicados
+        const newContainer = container.cloneNode(true);
+        if (container.parentNode) {
+            container.parentNode.replaceChild(newContainer, container);
+        }
+        
+        // Añadir nuevo listener
+        newContainer.addEventListener('click', (e) => {
+            // No activar si se hizo clic en el botón de agregar
+            if (e.target.classList.contains('add-to-cart')) return;
+            
+            // Cerrar otros contenedores activos
+            document.querySelectorAll('.img_container.active').forEach(c => {
+                if (c !== newContainer) c.classList.remove('active');
+            });
+            
+            // Alternar estado del contenedor actual
+            newContainer.classList.toggle('active');
+            
+            // Manejar la pista táctil
+            const tapHint = newContainer.querySelector('.tap-hint');
+            if (tapHint) {
+                if (newContainer.classList.contains('active')) {
+                    tapHint.style.opacity = '0';
+                    tapHint.style.visibility = 'hidden';
+                } else {
+                    setTimeout(() => {
+                        tapHint.style.opacity = '1';
+                        tapHint.style.visibility = 'visible';
+                    }, 300);
+                }
+            }
+        });
+    });
+}
+
+// Agregar la función al contexto global para poder llamarla desde otros archivos
+window.setupImageContainers = function() {
+    console.log('Llamando setupImageContainers desde global');
+    const imgContainers = document.querySelectorAll('.img_container');
+    
+    imgContainers.forEach(container => {
+        container.addEventListener('click', (e) => {
+            // No activar si se hizo clic en el botón de agregar al carrito
+            if (e.target.classList.contains('add-to-cart')) {
+                return;
+            }
+            
+            // Cerrar otros contenedores activos
+            document.querySelectorAll('.img_container.active').forEach(c => {
+                if (c !== container) {
+                    c.classList.remove('active');
+                }
+            });
+            
+            // Toggle estado active para este contenedor
+            container.classList.toggle('active');
+            console.log('Container active state:', container.classList.contains('active'));
+        });
+    });
+};

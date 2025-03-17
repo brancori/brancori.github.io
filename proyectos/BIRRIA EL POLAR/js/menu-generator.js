@@ -27,7 +27,7 @@ class MenuGenerator {
         <div class="orden_menu" data-category="${item.category}" data-id="${item.id}">
             <h3 class="type_order">${item.name}</h3>
             <div class="img_container">
-                <div class="add-product-label">Agregar producto</div>
+                <div class="add-product-label">Agregar</div>
                 <div class="add-to-cart shop-only">+</div>
                 <span class="tap-hint">Toca para ver detalles</span>
                 <div class="price">
@@ -116,6 +116,15 @@ class MenuGenerator {
                 this.filterMenuItems(category);
             });
         });
+        
+        // Configurar contenedores de imagen después de renderizar
+        setTimeout(() => {
+            if (typeof window.setupImageContainers === 'function') {
+                window.setupImageContainers();
+            } else {
+                console.error('setupImageContainers function not available');
+            }
+        }, 100);
     }
 }
 

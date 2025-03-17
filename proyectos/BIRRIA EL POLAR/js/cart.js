@@ -95,7 +95,7 @@ class Cart {
             document.body.appendChild(previewElement);
         }
         
-        // Create preview content
+        // Create preview content with debugging info
         previewElement.innerHTML = `
             <div class="preview-container">
                 <div class="preview-header">
@@ -111,17 +111,26 @@ class Cart {
                                     <span class="preview-item-price">$${(item.price * item.quantity).toFixed(2)}</span>
                                 </div>
                                 <div class="preview-item-quantity">
-                                    <span class="preview-quantity">${item.quantity > 1 ? `x${item.quantity}` : ''}</span>
-                                    <button class="preview-item-remove" data-index="${index}">−</button>
+                                    <button class="preview-quantity-btn decrease" data-index="${index}">−</button>
+                                    <span class="preview-quantity">${item.quantity}</span>
+                                    <button class="preview-quantity-btn increase" data-index="${index}">+</button>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
                     <div class="preview-divider"></div>
+                    
+                    <!-- Botón para mostrar/ocultar el mensaje -->
+                    <div class="message-preview-toggle">
+                        <i class="material-icons">visibility</i>
+                        <span>Ver mensaje para WhatsApp</span>
+                    </div>
+                    
                     <div class="preview-message">
                         <div class="preview-message-label">Mensaje a enviar:</div>
                         <div class="preview-message-content">${message.replace(/\n/g, '<br>')}</div>
                     </div>
+                    
                     <div class="preview-total">
                         <span>Total:</span>
                         <span>$${this.total.toFixed(2)}</span>
@@ -134,13 +143,39 @@ class Cart {
             </div>
         `;
         
-        // Show the preview
-        previewElement.classList.add('show');
+        // Force repaint to ensure proper rendering
+        void previewElement.offsetWidth;
+        
+        // Show the preview with a slight delay to ensure CSS transitions work
+        setTimeout(() => {
+            previewElement.classList.add('show');
+        }, 10);
         
         // Add event listeners
         const closeBtn = previewElement.querySelector('.preview-close');
         const sendBtn = previewElement.querySelector('.preview-send-button');
-        const removeButtons = previewElement.querySelectorAll('.preview-item-remove');
+        const decreaseButtons = previewElement.querySelectorAll('.preview-quantity-btn.decrease');
+        const increaseButtons = previewElement.querySelectorAll('.preview-quantity-btn.increase');
+        const messageToggle = previewElement.querySelector('.message-preview-toggle');
+        const messagePreview = previewElement.querySelector('.preview-message');
+        
+        // Listener para el botón de toggle del mensaje
+        messageToggle.addEventListener('click', () => {
+            messagePreview.classList.toggle('show');
+            messageToggle.classList.toggle('active');
+            
+            // Cambiar el texto según el estado
+            const toggleText = messageToggle.querySelector('span');
+            const toggleIcon = messageToggle.querySelector('i');
+            
+            if (messagePreview.classList.contains('show')) {
+                toggleText.textContent = 'Ocultar mensaje';
+                toggleIcon.textContent = 'visibility_off';
+            } else {
+                toggleText.textContent = 'Ver mensaje para WhatsApp';
+                toggleIcon.textContent = 'visibility';
+            }
+        });
         
         closeBtn.addEventListener('click', () => {
             previewElement.classList.remove('show');
@@ -151,7 +186,8 @@ class Cart {
             previewElement.classList.remove('show');
         });
         
-        removeButtons.forEach(btn => {
+        // Manejar botones de disminuir cantidad
+        decreaseButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const index = parseInt(btn.getAttribute('data-index'));
                 this.decreaseItemQuantity(index);
@@ -159,6 +195,22 @@ class Cart {
                 this.showOrderPreview();
             });
         });
+        
+        // Manejar botones de aumentar cantidad
+        increaseButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.getAttribute('data-index'));
+                this.increaseItemQuantity(index);
+                // Update preview
+                this.showOrderPreview();
+            });
+        });
+    }
+    
+    // Agregar método para aumentar la cantidad
+    increaseItemQuantity(index) {
+        this.items[index].quantity++;
+        this.updateCartDisplay();
     }
     
     decreaseItemQuantity(index) {
