@@ -95,3 +95,4 @@ class Cart {
 document.addEventListener('DOMContentLoaded', () => {
     new Cart();
 });
+
