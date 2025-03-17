@@ -6,16 +6,18 @@
     <meta name="theme-color" content="#DD1C1A"> <!-- Color de barra de estado para móvil -->
     <meta name="mobile-web-app-capable" content="yes"> <!-- Para pantalla completa en Android -->
     <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Para pantalla completa en iOS -->
+    <!-- Añadir esta meta para controlar el comportamiento de restauración del scroll -->
+    <meta name="scroll-restoration" content="none">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="css/components/trust-indicators.css">
-    <link rel="stylesheet" href="css/components/menu-items.css"> <!-- Nuevo archivo CSS -->
+    <link rel="stylesheet" href="css/components/menu-items.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>BIRRIA EL POLAR</title>
+    <title>BIRRIA EL POLAR 2</title>
 </head>
 <body>
     <section class="welcome-screen">
-        <h1 class="welcome-title">Menú<br>Birria el Polar</h1>
+        <h1 class="welcome-title">Menú<br>Birria el Polar 2</h1>
         <div class="welcome-scroll-hint">
             <span>Desliza hacia la izquierda</span>
             <div class="welcome-arrow">→</div>
@@ -23,7 +25,7 @@
     </section>
     <nav class="navbar">
         <div class="logo">
-            <h3>Birria El Polar</h3>
+            <h3>Birria El Polar 2</h3>
         </div>
         <div class="menu-icon pulse-animation">☰</div>
         <div class="progress-bar"></div>
@@ -37,7 +39,7 @@
             <span class="material-icons">shopping_cart</span>
         </div>
         <div class="tooltip">Cambiar a modo compra</div>
-        <div class="mode-label">Haz tu pedido por WhatsApp</div>
+        <div class="mode-label">Haz tu pedido <br> por WhatsApp</div>
     </button>
 
     <div class="filters">
@@ -158,7 +160,7 @@
             </div>
             <div class="about">
                 <h2>Sobre Nosotros</h2>
-                <p>Birria El Polar, la mejor birria de la ciudad. Ven y disfruta de nuestros deliciosos tacos de birria acompañados con un rico consomé.</p>
+                <p>Birria El Polar 2, la mejor birria de la ciudad. Ven y disfruta de nuestros deliciosos tacos de birria acompañados con un rico consomé.</p>
                 <div class="horario">
                     <h3>Horario</h3>
                     <p>Lunes a Domingo: 8:00 AM - 4:00 PM</p>
@@ -199,12 +201,11 @@
     <div class="floating-cart">
         <div class="floating-cart-total">Total: $0.00</div>
         <button class="floating-cart-button">
-            <img src="./assets/icons/whatsapp.svg" alt="WhatsApp" width="20">
+            <img src="./assets/logo/cdnlogo.com_whatsapp-icon.svg" alt="WhatsApp" width="20">
             Hacer pedido por WhatsApp
         </button>
     </div>
     <script src="js/app.js"></script>
     <script src="js/cart.js"></script>
-    <script src="js/tutorial.js"></script>
 </body>
 </html>

@@ -14,22 +14,7 @@
     --transition-normal: 0.3s ease;
     touch-action: manipulation; /* Mejorar rendimiento táctil */
 }
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--gray-light);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    position: relative;
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
-    -webkit-tap-highlight-color: transparent; /* Eliminar highlight al tocar */
-    overscroll-behavior: contain; /* Prevenir rebotes en iOS */
-}
+body{margin:0;padding:0;font-family:'Poppins',sans-serif;background-color:var(--gray-light);text-align:center;display:flex;flex-direction:column;min-height:100vh;position:relative;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-tap-highlight-color:transparent;overscroll-behavior:contain}
 
 .navbar {
     position: fixed;
@@ -75,7 +60,7 @@ body {
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
+    z-index: 900;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -103,7 +88,7 @@ body {
     background-color: #DD1C1A;
     border-radius: 50%;
     opacity: 0.5;
-    animation: fadeInOut 1.5s infinite;
+    animation: pulseAnimation 1.5s infinite;
 }
 
 .scroll-dots span:nth-child(2) {
@@ -114,12 +99,13 @@ body {
     animation-delay: 0.4s;
 }
 
-@keyframes fadeInOut {
-    0%, 10% { opacity: 0; }
+/* Consolidado fadeInOut y gentlePulse en una sola animación */
+@keyframes pulseAnimation {
+    0%, 10% { opacity: 0.3; }
     20%, 30% { opacity: 1; }
-    40%, 50% { opacity: 0; }
+    40%, 50% { opacity: 0.3; }
     60%, 70% { opacity: 1; }
-    80%, 90% { opacity: 0; }
+    80%, 90% { opacity: 0.3; }
     100% { opacity: 1; }
 }
 
@@ -138,64 +124,6 @@ body {
     animation: pulse 2s infinite;
 }
 
-.menu_carrusel:hover .swipe-indicator {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-10px);
-}
-.img_menu {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: transform 0.3s ease;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.img_container:hover img {
-    transform: scale(1.05);
-}
-
-.price {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    align-items: baseline;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-    padding: 8px 15px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    z-index: 5;
-    transform: scale(1);
-    transition: transform var(--transition-normal);
-}
-
-.price:hover {
-    transform: scale(1.05);
-}
-
-.currency {
-    font-size: 1.5rem;
-    color: white;
-    font-weight: 500;
-}
-
-.amount {
-    font-size: 2.2rem;
-    color: white;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.decimals {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
 .category-tag {
     position: absolute;
     top: 20px;
@@ -208,7 +136,7 @@ body {
     font-weight: 600;
     box-shadow: var(--shadow-sm);
     z-index: 5;
-    transition: transform var(--transition-normal);
+    transition: none;
 }
 
 .category-tag:hover {
@@ -227,67 +155,8 @@ body {
     pointer-events: none;
 }
 
-.description_overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    min-height: 30%;
-    background: linear-gradient(transparent, var(--overlay-dark));
-    padding: 20px;
-    transition: transform var(--transition-normal);
-    z-index: 4;
-    display: flex;
-    flex-direction: column; /* Cambiar a column para alinear verticalmente */
-    align-items: center; /* Centrar horizontalmente */
-    justify-content: center; /* Centrar verticalmente */
-    transform: translateY(100%);
-    padding-bottom: 40px;
-    text-align: center; /* Asegurar que el texto esté centrado */
-}
-
 .img_container.active .description_overlay {
     transform: translateY(0);
-}
-
-.description_overlay .description {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 8px 16px;
-    border-radius: 20px;
-    box-shadow: var(--shadow-sm);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all var(--transition-normal);
-}
-
-.img_container.active .description_overlay .description {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.tap-hint {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    opacity: 1;
-    z-index: 5;
-    transition: all var(--transition-normal);
-    box-shadow: var(--shadow-sm);
-    pointer-events: none;
-    visibility: visible;
-}
-
-.img_container.active .tap-hint {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(10px);
 }
 
 .img_container.active {
@@ -407,33 +276,6 @@ body {
     }
 }
 
-/* Indicador de deslizamiento */
-.slide-hint {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    text-align: center;
-    z-index: 10;
-    pointer-events: none;
-    animation: fadeOut 3s forwards;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-.slide-hint span {
-    display: block;
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.slide-arrows {
-    font-size: 2rem;
-    animation: slideLeftRight 2s infinite;
-}
-
 /* Botón flotante de contacto */
 .contact-float {
     position: fixed;
@@ -454,7 +296,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    transition: transform 0.3s ease;
+    transition: none;
     padding: 0;
     overflow: hidden;
     min-height: 44px; /* Estándar mínimo para área táctil accesible */
@@ -482,7 +324,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
     pointer-events: none;
-    transition: all 0.3s ease;
+    transition: none;
 }
 
 .contact-float:hover .contact-options {
@@ -497,7 +339,7 @@ body {
     padding: 12px 20px;
     color: #333;
     text-decoration: none;
-    transition: background 0.3s ease;
+    transition: none;
 }
 
 .option:hover {
@@ -515,16 +357,6 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-    0%, 70% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-@keyframes slideLeftRight {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(20px); }
 }
 
 /* Filtros */
@@ -577,7 +409,7 @@ body {
     height: 2px;
     background-color: var(--primary-color);
     transform: scaleX(0);
-    transition: transform 0.3s ease;
+    transition: none;
 }
 
 .filter-btn.active::after {
@@ -616,10 +448,6 @@ a:focus-visible {
     }
 }
 
-.img_container:hover img {
-    transform: scale(1.05);
-}
-
 /* Ajustar espaciado para los filtros */
 .menu_carrusel {
     padding-top: calc(var(--navbar-height) + 5px);
@@ -629,7 +457,7 @@ a:focus-visible {
 .tap-hint,
 .category-tag,
 .price {
-    transition: transform var(--transition-normal);
+    transition: none;
 }
 
 .tap-hint:hover,
@@ -653,17 +481,12 @@ a:focus-visible {
     font-size: 24px;
     cursor: pointer;
     z-index: 10;
-    transition: transform 0.3s ease;
+    transition: none;
     box-shadow: var(--shadow-md);
 }
 
 .add-item-indicator:hover {
     transform: scale(1.1);
-}
-
-.category-tag {
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .img_container:hover .category-tag {
@@ -686,6 +509,7 @@ a:focus-visible {
     transition: transform 0.3s ease;
     padding: 15px 20px;
     bottom: 30px;
+    width: 260px;
 }
 
 .floating-cart.show {
@@ -716,7 +540,6 @@ a:focus-visible {
 .mode-switch {
     display: none;
 }
-
 /* Nuevo botón flotante de cambio de modo */
 .mode-toggle-fab {
     position: fixed;
@@ -732,7 +555,7 @@ a:focus-visible {
     z-index: 1000;
     overflow: visible; /* Cambiado de hidden a visible para mostrar el label */
     padding: 0;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    transition: none;
     min-height: 44px;
     min-width: 44px;
     display: flex;
@@ -745,14 +568,14 @@ a:focus-visible {
 /* Label permanente para el botón */
 .mode-label {
     position: absolute;
-    left: 70px; /* Posicionado a la derecha del botón */
+    left: 80px; /* Posicionado a la derecha del botón */
     top: 50%;
     transform: translateY(-50%);
     background: #25D366; /* Color de WhatsApp */
     color: white;
     padding: 8px 12px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 25px;
     white-space: nowrap;
     box-shadow: var(--shadow-sm);
     opacity: 1;
@@ -785,9 +608,9 @@ body.shop-mode .mode-label {
     
     .mode-label {
         left: 65px;
-        font-size: 12px;
+        font-size: 25px;
         padding: 6px 10px;
-        max-width: 130px;
+        max-width: 180px;
         text-align: left;
         line-height: 1.2; /* Mejorar la legibilidad */
     }
@@ -821,19 +644,17 @@ body.shop-mode .mode-label {
 .tooltip {
     position: absolute;
     top: -40px;
-    left: 50%;
+    left: 70%;
     transform: translateX(-50%) scale(0);
     background: rgba(0, 0, 0, 0.8);
     color: white;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 14px;
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    transition: all 0.3s ease;
-    font-size: 14px; /* Texto más grande */
-    padding: 8px 16px;
+    transition: none;
     width: auto; /* Ancho automático basado en el contenido */
     min-width: 120px; /* Ancho mínimo */
     text-align: center;
@@ -886,12 +707,6 @@ body.shop-mode .mode-toggle-fab {
 /* Animación al cambiar de modo */
 .mode-change-animation .add-to-cart {
     animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-}
-
-@keyframes pop-in {
-    0% { transform: scale(0); }
-    80% { transform: scale(1.2); }
-    100% { transform: scale(1); }
 }
 
 /* The switch - the box around the slider */
@@ -949,49 +764,6 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-/* Botón de agregar al carrito */
-.add-to-cart {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    box-shadow: var(--shadow-md);
-    cursor: pointer;
-    z-index: 10;
-    transition: all 0.3s ease;
-    opacity: 0;
-    pointer-events: none;
-    min-height: 44px; /* Estándar mínimo para área táctil accesible */
-    min-width: 44px;
-    width: 54px; /* Más grande */
-    height: 54px; 
-    font-size: 30px;
-    top: 20px;
-    right: 20px;
-}
-
-.shop-only {
-    display: none;
-}
-
-body.shop-mode .shop-only {
-    display: flex;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.add-to-cart:hover {
-    transform: scale(1.1);
-    background-color: var(--primary-light);
-}
 
 /* Optimizaciones para móviles */
 @media (hover: none) {
@@ -1141,11 +913,51 @@ body.shop-mode .shop-only {
     display: flex;
     align-items: center; /* Centrar verticalmente */
     justify-content: center; /* Centrar horizontalmente */
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transition: opacity 0.3s ease;
 }
 
 .mode-icon .material-icons {
     font-size: 24px; /* Tamaño uniforme */
     line-height: 1; /* Asegurar alineación correcta */
+}
+
+/* Corregir visualización de los iconos del botón de modo */
+.mode-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+/* Simplificar la lógica de visibilidad de los iconos */
+.mode-icon.menu-mode {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mode-icon.shop-mode {
+    opacity: 0;
+    transform: scale(0);
+}
+
+body.shop-mode .mode-icon.menu-mode {
+    opacity: 0;
+    transform: scale(0);
+}
+
+body.shop-mode .mode-icon.shop-mode {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Eliminar reglas duplicadas y conflictivas */
+.mode-icon .material-icons {
+    font-size: 24px;
+    line-height: 1;
 }
 

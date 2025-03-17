@@ -7,12 +7,12 @@
     -webkit-overflow-scrolling: touch;
     width: 100vw;
     padding-top: calc(var(--navbar-height) + 5px);
-    padding-bottom: 180px; /* Espacio para el carrito */
+    padding-bottom: 60px; /* Espacio para el carrito */
     margin-top: 0;
     height: calc(100vh - var(--navbar-height));
     box-sizing: border-box;
     scroll-snap-align: start;
-    min-height: 100vh;
+    min-height: 90vh;
     position: relative;
     overflow-y: hidden;
 }
@@ -185,7 +185,7 @@
 /* Imagen del menú */
 .img_menu {
     width: 100%;
-    height: 100%;
+    height: 99%;
     object-fit: cover;
     object-position: center;
     transition: transform 0.3s ease;
@@ -194,6 +194,11 @@
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+/* Eliminar efecto hover de la imagen */
+.img_container img {
+    transition: none;
 }
 
 /* Etiqueta de precio */
@@ -208,12 +213,8 @@
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     z-index: 5;
-    transform: scale(1);
-    transition: transform var(--transition-normal);
-}
-
-.price:hover {
-    transform: scale(1.05);
+    transform: none;
+    transition: none;
 }
 
 .currency {
@@ -247,12 +248,8 @@
     font-weight: 600;
     box-shadow: var(--shadow-sm);
     z-index: 5;
-    transition: transform var(--transition-normal), opacity 0.3s ease;
+    transition: none;
     opacity: 0;
-}
-
-.category-tag:hover {
-    transform: scale(1.05);
 }
 
 .img_container:hover .category-tag {
@@ -385,13 +382,12 @@
     box-shadow: var(--shadow-md);
     cursor: pointer;
     z-index: 10;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease; /* Mantener solo transición de color */
     opacity: 0;
     pointer-events: none;
     min-height: 44px;
     min-width: 44px;
 }
-
 .shop-only {
     display: none;
 }
@@ -405,6 +401,54 @@ body.shop-mode .shop-only {
 .add-to-cart:hover {
     transform: scale(1.1);
     background-color: var(--primary-light);
+}
+
+/* Mejorar visibilidad de botones en modo compra */
+.add-to-cart.shop-only {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.shop-mode .add-to-cart.shop-only {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Evitar conflictos con el tutorial */
+body.intro-active .add-to-cart.shop-only {
+    position: relative !important;
+    z-index: 3000 !important;
+}
+
+/* Botón de agregar al carrito - Ajustes para asegurar visibilidad correcta */
+.add-to-cart.shop-only {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 54px;
+    height: 54px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: none; /* Inicialmente oculto */
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Activación de botones en modo compra */
+body.shop-mode .add-to-cart.shop-only {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* Modo móvil */
@@ -424,12 +468,11 @@ body.shop-mode .shop-only {
 
 /* Animación al cambiar de modo */
 .mode-change-animation .add-to-cart {
-    animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    animation: simple-pop-in 0.3s forwards;
 }
 
-@keyframes pop-in {
+@keyframes simple-pop-in {
     0% { transform: scale(0); }
-    80% { transform: scale(1.2); }
     100% { transform: scale(1); }
 }
 
@@ -441,4 +484,31 @@ body.shop-mode .shop-only {
 .menu_carrusel:hover .swipe-indicator {
     opacity: 1;
     transform: translateX(-50%) translateY(-10px);
+}
+
+/* Mantener solo el código móvil ya que solo se usará en dispositivos táctiles */
+.add-to-cart:active,
+.price:active,
+.category-tag:active {
+    transform: scale(0.95); /* Feedback táctil sutil */
+}
+
+/* Eliminar estilos específicos para hover */
+.tap-hint:hover,
+.category-tag:hover,
+.price:hover,
+.img_container:hover img,
+.img_container:hover .category-tag {
+    /* Eliminar estos efectos */
+}
+
+/* Eliminar referencias al spotlight */
+body:has(.spotlight-overlay) .add-to-cart.shop-only {
+    /* Eliminar esta regla */
+}
+
+/* Eliminar estas reglas relacionadas con intro-active */
+body.intro-active .add-to-cart.shop-only,
+body.intro-active.shop-mode .add-to-cart.shop-only {
+    /* Eliminar estas reglas */
 }

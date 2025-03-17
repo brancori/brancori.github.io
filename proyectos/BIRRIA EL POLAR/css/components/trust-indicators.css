@@ -53,98 +53,15 @@
     transform: translateY(0);
 }
 
-/* Estilos para tutorial */
-.tutorial-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 3000;
-    pointer-events: all;
-}
-
-.tutorial-highlight {
-    position: absolute;
-    border-radius: 10px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
-    z-index: 3001;
-    box-sizing: content-box;
-    animation: pulse-highlight 2s infinite;
-}
-
-@keyframes pulse-highlight {
-    0%, 100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 0 3px rgba(255, 255, 255, 0.5); }
-    50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7), 0 0 0 6px rgba(255, 255, 255, 0.8); }
-}
-
-.tutorial-content {
-    position: absolute;
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    width: 220px;
-    z-index: 3002;
-    box-shadow: var(--shadow-lg);
-}
-
-.tutorial-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin: 0 0 10px;
-}
-
-.tutorial-text {
-    font-size: 14px;
-    margin: 0 0 15px;
-    color: var(--gray-dark);
-}
-
-.tutorial-buttons {
-    display: flex;
-    justify-content: center;
-}
-
-.tutorial-skip-btn, .tutorial-next-btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.tutorial-skip-btn {
-    background: var(--gray-light);
-    color: var(--gray-dark);
-}
-
-.tutorial-next-btn {
-    background: var(--primary-color);
-    color: white;
-}
-
-.tutorial-understood-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    background: var(--primary-color);
-    color: white;
-    width: 100%;
-    margin-top: 10px;
-}
-
-body.tutorial-active .add-to-cart,
-body.tutorial-active .img_container,
-body.tutorial-active .mode-toggle-fab,
-body.tutorial-active .floating-cart {
-    z-index: 3003; /* Asegurar que estén por encima del overlay */
-}
+/* Eliminar todos los estilos relacionados con el efecto spotlight:
+- intro-overlay
+- spotlight
+- spotlight-label
+- intro-close-message
+- intro-active
+- fade-in, fade-out
+- etc. (si existen)
+*/
 
 /* Previsualización del pedido */
 .order-preview {
