@@ -57,92 +57,12 @@
             <span></span>
         </div>
     </div>
+    
+    <!-- Contenedor del carrusel - será llenado dinámicamente por JavaScript -->
     <section class="menu_carrusel">
-        <div class="slide-hint">
-            <span>Desliza</span>
-            <div class="slide-arrows">
-                <span>←</span>
-                <span>→</span>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <div class="arrow"></div>
-            <div class="arrow"></div>
-        </div>
-        <div class="orden_menu" data-category="popular">
-            <h3 class="type_order">Kilo de Birria</h3>
-            <div class="img_container">
-                <div class="add-product-label">Agregar producto</div>
-                <div class="add-to-cart shop-only">+</div>
-                <span class="tap-hint">Toca para ver detalles</span>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">60</span>
-                    <span class="decimals">.00</span>
-                </div>
-                <div class="category-tag">Popular</div>
-                <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
-                <div class="description_overlay">
-                    <p class="description">Tres tacos de birria, acompañados de un consome</p>
-                </div>
-            </div>
-        </div>
-        <div class="orden_menu">
-            <h3 class="type_order">Orden de tacos</h3>
-            <div class="img_container">
-                <div class="add-product-label">Agregar producto</div>
-                <div class="add-to-cart shop-only">+</div>
-                <span class="tap-hint">Toca para ver detalles</span>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">60</span>
-                    <span class="decimals">.00</span>
-                </div>
-                <div class="category-tag">Popular</div>
-                <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
-                <div class="description_overlay">
-                    <p class="description">Tres tacos de birria, acompañados de un consome</p>
-                </div>
-            </div>
-        </div>
-        <div class="orden_menu">
-            <h3 class="type_order">Orden de tacos</h3>
-            <div class="img_container">
-                <div class="add-product-label">Agregar producto</div>
-                <div class="add-to-cart shop-only">+</div>
-                <span class="tap-hint">Toca para ver detalles</span>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">60</span>
-                    <span class="decimals">.00</span>
-                </div>
-                <div class="category-tag">Popular</div>
-                <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
-                <div class="description_overlay">
-                    <p class="description">Tres tacos de birria, acompañados de un consome</p>
-                </div>
-            </div>
-        </div>
-        <div class="orden_menu">
-            <h3 class="type_order">Orden de tacos</h3>
-            <div class="img_container">
-                <div class="add-product-label">Agregar producto</div>
-                <div class="add-to-cart shop-only">+</div>
-                <span class="tap-hint">Toca para ver detalles</span>
-                <div class="price">
-                    <span class="currency">$</span>
-                    <span class="amount">60</span>
-                    <span class="decimals">.00</span>
-                </div>
-                <div class="category-tag">Popular</div>
-                <img class="img_menu" src="./assets/img/orden_tacos.png" alt="orden de tacos">
-                <div class="description_overlay">
-                    <p class="description">Tres tacos de birria, acompañados de un consome</p>
-                </div>
-            </div>
-        </div>
-
+        <!-- Los elementos del menú se generarán aquí dinámicamente -->
     </section>
+    
     <div class="trust-badge">
         <div class="trust-badge-inner">
             <i class="material-icons">verified</i>
@@ -206,11 +126,12 @@
         <div class="floating-cart-total">Total: $0.00</div>
         <button class="floating-cart-button">
             <img src="./assets/logo/cdnlogo.com_whatsapp-icon.svg" alt="WhatsApp" width="20">
-            Hacer pedido por WhatsApp
+            Ver mi pedido
         </button>
     </div>
-    <script src="js/app.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/welcome.js"></script>
+    <script src="js/app.js" type="module"></script>
+    <script src="js/cart.js" type="module"></script>
+    <script src="js/welcome.js" type="module"></script>
+    <script src="js/menu-init.js" type="module"></script>
 </body>
 </html>
