@@ -1,45 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROYECTOS</title>
-    <link rel="stylesheet" href="/css/pstyles.css">
+    <title>Proyectos - Brandon Cortes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,300;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/index.css">
+    <style>
+        .projects-page {
+            padding: 5rem 2rem;
+        }
+        
+        .project-showcase {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: var(--orange);
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background-color: var(--orange);
+            margin: 1rem auto 0;
+        }
+        
+        .project-detail {
+            margin-bottom: 3rem;
+            background: rgba(55, 69, 71, 0.5);
+            border-radius: 8px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .project-detail:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (min-width: 768px) {
+            .project-detail {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+        
+        .project-image-large {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 4px;
+            padding: 1rem;
+            height: 180px;
+        }
+        
+        .project-image-large img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .project-content {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .project-title {
+            color: white;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+        
+        .project-description {
+            font-size: 1.6rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+        }
+        
+        .project-link-large {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--orange);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            border: none;
+        }
+        
+        .project-link-large:hover {
+            background-color: #b85b17;
+            transform: translateY(-2px);
+        }
+        
+        .back-link {
+            display: inline-block;
+            text-align: center;
+            margin: 2rem auto;
+            color: white;
+            text-decoration: none;
+            font-size: 1.6rem;
+            padding: 1rem 2rem;
+            background-color: var(--soft-Grey);
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background-color: var(--orange);
+        }
+        
+        @media (max-width: 480px) {
+            .project-detail {
+                padding: 1.5rem;
+            }
+            
+            .project-title {
+                font-size: 1.8rem;
+            }
+            
+            .project-description {
+                font-size: 1.4rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .project-image-large {
+                height: 140px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <head>
-        <nav class="nav_bar">
+    <header> 
+        <nav class="nav-bar">
             <ul>
-                <a id="home_button" href="./index.html" class="home_button">Home</a>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="./cursos.html">CURSOS</a></li>
+                <li><a href="">SKILLS</a></li>
+                <li><a href="./blog/indexblog.html">BLOG</a></li>
+                <li><a href="./referencias.html">REFERENCIAS</a></li>
+                <li><a href="">CONTACTO</a></li>
+                <li><a href="./proyectos.html" id="active-page">PROYECTOS</a></li>
             </ul>
         </nav>
-    </head>
-    <main id="main_container">
-                <h1>Mis proyectos</h1>
-                <h2>Bievenid@ aquí encontraras los proyectos que he ido desarrollando</h2>
-            <section id="section_proyect">
-                <div class="proyect_container">
-                    <h3>Google Clone</h3>
-                    <div class="img_container">
-                        <img src="/img/imga/google_preview.png" alt="imagen_muestra" >
-                    </div>
-                    <div class="buttons_containers">
-                        <button><a href="./proyectos/google.html/index.html">Ir a Proyecto</a> </button> <button>Código en GitHub</button>
-                    </div>
-                </div>
+    </header>
 
-                <div class="proyect_container">
-                    <h3>TROX Proyect</h3>
-                    <div class="img_container">
-                        <img src="/proyectos/TROX-Induction/assets/img/trox logo.gif" alt="imagen_muestra">
-                    </div>
-                    <div class="buttons_containers">
-                        <button><a href="./proyectos/TROX-Induction/Index.html">Ir a Proyecto</a> </button> <button>Código en GitHub</button>
-                    </div>
-                </div>
-                
-            </section>
+    <main class="projects-page">
+        <section class="project-showcase">
+            <h1 class="page-title">Mis Proyectos</h1>
+            
+            <div id="projects-list">
+                <!-- Los proyectos se generarán dinámicamente -->
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link">Volver al inicio</a>
+            </div>
+        </section>
     </main>
+
+    <footer class="footers">
+        <p>Copyright© 2022 Brandon Cortes</p>
+    </footer>
+
+    <script type="module">
+        import projectsData from './js/projects.js';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectsList = document.getElementById('projects-list');
+            
+            if (projectsList) {
+                // Generar contenido detallado para cada proyecto
+                projectsData.forEach(project => {
+                    const projectElement = document.createElement('div');
+                    projectElement.className = 'project-detail';
+                    
+                    projectElement.innerHTML = `
+                        <div class="project-image-large">
+                            <img src="${project.image}" alt="${project.title}">
+                        </div>
+                        <div class="project-content">
+                            <h2 class="project-title">${project.title}</h2>
+                            <p class="project-description">${project.description}</p>
+                            <a href="${project.link}" class="project-link-large">Ver proyecto</a>
+                        </div>
+                    `;
+                    
+                    projectsList.appendChild(projectElement);
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
