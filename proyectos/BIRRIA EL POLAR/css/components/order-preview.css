@@ -2,7 +2,7 @@
 .order-preview {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 50%;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.75);
@@ -20,6 +20,7 @@
     opacity: 1;
     pointer-events: auto;
     visibility: visible; /* Explícitamente visible cuando tiene la clase show */
+    transform: translateX(-50%) translateY(0);
 }
 
 .preview-container {
@@ -32,8 +33,8 @@
     transform: translateY(100%); /* Comienza desde abajo */
     opacity: 0;
     transition: transform 0.4s ease, opacity 0.4s ease;
-    margin-bottom: 0; /* Aseguramos que esté pegado al fondo */
-    max-height: 85vh; /* Limitamos altura para dispositivos pequeños */
+    margin-bottom: 20px; /* Aseguramos que esté pegado al fondo */
+    max-height: 100vh; /* Limitamos altura para dispositivos pequeños */
 }
 
 .order-preview.show .preview-container {

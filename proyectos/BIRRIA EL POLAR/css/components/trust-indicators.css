@@ -53,35 +53,6 @@
     transform: translateY(0);
 }
 
-/* Eliminar todos los estilos relacionados con el efecto spotlight:
-- intro-overlay
-- spotlight
-- spotlight-label
-- intro-close-message
-- intro-active
-- fade-in, fade-out
-- etc. (si existen)
-*/
-
-/* Previsualización del pedido */
-.order-preview {
-    position: fixed;
-    left: 50%;
-    bottom: 0px;
-    transform: translateX(-50%) translateY(100%);
-    width: 90%;
-    background: white;
-    border-radius: 12px 12px 0 0;
-    box-shadow: var(--shadow-lg);
-    z-index: 1200;
-    transition: transform 0.3s ease;
-    padding: 20px;
-}
-
-.order-preview.show {
-    transform: translateX(-50%) translateY(0);
-}
-
 .order-preview-header {
     display: flex;
     justify-content: space-between;
@@ -89,19 +60,6 @@
     margin-bottom: 15px;
 }
 
-.order-preview-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--gray-dark);
-}
-
-.order-preview-close {
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: var(--gray-dark);
-    cursor: pointer;
-}
 
 .order-message-preview {
     background: #E2F7CB;

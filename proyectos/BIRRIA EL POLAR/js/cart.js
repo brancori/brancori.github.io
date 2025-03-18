@@ -146,6 +146,9 @@ class Cart {
         // Force repaint to ensure proper rendering
         void previewElement.offsetWidth;
         
+        // Hide the floating cart when showing the preview
+        this.floatingCart.classList.remove('show');
+        
         // Show the preview with a slight delay to ensure CSS transitions work
         setTimeout(() => {
             previewElement.classList.add('show');
@@ -179,11 +182,19 @@ class Cart {
         
         closeBtn.addEventListener('click', () => {
             previewElement.classList.remove('show');
+            
+            // Show the floating cart again when closing the preview
+            if (this.items.length > 0) {
+                setTimeout(() => {
+                    this.floatingCart.classList.add('show');
+                }, 300); // Add a small delay to allow the preview animation to complete
+            }
         });
         
         sendBtn.addEventListener('click', () => {
             this.sendOrder();
             previewElement.classList.remove('show');
+            // No need to show the floating cart here as we're redirecting to WhatsApp
         });
         
         // Manejar botones de disminuir cantidad
