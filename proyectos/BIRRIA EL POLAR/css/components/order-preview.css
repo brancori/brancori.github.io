@@ -13,14 +13,14 @@
     opacity: 0;
     pointer-events: none;
     visibility: hidden; /* Explícitamente oculto */
-    transition: opacity 0.3s ease, visibility 0.3s ease; /* Añadir transición para visibility */
+    transition: opacity 0.4s ease, visibility 0.4s ease; /* Añadir transición para visibility */
+    transform: translateX(-50%);
 }
 
 .order-preview.show {
     opacity: 1;
     pointer-events: auto;
     visibility: visible; /* Explícitamente visible cuando tiene la clase show */
-    transform: translateX(-50%) translateY(0);
 }
 
 .preview-container {
@@ -32,8 +32,8 @@
     overflow: hidden;
     transform: translateY(100%); /* Comienza desde abajo */
     opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
-    margin-bottom: 20px; /* Aseguramos que esté pegado al fondo */
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    margin-bottom: 10px; /* Aseguramos que esté pegado al fondo */
     max-height: 100vh; /* Limitamos altura para dispositivos pequeños */
 }
 
@@ -69,11 +69,12 @@
     font-size: 1.5rem;
     color: white;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .preview-close:hover {
     background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
 }
 
 .preview-content {
@@ -144,7 +145,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     font-weight: 600;
     font-size: 18px;
 }
@@ -157,6 +158,7 @@
 .preview-quantity-btn.decrease:hover {
     background-color: #e5e5e5;
     color: #333;
+    transform: scale(1.1);
 }
 
 .preview-quantity-btn.increase {
@@ -166,7 +168,7 @@
 
 .preview-quantity-btn.increase:hover {
     background-color: var(--primary-light);
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .preview-item-remove {
@@ -232,11 +234,12 @@
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .preview-send-button:hover {
     background-color: #1dac53;
+    transform: translateY(-2px);
 }
 
 .preview-send-button img {

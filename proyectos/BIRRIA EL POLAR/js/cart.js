@@ -146,13 +146,18 @@ class Cart {
         // Force repaint to ensure proper rendering
         void previewElement.offsetWidth;
         
-        // Hide the floating cart when showing the preview
-        this.floatingCart.classList.remove('show');
+        // Hide the floating cart with a nice transition
+        this.floatingCart.style.transform = 'translateY(20px)';
+        this.floatingCart.style.opacity = '0';
         
-        // Show the preview with a slight delay to ensure CSS transitions work
         setTimeout(() => {
-            previewElement.classList.add('show');
-        }, 10);
+            this.floatingCart.classList.remove('show');
+            
+            // Show the preview with a slight delay
+            setTimeout(() => {
+                previewElement.classList.add('show');
+            }, 50);
+        }, 300); // Timing coordinated with CSS transition
         
         // Add event listeners
         const closeBtn = previewElement.querySelector('.preview-close');
@@ -183,11 +188,17 @@ class Cart {
         closeBtn.addEventListener('click', () => {
             previewElement.classList.remove('show');
             
-            // Show the floating cart again when closing the preview
+            // Show the floating cart again when closing the preview with a nice transition
             if (this.items.length > 0) {
                 setTimeout(() => {
                     this.floatingCart.classList.add('show');
-                }, 300); // Add a small delay to allow the preview animation to complete
+                    
+                    // Reset the transform and opacity after a short delay
+                    setTimeout(() => {
+                        this.floatingCart.style.transform = '';
+                        this.floatingCart.style.opacity = '';
+                    }, 50);
+                }, 400); // Timing coordinated with CSS transition
             }
         });
         

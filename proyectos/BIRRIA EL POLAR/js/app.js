@@ -152,6 +152,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000); // Reducido a 3s para móviles
 
     modeToggle.addEventListener('click', () => {
+        // Scroll to top when mode toggle is clicked
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        
         // Vibración táctil para feedback en móviles
         if (navigator.vibrate) {
             navigator.vibrate(50);
@@ -161,42 +167,56 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('mode-change-animation');
         
         // Toggle shop mode
-        body.classList.toggle('shop-mode');
-        const isShopMode = body.classList.contains('shop-mode');
-        
-        // Gestionar las etiquetas "Agregar producto"
-        if (isShopMode) {
-            // Mostrar las etiquetas en todos los productos
-            document.querySelectorAll('.add-product-label').forEach(label => {
-                // Solo mostrar si no se ha hecho clic anteriormente
-                if (!label.classList.contains('clicked')) {
-                    label.style.display = 'block';
-                    label.style.opacity = '1';
-                    label.style.transform = 'translateX(0)';
-                    label.style.zIndex = '50';
-                    
-                    // Aplicar animación de parpadeo
-                    label.style.animation = window.innerWidth <= 768 ? 
-                        'blink-effect-mobile 1.2s infinite' : 
-                        'blink-effect 1.5s infinite';
-                }
-            });
-        } else {
-            // Ocultar todas las etiquetas al desactivar el modo compra
-            document.querySelectorAll('.add-product-label').forEach(label => {
-                label.style.display = 'none';
-                label.style.opacity = '0';
-            });
-        }
+        const isActivatingShopMode = !document.body.classList.contains('shop-mode');
+        document.body.classList.toggle('shop-mode');
         
         // Actualizar textos con versiones más cortas
-        tooltip.textContent = isShopMode ? "Modo menú" : "Modo compra";
-        modeLabel.textContent = isShopMode ? "Hacer pedido" : "Activar compras";
+        tooltip.textContent = isActivatingShopMode ? "Modo menú" : "Modo compra";
+        modeLabel.textContent = isActivatingShopMode ? "Hacer pedido" : "Activar compras";
+        
+        // Optimizar rendimiento usando requestAnimationFrame
+        requestAnimationFrame(() => {
+            // Añadir índices para animaciones secuenciales
+            document.querySelectorAll('.img_container').forEach((container, index) => {
+                const addBtn = container.querySelector('.add-to-cart');
+                const label = container.querySelector('.add-product-label');
+                
+                if (addBtn) addBtn.style.setProperty('--item-index', index);
+                if (label) label.style.setProperty('--item-index', index);
+                
+                // Gestionar las etiquetas "Agregar producto" de manera más eficiente
+                if (isActivatingShopMode) {
+                    // Mostrar solo si no se ha hecho clic anteriormente
+                    if (label && !label.classList.contains('clicked')) {
+                        requestAnimationFrame(() => {
+                            label.style.display = 'block';
+                            
+                            // Usar setTimeout para asegurar que el display:block se aplique antes de otras propiedades
+                            setTimeout(() => {
+                                label.style.opacity = '1';
+                                label.style.transform = 'translateX(0) scale(1)';
+                            }, 10);
+                        });
+                    }
+                } else {
+                    // Ocultar todas las etiquetas al desactivar el modo compra
+                    if (label) {
+                        label.style.opacity = '0';
+                        label.style.transform = 'translateX(20px) scale(0.95)';
+                        
+                        // Ocultar después de la transición
+                        setTimeout(() => {
+                            label.style.display = 'none';
+                        }, 400);
+                    }
+                }
+            });
+        });
         
         // Mostrar etiqueta temporalmente
         modeLabel.style.display = 'block';
         modeLabel.style.opacity = 1;
-        modeLabel.classList.remove('animate-fade'); // Eliminar animación cuando se hace clic en el botón
+        modeLabel.classList.remove('animate-fade');
         
         // Ocultar tras unos segundos en móvil
         if (window.innerWidth <= 768) {

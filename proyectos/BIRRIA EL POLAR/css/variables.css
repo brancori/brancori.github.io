@@ -29,4 +29,12 @@
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.6s ease;
+    --transition-elastic: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-smooth: 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    
+    /* Shop mode specific colors */
+    --shop-primary: #25D366;
+    --shop-secondary: #128C7E;
+    --shop-hover: #1dac53;
+    --shop-background: rgba(37, 211, 102, 0.05);
 }
