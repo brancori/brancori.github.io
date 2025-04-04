@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="navbar">
+    <div>
+      <h1 class="quizz-title-name">Quiz App</h1>
+      <small>by Brancori</small>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="toggleSection('quizList')">Quizzes</button>
+      <button class="nav-btn" onclick="toggleSection('recordsContainer')">Historial</button>
+      <button class="nav-btn" onclick="toggleModal('uploadModal')">Nuevo</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <button class="close-quiz" onclick="cerrarQuiz()" style="display: none;">Cerrar Quiz</button>
+
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar"><div id="progress" class="progress"></div></div>
+      <div class="progress-text" id="progressText"></div>
+    </div>
+
+    <div id="quizContainer"></div>
+    
+    <div class="verify-container" id="verifyContainer">
+      <button onclick="verificarRespuestas()" class="quiz-btn">Verificar Respuestas</button>
+    </div>
+
+    <div id="quizSummary" class="quiz-summary" style="display: none;"></div>
+
+    <div class="section-container" id="recordsContainer">
+      <div class="section-header">
+          <h2>Historial de Resultados</h2>
+          <button class="clear-all-btn" onclick="confirmarBorradoTotal()">Borrar Todos los Datos</button>
+      </div>
+      <div id="recordsList"></div>
+    </div>
+
+    <div class="section-container" id="quizList">
+      <div class="section-header">
+        <h2>Quizzes Guardados</h2>
+      </div>
+      <div id="quizListContent"></div>
+    </div>
+
+    <div class="quiz-controls">
+      <button class="floating-btn" onclick="toggleModal('uploadModal')">+</button>
+    </div>
+  </div>
+
+  <!-- Modal para cargar quiz -->
+  <div id="uploadModal" class="modal">
+    <div class="modal-content">
+      <h2>Crear/Cargar Quiz</h2>
+      <input type="text" id="quizName" placeholder="Nombre del Quiz">
+      <textarea id="quizInput" rows="6" placeholder="Pregunta | Correcta | Incorrecta1 | Incorrecta2..."></textarea>
+      <button onclick="guardarQuiz()">Guardar Quiz</button>
+      <input type="file" id="jsonInput" accept=".json" multiple>
+      <button onclick="exportarQuiz()">Exportar Quiz</button>
+      <button onclick="toggleModal('uploadModal')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal de éxito -->
+  <div id="successModal" class="modal">
+    <div class="modal-content success-modal">
+      <div class="emoji">🎉</div>
+      <h2>¡Felicitaciones!</h2>
+      <p>Has completado el quiz correctamente</p>
+      <button onclick="toggleModal('successModal')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div id="confirmModal" class="modal confirm-modal">
+    <div class="modal-content">
+      <h2>¿Estás seguro?</h2>
+      <p>Esta acción eliminará todos los quizzes y resultados guardados. No se puede deshacer.</p>
+      <div class="buttons">
+        <button class="cancel-btn" onclick="toggleModal('confirmModal')">Cancelar</button>
+        <button class="confirm-btn" onclick="borrarTodo()">Sí, Borrar Todo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let respuestasCorrectas = [];
+
+    const EXPIRACION_MS = 14 * 24 * 60 * 60 * 1000;
+
+    document.getElementById("jsonInput").addEventListener("change", function(e) {
+      [...e.target.files].forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const data = JSON.parse(event.target.result);
+          const saved = JSON.parse(localStorage.getItem('quizzes') || '{}');
+          saved[data.name] = { content: data.content, timestamp: Date.now() };
+          localStorage.setItem('quizzes', JSON.stringify(saved));
+          mostrarQuizzesGuardados();
+        };
+        reader.readAsText(file);
+      });
+    });
+
+    function guardarQuiz() {
+      const name = document.getElementById('quizName').value.trim();
+      const content = document.getElementById('quizInput').value.trim();
+      if (!name || !content) return alert('Nombre y preguntas requeridas');
+
+      try {
+          const saved = JSON.parse(localStorage.getItem('quizzes') || '{}');
+          saved[name] = { content, timestamp: Date.now() };
+          localStorage.setItem('quizzes', JSON.stringify(saved));
+          
+          generarQuiz(content);
+          mostrarQuizzesGuardados();
+          toggleModal('uploadModal');
+          
+          console.log('Quiz guardado:', name); // Debug info
+      } catch (error) {
+          console.error('Error al guardar quiz:', error);
+          alert('Error al guardar el quiz');
+      }
+    }
+
+    function generarQuiz(text) {
+        const lines = text.split('\n').filter(line => line.trim());
+        const shuffledLines = shuffle([...lines]);
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        respuestasCorrectas = [];
+        
+        // Hide other sections and show quiz
+        document.querySelectorAll('.section-container').forEach(s => s.style.display = 'none');
+        container.style.display = 'block';
+        
+        // Show controls
+        document.querySelector('.close-quiz').style.display = 'block';
+        document.getElementById('verifyContainer').style.display = 'block';
+        document.getElementById('verifyContainer').classList.add('active');
+        document.getElementById('progressContainer').classList.add('active');
+        
+        // Reset progress
+        updateProgress(0, shuffledLines.length);
+
+        shuffledLines.forEach((line, index) => {
+            const partes = line.split('|').map(p => p.trim());
+            if (partes.length < 4) return;
+
+            const [pregunta, correcta, ...incorrectas] = partes;
+            const opciones = shuffle([correcta, ...incorrectas]);
+
+            respuestasCorrectas.push({ index, correcta });
+
+            const div = document.createElement('div');
+            div.classList.add('question');
+            div.id = `question${index}`;
+            div.innerHTML = `
+                <h3>${index + 1}. ${pregunta}</h3>
+                <div class="options-container">
+                    ${opciones.map(op => `
+                        <button class="option-btn" 
+                                onclick="selectOption(this, ${index}, ${shuffledLines.length}, '${op}')"
+                                data-value="${op}">
+                            ${op}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="feedback${index}"></div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function selectOption(btn, index, total, value) {
+        // Deselect all options in this question
+        btn.closest('.question').querySelectorAll('.option-btn').forEach(b => 
+            b.classList.remove('selected'));
+        
+        // Select clicked button
+        btn.classList.add('selected');
+        
+        // Update progress
+        updateProgressFromSelection(total);
+        
+        // Scroll to next question or center last question
+        if (index < total - 1) {
+            setTimeout(() => {
+                const nextQuestion = document.getElementById(`question${index + 1}`);
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                const progressHeight = document.querySelector('.progress-container').offsetHeight;
+                const offset = navbarHeight + progressHeight + 20;
+                
+                const targetPosition = nextQuestion.offsetTop - offset;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }, 250);
+        } else {
+            // Center last question
+            setTimeout(() => {
+                const lastQuestion = btn.closest('.question');
+                const windowHeight = window.innerHeight;
+                const questionHeight = lastQuestion.offsetHeight;
+                const targetPosition = lastQuestion.offsetTop - ((windowHeight - questionHeight) / 2);
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }, 250);
+        }
+    }
+
+    function verificarRespuestas() {
+        let todas_correctas = true;
+        let total_correctas = 0;
+
+        // Verificar respuestas y mostrar feedback
+        respuestasCorrectas.forEach(({ index, correcta }) => {
+            const preguntaDiv = document.getElementById(`question${index}`);
+            const seleccionada = preguntaDiv.querySelector('.option-btn.selected');
+            const feedback = document.getElementById(`feedback${index}`);
+
+            if (!seleccionada) {
+                todas_correctas = false;
+                feedback.innerHTML = '<span class="incorrect">No respondiste esta pregunta</span>';
+            } else if (seleccionada.dataset.value === correcta) {
+                total_correctas++;
+                feedback.innerHTML = '<span class="correct">¡Correcto!</span>';
+            } else {
+                todas_correctas = false;
+                feedback.innerHTML = `<span class="incorrect">Incorrecto. Respuesta correcta: ${correcta}</span>`;
+            }
+        });
+
+        // Guardar resultado
+        const answers = respuestasCorrectas.map(({index, correcta}) => ({
+            question: document.querySelector(`#question${index} h3`).textContent,
+            given: document.querySelector(`#question${index} .option-btn.selected`)?.dataset.value || 'Sin respuesta',
+            correct: document.querySelector(`#question${index} .option-btn.selected`)?.dataset.value === correcta
+        }));
+
+        guardarResultado(total_correctas, respuestasCorrectas.length, answers);
+
+        // Mostrar resumen
+        const summary = document.getElementById('quizSummary');
+        summary.innerHTML = `
+            <h3>Resultados</h3>
+            <p>Correctas: ${total_correctas} de ${respuestasCorrectas.length}</p>
+            <p>Porcentaje: ${Math.round((total_correctas/respuestasCorrectas.length)*100)}%</p>
+        `;
+        summary.style.display = 'block';
+
+        // Ocultar quiz y mostrar modal si todas son correctas
+        document.getElementById('quizContainer').style.display = 'none';
+        document.getElementById('verifyContainer').style.display = 'none';
+        
+        if (todas_correctas) {
+            toggleModal('successModal');
+        }
+    }
+
+    function mostrarQuizzesGuardados() {
+      const lista = document.getElementById('quizListContent');
+      lista.innerHTML = '';
+      const saved = JSON.parse(localStorage.getItem('quizzes') || '{}');
+      const records = JSON.parse(localStorage.getItem('quizRecords') || '[]');
+
+      Object.entries(saved).forEach(([name, { content, timestamp }]) => {
+        if (Date.now() - timestamp > EXPIRACION_MS) return;
+
+        const numPreguntas = content.split('\n').filter(line => line.trim()).length;
+        const quizRecords = records.filter(r => r.quizName === name);
+        const promedio = quizRecords.length ? 
+          Math.round(quizRecords.reduce((acc, r) => acc + (r.correctas / r.total * 100), 0) / quizRecords.length) : 
+          0;
+
+        const contenedor = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.textContent = `${name} (${numPreguntas} preguntas - Promedio: ${promedio}%)`;
+        btn.className = 'quiz-btn';
+        btn.onclick = () => {
+          document.getElementById('quizName').value = name;
+          document.getElementById('quizInput').value = content;
+          generarQuiz(content);
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'X';
+        delBtn.className = 'delete-btn';
+        delBtn.onclick = () => {
+          delete saved[name];
+          localStorage.setItem('quizzes', JSON.stringify(saved));
+          // Limpiar records asociados
+          const newRecords = records.filter(r => r.quizName !== name);
+          localStorage.setItem('quizRecords', JSON.stringify(newRecords));
+          mostrarQuizzesGuardados();
+          mostrarRecords();
+        };
+
+        contenedor.appendChild(btn);
+        contenedor.appendChild(delBtn);
+        lista.appendChild(contenedor);
+      });
+    }
+
+    function shuffle(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function updateProgressFromSelection(total) {
+        const questions = document.querySelectorAll('.question');
+        let answered = 0;
+        
+        questions.forEach(question => {
+            if (question.querySelector('.option-btn.selected')) {
+                answered++;
+            }
+        });
+        
+        updateProgress(answered, total);
+    }
+
+    function updateProgress(current, total) {
+      const percent = Math.round((current / total) * 100);
+      document.getElementById('progress').style.width = percent + '%';
+      document.getElementById('progressText').textContent = `${current} de ${total} respondidas`;
+    }
+
+    function guardarResultado(correctas, total, answers) {
+      const quizName = document.getElementById('quizName').value;
+      const records = JSON.parse(localStorage.getItem('quizRecords') || '[]');
+      records.push({
+        quizName,
+        correctas,
+        total,
+        answers,
+        fecha: new Date().toISOString()
+      });
+      localStorage.setItem('quizRecords', JSON.stringify(records));
+      mostrarRecords();
+    }
+
+    function mostrarRecords() {
+      const records = JSON.parse(localStorage.getItem('quizRecords') || '[]');
+      const container = document.getElementById('recordsList');
+      
+      // Agrupar por quiz y analizar estadísticas por pregunta
+      const quizRecords = {};
+      const questionStats = {};
+
+      records.forEach(record => {
+        if (!quizRecords[record.quizName]) {
+          quizRecords[record.quizName] = [];
+          questionStats[record.quizName] = {};
+        }
+        quizRecords[record.quizName].push(record);
+
+        // Actualizar estadísticas por pregunta
+        record.answers.forEach(answer => {
+          const questionKey = answer.question;
+          if (!questionStats[record.quizName][questionKey]) {
+            questionStats[record.quizName][questionKey] = { correct: 0, incorrect: 0, firstCorrect: false };
+          }
+          if (answer.correct) {
+            questionStats[record.quizName][questionKey].correct++;
+            questionStats[record.quizName][questionKey].firstCorrect = true;
+          } else {
+            questionStats[record.quizName][questionKey].incorrect++;
+          }
+        });
+      });
+
+      container.innerHTML = Object.entries(quizRecords).map(([quizName, attempts]) => {
+        const promedio = Math.round((attempts.reduce((acc, r) => acc + (r.correctas / r.total * 10), 0) / attempts.length) * 10) / 10;
+        
+        return `
+          <div class="results-item">
+            <h3>${quizName}</h3>
+            <div class="timestamp">Intentos: ${attempts.length}</div>
+            <div class="score">Promedio: ${promedio}/10</div>
+            <button class="details-btn" onclick="toggleDetails('${quizName}_details')">Ver detalles</button>
+            
+            <div id="${quizName}_details" style="display:none">
+              <div class="question-stats">
+                ${Object.entries(questionStats[quizName]).map(([question, stats]) => `
+                  <div class="question-detail">
+                    <p>${question}</p>
+                    <div class="attempts">
+                      <span class="correct-count">✓ ${stats.correct}</span>
+                      <span class="incorrect-count">✗ ${stats.incorrect}</span>
+                    </div>
+                    <button class="small-btn" onclick="toggleAnswerDetails('${quizName}_${btoa(question)}')">
+                      Ver respuestas
+                    </button>
+                    <div id="${quizName}_${btoa(question)}" class="answer-details">
+                      ${attempts.map(record => {
+                        const answer = record.answers.find(a => a.question === question);
+                        if (!answer) return '';
+                        const fecha = new Date(record.fecha);
+                        return answer.correct ? 
+                          `<div class="correct">✓ ${answer.given}</div>` :
+                          `<div class="incorrect">✗ ${answer.given}</div>`;
+                      }).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleAnswerDetails(detailsId) {
+      const details = document.getElementById(detailsId);
+      details.classList.toggle('show');
+    }
+
+    function exportarQuiz() {
+      const name = document.getElementById('quizName').value;
+      const content = document.getElementById('quizInput').value;
+      const data = { name, content };
+      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      
+      if (modalId === 'uploadModal' && modal.style.display !== 'block') {
+        // Limpiar inputs al abrir el modal
+        document.getElementById('quizName').value = '';
+        document.getElementById('quizInput').value = '';
+      }
+      
+      modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function confirmarBorradoTotal() {
+      toggleModal('confirmModal');
+    }
+
+    function borrarTodo() {
+      localStorage.removeItem('quizzes');
+      localStorage.removeItem('quizRecords');
+      mostrarQuizzesGuardados();
+      mostrarRecords();
+      toggleModal('confirmModal');
+    }
+
+    function cerrarQuiz() {
+        document.getElementById('quizContainer').innerHTML = '';
+        document.querySelector('.close-quiz').style.display = 'none';
+        document.getElementById('verifyContainer').style.display = 'none';
+        document.getElementById('verifyContainer').classList.remove('active');
+        document.querySelector('.quiz-btn').style.display = 'none';
+        document.getElementById('quizSummary').style.display = 'none';
+        document.getElementById('progressContainer').classList.remove('active');
+        document.getElementById('progress').style.width = '0%';
+        document.getElementById('progressText').textContent = '';
+    }
+
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      const wasActive = section.classList.contains('active');
+      
+      // Ocultar todas las secciones primero
+      document.querySelectorAll('.section-container').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+      });
+      
+      // Remover active de todos los botones
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      if (!wasActive) {
+        section.classList.add('active');
+        section.style.display = 'block';
+        document.querySelector(`[onclick="toggleSection('${sectionId}')"]`).classList.add('active');
+      }
+    }
+
+    function toggleDetails(detailsId) {
+      const details = document.getElementById(detailsId);
+      details.style.display = details.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Eliminar vencidos
+    (function limpiarQuizzesVencidos() {
+      const saved = JSON.parse(localStorage.getItem('quizzes') || '{}');
+      const filtrados = {};
+      Object.entries(saved).forEach(([name, { content, timestamp }]) => {
+        if ((Date.now() - timestamp) <= EXPIRACION_MS) {
+          filtrados[name] = { content, timestamp };
+        }
+      });
+      localStorage.setItem('quizzes', JSON.stringify(filtrados));
+      mostrarQuizzesGuardados();
+    })();
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+      mostrarQuizzesGuardados();
+      mostrarRecords();
+      
+      // Ocultar modales y secciones al inicio
+      document.querySelectorAll('.modal, .section-container').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      // Asegurarse que los botones del navbar estén visibles
+      document.querySelector('.nav-buttons').style.display = 'flex';
+
+      // Initialize verify button state
+      document.querySelector('.quiz-btn').style.display = 'none';
+      document.getElementById('verifyContainer').classList.remove('active');
+      
+      // Debug storage
+      console.log('Quizzes guardados:', localStorage.getItem('quizzes'));
+    });
+
+    // Manejar scroll del navbar
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Add debug function for scroll
+    function debugScroll(element) {
+        const rect = element.getBoundingClientRect();
+        const availableHeight = window.innerHeight - document.querySelector('.progress-container').offsetHeight;
+        console.log({
+            element: element.id,
+            top: rect.top,
+            viewportHeight: window.innerHeight,
+            availableHeight: availableHeight,
+            progressHeight: document.querySelector('.progress-container').offsetHeight,
+            isVisible: rect.top >= 0 && rect.bottom <= availableHeight
+        });
+    }
+  </script>
+</body>
+</html>
