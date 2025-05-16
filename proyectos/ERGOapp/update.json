@@ -1,7 +1,9 @@
 {
-  "latest": "1.0.2",
+  "latest": "1.0.4",
   "files": {
     "formulario.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/formulario.json",
-    "server.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/server.js"
+    "server.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/server.js",
+    "package.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/package.json",
+    "package-lock.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/package-lock.json"
   }
 }
