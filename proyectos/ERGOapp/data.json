@@ -1,11 +1,6 @@
 {
   "areas": [
     {
-      "id": "area_1747332157828",
-      "nombre": "prueba nueva",
-      "responsable": "12345"
-    },
-    {
       "id": "area_1747369327502",
       "nombre": "Otra nueva área",
       "responsable": "Prueba"
@@ -22,89 +17,6 @@
     }
   ],
   "puestos": {
-    "area_1747332157828": [
-      {
-        "evaluador": "ddd",
-        "puesto": "s",
-        "ubicacion": "ddd",
-        "documentado": "Sí",
-        "trabajadores": "33",
-        "turno": "dd",
-        "rotacion": "Sí",
-        "tareas": "dd",
-        "presente": "Sí",
-        "id": "puesto_1747332431238",
-        "evaluacion": {
-          "respuestas": {
-            "general_14": "No",
-            "general_15": "No",
-            "general_16": "No",
-            "general_17": "No",
-            "general_18": "No",
-            "general_19": "No",
-            "general_20": "No",
-            "general_21": "No",
-            "general_22": "No",
-            "general_23": "No",
-            "general_24": "No",
-            "general_25": "No",
-            "general_26": "No",
-            "manipulaCargas_0": "Sí",
-            "manipulaCargas_1": "Sí",
-            "manipulaCargas_2": "Sí",
-            "manipulaCargas_3": "Sí",
-            "manipulaCargas_4": "Sí",
-            "manipulaCargas_5": "Sí",
-            "manipulaCargas_6": "Sí",
-            "manipulaCargas_7": "Sí",
-            "manipulaCargas_8": "Sí",
-            "manipulaCargas_9": "Sí",
-            "manipulaCargas_10": "Sí",
-            "manipulaCargas_11": "Sí",
-            "manipulaCargas_12": "Sí",
-            "manipulaCargas_13": "Sí",
-            "manipulaCargas_14": "Sí",
-            "manipulaCargas_15": "Sí",
-            "manipulaCargas_16": "Sí",
-            "manipulaCargas_17": "Sí",
-            "manipulaCargas_18": "Sí",
-            "manipulaCargas_19": "Sí",
-            "usaPantallas_0": "Sí",
-            "usaPantallas_1": "Sí",
-            "usaPantallas_2": "Sí",
-            "usaPantallas_3": "Sí",
-            "usaPantallas_4": "Sí",
-            "usaHerramientas_0": "No",
-            "usaHerramientas_1": "No",
-            "usaHerramientas_2": "No",
-            "usaHerramientas_3": "No",
-            "usaHerramientas_4": "No",
-            "usaHerramientas_5": "No",
-            "usaHerramientas_6": "No",
-            "usaHerramientas_7": "No",
-            "usaHerramientas_8": "No",
-            "usaHerramientas_9": "No",
-            "usaHerramientas_10": "No",
-            "usaHerramientas_11": "No",
-            "usaHerramientas_12": "No",
-            "usaHerramientas_13": "No",
-            "usaHerramientas_14": "No",
-            "mantienePosturas_0": "No",
-            "mantienePosturas_1": "No",
-            "mantienePosturas_2": "No",
-            "mantienePosturas_3": "No",
-            "mantienePosturas_4": "No",
-            "mantienePosturas_5": "No",
-            "mantienePosturas_6": "No",
-            "mantienePosturas_7": "No",
-            "mantienePosturas_8": "No",
-            "mantienePosturas_9": "No"
-          },
-          "evidencias": {},
-          "fecha": "2025-05-16T04:19:38.620Z"
-        }
-      }
-    ],
     "area_1747369327502": [
       {
         "evaluador": "2222",
