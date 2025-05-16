@@ -10,6 +10,10 @@ const DATA_PATH = path.join(__dirname, 'data.json');
 app.use(express.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Inicializar archivo si no existe
 if (!fs.existsSync(DATA_PATH)) {
   fs.writeFileSync(DATA_PATH, JSON.stringify({ areas: [], puestos: {} }, null, 2));
