@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Evaluación Ergonómica</title>
+  <link rel="stylesheet" href="assets/formulario.css" />
+</head>
+<body>
+  <header>
+    <a href="puestos.html?areaId=" id="btnVolver" class="volver">⬅ Volver</a>
+    <h2>Evaluación Ergonómica</h2>
+    <p><strong>ID Puesto:</strong> <span id="puestoId"></span></p>
+    <p><strong>Área:</strong> <span id="areaNombre"></span></p>
+    <p><strong>Responsable:</strong> <span id="responsableArea"></span></p>
+  </header>
+
+  <main>
+    <form id="formEvaluacion">
+      <!-- Las preguntas generales y condicionales serán insertadas dinámicamente -->
+      <h3>Evidencias Fotográficas Adicionales</h3>
+      <input type="file" accept="image/*" multiple id="evidencias" />
+      <div id="vistaPrevia"></div>
+
+      <button type="submit">Guardar Evaluación</button>
+      <button type="button" id="btnExportar">Exportar a PDF</button>
+    </form>
+  </main>
+
+  <!-- Librería para exportar a PDF (implementaremos en el siguiente paso) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="assets/formulario.js"></script>
+</body>
+</html>
