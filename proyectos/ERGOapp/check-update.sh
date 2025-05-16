@@ -22,6 +22,7 @@ if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
     curl -L -o "$FILE" "$URL"
   done
 
+
   echo "$REMOTE_VERSION" > version.txt
   echo "Actualización completada."
 
