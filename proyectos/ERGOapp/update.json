@@ -1,0 +1,7 @@
+{
+  "latest": "1.0.0",
+  "files": {
+    "formulario.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/formulario.json",
+    "server.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/server.js"
+  }
+}

@@ -9,13 +9,12 @@
 </head>
 <body>
 
-    <header>
-    <h1>Administrador</h1>
-    <p>Panel de control de áreas</p>
+<header>
+  <h1>Administrador</h1>
+  <p>Panel de control de áreas</p>
+</header>
 
-  </header>
-
-  <main>
+<main>
   <div class="dashboard-title">Áreas</div>
 
   <div class="cards">
@@ -29,7 +28,7 @@
     </div>
     <div class="card">
       <h3>Alertas ergonómicas</h3>
-      <p>0</p>
+      <p id="alertasCount">0</p>
     </div>
     <div class="card">
       <h3>Última evaluación</h3>
@@ -39,6 +38,7 @@
 
   <div class="button-container">
     <button class="add-button">+ Agregar nueva área</button>
+    <a href="dashboard.html" class="add-button"> Ver Dashboard Ergonómico</a>
   </div>
 
   <div class="areas-grid" id="areasGrid"></div>
@@ -52,9 +52,10 @@
     <input type="text" id="nombreArea" required>
     <label for="responsableArea">Responsable del área:</label>
     <input type="text" id="responsableArea" required>
-    <button id="guardarBtn">Guardar</button>  
+    <button id="guardarBtn">Guardar</button>
   </div>
 </div>
+
 <script src="/componentes/assets/admin.js"></script>
 
 </body>

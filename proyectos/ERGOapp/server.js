@@ -86,7 +86,85 @@ app.post('/api/evaluacion/:puestoId', (req, res) => {
   res.status(404).json({ error: 'Puesto no encontrado' });
 });
 
+// Endpoint para obtener la versión desde version.txt
+app.get('/version', (req, res) => {
+  fs.readFile('version.txt', 'utf8', (err, data) => {
+    if (err) return res.status(500).send('0.0.0');
+    res.send(data);
+  });
+});
+
+// Endpoint oculto de administración
+app.get('/admin-info', (req, res) => {
+  const version = fs.existsSync('version.txt') ? fs.readFileSync('version.txt', 'utf8').trim() : '0.0.0';
+  const changelog = fs.existsSync('CHANGELOG.txt') ? fs.readFileSync('CHANGELOG.txt', 'utf8') : 'Sin historial disponible';
+  const updateStats = fs.existsSync('update.json') ? fs.statSync('update.json') : null;
+  const updated = updateStats ? new Date(updateStats.mtime).toLocaleString() : 'Fecha no disponible';
+
+  res.json({ version, updated, changelog });
+});
+app.get('/api/dashboard', (req, res) => {
+  const data = JSON.parse(fs.readFileSync(DATA_PATH));
+  const resumen = [];
+
+  for (const area of data.areas) {
+    const puestos = data.puestos[area.id] || [];
+    let puestosConRiesgo = 0;
+
+    puestos.forEach(p => {
+      if (!p.evaluacion) return;
+
+      const secciones = ["manipulaCargas", "mantienePosturas", "usaPantallas", "usaHerramientas"];
+      for (const clave of secciones) {
+        const respuestas = p.evaluacion[clave]?.respuestas || [];
+        if (respuestas.length === 0) continue;
+        const positivas = respuestas.filter(r => r === true).length;
+        const porcentaje = (positivas / respuestas.length) * 100;
+
+        const umbral = {
+          manipulaCargas: 60,
+          mantienePosturas: 70,
+          usaPantallas: 60,
+          usaHerramientas: 60
+        };
+
+        if (porcentaje < umbral[clave]) {
+          puestosConRiesgo++;
+          break; // si ya tiene una bandera roja, no seguimos
+        }
+      }
+    });
+
+    resumen.push({
+      nombre: area.nombre,
+      total: puestos.length,
+      riesgo: puestosConRiesgo
+    });
+  }
+
+  res.json(resumen);
+});
+app.get('/api/ultima-evaluacion', (req, res) => {
+  const data = JSON.parse(fs.readFileSync(DATA_PATH));
+  let fechas = [];
+
+  for (const puestos of Object.values(data.puestos)) {
+    puestos.forEach(p => {
+      if (p.evaluacion?.fecha) {
+        fechas.push(new Date(p.evaluacion.fecha));
+      }
+    });
+  }
+
+  if (fechas.length === 0) return res.json({ fecha: '-' });
+
+  const masReciente = new Date(Math.max(...fechas));
+  const opciones = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  res.json({ fecha: masReciente.toLocaleString('es-MX', opciones) });
+});
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });
+
+

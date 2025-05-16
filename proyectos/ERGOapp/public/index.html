@@ -14,7 +14,50 @@
     <input type="password" id="password" placeholder="Contraseña">
     <button onclick="login()">Entrar</button>
   </div>
+
   <script src="/inicio/index.js"></script>
-</body>
+<!-- Contenedor horizontal -->
+<div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-top: 40px;" id="info-bar">
+  <footer id="info-sistema" style="font-size: 13px; color: gray;">
+    Cargando información del sistema...
+  </footer>
+
+  <button id="admin-btn"
+    style="font-size: 12px; background: none; border: none; color: #0077cc; text-decoration: underline; cursor: pointer;">
+    Información del sistema ⓘ
+  </button>
+</div>
+
+<!-- Info desplegable -->
+<div id="admin-info"
+  style="display: none; font-size: 13px; background: #f1f1f1; padding: 12px; margin: 15px auto; max-width: 600px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+</div>
+
+<!-- Script -->
+<script>
+  // Footer con versión
+  fetch('/version')
+    .then(res => res.text())
+    .then(version => {
+      document.getElementById('info-sistema').innerText =
+        `Walkthrough Ergonómico v${version.trim()} – Desarrollado por Bracori`;
+    });
+
+  // Botón admin info
+  document.getElementById('admin-btn').addEventListener('click', () => {
+    fetch('/admin-info')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('admin-info').style.display = 'block';
+        document.getElementById('admin-info').innerHTML = `
+          <strong>Versión:</strong> ${data.version}<br>
+          <strong>Última actualización:</strong> ${data.updated}<br>
+          <strong>Log de cambios:</strong><br><pre>${data.changelog}</pre>
+        `;
+      });
+  });
+</script>
+
+  </body>
 
 </html>

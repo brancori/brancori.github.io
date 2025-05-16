@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const areasGrid = document.getElementById('areasGrid');
   const areaCount = document.getElementById('areaCount');
+  const puestosCount = document.getElementById('puestosCount');
+  const alertasCount = document.getElementById('alertasCount');
   const modal = document.getElementById('areaModal');
   const nombreInput = document.getElementById('nombreArea');
   const responsableInput = document.getElementById('responsableArea');
@@ -30,22 +32,33 @@ document.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify({ nombre, responsable })
     })
       .then(res => res.json())
-      .then(data => {
+      .then(() => {
         modal.style.display = 'none';
         nombreInput.value = '';
         responsableInput.value = '';
         cargarAreas();
+        cargarAlertas();
+        cargarUltimaEvaluacion();
       });
   });
 
   function cargarAreas() {
     fetch('/api/areas')
       .then(res => res.json())
-      .then(areas => {
+      .then(async areas => {
         areasGrid.innerHTML = '';
         areaCount.textContent = areas.length;
 
-        areas.forEach(area => {
+        let totalEvaluados = 0;
+        puestosCount.textContent = '0';
+
+        // Usar Promise.all para esperar todas las peticiones
+        await Promise.all(areas.map(async area => {
+          const res = await fetch(`/api/puestos/${area.id}`);
+          const puestos = await res.json();
+          const evaluados = puestos.filter(p => p.evaluacion).length;
+          totalEvaluados += evaluados;
+
           const tile = document.createElement('div');
           tile.className = 'area-tile';
           tile.innerHTML = `
@@ -58,22 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           `;
           areasGrid.appendChild(tile);
-                  let totalEvaluados = 0;
-        const areaCount = document.getElementById('areaCount');
-        const puestosCount = document.getElementById('puestosCount'); // ← asegúrate que exista en el HTML
+        }));
 
-        areaCount.textContent = areas.length;
-
-        areas.forEach(async area => {
-          const res = await fetch(`/api/puestos/${area.id}`);
-          const puestos = await res.json();
-          const evaluados = puestos.filter(p => p.evaluacion).length;
-          totalEvaluados += evaluados;
-          puestosCount.textContent = totalEvaluados;
-        });
+        puestosCount.textContent = totalEvaluados;
+      })
+      .catch(err => {
+        alert('Error al cargar las áreas');
+        console.error(err);
       });
-        });
+  }
 
+  function cargarAlertas() {
+    fetch('/api/dashboard')
+      .then(res => res.json())
+      .then(data => {
+        const totalRiesgos = data.reduce((acc, area) => acc + area.riesgo, 0);
+        alertasCount.textContent = totalRiesgos;
+      });
   }
 
   window.borrarArea = (id) => {
@@ -88,8 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
     })
-    .then(() => cargarAreas());
+    .then(() => {
+      cargarAreas();
+      cargarAlertas();
+    });
   };
 
   cargarAreas();
+  cargarAlertas();
+  function cargarUltimaEvaluacion() {
+  fetch('/api/ultima-evaluacion')
+    .then(res => res.json())
+    .then(data => {
+      document.querySelector('.card:nth-child(4) p').textContent = data.fecha;
+    });
+}
 });

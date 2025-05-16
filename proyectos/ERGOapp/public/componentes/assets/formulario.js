@@ -239,14 +239,21 @@ function verImagenGrande(src) {
 form.onsubmit = async (e) => {
   e.preventDefault();
 
-  const respuestas = {};
   const formData = new FormData(form);
+  const evaluacion = {};
 
+  // Clasificar respuestas en secciones condicionales
   for (let [key, value] of formData.entries()) {
-    respuestas[key] = value;
+    const [seccion] = key.split('_');
+    const esPositiva = value === 'Sí';
+
+    if (!evaluacion[seccion]) {
+      evaluacion[seccion] = { respuestas: [] };
+    }
+    evaluacion[seccion].respuestas.push(esPositiva);
   }
 
-  // Agrega las evidencias desde localStorage
+  // Agregar evidencias desde localStorage
   const evidencias = {};
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith('evidencia_')) {
@@ -254,11 +261,8 @@ form.onsubmit = async (e) => {
     }
   });
 
-  const evaluacion = {
-    respuestas,
-    evidencias,
-    fecha: new Date().toISOString()
-  };
+  evaluacion.evidencias = evidencias;
+  evaluacion.fecha = new Date().toISOString();
 
   const response = await fetch(`/api/evaluacion/${puestoId}`, {
     method: 'POST',
