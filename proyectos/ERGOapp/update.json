@@ -22,6 +22,10 @@
     "public/componentes/assets/ver-evaluacion.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/ver-evaluacion.css",
     "public/componentes/assets/ver-evaluacion.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/ver-evaluacion.js",
     "public/inicio/index.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/inicio/index.css",
-    "public/inicio/index.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/inicio/index.js"
+    "public/inicio/index.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/inicio/index.js",
+    "check-update.sh": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/check-update.sh",
+    "bloqueado.txt": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/bloqueado.txt",
+    "data": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/data.json"
+
   }
 }
