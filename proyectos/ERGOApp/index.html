@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Sistema de Evaluación Ergonómica</title>
+    <script type="module" src="supabase-client.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Evaluación Ergonómica</h1>
+            <p>Gestión integral de centros de trabajo y evaluaciones de riesgo</p>
+        </div>
+
+        <div class="content">
+            <!-- Sección de Áreas Guardadas -->
+            <div class="areas-section">
+                <div class="areas-header">
+                    <h2 class="areas-title">Áreas Guardadas</h2>
+                    <button class="btn btn-primary" onclick="toggleNewAreaForm()">
+                        ➕ Nueva Área
+                    </button>
+                </div>
+
+                <!-- Lista de áreas -->
+                <div id="areasList">
+                    <!-- Las áreas se cargarán aquí dinámicamente -->
+                </div>
+
+                <!-- Estado vacío -->
+                <div id="emptyAreasState" class="empty-state hidden">
+                    <div class="empty-state-icon"></div>
+                    <div class="empty-state-text">No hay áreas registradas</div>
+                    <div class="empty-state-subtext">Comienza creando tu primera área de trabajo</div>
+                </div>
+            </div>
+
+            <!-- Formulario de Nueva Área (oculto por defecto) -->
+            <div id="newAreaForm" class="form-section hidden">
+                <h3>Registrar Nueva Área</h3>
+                <form id="areaForm">
+                    <div class="form-group">
+                        <label for="areaName">Nombre del Área *</label>
+                        <input type="text" id="areaName" class="form-control" 
+                               placeholder="Ej: Laboratorio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="areaManager">Responsable del Área *</label>
+                        <input type="text" id="areaManager" class="form-control" 
+                               placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    <div class="area-actions">
+                        <button type="submit" class="btn btn-success">Guardar Área</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelNewArea()">❌ Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sección de Cargar Evaluación -->
+            <div class="evaluation-section">
+                <div class="evaluation-header">
+                    <h2 class="evaluation-title">Cargar Evaluación</h2>
+                    <p class="evaluation-subtitle">Importa evaluaciones desde archivos JSON o inicia una nueva</p>
+                </div>
+
+                <!-- Área de carga de archivos -->
+                <div class="upload-area" onclick="document.getElementById('jsonFileInput').click()" 
+                     ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" 
+                     ondragleave="dragLeaveHandler(event)">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Arrastra archivos JSON aquí</div>
+                    <div class="upload-subtext">o haz clic para seleccionar archivos</div>
+                    <input type="file" id="jsonFileInput" class="file-input" 
+                           accept=".json" multiple onchange="handleFileSelect(event)">
+                </div>
+
+                <!-- Botón de nueva evaluación -->
+                <div class="text-center mt-20">
+                    <p style="margin-bottom: 15px; color: #666;">¿Prefieres hacer una nueva evaluación?</p>
+                    <a href="formulario_.html" class="btn btn-primary" target="_blank">
+                        Iniciar Nueva Evaluación
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mensajes de estado -->
+            <div id="statusMessages"></div>
+        </div>
+    </div>
+<script src="js/supabase-client.js"></script>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/pages/index-page.js"></script>
+</body>
+</html>

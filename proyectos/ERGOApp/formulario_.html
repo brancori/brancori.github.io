@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="stylesheet" href="style.css">
+    <title>Evaluación Ergonómica Integrada</title>
+    <script type="module" src="supabase-client.js"></script>
+    
+    <!-- Bibliotecas PDF mejoradas -->
+    <script src="./libs/jspdf.umd.min.js"></script>
+    <script src="./libs/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Evaluación Ergonómica Integrada</h1>
+        
+        <div class="datos-area">
+            <h2>Datos del área evaluada</h2>
+            <div class="form-group">
+                <label for="nombreArea">Nombre del área:</label>
+                <input type="text" id="nombreArea" class="input-field" placeholder="Ej. Área de producción">
+            </div>
+            <div class="form-group">
+                <label for="ubicacionArea">Ubicación:</label>
+                <input type="text" id="ubicacionArea" class="input-field" placeholder="Ej. Planta 2, Edificio A">
+            </div>
+            <div class="form-group">
+                <label for="responsableArea">Responsable:</label>
+                <input type="text" id="responsableArea" class="input-field" placeholder="Ej. Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label for="fechaEvaluacion">Fecha de evaluación:</label>
+                <input type="date" id="fechaEvaluacion" class="input-field">
+            </div>
+        </div>
+        
+        <div class="conditional-section">
+            <h2>Seleccione los criterios aplicables:</h2>
+            <label class="checkbox-label">
+                <input type="checkbox" class="checkbox-input" id="manipulaCargas">
+                Manipulación de cargas
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" class="checkbox-input" id="usaPantallas">
+                Uso de pantallas
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" class="checkbox-input" id="usaHerramientas">
+                Uso de herramientas
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" class="checkbox-input" id="mantienePosturas">
+                Mantenimiento de posturas
+            </label>
+        </div>
+
+        <div id="preguntas-container">
+            <!-- Aquí se cargarán dinámicamente las preguntas -->
+        </div>
+
+        <div id="resultadoScore" class="btn-container" style="margin-top: 20px;">
+            <h2>Nivel de Riesgo Ergonómico: <span id="scoreFinal">0%</span></h2>
+            <div id="categoriaRiesgo" style="font-size: 14px; margin-top: 5px; font-weight: normal;">
+                <span id="textoCategoria">Sin evaluar</span>
+            </div>
+        </div>
+
+        <!-- Nueva sección para recomendaciones de métodos -->
+        <div id="metodosRecomendados" class="metodos-recomendados hidden">
+            <h2>🎯 Métodos de Evaluación Recomendados</h2>
+            <div id="resumenDecision" class="resumen-decision">
+                <h3>📊 Resumen de Decisión</h3>
+                <div id="textoResumen"></div>
+            </div>
+            <div id="listMetodos"></div>
+            <div id="preguntasClave" class="preguntas-clave">
+                <h3>🔍 Preguntas Clave Identificadas</h3>
+                <div id="listPreguntasClave"></div>
+            </div>
+        </div>
+
+        <!-- Sección de Evaluaciones Guardadas -->
+        <div id="seccionEvaluaciones" class="evaluaciones-guardadas">
+            <h2>📋 Evaluaciones Guardadas</h2>
+            <div class="evaluaciones-stats">
+                <span id="contadorEvaluaciones">0 evaluaciones guardadas</span>
+                <button class="btn btn-secondary" onclick="toggleEvaluaciones()">
+                    <span id="toggleText">Mostrar Evaluaciones</span>
+                </button>
+            </div>
+            
+            <div id="listaEvaluaciones" class="lista-evaluaciones hidden">
+                <div class="btn-container">
+                <button class="btn" id="calcularBtn">Calcular Score</button>
+                <button class="btn" id="analizarMetodosBtn">Analizar Métodos Requeridos</button>
+                <button class="btn btn-success" onclick="saveEvaluationDirectly()">💾 Guardar Evaluación</button>
+                <button class="btn" id="exportBtn">Exportar Reporte PDF <span id="spinner" class="spinner hidden"></span></button>
+                </div>
+                <div id="contenedorEvaluaciones"></div>
+                <div class="evaluaciones-actions">
+                    <button class="btn btn-warning" onclick="exportarTodasPDF()">Exportar Todas a PDF</button>
+                    <button class="btn btn-danger" onclick="limpiarTodasEvaluaciones()">Limpiar Todas</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn" id="calcularBtn">Calcular Score</button>
+            <button class="btn" id="analizarMetodosBtn">Analizar Métodos Requeridos</button>
+            <button class="btn" id="exportBtn">Exportar Reporte PDF <span id="spinner" class="spinner hidden"></span></button>
+        </div>
+    </div>
+
+<!-- Supabase client (mantener el actual) -->
+<script src="js/supabase-client.js"></script>
+
+<!-- Nuevos módulos -->
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/pages/formulario.js"></script>
+
+<!-- Librerías externas (si no las tienes ya) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</body>
+</html>

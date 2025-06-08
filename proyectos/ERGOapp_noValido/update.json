@@ -1,0 +1,31 @@
+{
+  "latest": "1.0.7",
+  "files": {
+    "formulario.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/formulario.json",
+    "server.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/server.js",
+    "package.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/package.json",
+    "package-lock.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/package-lock.json",
+    "public/index.html": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/index.html",
+    "public/componentes/admin.html": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/admin.html",
+    "public/componentes/dashboard.html": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/dashboard.html",
+    "public/componentes/formulario.html": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/formulario.html",
+    "public/componentes/puestos.html": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/puestos.html",
+    "public/componentes/ver-evaluacion.html": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/ver-evaluacion.html",
+    "public/componentes/assets/admin.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/admin.css",
+    "public/componentes/assets/admin.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/admin.js",
+    "public/componentes/assets/formulario.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/formulario.css",
+    "public/componentes/assets/formulario.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/formulario.js",
+    "public/componentes/assets/preguntas.json": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/preguntas.json",
+    "public/componentes/assets/proteccion.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/proteccion.js",
+    "public/componentes/assets/puestos.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/puestos.css",
+    "public/componentes/assets/puestos.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/puestos.js",
+    "public/componentes/assets/ver-evaluacion.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/ver-evaluacion.css",
+    "public/componentes/assets/ver-evaluacion.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/componentes/assets/ver-evaluacion.js",
+    "public/inicio/index.css": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/inicio/index.css",
+    "public/inicio/index.js": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/public/inicio/index.js",
+    "check-update.sh": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/check-update.sh",
+    "bloqueado.txt": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/bloqueado.txt",
+    "data": "https://raw.githubusercontent.com/brancori/brancori.github.io/main/proyectos/ERGOapp/data.json"
+
+  }
+}

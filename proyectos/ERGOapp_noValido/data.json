@@ -1,0 +1,50 @@
+{
+  "areas": [
+    {
+      "id": "area_1747369327502",
+      "nombre": "Otra nueva área",
+      "responsable": "Prueba"
+    },
+    {
+      "id": "area_1747371074328",
+      "nombre": "Pruebas 35",
+      "responsable": "Jose Luis"
+    },
+    {
+      "id": "area_1747371159365",
+      "nombre": "pruebakakaka",
+      "responsable": "3333"
+    }
+  ],
+  "puestos": {
+    "area_1747369327502": [
+      {
+        "evaluador": "2222",
+        "puesto": "222",
+        "ubicacion": "222",
+        "documentado": "Sí",
+        "trabajadores": "22",
+        "turno": "222",
+        "rotacion": "Sí",
+        "tareas": "2222",
+        "presente": "Sí",
+        "id": "puesto_1747369353188",
+        "evaluacion": {
+          "usaPantallas": {
+            "respuestas": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          "evidencias": {},
+          "fecha": "2025-05-16T04:46:55.858Z"
+        }
+      }
+    ],
+    "area_1747371074328": [],
+    "area_1747371159365": []
+  }
+}

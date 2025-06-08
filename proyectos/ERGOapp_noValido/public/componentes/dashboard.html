@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Ergonómico</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .area {
+      background: white;
+      border-left: 5px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .riesgo-alto {
+      border-color: red;
+    }
+    .riesgo-bajo {
+      border-color: green;
+    }
+    .area strong {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<div style="text-align: center; margin-top: 30px;">
+  <a href="admin.html" style="
+    padding: 10px 20px;
+    background-color: #999;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: inline-block;
+  ">
+    ⬅ Regresar al Panel de Administración
+  </a>
+</div>
+<body>
+  <h1>Dashboard de Riesgo Ergonómico</h1>
+  <div id="reporte"></div>
+
+  <script>
+    fetch('/api/dashboard')
+      .then(res => res.json())
+      .then(data => {
+        const contenedor = document.getElementById('reporte');
+        data.forEach(area => {
+          const div = document.createElement('div');
+          div.className = 'area ' + (area.riesgo > 0 ? 'riesgo-alto' : 'riesgo-bajo');
+          div.innerHTML = `
+            <strong>${area.nombre}</strong><br>
+            Total puestos evaluados: ${area.total}<br>
+            Puestos con riesgo: <b style="color:${area.riesgo > 0 ? 'red' : 'green'}">${area.riesgo}</b>
+          `;
+          contenedor.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>
