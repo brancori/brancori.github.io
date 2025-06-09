@@ -3,94 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Áreas</title>
     <link rel="stylesheet" href="index.css">
-    <title>Sistema de Evaluación Ergonómica</title>
-    <script type="module" src="supabase-client.js"></script>
+    <script src="supabase-config.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Sistema de Evaluación Ergonómica</h1>
-            <p>Gestión integral de centros de trabajo y evaluaciones de riesgo</p>
-        </div>
-
-        <div class="content">
-            <!-- Sección de Áreas Guardadas -->
-            <div class="areas-section">
-                <div class="areas-header">
-                    <h2 class="areas-title">Áreas Guardadas</h2>
-                    <button class="btn btn-primary" onclick="toggleNewAreaForm()">
-                        ➕ Nueva Área
+    <!-- Página Principal de Áreas -->
+    <div id="areas-page" class="page active">
+        <div class="container">
+            <header class="header">
+                <div class="header-content">
+                    <h1>Gestión de Áreas</h1>
+                    <p class="subtitle">Administra las áreas y centros de trabajo de tu organización</p>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <h2>Áreas registradas</h2>
+                        <span id="areas-count" class="count-badge">0 áreas</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAreaModal()">
+                        <span class="icon">+</span>
+                        Nueva Área
                     </button>
                 </div>
-
-                <!-- Lista de áreas -->
-                <div id="areasList">
-                    <!-- Las áreas se cargarán aquí dinámicamente -->
+                
+                <div id="areas-container" class="content-grid">
+                    <!-- Las áreas se renderizan aquí -->
                 </div>
+            </main>
+        </div>
+    </div>
 
-                <!-- Estado vacío -->
-                <div id="emptyAreasState" class="empty-state hidden">
-                    <div class="empty-state-icon"></div>
-                    <div class="empty-state-text">No hay áreas registradas</div>
-                    <div class="empty-state-subtext">Comienza creando tu primera área de trabajo</div>
+    <!-- Página de Área Individual -->
+    <div id="area-detail-page" class="page">
+        <div class="container">
+            <header class="header">
+                <div class="header-content">
+                    <nav class="breadcrumb">
+                        <a href="#" onclick="showAreasPage()">Áreas</a>
+                        <span class="separator">/</span>
+                        <span id="breadcrumb-area">Área</span>
+                    </nav>
+                    <h1 id="area-detail-title">Área</h1>
+                    <p id="area-detail-subtitle" class="subtitle">Responsable: </p>
                 </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn btn-ghost" onclick="showAreasPage()">
+                            <span class="icon">←</span>
+                            Volver
+                        </button>
+                        <div class="toolbar-info">
+                            <h2>Centros de Trabajo</h2>
+                            <span id="centers-count" class="count-badge">0 centros</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openWorkCenterModal()">
+                        <span class="icon">+</span>
+                        Nuevo Centro
+                    </button>
+                </div>
+                
+                <div id="work-centers-container" class="content-grid">
+                    <!-- Los centros de trabajo se renderizan aquí -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Área -->
+    <div id="area-modal" class="modal">
+        <div class="modal-overlay" onclick="closeAreaModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Área</h3>
+                <button class="modal-close" onclick="closeAreaModal()">
+                    <span>×</span>
+                </button>
             </div>
-
-            <!-- Formulario de Nueva Área (oculto por defecto) -->
-            <div id="newAreaForm" class="form-section hidden">
-                <h3>Registrar Nueva Área</h3>
-                <form id="areaForm">
+            
+            <div class="modal-body">
+                <form id="area-form">
                     <div class="form-group">
-                        <label for="areaName">Nombre del Área *</label>
-                        <input type="text" id="areaName" class="form-control" 
-                               placeholder="Ej: Laboratorio" required>
+                        <label for="area-name">Nombre del área</label>
+                        <input 
+                            type="text" 
+                            id="area-name" 
+                            placeholder="Ej. Recursos Humanos"
+                            required
+                        >
                     </div>
+                    
                     <div class="form-group">
-                        <label for="areaManager">Responsable del Área *</label>
-                        <input type="text" id="areaManager" class="form-control" 
-                               placeholder="Ej: Juan Pérez" required>
-                    </div>
-                    <div class="area-actions">
-                        <button type="submit" class="btn btn-success">Guardar Área</button>
-                        <button type="button" class="btn btn-secondary" onclick="cancelNewArea()">❌ Cancelar</button>
+                        <label for="area-responsible">Responsable del área</label>
+                        <input 
+                            type="text" 
+                            id="area-responsible" 
+                            placeholder="Nombre del responsable"
+                            required
+                        >
                     </div>
                 </form>
             </div>
-
-            <!-- Sección de Cargar Evaluación -->
-            <div class="evaluation-section">
-                <div class="evaluation-header">
-                    <h2 class="evaluation-title">Cargar Evaluación</h2>
-                    <p class="evaluation-subtitle">Importa evaluaciones desde archivos JSON o inicia una nueva</p>
-                </div>
-
-                <!-- Área de carga de archivos -->
-                <div class="upload-area" onclick="document.getElementById('jsonFileInput').click()" 
-                     ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" 
-                     ondragleave="dragLeaveHandler(event)">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Arrastra archivos JSON aquí</div>
-                    <div class="upload-subtext">o haz clic para seleccionar archivos</div>
-                    <input type="file" id="jsonFileInput" class="file-input" 
-                           accept=".json" multiple onchange="handleFileSelect(event)">
-                </div>
-
-                <!-- Botón de nueva evaluación -->
-                <div class="text-center mt-20">
-                    <p style="margin-bottom: 15px; color: #666;">¿Prefieres hacer una nueva evaluación?</p>
-                    <a href="formulario_.html" class="btn btn-primary" target="_blank">
-                        Iniciar Nueva Evaluación
-                    </a>
-                </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeAreaModal()">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="saveArea()">
+                    Crear Área
+                </button>
             </div>
-
-            <!-- Mensajes de estado -->
-            <div id="statusMessages"></div>
         </div>
     </div>
-<script src="js/supabase-client.js"></script>
-<script type="module" src="js/main.js"></script>
-<script type="module" src="js/pages/index-page.js"></script>
+
+    <!-- Modal para Agregar Centro de Trabajo -->
+    <div id="work-center-modal" class="modal">
+        <div class="modal-overlay" onclick="closeWorkCenterModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Centro de Trabajo</h3>
+                <button class="modal-close" onclick="closeWorkCenterModal()">
+                    <span>×</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="work-center-form">
+                    <div class="form-group">
+                        <label for="work-center-name">Nombre del centro</label>
+                        <input 
+                            type="text" 
+                            id="work-center-name" 
+                            placeholder="Ej. Estación de Trabajo A1"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="work-center-responsible">Responsable</label>
+                        <input 
+                            type="text" 
+                            id="work-center-responsible" 
+                            placeholder="Nombre del responsable"
+                            required
+                        >
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeWorkCenterModal()">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="saveWorkCenter()">
+                    Crear Centro
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script src="index.js"></script>
 </body>
 </html>
