@@ -380,7 +380,7 @@ function renderWorkCenters() {
         <div class="card-responsible">Responsable: ${center.responsible}</div>
             <div class="card-footer">
                 <div class="card-stats">
-                    Creado ${formatDate(center.createdAt)}
+                    Creado ${formatDate(center.created_at || center.createdAt)}
                 </div>
                 <button class="btn btn-danger" onclick="deleteWorkCenter('${center.id}', event)">
                     Eliminar
