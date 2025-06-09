@@ -192,19 +192,22 @@ function deleteArea(areaId, event) {
     }
 }
 
-function renderAreas() {
-    const container = document.getElementById('areas-container');
-    updateAreasCount();
-    
-    if (areas.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <h3>No hay áreas registradas</h3>
-                <p>Comienza creando tu primera área de trabajo</p>
-            </div>
-        `;
-        return;
-    }
+    async function renderAreas() {
+        const container = document.getElementById('areas-container');
+        updateAreasCount();
+        
+        // AGREGAR ESTA LÍNEA: Cargar todos los centros de trabajo
+        await loadWorkCenters();
+        
+        if (areas.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No hay áreas registradas</h3>
+                    <p>Comienza creando tu primera área de trabajo</p>
+                </div>
+            `;
+            return;
+        }
 
     container.innerHTML = areas.map(area => {
         const areaCenters = workCenters.filter(wc => wc.areaId === area.id);
