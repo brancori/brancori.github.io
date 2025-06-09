@@ -62,7 +62,17 @@ async query(table, method = 'GET', data = null, filters = '') {
     async deleteArea(id) {
         return await this.query('areas', 'DELETE', null, `?id=eq.${id}`);
     }
+    async updateArea(id, data) {
+        return await this.query('areas', 'PATCH', data, `?id=eq.${id}`);
+    }
 
+    async updateWorkCenter(id, data) {
+        return await this.query('work_centers', 'PATCH', data, `?id=eq.${id}`);
+    }
+
+    async deleteEvaluacion(id) {
+        return await this.query('evaluaciones', 'DELETE', null, `?id=eq.${id}`);
+}
     async getWorkCenters(areaId = null) {
         const filter = areaId ? `?area_id=eq.${areaId}` : '';
         return await this.query('work_centers', 'GET', null, filter);

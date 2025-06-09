@@ -57,6 +57,9 @@ let currentAreaId = null;
 const urlParams = new URLSearchParams(window.location.search);
 const workCenterId = urlParams.get('workCenter');
 const areaId = urlParams.get('area');
+const areaName = urlParams.get('areaName');
+const centerName = urlParams.get('centerName');
+const responsibleName = urlParams.get('responsible');
 
 // Utilidades
 function generateShortId() {
@@ -136,38 +139,77 @@ async function saveArea() {
         return;
     }
     
-    if (areas.some(area => area.name.toLowerCase() === name.toLowerCase())) {
-        showToast('Ya existe un área con ese nombre', 'error');
-        return;
-    }
-
-    const newArea = {
-        id: generateShortId(),
-        name: name,
-        responsible: responsible,
-        created_at: new Date().toISOString()
-    };
-
-    try {
-        if (USE_SUPABASE) {
-            await supabase.createArea(newArea);
-            areas.push(newArea);
-        } else {
-            areas.push(newArea);
-            localStorage.setItem('areas', JSON.stringify(areas));
+    // Verificar si es edición (si el modal tiene un ID oculto)
+    const editingId = document.getElementById('area-id-hidden')?.value;
+    
+    if (editingId) {
+        // ES EDICIÓN - UPDATE
+        if (areas.some(area => area.id !== editingId && area.name.toLowerCase() === name.toLowerCase())) {
+            showToast('Ya existe un área con ese nombre', 'error');
+            return;
         }
-        
-        closeAreaModal();
-        renderAreas();
-        showToast(`Área "${name}" creada exitosamente`);
-    } catch (error) {
-        console.error('Error saving area:', error);
-        showToast('Error al crear el área', 'error');
+
+        try {
+            const updatedArea = {
+                name: name,
+                responsible: responsible,
+                updated_at: new Date().toISOString()
+            };
+
+            if (USE_SUPABASE) {
+                await supabase.updateArea(editingId, updatedArea);
+            }
+            
+            // Actualizar array local
+            const areaIndex = areas.findIndex(a => a.id === editingId);
+            if (areaIndex !== -1) {
+                areas[areaIndex] = { ...areas[areaIndex], ...updatedArea };
+            }
+            
+            localStorage.setItem('areas', JSON.stringify(areas));
+            
+            closeAreaModal();
+            renderAreas();
+            showToast(`Área "${name}" actualizada exitosamente`);
+        } catch (error) {
+            console.error('Error updating area:', error);
+            showToast('Error al actualizar el área', 'error');
+        }
+    } else {
+        // ES CREACIÓN - CREATE (código existente)
+        if (areas.some(area => area.name.toLowerCase() === name.toLowerCase())) {
+            showToast('Ya existe un área con ese nombre', 'error');
+            return;
+        }
+
+        const newArea = {
+            id: generateShortId(),
+            name: name,
+            responsible: responsible,
+            created_at: new Date().toISOString()
+        };
+
+        try {
+            if (USE_SUPABASE) {
+                await supabase.createArea(newArea);
+                areas.push(newArea);
+            } else {
+                areas.push(newArea);
+                localStorage.setItem('areas', JSON.stringify(areas));
+            }
+            
+            closeAreaModal();
+            renderAreas();
+            showToast(`Área "${name}" creada exitosamente`);
+        } catch (error) {
+            console.error('Error saving area:', error);
+            showToast('Error al crear el área', 'error');
+        }
     }
 }
 
-function deleteArea(areaId, event) {
-    event.stopPropagation(); // Evitar que se abra el área
+async function deleteArea(areaId, event) {
+    event.stopPropagation();
     
     const area = areas.find(a => a.id === areaId);
     if (!area) return;
@@ -181,14 +223,30 @@ function deleteArea(areaId, event) {
     }
     
     if (confirm(confirmMessage)) {
-        areas = areas.filter(a => a.id !== areaId);
-        workCenters = workCenters.filter(wc => wc.areaId !== areaId);
-        
-        localStorage.setItem('areas', JSON.stringify(areas));
-        localStorage.setItem('workCenters', JSON.stringify(workCenters));
-        
-        renderAreas();
-        showToast(`Área "${area.name}" eliminada`);
+        try {
+            if (USE_SUPABASE) {
+                // Eliminar centros asociados primero
+                for (const center of areaCenters) {
+                    await supabase.deleteWorkCenter(center.id);
+                }
+                // Luego eliminar el área
+                await supabase.deleteArea(areaId);
+            }
+            
+            // Actualizar arrays locales
+            areas = areas.filter(a => a.id !== areaId);
+            workCenters = workCenters.filter(wc => wc.areaId !== areaId);
+            
+            // Actualizar localStorage como fallback
+            localStorage.setItem('areas', JSON.stringify(areas));
+            localStorage.setItem('workCenters', JSON.stringify(workCenters));
+            
+            renderAreas();
+            showToast(`Área "${area.name}" eliminada`);
+        } catch (error) {
+            console.error('Error deleting area:', error);
+            showToast('Error al eliminar el área', 'error');
+        }
     }
 }
 
@@ -305,53 +363,105 @@ async function saveWorkCenter() {
         return;
     }
     
-    const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
-    if (areaCenters.some(center => center.name.toLowerCase() === name.toLowerCase())) {
-        showToast('Ya existe un centro con ese nombre en esta área', 'error');
-        return;
-    }
-
-    const newWorkCenter = {
-        id: generateShortId(),
-        name: name,
-        responsible: responsible,
-        area_id: currentAreaId,  // Para Supabase
-        areaId: currentAreaId,   // Para localStorage local
-        created_at: new Date().toISOString()
-    };
-
-    try {
-        if (USE_SUPABASE) {
-            await supabase.createWorkCenter(newWorkCenter);
-            workCenters.push({...newWorkCenter, areaId: currentAreaId});
-        } else {
-            workCenters.push({...newWorkCenter, areaId: currentAreaId});
-            localStorage.setItem('workCenters', JSON.stringify(workCenters));
+    // Verificar si es edición
+    const editingId = document.getElementById('work-center-id-hidden')?.value;
+    
+    if (editingId) {
+        // ES EDICIÓN - UPDATE
+        const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
+        if (areaCenters.some(center => center.id !== editingId && center.name.toLowerCase() === name.toLowerCase())) {
+            showToast('Ya existe un centro con ese nombre en esta área', 'error');
+            return;
         }
-        
-        closeWorkCenterModal();
-        renderWorkCenters();
-        renderAreas();
-        showToast(`Centro de trabajo "${name}" creado exitosamente`);
-    } catch (error) {
-        console.error('Error saving work center:', error);
-        showToast('Error al crear el centro de trabajo', 'error');
+
+        try {
+            const updatedCenter = {
+                name: name,
+                responsible: responsible,
+                updated_at: new Date().toISOString()
+            };
+
+            if (USE_SUPABASE) {
+                await supabase.updateWorkCenter(editingId, updatedCenter);
+            }
+            
+            // Actualizar array local
+            const centerIndex = workCenters.findIndex(wc => wc.id === editingId);
+            if (centerIndex !== -1) {
+                workCenters[centerIndex] = { ...workCenters[centerIndex], ...updatedCenter };
+            }
+            
+            localStorage.setItem('workCenters', JSON.stringify(workCenters));
+            
+            closeWorkCenterModal();
+            renderWorkCenters();
+            renderAreas();
+            showToast(`Centro "${name}" actualizado exitosamente`);
+        } catch (error) {
+            console.error('Error updating work center:', error);
+            showToast('Error al actualizar el centro de trabajo', 'error');
+        }
+    } else {
+        // ES CREACIÓN - CREATE (código existente)
+        const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
+        if (areaCenters.some(center => center.name.toLowerCase() === name.toLowerCase())) {
+            showToast('Ya existe un centro con ese nombre en esta área', 'error');
+            return;
+        }
+
+        const newWorkCenter = {
+            id: generateShortId(),
+            name: name,
+            responsible: responsible,
+            area_id: currentAreaId,
+            created_at: new Date().toISOString()
+        };
+
+        try {
+            if (USE_SUPABASE) {
+                await supabase.createWorkCenter(newWorkCenter);
+                workCenters.push({...newWorkCenter, areaId: currentAreaId});
+            } else {
+                workCenters.push({...newWorkCenter, areaId: currentAreaId});
+                localStorage.setItem('workCenters', JSON.stringify(workCenters));
+            }
+            
+            closeWorkCenterModal();
+            renderWorkCenters();
+            renderAreas();
+            showToast(`Centro de trabajo "${name}" creado exitosamente`);
+        } catch (error) {
+            console.error('Error saving work center:', error);
+            showToast('Error al crear el centro de trabajo', 'error');
+        }
     }
 }
 
-function deleteWorkCenter(centerId, event) {
-    event.stopPropagation(); // Evitar propagación si hay eventos padre
+async function deleteWorkCenter(centerId, event) {
+    event.stopPropagation();
     
     const center = workCenters.find(wc => wc.id === centerId);
     if (!center) return;
     
     if (confirm(`¿Estás seguro de eliminar el centro "${center.name}"?`)) {
-        workCenters = workCenters.filter(wc => wc.id !== centerId);
-        localStorage.setItem('workCenters', JSON.stringify(workCenters));
-        
-        renderWorkCenters();
-        renderAreas(); // Actualizar contador en vista principal
-        showToast(`Centro "${center.name}" eliminado`);
+        try {
+            if (USE_SUPABASE) {
+                await supabase.deleteWorkCenter(centerId);
+            }
+            
+            // Actualizar array local
+            workCenters = workCenters.filter(wc => wc.id !== centerId);
+            
+            // Actualizar localStorage como fallback
+            localStorage.setItem('workCenters', JSON.stringify(workCenters));
+            
+            renderWorkCenters();
+            renderAreas(); // Actualizar contador en vista principal
+            showToast(`Centro "${center.name}" eliminado`);
+        } catch (error) {
+            console.error('Error deleting work center:', error);
+            showToast('Error al eliminar el centro de trabajo', 'error');
+        }
     }
 }
 
@@ -382,7 +492,7 @@ function renderWorkCenters() {
     }
 
     container.innerHTML = areaCenters.map(center => `
-    <div class="card" data-work-center-id="${center.id}" onclick="window.open('evaluacion_integrada_html (1).html?workCenter=${center.id}&area=${currentAreaId}', '_blank')">
+        <div class="card" data-work-center-id="${center.id}" onclick="window.open('evaluacion_integrada_html (1).html?workCenter=${center.id}&area=${currentAreaId}&areaName=${encodeURIComponent(areas.find(a => a.id === currentAreaId)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}', '_blank')">        
         <div class="card-header">
             <div class="card-id">${center.id}</div>
         </div>

@@ -392,6 +392,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         const workCenterId = urlParams.get('workCenter');
         const areaId = urlParams.get('area');
+        const areaName = urlParams.get('areaName');
+        const centerName = urlParams.get('centerName');
+        const responsibleName = urlParams.get('responsible');
         let isEditMode = false;
         let originalData = null;
 
@@ -402,21 +405,21 @@ const USE_SUPABASE_EVAL = true;
 async function guardarEvaluacionSupabase(evaluacion) {
     if (USE_SUPABASE_EVAL) {
         try {
-            const evaluacionSupabase = {
-                id: evaluacion.id,
-                work_center_id: evaluacion.workCenterId,
-                area_id: evaluacion.areaId,
-                fecha_evaluacion: evaluacion.fechaEvaluacion,
-                nombre_area: evaluacion.nombreArea,
-                ubicacion_area: evaluacion.ubicacionArea,
-                responsable_area: evaluacion.responsableArea,
-                criterios: evaluacion.criterios,
-                respuestas: evaluacion.respuestas,
-                score_final: parseFloat(evaluacion.scoreFinal),
-                categoria_riesgo: evaluacion.categoriaRiesgo,
-                nivel_riesgo_ergonomico: evaluacion.nivelRiesgoErgonomico,
-                color_riesgo: evaluacion.colorRiesgo
-            };
+        const evaluacionSupabase = {
+            id: evaluacion.id,
+            work_center_id: evaluacion.workCenterId,
+            area_id: evaluacion.areaId,
+            fecha_evaluacion: evaluacion.fechaEvaluacion,
+            nombre_area: evaluacion.nombreArea,        // Consistente con snake_case
+            ubicacion_area: evaluacion.ubicacionArea,  // Consistente con snake_case  
+            responsable_area: evaluacion.responsableArea, // Consistente con snake_case
+            criterios: evaluacion.criterios,
+            respuestas: evaluacion.respuestas,
+            score_final: parseFloat(evaluacion.scoreFinal),
+            categoria_riesgo: evaluacion.categoriaRiesgo,
+            nivel_riesgo_ergonomico: evaluacion.nivelRiesgoErgonomico,
+            color_riesgo: evaluacion.colorRiesgo
+        };
             
             // Verificar si ya existe
             const existing = await supabase.getEvaluaciones(evaluacion.workCenterId);
@@ -1126,53 +1129,57 @@ function enterEditMode() {
 }
 }
 
-        // 3. AQUÍ va la función cargarDatosExistentes
-// Función para cargar evaluación existente
-        async function cargarDatosExistentes() {
-            // Intentar cargar desde Supabase primero
-            let evaluacion = await cargarEvaluacionSupabase(workCenterId);
-            
-            // Fallback a localStorage
-            if (!evaluacion) {
-                const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-                evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
-            }
-            
-            if (evaluacion) {
-                // Cargar datos básicos
-                if (evaluacion.nombreArea) document.getElementById('nombreArea').value = evaluacion.nombreArea;
-                if (evaluacion.ubicacionArea) document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea;
-                if (evaluacion.responsableArea) document.getElementById('responsableArea').value = evaluacion.responsableArea;
-                if (evaluacion.fechaEvaluacion) document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion;
-                
-                // Cargar criterios
-                if (evaluacion.criterios) {
-                    document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
-                    document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
-                    document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
-                    document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
-                }
-                
-                // Actualizar preguntas y luego cargar respuestas
-                actualizarPreguntas();
-                
-                setTimeout(() => {
-                if (evaluacion.respuestas) {
-                    Object.keys(evaluacion.respuestas).forEach(key => {
-                        const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
-                        if (radio) radio.checked = true;
-                    });
-                }
-                calcularScoreAutomatico();
-                
-                // ACTIVAR MODO DE VISUALIZACIÓN AUTOMÁTICAMENTE
-                enterViewMode();
-            }, 100);
-                
-                console.log('Datos existentes cargados:', evaluacion);
-            }
+// REEMPLAZAR toda la función cargarDatosExistentes()
+async function cargarDatosExistentes() {
+    // Intentar cargar desde Supabase primero
+    let evaluacion = await cargarEvaluacionSupabase(workCenterId);
+    
+    // Fallback a localStorage
+    if (!evaluacion) {
+        const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+        evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+    }
+    
+    if (evaluacion) {
+        // EXISTE EVALUACIÓN - Cargar datos guardados
+        // Manejar ambos formatos de nombres de campos
+        document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
+        document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
+        document.getElementById('responsableArea').value = evaluacion.responsableArea || evaluacion.responsable_area || '';
+        document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion || evaluacion.fecha_evaluacion || '';
+        
+        // Cargar criterios
+        if (evaluacion.criterios) {
+            document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
+            document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
+            document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
+            document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
         }
-
+        
+        // Actualizar preguntas y cargar respuestas
+        actualizarPreguntas();
+        
+        setTimeout(() => {
+            if (evaluacion.respuestas) {
+                Object.keys(evaluacion.respuestas).forEach(key => {
+                    const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
+                    if (radio) radio.checked = true;
+                });
+            }
+            calcularScoreAutomatico();
+            enterViewMode();
+        }, 100);
+        
+        console.log('✅ Evaluación existente cargada');
+    } else {
+        // NO EXISTE EVALUACIÓN - Cargar datos básicos desde URL si están disponibles
+        if (centerName) document.getElementById('nombreArea').value = decodeURIComponent(centerName);
+        if (areaName) document.getElementById('ubicacionArea').value = decodeURIComponent(areaName);
+        if (responsibleName) document.getElementById('responsableArea').value = decodeURIComponent(responsibleName);
+        
+        console.log('ℹ️ Nueva evaluación - datos básicos cargados desde URL');
+    }
+}
         // 4. Luego sigue tu función existente
         function exportarPDFCompleto() {
             // AGREGAR guardarEvaluacion(); al inicio
