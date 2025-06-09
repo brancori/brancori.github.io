@@ -14,29 +14,41 @@ class SupabaseClient {
         };
     }
 
-    async query(table, method = 'GET', data = null, filters = '') {
-        const url = `${this.url}/rest/v1/${table}${filters}`;
-        
-        const options = {
-            method: method,
-            headers: this.headers
-        };
-        
-        if (data && (method === 'POST' || method === 'PATCH')) {
-            options.body = JSON.stringify(data);
-        }
-        
-        try {
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Supabase query error:', error);
-            throw error;
-        }
+async query(table, method = 'GET', data = null, filters = '') {
+    const url = `${this.url}/rest/v1/${table}${filters}`;
+    
+    const options = {
+        method: method,
+        headers: this.headers
+    };
+    
+    if (data && (method === 'POST' || method === 'PATCH')) {
+        options.body = JSON.stringify(data);
     }
+    
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Para métodos que no devuelven datos
+        if (method === 'POST' || method === 'PATCH' || method === 'DELETE') {
+            return { success: true }; // Devolver un objeto simple para indicar éxito
+        }
+        
+        // Solo para GET, intentar parsear JSON
+        const text = await response.text();
+        if (!text) {
+            return null;
+        }
+        
+        return JSON.parse(text);
+    } catch (error) {
+        console.error('Supabase query error:', error);
+        throw error;
+    }
+}
 
     // Métodos específicos para cada tabla
     async getAreas() {

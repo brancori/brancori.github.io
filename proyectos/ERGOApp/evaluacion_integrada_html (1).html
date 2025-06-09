@@ -395,6 +395,59 @@
         let isEditMode = false;
         let originalData = null;
 
+// Configuración para usar Supabase
+const USE_SUPABASE_EVAL = true;
+
+// Función para guardar en Supabase
+async function guardarEvaluacionSupabase(evaluacion) {
+    if (USE_SUPABASE_EVAL) {
+        try {
+            const evaluacionSupabase = {
+                id: evaluacion.id,
+                work_center_id: evaluacion.workCenterId,
+                area_id: evaluacion.areaId,
+                fecha_evaluacion: evaluacion.fechaEvaluacion,
+                nombre_area: evaluacion.nombreArea,
+                ubicacion_area: evaluacion.ubicacionArea,
+                responsable_area: evaluacion.responsableArea,
+                criterios: evaluacion.criterios,
+                respuestas: evaluacion.respuestas,
+                score_final: parseFloat(evaluacion.scoreFinal),
+                categoria_riesgo: evaluacion.categoriaRiesgo,
+                nivel_riesgo_ergonomico: evaluacion.nivelRiesgoErgonomico,
+                color_riesgo: evaluacion.colorRiesgo
+            };
+            
+            // Verificar si ya existe
+            const existing = await supabase.getEvaluaciones(evaluacion.workCenterId);
+            if (existing && existing.length > 0) {
+                await supabase.updateEvaluacion(evaluacion.id, evaluacionSupabase);
+            } else {
+                await supabase.createEvaluacion(evaluacionSupabase);
+            }
+            
+            console.log('Evaluación guardada en Supabase');
+        } catch (error) {
+            console.error('Error guardando en Supabase:', error);
+            // Fallback a localStorage
+        }
+    }
+}
+
+// Función para cargar desde Supabase
+async function cargarEvaluacionSupabase(workCenterId) {
+    if (USE_SUPABASE_EVAL) {
+        try {
+            const evaluaciones = await supabase.getEvaluaciones(workCenterId);
+            return evaluaciones && evaluaciones.length > 0 ? evaluaciones[0] : null;
+        } catch (error) {
+            console.error('Error cargando desde Supabase:', error);
+            return null;
+        }
+    }
+    return null;
+}
+
         // Datos con preguntas, ponderaciones y mapeo de métodos
         const data = {
             generales: [
@@ -530,11 +583,11 @@
             const fechaHoy = new Date().toISOString().split('T')[0];
             document.getElementById('fechaEvaluacion').value = fechaHoy;
 
-                setTimeout(() => {
-                        if (workCenterId && areaId) {
-                            cargarDatosExistentes();
-                        }
-                    }, 100);
+            setTimeout(async () => {
+                if (workCenterId && areaId) {
+                    await cargarDatosExistentes();
+                }
+            }, 100);
             
             // Cargar preguntas generales
             cargarPreguntasGenerales();
@@ -1000,7 +1053,7 @@ function enterEditMode() {
         }
         
         // Función para guardar evaluación en localStorage
-        function guardarEvaluacion() {
+        async function guardarEvaluacion() {
     if (!workCenterId || !areaId) {
         console.warn('No se pueden guardar los datos: faltan parámetros de URL');
         return;
@@ -1061,6 +1114,8 @@ function enterEditMode() {
     
     localStorage.setItem('evaluaciones', JSON.stringify(evaluaciones));
     console.log('Evaluación guardada exitosamente');
+    await guardarEvaluacionSupabase(evaluacion);
+    
     if (window.parent && window.parent.postMessage) {
     window.parent.postMessage({
         type: 'evaluacionActualizada',
@@ -1073,9 +1128,15 @@ function enterEditMode() {
 
         // 3. AQUÍ va la función cargarDatosExistentes
 // Función para cargar evaluación existente
-        function cargarDatosExistentes() {
-            const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-            const evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+        async function cargarDatosExistentes() {
+            // Intentar cargar desde Supabase primero
+            let evaluacion = await cargarEvaluacionSupabase(workCenterId);
+            
+            // Fallback a localStorage
+            if (!evaluacion) {
+                const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+                evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+            }
             
             if (evaluacion) {
                 // Cargar datos básicos

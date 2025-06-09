@@ -28,19 +28,25 @@ async function saveAreaToStorage(area) {
     }
 }
 
-async function loadWorkCenters(areaId = null) {
-    if (USE_SUPABASE) {
-        try {
-            workCenters = await supabase.getWorkCenters(areaId);
-        } catch (error) {
-            console.error('Error loading work centers from Supabase:', error);
+    async function loadWorkCenters(areaId = null) {
+        if (USE_SUPABASE) {
+            try {
+                const data = await supabase.getWorkCenters(areaId);
+                // Normalizar los datos para que funcionen con el resto del código
+                workCenters = data ? data.map(wc => ({
+                    ...wc,
+                    areaId: wc.area_id || wc.areaId,
+                    createdAt: wc.created_at || wc.createdAt
+                })) : [];
+            } catch (error) {
+                console.error('Error loading work centers from Supabase:', error);
+                workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
+            }
+        } else {
             workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
         }
-    } else {
-        workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
+        return workCenters;
     }
-    return workCenters;
-}
 
 // Variables globales
 let areas = JSON.parse(localStorage.getItem('areas')) || [];
@@ -306,7 +312,8 @@ async function saveWorkCenter() {
         id: generateShortId(),
         name: name,
         responsible: responsible,
-        area_id: currentAreaId,
+        area_id: currentAreaId,  // Para Supabase
+        areaId: currentAreaId,   // Para localStorage local
         created_at: new Date().toISOString()
     };
 
