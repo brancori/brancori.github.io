@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Trabajo</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="supabase-config.js"></script>
+    <style>
+        .centro-header {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .centro-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .centro-info {
+            flex: 1;
+        }
+
+        .centro-info h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .centro-responsable {
+            color: var(--gray-600);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-container {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-category {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .btn-add-note {
+            background: var(--primary-600);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-md);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-add-note:hover {
+            background: var(--primary-700);
+        }
+
+        .content-sections {
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .section-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Estilos para la sección de fotos */
+        .fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .foto-slot {
+            aspect-ratio: 1;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: var(--gray-50);
+        }
+
+        .foto-slot:hover {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+
+        .foto-slot.occupied {
+            border: 2px solid var(--gray-200);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .foto-slot.disabled {
+            background: var(--gray-100);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .foto-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .foto-delete {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--red-500);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .foto-delete:hover {
+            background: var(--red-600);
+        }
+
+        .fotos-info {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-align: center;
+        }
+
+        /* Estilos para evaluaciones */
+        .evaluaciones-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .evaluacion-item {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .evaluacion-item:hover {
+            border-color: var(--primary-300);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .evaluacion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .evaluacion-metodo {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .evaluacion-score {
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .evaluacion-fecha {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .empty-evaluations {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        /* Estilos para notas */
+        .notas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nota-item {
+            border-left: 4px solid var(--primary-500);
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+        }
+
+        .nota-fecha {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .nota-texto {
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .empty-notas {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        /* Modal para nueva nota */
+        .modal-nota {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-nota.show {
+            display: flex;
+        }
+
+        .modal-nota-content {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-nota textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-md);
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .modal-nota textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .centro-title {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .fotos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .content-sections {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fotos-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        /* Modal para vista completa de fotos */
+.foto-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.foto-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.foto-modal-content {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalZoomIn 0.3s ease-out;
+}
+
+@keyframes modalZoomIn {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.foto-modal-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.foto-modal-info {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-lg);
+    margin-top: 1rem;
+    text-align: center;
+    color: var(--gray-800);
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+}
+
+.foto-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--gray-700);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-lg);
+}
+
+.foto-modal-close:hover {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    transform: scale(1.1);
+}
+
+.foto-modal-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-lg);
+    color: var(--gray-700);
+}
+
+.foto-modal-controls:hover {
+    background: rgba(59, 130, 246, 0.9);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.foto-modal-prev {
+    left: 20px;
+}
+
+.foto-modal-next {
+    right: 20px;
+}
+
+.foto-modal-counter {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Zoom functionality */
+.foto-modal-image.zoomed {
+    cursor: zoom-out;
+    transform: scale(1.5);
+}
+
+.foto-modal-image:not(.zoomed) {
+    cursor: zoom-in;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .foto-modal-close,
+    .foto-modal-controls {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .foto-modal-close {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .foto-modal-prev {
+        left: 10px;
+    }
+    
+    .foto-modal-next {
+        right: 10px;
+    }
+    
+    .foto-modal-counter {
+        top: 10px;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .foto-modal-info {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header del centro -->
+        <header class="centro-header">
+            <nav class="breadcrumb">
+                <a href="index.html">Áreas</a>
+                <span class="separator">/</span>
+                <a href="#" id="breadcrumb-area">Área</a>
+                <span class="separator">/</span>
+                <span id="breadcrumb-centro">Centro</span>
+            </nav>
+            
+            <div class="centro-title">
+                <div class="centro-info">
+                    <h1 id="centro-name">Centro de Trabajo</h1>
+                    <div id="centro-responsable" class="centro-responsable">Responsable: </div>
+                </div>
+                
+                <div class="score-container">
+                    <div id="score-value" class="score-value">60%</div>
+                    <div id="score-category" class="score-category">Para mejorar</div>
+                    <button class="btn-add-note" onclick="openNotaModal()">
+                        + AGREGAR NOTA
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="content-sections">
+            <!-- Sección de Evaluación Inicial -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📊 Evaluación Inicial</h2>
+                    <button class="btn btn-ghost" onclick="abrirEvaluacion()">
+                        Ver Evaluación Completa
+                    </button>
+                </div>
+                
+                <div id="evaluacion-inicial-info">
+                    <p>Fecha: <span id="eval-fecha">--</span></p>
+                    <p>Score: <span id="eval-score">--</span></p>
+                    <p>Evaluaciones sugeridas: <span id="eval-sugeridas">--</span></p>
+                </div>
+            </section>
+
+            <!-- Sección de Fotos -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📸 Fotos del Centro</h2>
+                    <span class="fotos-counter">
+                        <span id="fotos-count">0</span>/5 fotos
+                    </span>
+                </div>
+                
+                <div class="fotos-grid" id="fotos-grid">
+                    <!-- Los slots de fotos se generan dinámicamente -->
+                </div>
+                
+                <div class="fotos-info">
+                    Haz clic en un slot vacío para agregar una foto (máximo 5)
+                    <br>
+                    <small>Formatos: JPG, PNG, WEBP (máx. 5MB cada una)</small>
+                </div>
+                
+                <input type="file" id="foto-input" accept="image/*" style="display: none;">
+            </section>
+
+            <!-- Sección de Evaluaciones Específicas -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">🎯 Evaluaciones Específicas</h2>
+                    <button class="btn btn-primary" onclick="openEvaluacionModal()">
+                        + AGREGAR EVALUACIÓN
+                    </button>
+                </div>
+                
+                <div id="evaluaciones-container" class="evaluaciones-list">
+                    <div class="empty-evaluations">
+                        <p>No hay evaluaciones específicas realizadas</p>
+                        <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Notas -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📝 Notas y Observaciones</h2>
+                    <span class="count-badge" id="notas-count">0 notas</span>
+                </div>
+                
+                <div id="notas-container" class="notas-list">
+                    <div class="empty-notas">
+                        <p>No hay notas registradas</p>
+                        <small>Usa el botón "AGREGAR NOTA" para documentar observaciones</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Botones de acción -->
+            <section class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📄 Acciones</h2>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="exportarPDFCompleto()">
+                        📄 Exportar PDF Completo
+                    </button>
+                    <button class="btn btn-ghost" onclick="volverACentros()">
+                        ← Volver a Centros
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para agregar nota -->
+    <div id="modal-nota" class="modal-nota">
+        <div class="modal-nota-content">
+            <h3 style="margin-bottom: 1rem;">Nueva Nota</h3>
+            <textarea id="nota-texto" placeholder="Escribe tu observación aquí..."></textarea>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-ghost" onclick="closeNotaModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarNota()">Guardar Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para vista completa de fotos -->
+<div id="foto-modal" class="foto-modal">
+    <div class="foto-modal-content">
+        <button class="foto-modal-close" onclick="closeFotoModal()">×</button>
+        <button class="foto-modal-controls foto-modal-prev" onclick="prevFoto()" id="foto-prev-btn">‹</button>
+        <button class="foto-modal-controls foto-modal-next" onclick="nextFoto()" id="foto-next-btn">›</button>
+        <div class="foto-modal-counter" id="foto-counter">1 / 1</div>
+        
+        <img id="foto-modal-image" class="foto-modal-image" src="" alt="Foto ampliada">
+        <div class="foto-modal-info" id="foto-modal-info">
+            <div id="foto-modal-name">Nombre de la foto</div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // Variables globales
+        let currentCenterData = null;
+        let fotosActuales = [];
+        let notasActuales = [];
+        let evaluacionesEspecificas = [];
+
+        // Obtener parámetros de URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const workCenterId = urlParams.get('workCenter');
+        const areaId = urlParams.get('area');
+        const areaName = urlParams.get('areaName');
+        const centerName = urlParams.get('centerName');
+        const responsibleName = urlParams.get('responsible');
+
+        // Configuración Supabase
+        const USE_SUPABASE = true;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!workCenterId || !areaId) {
+                alert('Error: Parámetros de URL faltantes');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Configurar datos del centro
+            currentCenterData = {
+                id: workCenterId,
+                name: decodeURIComponent(centerName || 'Centro de Trabajo'),
+                responsible: decodeURIComponent(responsibleName || 'No especificado'),
+                areaId: areaId
+            };
+
+            // Actualizar UI
+            document.getElementById('centro-name').textContent = currentCenterData.name;
+            document.getElementById('centro-responsable').textContent = `Responsable: ${currentCenterData.responsible}`;
+            document.getElementById('breadcrumb-area').textContent = decodeURIComponent(areaName || 'Área');
+            document.getElementById('breadcrumb-centro').textContent = currentCenterData.name;
+
+            // Configurar breadcrumb link
+            document.getElementById('breadcrumb-area').href = `index.html#area-${areaId}`;
+
+            // Cargar datos
+            await Promise.all([
+                loadEvaluacionInicial(),
+                loadFotos(),
+                loadNotas(),
+                loadEvaluacionesEspecificas()
+            ]);
+
+            // Configurar eventos
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Input de fotos
+            document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
+
+            // Click en modal overlay para cerrar
+            document.getElementById('modal-nota').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeNotaModal();
+                }
+            });
+        }
+
+        // Funciones de carga de datos
+        async function loadEvaluacionInicial() {
+            try {
+                let evaluaciones = [];
+                
+                if (USE_SUPABASE) {
+                    try {
+                        evaluaciones = await supabase.getEvaluaciones(workCenterId) || [];
+                    } catch (error) {
+                        console.log('Supabase no disponible, usando localStorage');
+                    }
+                }
+
+                // Fallback a localStorage
+                if (evaluaciones.length === 0) {
+                    const localEvals = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+                    evaluaciones = localEvals.filter(e => e.workCenterId === workCenterId);
+                }
+
+                if (evaluaciones.length > 0) {
+                    const eval = evaluaciones[0];
+                    const score = eval.scoreFinal || eval.score_final || '0';
+                    const categoria = eval.categoriaRiesgo || eval.categoria_riesgo || 'Sin evaluar';
+                    const fecha = eval.fechaEvaluacion || eval.fecha_evaluacion || 'No especificada';
+
+                    // Actualizar score principal
+                    document.getElementById('score-value').textContent = `${score}%`;
+                    document.getElementById('score-category').textContent = categoria;
+                    
+                    // Aplicar color según score
+                    const scoreNum = parseFloat(score);
+                    const color = getScoreColor(scoreNum);
+                    document.getElementById('score-value').style.color = color;
+
+                    // Actualizar info de evaluación inicial
+                    document.getElementById('eval-fecha').textContent = fecha;
+                    document.getElementById('eval-score').textContent = `${score}%`;
+                    
+                    // Determinar métodos sugeridos basado en score
+                    const metodosRecomendados = getMetodosRecomendados(scoreNum);
+                    document.getElementById('eval-sugeridas').textContent = metodosRecomendados;
+                } else {
+                    // Sin evaluación
+                    document.getElementById('score-value').textContent = '--';
+                    document.getElementById('score-category').textContent = 'Sin evaluar';
+                    document.getElementById('eval-fecha').textContent = 'Sin evaluación';
+                    document.getElementById('eval-score').textContent = '--';
+                    document.getElementById('eval-sugeridas').textContent = 'Realizar evaluación inicial';
+                }
+            } catch (error) {
+                console.error('Error cargando evaluación inicial:', error);
+            }
+        }
+
+        async function loadFotos() {
+            try {
+                if (USE_SUPABASE) {
+                    fotosActuales = await supabase.getFotos(workCenterId) || [];
+                } else {
+                    fotosActuales = JSON.parse(localStorage.getItem(`fotos_${workCenterId}`)) || [];
+                }
+                
+                renderFotosGrid();
+            } catch (error) {
+                console.error('Error cargando fotos:', error);
+                fotosActuales = [];
+                renderFotosGrid();
+            }
+        }
+
+        async function loadNotas() {
+            try {
+                // Implementar carga de notas desde storage
+                notasActuales = JSON.parse(localStorage.getItem(`notas_${workCenterId}`)) || [];
+                renderNotas();
+            } catch (error) {
+                console.error('Error cargando notas:', error);
+                notasActuales = [];
+                renderNotas();
+            }
+        }
+
+        async function loadEvaluacionesEspecificas() {
+            try {
+                // Temporalmente usar localStorage para evaluaciones específicas
+                if (false) { // Cambiar a USE_SUPABASE cuando funcione
+                    evaluacionesEspecificas = await supabase.getAllEvaluacionesEspecificas(workCenterId) || [];
+                } else {
+                    evaluacionesEspecificas = JSON.parse(localStorage.getItem(`evaluaciones_especificas_${workCenterId}`)) || [];
+                }
+                renderEvaluacionesEspecificas();
+            } catch (error) {
+                console.error('Error cargando evaluaciones específicas:', error);
+                evaluacionesEspecificas = [];
+                renderEvaluacionesEspecificas();
+            }
+        }
+
+
+        // Funciones de renderizado
+        function renderFotosGrid() {
+            const grid = document.getElementById('fotos-grid');
+            const count = document.getElementById('fotos-count');
+            
+            count.textContent = fotosActuales.length;
+            
+            let html = '';
+            
+            // Renderizar fotos existentes
+            fotosActuales.forEach((foto, index) => {
+                const publicUrl = USE_SUPABASE ? 
+                    `${SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
+                    foto.url;
+                
+                html += `
+                    <div class="foto-slot occupied" onclick="openFotoModal(${index})"> <!-- AGREGAR onclick aquí -->
+                        <img src="${publicUrl}" alt="${foto.foto_name || `Foto ${index + 1}`}" 
+                            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjYwIiB5PSI2NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZW4gTm8gRGlzcG9uaWJsZTwvdGV4dD4KPHN2Zz4='" />
+                        <button class="foto-delete" onclick="event.stopPropagation(); deleteFoto('${foto.id || index}')">×</button>
+                    </div>
+                `;
+            });
+            
+            // Renderizar slots vacíos
+            for (let i = fotosActuales.length; i < 5; i++) {
+                const isDisabled = fotosActuales.length >= 5;
+                html += `
+                    <div class="foto-slot ${isDisabled ? 'disabled' : ''}" 
+                         onclick="${isDisabled ? '' : 'triggerFotoUpload()'}">
+                        <span style="font-size: 2rem; color: var(--gray-400);">📸</span>
+                        <span style="font-size: 0.75rem; color: var(--gray-500); margin-top: 0.5rem;">
+                            ${isDisabled ? 'Máximo alcanzado' : 'Agregar foto'}
+                        </span>
+                    </div>
+                `;
+            }
+            
+            grid.innerHTML = html;
+        }
+
+        function renderNotas() {
+            const container = document.getElementById('notas-container');
+            const count = document.getElementById('notas-count');
+            
+            count.textContent = `${notasActuales.length} ${notasActuales.length === 1 ? 'nota' : 'notas'}`;
+            
+            if (notasActuales.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-notas">
+                        <p>No hay notas registradas</p>
+                        <small>Usa el botón "AGREGAR NOTA" para documentar observaciones</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = notasActuales.map(nota => `
+                <div class="nota-item">
+                    <div class="nota-fecha">${formatDate(nota.fecha)}</div>
+                    <div class="nota-texto">${nota.texto}</div>
+                </div>
+            `).reverse().join(''); // Mostrar más recientes primero
+        }
+
+function renderEvaluacionesEspecificas() {
+    const container = document.getElementById('evaluaciones-container');
+    
+    if (evaluacionesEspecificas.length === 0) {
+        container.innerHTML = `
+            <div class="empty-evaluations">
+                <p>No hay evaluaciones específicas realizadas</p>
+                <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = evaluacionesEspecificas.map(eval => {
+        // Determinar el score según el tipo
+        let scoreText = 'N/A';
+        if (eval.tipo === 'REBA' && eval.score_final) scoreText = `${eval.score_final} puntos`;
+        else if (eval.tipo === 'RULA' && eval.score_final) scoreText = `${eval.score_final} puntos`;
+        else if (eval.tipo === 'OCRA' && eval.indice_ocra) scoreText = `${eval.indice_ocra}`;
+        else if (eval.tipo === 'NIOSH' && eval.indice_levantamiento) scoreText = `IL: ${eval.indice_levantamiento}`;
+        
+        return `
+            <div class="evaluacion-item" onclick="verEvaluacionEspecifica('${eval.id}', '${eval.tipo}')">
+                <div class="evaluacion-header">
+                    <span class="evaluacion-metodo">${eval.tipo}</span>
+                    <span class="evaluacion-score">Score: ${scoreText}</span>
+                </div>
+                <div class="evaluacion-fecha">Realizada: ${formatDate(eval.created_at)}</div>
+                ${eval.nivel_riesgo ? `<div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">${eval.nivel_riesgo}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+        // Funciones de utilidad
+        function getScoreColor(score) {
+            if (score <= 25) return "#28a745";
+            else if (score <= 50) return "#ffc107";
+            else if (score <= 75) return "#fd7e14";
+            else return "#dc3545";
+        }
+
+        function getMetodosRecomendados(score) {
+            if (score <= 25) return "Seguimiento rutinario";
+            else if (score <= 50) return "RULA, observación postural";
+            else if (score <= 75) return "REBA, RULA, evaluación de cargas";
+            else return "REBA, NIOSH, OCRA - Evaluación completa";
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Funciones de interacción
+        function triggerFotoUpload() {
+            if (fotosActuales.length >= 5) {
+                alert('Ya tienes el máximo de 5 fotos');
+                return;
+            }
+            document.getElementById('foto-input').click();
+        }
+
+        async function handleFotoUpload(event) {
+            const files = Array.from(event.target.files);
+            
+            for (const file of files) {
+                if (fotosActuales.length >= 5) {
+                    alert('Máximo 5 fotos por centro');
+                    break;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`${file.name} es muy grande (máx. 5MB)`);
+                    continue;
+                }
+                
+                try {
+                    if (USE_SUPABASE) {
+                        await supabase.uploadFoto(file, areaId, workCenterId);
+                        await loadFotos(); // Recargar fotos
+                    } else {
+                        // Implementar guardado local
+                        const fotoData = {
+                            id: Date.now().toString(),
+                            foto_name: file.name,
+                            url: URL.createObjectURL(file)
+                        };
+                        fotosActuales.push(fotoData);
+                        localStorage.setItem(`fotos_${workCenterId}`, JSON.stringify(fotosActuales));
+                        renderFotosGrid();
+                    }
+                    
+                    console.log('Foto cargada exitosamente');
+                } catch (error) {
+                    console.error('Error uploading foto:', error);
+                    alert('Error al cargar foto');
+                }
+            }
+            
+            // Limpiar input
+            event.target.value = '';
+        }
+
+        async function deleteFoto(fotoId) {
+            if (confirm('¿Eliminar esta foto?')) {
+                try {
+                    if (USE_SUPABASE) {
+                        await supabase.deleteFoto(fotoId);
+                    }
+                    
+                    fotosActuales = fotosActuales.filter(f => f.id !== fotoId);
+                    
+                    if (!USE_SUPABASE) {
+                        localStorage.setItem(`fotos_${workCenterId}`, JSON.stringify(fotosActuales));
+                    }
+                    
+                    renderFotosGrid();
+                } catch (error) {
+                    console.error('Error deleting foto:', error);
+                    alert('Error al eliminar foto');
+                }
+            }
+        }
+
+        function openNotaModal() {
+            document.getElementById('modal-nota').classList.add('show');
+            document.getElementById('nota-texto').focus();
+        }
+
+        function closeNotaModal() {
+            document.getElementById('modal-nota').classList.remove('show');
+            document.getElementById('nota-texto').value = '';
+        }
+
+        function guardarNota() {
+            const texto = document.getElementById('nota-texto').value.trim();
+            
+            if (!texto) {
+                alert('Por favor, escribe una nota');
+                return;
+            }
+            
+            const nuevaNota = {
+                id: Date.now().toString(),
+                texto: texto,
+                fecha: new Date().toISOString(),
+                workCenterId: workCenterId
+            };
+            
+            notasActuales.push(nuevaNota);
+            localStorage.setItem(`notas_${workCenterId}`, JSON.stringify(notasActuales));
+            
+            renderNotas();
+            closeNotaModal();
+        }
+
+function openEvaluacionModal() {
+    const metodos = [
+        { nombre: 'REBA', archivo: 'especificas/formulario_reba_completo.html', descripcion: 'Evaluación de cuerpo completo' },
+        { nombre: 'RULA', archivo: 'especificas/formulario_rula_completo.html', descripcion: 'Evaluación de miembros superiores' },
+        { nombre: 'OCRA', archivo: 'especificas/formulario_ocra_completo.html', descripcion: 'Movimientos repetitivos' },
+        { nombre: 'NIOSH', archivo: 'especificas/calculadora_niosh_excel.html', descripcion: 'Levantamiento de cargas' }
+    ];
+    
+    let modalHTML = `
+        <div id="evaluacion-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+                <h3 style="margin-bottom: 1.5rem; text-align: center;">Seleccionar Evaluación Específica</h3>
+                <div style="display: grid; gap: 1rem;">
+    `;
+    
+    metodos.forEach(metodo => {
+        modalHTML += `
+            <button onclick="abrirEvaluacionEspecifica('${metodo.archivo}', '${metodo.nombre}')" 
+                    style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; text-align: left; transition: all 0.2s;"
+                    onmouseover="this.style.borderColor='#3b82f6'; this.style.backgroundColor='#f0f9ff'"
+                    onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'">
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 0.25rem;">${metodo.nombre}</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">${metodo.descripcion}</div>
+            </button>
+        `;
+    });
+    
+    modalHTML += `
+                </div>
+                <button onclick="cerrarEvaluacionModal()" 
+                        style="width: 100%; margin-top: 1.5rem; padding: 0.75rem; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function abrirEvaluacionEspecifica(archivo, tipo) {
+    const url = `${archivo}?workCenter=${workCenterId}&area=${areaId}&areaName=${encodeURIComponent(areaName || '')}&centerName=${encodeURIComponent(centerName || '')}&responsible=${encodeURIComponent(responsibleName || '')}&tipo=${tipo}`;
+    window.location.href = url;
+}
+
+function cerrarEvaluacionModal() {
+    const modal = document.getElementById('evaluacion-modal');
+    if (modal) modal.remove();
+}
+
+function verEvaluacionEspecifica(evalId, tipo) {
+    alert(`Ver evaluación ${tipo} con ID: ${evalId}\n(Función pendiente de implementar)`);
+}
+
+        function verEvaluacionEspecifica(evalId) {
+            const evaluacion = evaluacionesEspecificas.find(e => e.id === evalId);
+            if (evaluacion) {
+                alert(`Ver evaluación ${evaluacion.metodo}\nScore: ${evaluacion.score}\nFecha: ${formatDate(evaluacion.fecha)}`);
+            }
+        }
+
+        function abrirEvaluacion() {
+            const url = `evaluacion_integrada_html (1).html?workCenter=${workCenterId}&area=${areaId}&areaName=${encodeURIComponent(areaName || '')}&centerName=${encodeURIComponent(centerName || '')}&responsible=${encodeURIComponent(responsibleName || '')}`;
+            window.location.href = url;
+        }
+
+        function volverACentros() {
+            window.location.href = `index.html#area-${areaId}`;
+        }
+
+        async function exportarPDFCompleto() {
+            try {
+                // Verificar que jsPDF esté disponible
+                if (typeof window.jspdf === 'undefined') {
+                    alert('Cargando librerías PDF...');
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const nombreArchivo = `${timestamp}_Reporte_Completo_${currentCenterData.name.replace(/\s+/g, '_')}.pdf`;
+
+                // Título principal
+                doc.setFontSize(16);
+                doc.text('Reporte Completo de Centro de Trabajo', 105, 15, {align: 'center'});
+
+                // Información del centro
+                doc.setFontSize(12);
+                let posY = 30;
+                doc.text(`Centro: ${currentCenterData.name}`, 14, posY);
+                posY += 8;
+                doc.text(`Responsable: ${currentCenterData.responsible}`, 14, posY);
+                posY += 8;
+                doc.text(`Área: ${decodeURIComponent(areaName || 'No especificada')}`, 14, posY);
+                posY += 8;
+                doc.text(`Fecha del reporte: ${new Date().toLocaleDateString()}`, 14, posY);
+                posY += 15;
+
+                // Score de evaluación
+                const scoreValue = document.getElementById('score-value').textContent;
+                const scoreCategory = document.getElementById('score-category').textContent;
+                
+                doc.setFontSize(14);
+                doc.text('📊 Evaluación Ergonómica', 14, posY);
+                posY += 10;
+                doc.setFontSize(12);
+                doc.text(`Score de Riesgo: ${scoreValue}`, 14, posY);
+                posY += 6;
+                doc.text(`Categoría: ${scoreCategory}`, 14, posY);
+                posY += 15;
+
+                // Información de evaluación inicial
+                const evalFecha = document.getElementById('eval-fecha').textContent;
+                const evalSugeridas = document.getElementById('eval-sugeridas').textContent;
+                
+                doc.text(`Fecha de evaluación: ${evalFecha}`, 14, posY);
+                posY += 6;
+                doc.text(`Métodos recomendados: ${evalSugeridas}`, 14, posY);
+                posY += 15;
+
+                // Sección de fotos
+                if (fotosActuales && fotosActuales.length > 0) {
+                    doc.setFontSize(14);
+                    doc.text('📸 Fotos del Centro de Trabajo', 14, posY);
+                    posY += 15;
+
+                    for (let i = 0; i < fotosActuales.length; i++) {
+                        const foto = fotosActuales[i];
+                        
+                        try {
+                            const publicUrl = USE_SUPABASE ? 
+                                `${SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
+                                foto.url;
+                            
+                            const img = new Image();
+                            img.crossOrigin = 'anonymous';
+                            
+                            await new Promise((resolve, reject) => {
+                                img.onload = () => resolve();
+                                img.onerror = () => reject(new Error('No se pudo cargar la imagen'));
+                                img.src = publicUrl;
+                            });
+                            
+                            const col = i % 2;
+                            const row = Math.floor(i / 2);
+                            let imgX = 14 + (col * 95);
+                            let imgY = posY + (row * 70);
+                            
+                            if (imgY > 200) {
+                                doc.addPage();
+                                posY = 20;
+                                const newRow = Math.floor((i % 4) / 2);
+                                imgY = posY + (newRow * 70);
+                            }
+                            
+                            doc.addImage(img, 'JPEG', imgX, imgY, 80, 60);
+                            
+                            doc.setFontSize(8);
+                            doc.text(foto.foto_name || `Foto ${i + 1}`, imgX, imgY + 65, {maxWidth: 80});
+                            
+                            if (col === 1) {
+                                posY += 80;
+                            }
+                            
+                        } catch (imgError) {
+                            console.error(`Error cargando foto ${i + 1}:`, imgError);
+                            doc.setFontSize(10);
+                            doc.text(`❌ Error cargando: ${foto.foto_name}`, 14, posY);
+                            posY += 10;
+                        }
+                    }
+                } else {
+                    doc.setFontSize(12);
+                    doc.text('📸 No hay fotos disponibles para este centro', 14, posY);
+                    posY += 15;
+                }
+
+                // Asegurar nueva página para notas si es necesario
+                if (posY > 200) {
+                    doc.addPage();
+                    posY = 20;
+                }
+
+                // Sección de notas
+                if (notasActuales && notasActuales.length > 0) {
+                    doc.setFontSize(14);
+                    doc.text('📝 Notas y Observaciones', 14, posY);
+                    posY += 15;
+
+                    notasActuales.reverse().forEach((nota, index) => {
+                        if (posY > 250) {
+                            doc.addPage();
+                            posY = 20;
+                        }
+
+                        doc.setFontSize(10);
+                        doc.text(`${formatDate(nota.fecha)}:`, 14, posY);
+                        posY += 6;
+                        
+                        doc.setFontSize(9);
+                        const textLines = doc.splitTextToSize(nota.texto, 180);
+                        doc.text(textLines, 14, posY);
+                        posY += textLines.length * 4 + 8;
+                    });
+                } else {
+                    doc.setFontSize(12);
+                    doc.text('📝 No hay notas registradas', 14, posY);
+                }
+
+                // Guardar PDF
+                doc.save(nombreArchivo);
+                alert('PDF generado correctamente');
+
+            } catch (error) {
+                console.error('Error generando PDF:', error);
+                alert('Error al generar PDF: ' + error.message);
+            }
+        }
+
+        // Listener para recibir actualizaciones de evaluaciones
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'evaluacionActualizada') {
+                // Recargar datos de evaluación
+                loadEvaluacionInicial();
+            }
+        });
+        // Variables para el modal de fotos
+let currentFotoIndex = 0;
+let isZoomed = false;
+
+// Función para abrir el modal de foto
+function openFotoModal(fotoIndex) {
+    if (fotosActuales.length === 0) return;
+    
+    currentFotoIndex = fotoIndex;
+    const foto = fotosActuales[currentFotoIndex];
+    
+    const modal = document.getElementById('foto-modal');
+    const modalImage = document.getElementById('foto-modal-image');
+    const modalName = document.getElementById('foto-modal-name');
+    const counter = document.getElementById('foto-counter');
+    const prevBtn = document.getElementById('foto-prev-btn');
+    const nextBtn = document.getElementById('foto-next-btn');
+    
+    // Configurar imagen
+    const publicUrl = USE_SUPABASE ? 
+        `${SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
+        foto.url;
+    
+    modalImage.src = publicUrl;
+    modalImage.alt = foto.foto_name || `Foto ${currentFotoIndex + 1}`;
+    
+    // Configurar información
+    modalName.textContent = foto.foto_name || `Foto ${currentFotoIndex + 1}`;
+    counter.textContent = `${currentFotoIndex + 1} / ${fotosActuales.length}`;
+    
+    // Mostrar/ocultar controles de navegación
+    prevBtn.style.display = fotosActuales.length > 1 ? 'flex' : 'none';
+    nextBtn.style.display = fotosActuales.length > 1 ? 'flex' : 'none';
+    counter.style.display = fotosActuales.length > 1 ? 'block' : 'none';
+    
+    // Mostrar modal
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    
+    // Reset zoom
+    isZoomed = false;
+    modalImage.classList.remove('zoomed');
+}
+
+// Función para cerrar el modal
+function closeFotoModal() {
+    const modal = document.getElementById('foto-modal');
+    modal.classList.remove('show');
+    document.body.style.overflow = ''; // Restaurar scroll del body
+    
+    // Reset zoom
+    isZoomed = false;
+    document.getElementById('foto-modal-image').classList.remove('zoomed');
+}
+
+// Función para foto anterior
+function prevFoto() {
+    if (fotosActuales.length <= 1) return;
+    
+    currentFotoIndex = currentFotoIndex > 0 ? currentFotoIndex - 1 : fotosActuales.length - 1;
+    openFotoModal(currentFotoIndex);
+}
+
+// Función para foto siguiente
+function nextFoto() {
+    if (fotosActuales.length <= 1) return;
+    
+    currentFotoIndex = currentFotoIndex < fotosActuales.length - 1 ? currentFotoIndex + 1 : 0;
+    openFotoModal(currentFotoIndex);
+}
+
+// Función para zoom
+function toggleZoom() {
+    const modalImage = document.getElementById('foto-modal-image');
+    isZoomed = !isZoomed;
+    
+    if (isZoomed) {
+        modalImage.classList.add('zoomed');
+    } else {
+        modalImage.classList.remove('zoomed');
+    }
+}
+
+// Event listeners para el modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Click fuera del modal para cerrar
+    document.getElementById('foto-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFotoModal();
+        }
+    });
+    
+    // Click en imagen para zoom
+    document.getElementById('foto-modal-image').addEventListener('click', toggleZoom);
+    
+    // Teclado para navegación
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('foto-modal');
+        if (!modal.classList.contains('show')) return;
+        
+        switch(e.key) {
+            case 'Escape':
+                closeFotoModal();
+                break;
+            case 'ArrowLeft':
+                prevFoto();
+                break;
+            case 'ArrowRight':
+                nextFoto();
+                break;
+        }
+    });
+});
+    </script>
+</body>
+</html>

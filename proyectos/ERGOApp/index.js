@@ -28,35 +28,30 @@ async function saveAreaToStorage(area) {
     }
 }
 
-    async function loadWorkCenters(areaId = null) {
-        if (USE_SUPABASE) {
-            try {
-                const data = await supabase.getWorkCenters(areaId);
-                // Normalizar los datos para que funcionen con el resto del código
-                workCenters = data ? data.map(wc => ({
-                    ...wc,
-                    areaId: wc.area_id || wc.areaId,
-                    createdAt: wc.created_at || wc.createdAt
-                })) : [];
-            } catch (error) {
-                console.error('Error loading work centers from Supabase:', error);
-                workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
-            }
-        } else {
+async function loadWorkCenters(area_id = null) {
+    if (USE_SUPABASE) {
+        try {
+            const data = await supabase.getWorkCenters(area_id);
+            workCenters = data || [];
+        } catch (error) {
+            console.error('Error loading work centers from Supabase:', error);
             workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
         }
-        return workCenters;
+    } else {
+        workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
     }
+    return workCenters;
+}
 
 // Variables globales
 let areas = JSON.parse(localStorage.getItem('areas')) || [];
 let workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
-let currentAreaId = null;
+let current_area_id = null;
 
 // Obtener parámetros de URL para identificar el centro
 const urlParams = new URLSearchParams(window.location.search);
 const workCenterId = urlParams.get('workCenter');
-const areaId = urlParams.get('area');
+const area_id = urlParams.get('area');
 const areaName = urlParams.get('areaName');
 const centerName = urlParams.get('centerName');
 const responsibleName = urlParams.get('responsible');
@@ -98,9 +93,9 @@ function updateAreasCount() {
 }
 
 function updateCentersCount() {
-    if (!currentAreaId) return;
+    if (!current_area_id) return;
     
-    const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
+    const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
     const count = areaCenters.length;
     const countElement = document.getElementById('centers-count');
     if (countElement) {
@@ -169,7 +164,7 @@ async function saveArea() {
             localStorage.setItem('areas', JSON.stringify(areas));
             
             closeAreaModal();
-            renderAreas();
+            await renderAreas();
             showToast(`Área "${name}" actualizada exitosamente`);
         } catch (error) {
             console.error('Error updating area:', error);
@@ -199,7 +194,7 @@ async function saveArea() {
             }
             
             closeAreaModal();
-            renderAreas();
+            await renderAreas();
             showToast(`Área "${name}" creada exitosamente`);
         } catch (error) {
             console.error('Error saving area:', error);
@@ -208,13 +203,13 @@ async function saveArea() {
     }
 }
 
-async function deleteArea(areaId, event) {
+async function deleteArea(area_id, event) {
     event.stopPropagation();
     
-    const area = areas.find(a => a.id === areaId);
+    const area = areas.find(a => a.id === area_id);
     if (!area) return;
     
-    const areaCenters = workCenters.filter(wc => wc.areaId === areaId);
+    const areaCenters = workCenters.filter(wc => wc.area_id === area_id);
     const centerCount = areaCenters.length;
     
     let confirmMessage = `¿Estás seguro de eliminar el área "${area.name}"?`;
@@ -230,18 +225,18 @@ async function deleteArea(areaId, event) {
                     await supabase.deleteWorkCenter(center.id);
                 }
                 // Luego eliminar el área
-                await supabase.deleteArea(areaId);
+                await supabase.deleteArea(area_id);
             }
             
             // Actualizar arrays locales
-            areas = areas.filter(a => a.id !== areaId);
-            workCenters = workCenters.filter(wc => wc.areaId !== areaId);
+            areas = areas.filter(a => a.id !== area_id);
+            workCenters = workCenters.filter(wc => wc.area_id !== area_id);
             
             // Actualizar localStorage como fallback
             localStorage.setItem('areas', JSON.stringify(areas));
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
             
-            renderAreas();
+            await renderAreas();
             showToast(`Área "${area.name}" eliminada`);
         } catch (error) {
             console.error('Error deleting area:', error);
@@ -250,26 +245,33 @@ async function deleteArea(areaId, event) {
     }
 }
 
-    async function renderAreas() {
-        const container = document.getElementById('areas-container');
-        updateAreasCount();
-        
-        // AGREGAR ESTA LÍNEA: Cargar todos los centros de trabajo
-        await loadWorkCenters();
-        
-        if (areas.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <h3>No hay áreas registradas</h3>
-                    <p>Comienza creando tu primera área de trabajo</p>
-                </div>
-            `;
-            return;
-        }
+async function renderAreas() {
+    const container = document.getElementById('areas-container');
+    updateAreasCount();
+    
+    await loadWorkCenters();
+    
+    if (areas.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No hay áreas registradas</h3>
+                <p>Comienza creando tu primera área de trabajo</p>
+            </div>
+        `;
+        return;
+    }
 
-    container.innerHTML = areas.map(area => {
-        const areaCenters = workCenters.filter(wc => wc.areaId === area.id);
-        const centerCount = areaCenters.length;
+    // Crear array de promesas para obtener los summaries
+    const summariesPromises = areas.map(area => calcularPromedioAreaFromSupabase(area.id));
+    const summaries = await Promise.all(summariesPromises);
+
+    container.innerHTML = areas.map((area, index) => {
+        const summary = summaries[index];
+        
+        const centerCount = summary.total_centros;
+        const promedioScore = summary.promedio_score;
+        const colorPromedio = summary.color_promedio;
+        const centrosEvaluados = summary.centros_evaluados;
         
         return `
             <div class="card" onclick="showAreaDetail('${area.id}')">
@@ -278,6 +280,24 @@ async function deleteArea(areaId, event) {
                 </div>
                 <h3>${area.name}</h3>
                 <div class="card-responsible">Responsable: ${area.responsible}</div>
+                
+                <div style="
+                    font-size: 11px;
+                    color: #666;
+                    margin: 8px 0;
+                    padding: 6px 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 4px;
+                    border-left: 3px solid ${colorPromedio};
+                    font-weight: 500;
+                ">
+                    📊 Promedio: ${promedioScore}%
+                    <br>
+                    <small style="font-size: 10px; color: #888;">
+                        ${centrosEvaluados}/${centerCount} evaluados
+                    </small>
+                </div>
+                
                 <div class="card-footer">
                     <div class="card-stats">
                         ${centerCount} ${centerCount === 1 ? 'centro' : 'centros'} de trabajo
@@ -295,18 +315,18 @@ async function deleteArea(areaId, event) {
 function showAreasPage() {
     document.getElementById('areas-page').classList.add('active');
     document.getElementById('area-detail-page').classList.remove('active');
-    currentAreaId = null;
+    current_area_id = null;
     renderAreas();
 }
 
-function showAreaDetail(areaId) {
-    const area = areas.find(a => a.id === areaId);
+async function showAreaDetail(area_id) {
+    const area = areas.find(a => a.id === area_id);
     if (!area) {
         showToast('Área no encontrada', 'error');
         return;
     }
 
-    currentAreaId = areaId;
+    current_area_id = area_id;
     
     // Actualizar contenido de la página
     document.getElementById('area-detail-title').textContent = area.name;
@@ -317,14 +337,13 @@ function showAreaDetail(areaId) {
     document.getElementById('areas-page').classList.remove('active');
     document.getElementById('area-detail-page').classList.add('active');
     
-    loadWorkCenters(areaId).then(() => {
-    renderWorkCenters();
-});
+    await loadWorkCenters(area_id);
+    await renderWorkCenters();
 }
 
 // Gestión de centros de trabajo
 function openWorkCenterModal() {
-    if (!currentAreaId) {
+    if (!current_area_id) {
         showToast('Error: No hay área seleccionada', 'error');
         return;
     }
@@ -358,7 +377,7 @@ async function saveWorkCenter() {
         return;
     }
     
-    if (!currentAreaId) {
+    if (!current_area_id) {
         showToast('Error: No hay área seleccionada', 'error');
         return;
     }
@@ -368,7 +387,7 @@ async function saveWorkCenter() {
     
     if (editingId) {
         // ES EDICIÓN - UPDATE
-        const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
+        const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
         if (areaCenters.some(center => center.id !== editingId && center.name.toLowerCase() === name.toLowerCase())) {
             showToast('Ya existe un centro con ese nombre en esta área', 'error');
             return;
@@ -394,8 +413,8 @@ async function saveWorkCenter() {
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
             
             closeWorkCenterModal();
-            renderWorkCenters();
-            renderAreas();
+            await renderWorkCenters();
+            await renderAreas();
             showToast(`Centro "${name}" actualizado exitosamente`);
         } catch (error) {
             console.error('Error updating work center:', error);
@@ -403,7 +422,7 @@ async function saveWorkCenter() {
         }
     } else {
         // ES CREACIÓN - CREATE (código existente)
-        const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
+        const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
         if (areaCenters.some(center => center.name.toLowerCase() === name.toLowerCase())) {
             showToast('Ya existe un centro con ese nombre en esta área', 'error');
             return;
@@ -413,22 +432,22 @@ async function saveWorkCenter() {
             id: generateShortId(),
             name: name,
             responsible: responsible,
-            area_id: currentAreaId,
+            area_id: current_area_id,
             created_at: new Date().toISOString()
         };
 
         try {
             if (USE_SUPABASE) {
                 await supabase.createWorkCenter(newWorkCenter);
-                workCenters.push({...newWorkCenter, areaId: currentAreaId});
+                workCenters.push(newWorkCenter);
             } else {
-                workCenters.push({...newWorkCenter, areaId: currentAreaId});
+                workCenters.push(newWorkCenter);
                 localStorage.setItem('workCenters', JSON.stringify(workCenters));
             }
             
             closeWorkCenterModal();
-            renderWorkCenters();
-            renderAreas();
+            await renderWorkCenters();
+            await renderAreas();
             showToast(`Centro de trabajo "${name}" creado exitosamente`);
         } catch (error) {
             console.error('Error saving work center:', error);
@@ -455,8 +474,8 @@ async function deleteWorkCenter(centerId, event) {
             // Actualizar localStorage como fallback
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
             
-            renderWorkCenters();
-            renderAreas(); // Actualizar contador en vista principal
+            await renderWorkCenters();
+            await renderAreas(); // Actualizar contador en vista principal
             showToast(`Centro "${center.name}" eliminado`);
         } catch (error) {
             console.error('Error deleting work center:', error);
@@ -465,54 +484,62 @@ async function deleteWorkCenter(centerId, event) {
     }
 }
 
-function renderWorkCenters() {
+async function renderWorkCenters() {
     const container = document.getElementById('work-centers-container');
     updateCentersCount();
     
-    if (!currentAreaId) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <h3>Error</h3>
-                <p>No se ha seleccionado ningún área</p>
-            </div>
-        `;
+    if (!current_area_id) {
+        container.innerHTML = `<div class="empty-state"><h3>Error</h3><p>No se ha seleccionado ningún área</p></div>`;
         return;
     }
     
-    const areaCenters = workCenters.filter(wc => wc.areaId === currentAreaId);
+    const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
     
     if (areaCenters.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <h3>No hay centros de trabajo</h3>
-                <p>Agrega el primer centro de trabajo para esta área</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="empty-state"><h3>No hay centros de trabajo</h3><p>Agrega el primer centro de trabajo para esta área</p></div>`;
         return;
     }
 
-    container.innerHTML = areaCenters.map(center => `
-        <div class="card" data-work-center-id="${center.id}" onclick="window.open('evaluacion_integrada_html (1).html?workCenter=${center.id}&area=${currentAreaId}&areaName=${encodeURIComponent(areas.find(a => a.id === currentAreaId)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}', '_blank')">        
-        <div class="card-header">
-            <div class="card-id">${center.id}</div>
-        </div>
-        <h3>${center.name}</h3>
-        <div class="card-responsible">Responsable: ${center.responsible}</div>
-            <div class="card-footer">
-                <div class="card-stats">
-                    Creado ${formatDate(center.created_at || center.createdAt)}
+    // Obtener scores de todos los centros de forma paralela
+    const scoreInfoPromises = areaCenters.map(center => obtenerScoreFromSupabase(center.id));
+    const scoreInfos = await Promise.all(scoreInfoPromises);
+
+    container.innerHTML = areaCenters.map((center, index) => {
+        const scoreInfo = scoreInfos[index];
+        
+        return `
+            <div class="card" data-work-center-id="${center.id}" onclick="window.location.href='centro-trabajo.html?workCenter=${center.id}&area=${current_area_id}&areaName=${encodeURIComponent(areas.find(a => a.id === current_area_id)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}'">        
+                <div class="card-header">
+                    <div class="card-id">${center.id}</div>
                 </div>
-                <button class="btn btn-danger" onclick="deleteWorkCenter('${center.id}', event)">
-                    Eliminar
-                </button>
+                <h3>${center.name}</h3>
+                <div class="card-responsible">Responsable: ${center.responsible}</div>
+                
+                <!-- Score ergonómico -->
+                <div class="score-ergonomico" style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 4px;
+                    padding: 4px 8px;
+                    background-color: #f8f9fa;
+                    border-radius: 4px;
+                    border-left: 3px solid ${scoreInfo.color_riesgo};
+                    font-weight: 500;
+                ">
+                    📊 Riesgo: ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
+                </div>
+                
+                <div class="card-footer">
+                    <div class="card-stats">
+                        Creado ${formatDate(center.created_at)}
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteWorkCenter('${center.id}', event)">
+                        Eliminar
+                    </button>
+                </div>
             </div>
-        </div>
-        `).join('');
-    
-    // Cargar scores después de renderizar
-    setTimeout(() => {
-        cargarScoresExistentes();
-    }, 50);
+        `;
+    }).join('');
 }
 
 // Utilidades adicionales
@@ -538,22 +565,6 @@ function formatDate(dateString) {
     }
 }
 
-function validateForm(form) {
-    const inputs = form.querySelectorAll('input[required]');
-    let isValid = true;
-    
-    inputs.forEach(input => {
-        if (!input.value.trim()) {
-            input.style.borderColor = 'var(--red-500)';
-            isValid = false;
-        } else {
-            input.style.borderColor = '';
-        }
-    });
-    
-    return isValid;
-}
-
 // Event listeners
 document.addEventListener('DOMContentLoaded', async function() {
     // Cargar datos desde Supabase
@@ -565,14 +576,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     // Inicializar la aplicación
-    renderAreas();
+    await renderAreas();
 
     // Cargar scores existentes
     setTimeout(() => {
         cargarScoresExistentes();
     }, 100);
     
-    // ... resto del código igual
+   if (USE_SUPABASE && !localStorage.getItem('migracion_scores_completada')) {
+        setTimeout(async () => {
+            try {
+                const exito = await supabase.migrarDatosAScoresResumen();
+                if (exito) {
+                    localStorage.setItem('migracion_scores_completada', 'true');
+                    console.log('✅ Migración de scores completada');
+                    // Recargar vista
+                    if (current_area_id) await renderWorkCenters();
+                    else await renderAreas();
+                }
+            } catch (error) {
+                console.error('❌ Error en migración:', error);
+            }
+        }, 2000);
+    }
 });
 
 // Funciones de exportación e importación (para futuro uso)
@@ -626,28 +652,12 @@ function clearAllData() {
         localStorage.removeItem('workCenters');
         areas = [];
         workCenters = [];
-        currentAreaId = null;
+        current_area_id = null;
         showAreasPage();
         showToast('Todos los datos han sido eliminados');
     }
 }
 
-// Estadísticas (para futuro dashboard)
-function getStats() {
-    const totalAreas = areas.length;
-    const totalCenters = workCenters.length;
-    const areasWithCenters = areas.filter(area => 
-        workCenters.some(center => center.areaId === area.id)
-    ).length;
-    
-    return {
-        totalAreas,
-        totalCenters,
-        areasWithCenters,
-        areasWithoutCenters: totalAreas - areasWithCenters,
-        averageCentersPerArea: totalAreas > 0 ? (totalCenters / totalAreas).toFixed(1) : 0
-    };
-}
 // Función para obtener color según el score de riesgo
 function obtenerColorRiesgo(score) {
     if (score <= 25) return "#28a745";
@@ -710,3 +720,137 @@ window.addEventListener('message', function(event) {
         actualizarScoreEnCentro(workCenterId, score, categoria);
     }
 });
+
+// Función para obtener score desde Supabase con fallback a localStorage
+async function obtenerScoreFromSupabase(workCenterId) {
+    if (USE_SUPABASE) {
+        try {
+            const score = await supabase.getScoreWorkCenter(workCenterId);
+            if (score) {
+                return {
+                    score_actual: score.score_actual,
+                    categoria_riesgo: score.categoria_riesgo,
+                    color_riesgo: score.color_riesgo
+                };
+            }
+        } catch (error) {
+            console.error('Error obteniendo score de Supabase:', error);
+        }
+    }
+    
+    // Fallback a localStorage si Supabase falla
+    try {
+        const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+        const evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+        
+        if (evaluacion && evaluacion.scoreFinal) {
+            const score = parseFloat(evaluacion.scoreFinal);
+            let color = '#d1d5db';
+            let categoria = evaluacion.categoriaRiesgo || 'Evaluado';
+            
+            if (score <= 25) color = '#28a745';
+            else if (score <= 60) color = '#fd7e14';
+            else color = '#dc3545';
+            
+            return {
+                score_actual: score,
+                categoria_riesgo: categoria,
+                color_riesgo: color
+            };
+        }
+        
+        return {
+            score_actual: 0,
+            categoria_riesgo: 'Sin evaluación',
+            color_riesgo: '#d1d5db'
+        };
+    } catch (error) {
+        console.error('Error obteniendo score:', error);
+        return {
+            score_actual: 0,
+            categoria_riesgo: 'Sin evaluación',
+            color_riesgo: '#d1d5db'
+        };
+    }
+}
+
+// Función para calcular promedio de área desde Supabase con fallback a localStorage
+async function calcularPromedioAreaFromSupabase(area_id) {
+    if (USE_SUPABASE) {
+        try {
+            const scores = await supabase.getScoresArea(area_id);
+            const workCentersData = await supabase.getWorkCenters(area_id);
+            
+            if (scores && scores.length > 0) {
+                const sumaScores = scores.reduce((sum, s) => sum + s.score_actual, 0);
+                const promedio = (sumaScores / scores.length).toFixed(1);
+                
+                // Calcular color basado en el promedio
+                let colorPromedio = '#d1d5db';
+                if (promedio <= 25) colorPromedio = '#28a745';
+                else if (promedio <= 60) colorPromedio = '#fd7e14';
+                else colorPromedio = '#dc3545';
+                
+                return {
+                    promedio_score: promedio,
+                    color_promedio: colorPromedio,
+                    centros_evaluados: scores.length,
+                    total_centros: workCentersData ? workCentersData.length : 0
+                };
+            }
+        } catch (error) {
+            console.error('Error calculando promedio desde Supabase:', error);
+        }
+    }
+    
+    // Fallback a localStorage
+    return calcularPromedioFromLocalStorage(area_id);
+}
+
+// Función fallback para calcular promedio desde localStorage
+function calcularPromedioFromLocalStorage(area_id) {
+    try {
+        const areaCenters = workCenters.filter(wc => wc.area_id === area_id);
+        const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+        
+        let sumaScores = 0;
+        let centrosConEvaluacion = 0;
+        
+        areaCenters.forEach(center => {
+            const evaluacion = evaluaciones.find(e => 
+                e.workCenterId === center.id || 
+                e.work_center_id === center.id
+            );
+            
+            if (evaluacion && (evaluacion.scoreFinal || evaluacion.score_final)) {
+                const score = parseFloat(evaluacion.scoreFinal || evaluacion.score_final);
+                sumaScores += score;
+                centrosConEvaluacion++;
+            }
+        });
+        
+        const result = {
+            promedio_score: centrosConEvaluacion > 0 ? (sumaScores / centrosConEvaluacion).toFixed(1) : 0,
+            color_promedio: '#d1d5db',
+            centros_evaluados: centrosConEvaluacion,
+            total_centros: areaCenters.length
+        };
+        
+        if (result.promedio_score > 0) {
+            if (result.promedio_score <= 25) result.color_promedio = '#28a745';
+            else if (result.promedio_score <= 60) result.color_promedio = '#fd7e14';
+            else result.color_promedio = '#dc3545';
+        }
+        
+        return result;
+        
+    } catch (error) {
+        console.error(`Error calculando promedio área ${area_id}:`, error);
+        return {
+            promedio_score: 0,
+            color_promedio: '#d1d5db',
+            centros_evaluados: 0,
+            total_centros: 0
+        };
+    }
+}

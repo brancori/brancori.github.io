@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación OCRA - Occupational Repetitive Actions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #e67e22;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #2c3e50;
+            border-left: 4px solid #e67e22;
+            padding-left: 10px;
+        }
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .input-field {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .factor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .factor-section {
+            background-color: #fdf2e9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e67e22;
+        }
+        .score-option {
+            margin: 8px 0;
+            padding: 8px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .score-option input[type="radio"], .score-option input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+        .calculate-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            margin: 25px 0;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .results {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .result-item {
+            background-color: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .risk-acceptable { color: #27ae60; }
+        .risk-doubtful { color: #f1c40f; }
+        .risk-unacceptable-light { color: #e67e22; }
+        .risk-unacceptable-high { color: #e74c3c; }
+        .interpretation {
+            background-color: #1a252f;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .borg-scale {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .borg-item {
+            text-align: center;
+            padding: 5px;
+            background-color: white;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .borg-item:hover {
+            border-color: #e67e22;
+        }
+        .borg-item.selected {
+            background-color: #e67e22;
+            color: white;
+            border-color: #d35400;
+        }
+        .time-distribution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .posture-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .posture-matrix th, .posture-matrix td {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            text-align: center;
+        }
+        .posture-matrix th {
+            background-color: #e67e22;
+            color: white;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 OCRA - Occupational Repetitive Actions</h1>
+        
+        <h2>📋 Información General</h2>
+        <div class="info-section">
+            <div>
+                <div class="input-field">
+                    <label for="area">Área:</label>
+                    <input type="text" id="area" placeholder="Ej: Acondicionamiento">
+                </div>
+                <div class="input-field">
+                    <label for="puesto">Puesto de Trabajo:</label>
+                    <input type="text" id="puesto" placeholder="Ej: Línea manual 2">
+                </div>
+                <div class="input-field">
+                    <label for="tarea">Tarea Específica:</label>
+                    <input type="text" id="tarea" placeholder="Ej: Envasado repetitivo">
+                </div>
+                <div class="input-field">
+                    <label for="lado">Lado Evaluado:</label>
+                    <select id="lado">
+                        <option value="derecho">Derecho</option>
+                        <option value="izquierdo">Izquierdo</option>
+                        <option value="ambos">Ambos (evaluar por separado)</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <div class="input-field">
+                    <label for="evaluador">Evaluador:</label>
+                    <input type="text" id="evaluador" placeholder="Nombre del evaluador">
+                </div>
+                <div class="input-field">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha">
+                </div>
+                <div class="input-field">
+                    <label for="trabajadores">No. Trabajadores:</label>
+                    <input type="number" id="trabajadores" min="1" placeholder="1">
+                </div>
+                <div class="input-field">
+                    <label for="duracion_turno">Duración del Turno (horas):</label>
+                    <input type="number" id="duracion_turno" step="0.5" min="1" max="12" value="8" placeholder="8">
+                </div>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ Criterios para Aplicar OCRA</h3>
+            <p><strong>Aplique OCRA cuando:</strong></p>
+            <ul>
+                <li>La tarea involucre movimientos repetitivos de miembros superiores</li>
+                <li>La duración del trabajo sea ≥ 1 hora por turno</li>
+                <li>Los ciclos de trabajo sean ≤ 30 segundos O ≥ 50% del tiempo tenga el mismo tipo de acción</li>
+            </ul>
+        </div>
+
+        <h2>🔄 Factor de Recuperación (Fr)</h2>
+        <div class="factor-section">
+            <div class="input-field">
+                <label for="tiempo_trabajo">Tiempo neto de trabajo (minutos):</label>
+                <input type="number" id="tiempo_trabajo" min="1" placeholder="Ej: 420 (7 horas)">
+            </div>
+            <div class="input-field">
+                <label for="pausas_oficiales">Pausas oficiales (minutos):</label>
+                <input type="number" id="pausas_oficiales" min="0" placeholder="Ej: 60 (1 hora)">
+            </div>
+            <div class="input-field">
+                <label for="pausas_no_repetitivas">Pausas/tareas no repetitivas (minutos):</label>
+                <input type="number" id="pausas_no_repetitivas" min="0" placeholder="Ej: 30">
+            </div>
+            <p><strong>Fr = Tiempo de recuperación / Tiempo de trabajo</strong></p>
+            <p>Resultado Fr: <span id="fr_result">-</span></p>
+        </div>
+
+        <h2>📊 Factor de Frecuencia (Ff)</h2>
+        <div class="factor-grid">
+            <div class="factor-section">
+                <h3>Acciones Técnicas por Minuto</h3>
+                <div class="input-field">
+                    <label for="acciones_minuto">Acciones técnicas observadas/minuto:</label>
+                    <input type="number" id="acciones_minuto" step="0.1" min="0" placeholder="Ej: 25.5">
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="tipo_accion" value="dinamica" id="dinamica" checked>
+                    <label for="dinamica">Acciones dinámicas (con movimiento visible)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="tipo_accion" value="estatica" id="estatica">
+                    <label for="estatica">Acciones estáticas (mantenimiento de posición)</label>
+                </div>
+            </div>
+            
+            <div class="factor-section">
+                <h3>Resultado Factor Frecuencia</h3>
+                <p><strong>Criterios:</strong></p>
+                <ul style="font-size: 12px;">
+                    <li>Dinámicas ≤20/min: Ff = 1.0</li>
+                    <li>Dinámicas 20-40/min: Ff = 0.5</li>
+                    <li>Dinámicas >40/min: Ff = 0.0</li>
+                    <li>Estáticas >50% tiempo: Ff = 0.0</li>
+                </ul>
+                <p>Resultado Ff: <span id="ff_result">-</span></p>
+            </div>
+        </div>
+
+        <h2>💪 Factor de Fuerza (Ffu)</h2>
+        <div class="factor-section">
+            <h3>Escala de Borg Percepción del Esfuerzo</h3>
+            <p><strong>Seleccione el nivel de esfuerzo promedio:</strong></p>
+            <div class="borg-scale">
+                <div class="borg-item" data-value="0">0<br>Nada</div>
+                <div class="borg-item" data-value="0.5">0.5<br>Muy débil</div>
+                <div class="borg-item" data-value="1">1<br>Muy débil</div>
+                <div class="borg-item" data-value="2">2<br>Débil</div>
+                <div class="borg-item" data-value="3">3<br>Moderado</div>
+                <div class="borg-item" data-value="4">4<br>Algo fuerte</div>
+                <div class="borg-item" data-value="5">5<br>Fuerte</div>
+                <div class="borg-item" data-value="6">6<br>-</div>
+                <div class="borg-item" data-value="7">7<br>Muy fuerte</div>
+                <div class="borg-item" data-value="8">8<br>-</div>
+                <div class="borg-item" data-value="9">9<br>-</div>
+                <div class="borg-item" data-value="10">10<br>Máximo</div>
+            </div>
+            
+            <h3>Distribución del Tiempo por Nivel de Esfuerzo</h3>
+            <div class="time-distribution">
+                <div class="input-field">
+                    <label for="tiempo_borg_0_2">Tiempo en Borg 0-2 (%):</label>
+                    <input type="number" id="tiempo_borg_0_2" min="0" max="100" placeholder="Ej: 70">
+                </div>
+                <div class="input-field">
+                    <label for="tiempo_borg_3_4">Tiempo en Borg 3-4 (%):</label>
+                    <input type="number" id="tiempo_borg_3_4" min="0" max="100" placeholder="Ej: 20">
+                </div>
+                <div class="input-field">
+                    <label for="tiempo_borg_5_plus">Tiempo en Borg 5+ (%):</label>
+                    <input type="number" id="tiempo_borg_5_plus" min="0" max="100" placeholder="Ej: 10">
+                </div>
+                <div class="input-field">
+                    <p><strong>Total debe sumar 100%</strong></p>
+                    <p>Total actual: <span id="total_tiempo">0</span>%</p>
+                </div>
+            </div>
+            
+            <p>Resultado Ffu: <span id="ffu_result">-</span></p>
+        </div>
+
+        <h2>🦴 Factor de Postura (Fp)</h2>
+        <div class="factor-grid">
+            <div class="factor-section">
+                <h3>Hombro</h3>
+                <div class="score-option">
+                    <input type="radio" name="hombro" value="1" id="hombro1">
+                    <label for="hombro1">Brazo no elevado, no abducido (1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="hombro" value="2" id="hombro2">
+                    <label for="hombro2">Brazo ligeramente elevado, apenas abducido (2)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="hombro" value="4" id="hombro4">
+                    <label for="hombro4">Brazo elevado, fuertemente abducido (4)</label>
+                </div>
+            </div>
+
+            <div class="factor-section">
+                <h3>Codo</h3>
+                <div class="score-option">
+                    <input type="radio" name="codo" value="1" id="codo1">
+                    <label for="codo1">60-100° flexión (1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="codo" value="2" id="codo2">
+                    <label for="codo2">Flexión <60° o >100° pero <120° (2)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="codo" value="4" id="codo4">
+                    <label for="codo4">Flexión >120° o extensión completa (4)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="codo" value="6" id="codo6">
+                    <label for="codo6">Extrema flexión/extensión con carga (6)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="codo" value="8" id="codo8">
+                    <label for="codo8">Posición extrema sostenida (8)</label>
+                </div>
+            </div>
+
+            <div class="factor-section">
+                <h3>Muñeca</h3>
+                <div class="score-option">
+                    <input type="radio" name="muneca" value="1" id="muneca1">
+                    <label for="muneca1">Posición neutra (1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="muneca" value="2" id="muneca2">
+                    <label for="muneca2">Desviación ligera o intermitente (2)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="muneca" value="4" id="muneca4">
+                    <label for="muneca4">Desviación marcada y sostenida (4)</label>
+                </div>
+            </div>
+
+            <div class="factor-section">
+                <h3>Agarre</h3>
+                <div class="score-option">
+                    <input type="radio" name="agarre" value="1" id="agarre1">
+                    <label for="agarre1">Agarre óptimo, objeto bien diseñado (1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="agarre" value="2" id="agarre2">
+                    <label for="agarre2">Agarre aceptable, no óptimo (2)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="agarre" value="3" id="agarre3">
+                    <label for="agarre3">Agarre pobre, objetos sin forma (3)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="agarre" value="4" id="agarre4">
+                    <label for="agarre4">Agarre inaceptable, pellizcos (4)</label>
+                </div>
+            </div>
+        </div>
+
+        <p><strong>Fp = Peor puntuación de las 4 categorías</strong></p>
+        <p>Resultado Fp: <span id="fp_result">-</span></p>
+
+        <h2>➕ Factores Adicionales (Fa)</h2>
+        <div class="factor-section">
+            <h3>Seleccione los factores presentes (+2 puntos cada uno):</h3>
+            <div class="score-option">
+                <input type="checkbox" id="fa_vibracion">
+                <label for="fa_vibracion">Vibraciones localizadas</label>
+            </div>
+            <div class="score-option">
+                <input type="checkbox" id="fa_compresion">
+                <label for="fa_compresion">Compresiones localizadas</label>
+            </div>
+            <div class="score-option">
+                <input type="checkbox" id="fa_frio">
+                <label for="fa_frio">Exposición al frío</label>
+            </div>
+            <div class="score-option">
+                <input type="checkbox" id="fa_guantes">
+                <label for="fa_guantes">Uso de guantes que interfieren</label>
+            </div>
+            <div class="score-option">
+                <input type="checkbox" id="fa_ritmo">
+                <label for="fa_ritmo">Ritmo de trabajo completamente impuesto</label>
+            </div>
+            <div class="score-option">
+                <input type="checkbox" id="fa_precision">
+                <label for="fa_precision">Movimientos muy precisos (tolerancias <1mm)</label>
+            </div>
+            
+            <p>Total Fa: <span id="fa_result">0</span> puntos</p>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateOCRA()">🔍 CALCULAR ÍNDICE OCRA</button>
+
+        <div id="results" class="results" style="display: none;">
+            <h2>🎯 Resultados OCRA</h2>
+            <div class="result-grid">
+                <div class="result-item">
+                    <h3>Factor Recuperación (Fr)</h3>
+                    <div class="score-display" id="fr_display">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Factor Frecuencia (Ff)</h3>
+                    <div class="score-display" id="ff_display">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Factor Fuerza (Ffu)</h3>
+                    <div class="score-display" id="ffu_display">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Factor Postura (Fp)</h3>
+                    <div class="score-display" id="fp_display">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Factores Adicionales (Fa)</h3>
+                    <div class="score-display" id="fa_display">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Índice OCRA Final</h3>
+                    <div class="score-display" id="ocra_final">-</div>
+                </div>
+            </div>
+            
+            <div class="interpretation">
+                <h3>📋 Interpretación y Recomendaciones</h3>
+                <div id="recommendations"></div>
+                <div id="detailed_analysis"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Event listeners para la escala de Borg
+        document.querySelectorAll('.borg-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.borg-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                calculateFfu();
+            });
+        });
+
+        // Event listeners para inputs de tiempo
+        ['tiempo_borg_0_2', 'tiempo_borg_3_4', 'tiempo_borg_5_plus'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateTotalTiempo);
+        });
+
+        // Event listeners para factores adicionales
+        document.querySelectorAll('#fa_vibracion, #fa_compresion, #fa_frio, #fa_guantes, #fa_ritmo, #fa_precision').forEach(checkbox => {
+            checkbox.addEventListener('change', updateFa);
+        });
+
+        function updateTotalTiempo() {
+            const t1 = parseFloat(document.getElementById('tiempo_borg_0_2').value) || 0;
+            const t2 = parseFloat(document.getElementById('tiempo_borg_3_4').value) || 0;
+            const t3 = parseFloat(document.getElementById('tiempo_borg_5_plus').value) || 0;
+            const total = t1 + t2 + t3;
+            document.getElementById('total_tiempo').textContent = total;
+            calculateFfu();
+        }
+
+        function updateFa() {
+            let fa = 0;
+            document.querySelectorAll('#fa_vibracion, #fa_compresion, #fa_frio, #fa_guantes, #fa_ritmo, #fa_precision').forEach(checkbox => {
+                if (checkbox.checked) fa += 2;
+            });
+            document.getElementById('fa_result').textContent = fa;
+        }
+
+        function calculateFr() {
+            const tiempoTrabajo = parseFloat(document.getElementById('tiempo_trabajo').value) || 0;
+            const pausasOficiales = parseFloat(document.getElementById('pausas_oficiales').value) || 0;
+            const pausasNoRepetitivas = parseFloat(document.getElementById('pausas_no_repetitivas').value) || 0;
+            
+            if (tiempoTrabajo === 0) return 0;
+            
+            const tiempoRecuperacion = pausasOficiales + pausasNoRepetitivas;
+            const fr = tiempoRecuperacion / tiempoTrabajo;
+            
+            document.getElementById('fr_result').textContent = fr.toFixed(3);
+            return fr;
+        }
+
+        function calculateFf() {
+            const acciones = parseFloat(document.getElementById('acciones_minuto').value) || 0;
+            const tipoAccion = document.querySelector('input[name="tipo_accion"]:checked')?.value;
+            
+            let ff = 0;
+            
+            if (tipoAccion === 'dinamica') {
+                if (acciones <= 20) ff = 1.0;
+                else if (acciones <= 40) ff = 0.5;
+                else ff = 0.0;
+            } else { // estática
+                ff = 0.0; // Acciones estáticas >50% del tiempo
+            }
+            
+            document.getElementById('ff_result').textContent = ff.toFixed(1);
+            return ff;
+        }
+
+        function calculateFfu() {
+            const t1 = parseFloat(document.getElementById('tiempo_borg_0_2').value) || 0;
+            const t2 = parseFloat(document.getElementById('tiempo_borg_3_4').value) || 0;
+            const t3 = parseFloat(document.getElementById('tiempo_borg_5_plus').value) || 0;
+            const total = t1 + t2 + t3;
+            
+            if (total !== 100) {
+                document.getElementById('ffu_result').textContent = 'Error: Total debe ser 100%';
+                return 0;
+            }
+            
+            // Cálculo simplificado del Ffu basado en distribución de tiempo
+            let ffu = 1.0;
+            if (t2 > 30) ffu = 0.5; // Más del 30% en esfuerzo moderado
+            if (t3 > 20) ffu = 0.25; // Más del 20% en esfuerzo alto
+            if (t3 > 50) ffu = 0.0; // Más del 50% en esfuerzo alto
+            
+            document.getElementById('ffu_result').textContent = ffu.toFixed(2);
+            return ffu;
+        }
+
+        function calculateFp() {
+            const hombro = parseInt(document.querySelector('input[name="hombro"]:checked')?.value || 1);
+            const codo = parseInt(document.querySelector('input[name="codo"]:checked')?.value || 1);
+            const muneca = parseInt(document.querySelector('input[name="muneca"]:checked')?.value || 1);
+            const agarre = parseInt(document.querySelector('input[name="agarre"]:checked')?.value || 1);
+            
+            const fp = Math.max(hombro, codo, muneca, agarre);
+            document.getElementById('fp_result').textContent = fp;
+            return fp;
+        }
+
+        function calculateOCRA() {
+            // Calcular todos los factores
+            const fr = calculateFr();
+            const ff = calculateFf();
+            const ffu = calculateFfu();
+            const fp = calculateFp();
+            
+            // Validar factores adicionales
+            let fa = 0;
+            document.querySelectorAll('#fa_vibracion, #fa_compresion, #fa_frio, #fa_guantes, #fa_ritmo, #fa_precision').forEach(checkbox => {
+                if (checkbox.checked) fa += 2;
+            });
+
+            // Validar entradas
+            if (fr === 0 || isNaN(ffu)) {
+                alert('Por favor, complete todos los campos requeridos correctamente');
+                return;
+            }
+
+            // Calcular índice OCRA
+            const ocraIndex = (fr * ff * ffu * fp) + fa;
+
+            // Determinar nivel de riesgo
+            let riskLevel, riskClass, recommendations, detailedAnalysis;
+            
+            if (ocraIndex <= 2.2) {
+                riskLevel = "ACEPTABLE";
+                riskClass = "risk-acceptable";
+                recommendations = `
+                    <ul>
+                        <li>✅ Riesgo aceptable para la población trabajadora</li>
+                        <li>📊 Seguimiento rutinario recomendado</li>
+                        <li>🔍 Revisión anual de las condiciones</li>
+                        <li>📚 Capacitación preventiva básica</li>
+                    </ul>
+                `;
+            } else if (ocraIndex <= 3.5) {
+                riskLevel = "DUDOSO";
+                riskClass = "risk-doubtful";
+                recommendations = `
+                    <ul>
+                        <li>⚠️ Zona de incertidumbre, requiere atención</li>
+                        <li>📋 Análisis más detallado de la tarea</li>
+                        <li>🔄 Implementar rotación de personal</li>
+                        <li>📚 Capacitación específica en técnicas</li>
+                        <li>🔍 Monitoreo cada 6 meses</li>
+                        <li>💪 Ejercicios de estiramiento</li>
+                    </ul>
+                `;
+            } else if (ocraIndex <= 9.0) {
+                riskLevel = "INACEPTABLE LEVE";
+                riskClass = "risk-unacceptable-light";
+                recommendations = `
+                    <ul>
+                        <li>🚨 Riesgo presente, se requieren mejoras</li>
+                        <li>🏗️ Rediseño ergonómico del puesto</li>
+                        <li>⚡ Implementar pausas activas</li>
+                        <li>🔄 Rotación obligatoria de tareas</li>
+                        <li>🤖 Considerar ayudas mecánicas</li>
+                        <li>📚 Capacitación intensiva</li>
+                        <li>🏥 Vigilancia médica específica</li>
+                    </ul>
+                `;
+            } else {
+                riskLevel = "INACEPTABLE ALTO";
+                riskClass = "risk-unacceptable-high";
+                recommendations = `
+                    <ul>
+                        <li>⛔ Riesgo elevado, acción inmediata</li>
+                        <li>🚫 Suspender tarea hasta mejoras</li>
+                        <li>🏗️ Rediseño completo obligatorio</li>
+                        <li>🤖 Automatización prioritaria</li>
+                        <li>🏥 Evaluación médica inmediata</li>
+                        <li>📋 Seguimiento médico continuo</li>
+                        <li>⚕️ Programa de rehabilitación</li>
+                    </ul>
+                `;
+            }
+
+            // Análisis detallado por factor
+            detailedAnalysis = `
+                <h4>🔍 Análisis Detallado por Factor:</h4>
+                <ul>
+                    <li><strong>Recuperación (Fr=${fr.toFixed(2)}):</strong> ${fr < 0.2 ? '❌ Insuficiente' : fr < 0.5 ? '⚠️ Limitada' : '✅ Adecuada'}</li>
+                    <li><strong>Frecuencia (Ff=${ff}):</strong> ${ff === 0 ? '❌ Muy alta' : ff < 1 ? '⚠️ Alta' : '✅ Aceptable'}</li>
+                    <li><strong>Fuerza (Ffu=${ffu.toFixed(2)}):</strong> ${ffu < 0.5 ? '❌ Excesiva' : ffu < 0.8 ? '⚠️ Moderada' : '✅ Aceptable'}</li>
+                    <li><strong>Postura (Fp=${fp}):</strong> ${fp > 3 ? '❌ Inadecuada' : fp > 2 ? '⚠️ Subóptima' : '✅ Aceptable'}</li>
+                    <li><strong>Factores Adicionales (Fa=${fa}):</strong> ${fa > 4 ? '❌ Múltiples riesgos' : fa > 0 ? '⚠️ Riesgos presentes' : '✅ Sin riesgos adicionales'}</li>
+                </ul>
+                
+                <h4>📊 Fórmula OCRA:</h4>
+                <p><strong>Índice OCRA = (Fr × Ff × Ffu × Fp) + Fa</strong></p>
+                <p><strong>Índice OCRA = (${fr.toFixed(2)} × ${ff} × ${ffu.toFixed(2)} × ${fp}) + ${fa} = ${ocraIndex.toFixed(2)}</strong></p>
+            `;
+
+            // Mostrar resultados
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('fr_display').textContent = fr.toFixed(2);
+            document.getElementById('ff_display').textContent = ff.toFixed(1);
+            document.getElementById('ffu_display').textContent = ffu.toFixed(2);
+            document.getElementById('fp_display').textContent = fp;
+            document.getElementById('fa_display').textContent = fa;
+            document.getElementById('ocra_final').innerHTML = `<span class="${riskClass}">${ocraIndex.toFixed(2)}</span>`;
+            document.getElementById('recommendations').innerHTML = `<h4>🎯 Nivel de Riesgo: <span class="${riskClass}">${riskLevel}</span></h4>${recommendations}`;
+            document.getElementById('detailed_analysis').innerHTML = detailedAnalysis;
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Event listeners para cálculo automático de factores
+        ['tiempo_trabajo', 'pausas_oficiales', 'pausas_no_repetitivas'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateFr);
+        });
+
+        ['acciones_minuto'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateFf);
+        });
+
+        document.querySelectorAll('input[name="tipo_accion"]').forEach(radio => {
+            radio.addEventListener('change', calculateFf);
+        });
+
+        document.querySelectorAll('input[name="hombro"], input[name="codo"], input[name="muneca"], input[name="agarre"]').forEach(radio => {
+            radio.addEventListener('change', calculateFp);
+        });
+
+        // Establecer fecha actual por defecto
+        document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+        
+        // Inicializar cálculos
+        updateFa();
+    </script>
+</body>
+</html>

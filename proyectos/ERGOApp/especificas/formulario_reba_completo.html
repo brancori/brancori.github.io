@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación REBA - Rapid Entire Body Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #2c3e50;
+            border-left: 4px solid #e74c3c;
+            padding-left: 10px;
+        }
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .input-field {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .posture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .posture-section {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #bdc3c7;
+        }
+        .score-option {
+            margin: 8px 0;
+            padding: 8px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .score-option input[type="radio"] {
+            width: auto;
+            margin-right: 8px;
+        }
+        .calculate-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            margin: 25px 0;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .results {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .result-item {
+            background-color: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .score-display {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .risk-negligible { color: #27ae60; }
+        .risk-low { color: #f1c40f; }
+        .risk-medium { color: #e67e22; }
+        .risk-high { color: #e74c3c; }
+        .risk-very-high { color: #8e44ad; }
+        .interpretation {
+            background-color: #2c3e50;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .table-lookup {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        .table-lookup th, .table-lookup td {
+            border: 1px solid #bdc3c7;
+            padding: 6px;
+            text-align: center;
+        }
+        .table-lookup th {
+            background-color: #34495e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ REBA - Rapid Entire Body Assessment</h1>
+        
+        <h2>📋 Información General</h2>
+        <div class="info-section">
+            <div>
+                <div class="input-field">
+                    <label for="area">Área:</label>
+                    <input type="text" id="area" placeholder="Ej: Fabricación">
+                </div>
+                <div class="input-field">
+                    <label for="puesto">Puesto de Trabajo:</label>
+                    <input type="text" id="puesto" placeholder="Ej: Operador de línea">
+                </div>
+                <div class="input-field">
+                    <label for="tarea">Tarea Específica:</label>
+                    <input type="text" id="tarea" placeholder="Ej: Carga de materiales">
+                </div>
+            </div>
+            <div>
+                <div class="input-field">
+                    <label for="evaluador">Evaluador:</label>
+                    <input type="text" id="evaluador" placeholder="Nombre del evaluador">
+                </div>
+                <div class="input-field">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha">
+                </div>
+                <div class="input-field">
+                    <label for="trabajadores">No. Trabajadores:</label>
+                    <input type="number" id="trabajadores" min="1" placeholder="1">
+                </div>
+            </div>
+        </div>
+
+        <h2>👥 GRUPO A - Tronco, Cuello y Piernas</h2>
+        
+        <div class="posture-grid">
+            <div class="posture-section">
+                <h3>🦴 Tronco</h3>
+                <div class="score-option">
+                    <input type="radio" name="tronco" value="1" id="tronco1">
+                    <label for="tronco1">Erguido (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="tronco" value="2" id="tronco2">
+                    <label for="tronco2">0-20° flexión/extensión (2 puntos)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="tronco" value="3" id="tronco3">
+                    <label for="tronco3">20-60° flexión (3 puntos)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="tronco" value="4" id="tronco4">
+                    <label for="tronco4">>60° flexión (4 puntos)</label>
+                </div>
+                
+                <h4>Ajustes del Tronco:</h4>
+                <div class="score-option">
+                    <input type="checkbox" id="tronco_twist">
+                    <label for="tronco_twist">Rotación/flexión lateral (+1)</label>
+                </div>
+            </div>
+
+            <div class="posture-section">
+                <h3>🦢 Cuello</h3>
+                <div class="score-option">
+                    <input type="radio" name="cuello" value="1" id="cuello1">
+                    <label for="cuello1">0-20° flexión (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="cuello" value="2" id="cuello2">
+                    <label for="cuello2">>20° flexión o extensión (2 puntos)</label>
+                </div>
+                
+                <h4>Ajustes del Cuello:</h4>
+                <div class="score-option">
+                    <input type="checkbox" id="cuello_twist">
+                    <label for="cuello_twist">Rotación/flexión lateral (+1)</label>
+                </div>
+            </div>
+
+            <div class="posture-section">
+                <h3>🦵 Piernas</h3>
+                <div class="score-option">
+                    <input type="radio" name="piernas" value="1" id="piernas1">
+                    <label for="piernas1">Soporte bilateral, caminando o sentado (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="piernas" value="2" id="piernas2">
+                    <label for="piernas2">Soporte unilateral (2 puntos)</label>
+                </div>
+                
+                <h4>Ajustes de Piernas:</h4>
+                <div class="score-option">
+                    <input type="checkbox" id="piernas_flex1">
+                    <label for="piernas_flex1">Flexión rodillas 30-60° (+1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="checkbox" id="piernas_flex2">
+                    <label for="piernas_flex2">Flexión rodillas >60° (+2)</label>
+                </div>
+            </div>
+        </div>
+
+        <h2>💪 GRUPO B - Brazos, Antebrazos y Muñecas</h2>
+        
+        <div class="posture-grid">
+            <div class="posture-section">
+                <h3>💪 Brazo</h3>
+                <div class="score-option">
+                    <input type="radio" name="brazo" value="1" id="brazo1">
+                    <label for="brazo1">20° extensión - 20° flexión (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="brazo" value="2" id="brazo2">
+                    <label for="brazo2">20-45° flexión (2 puntos)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="brazo" value="3" id="brazo3">
+                    <label for="brazo3">45-90° flexión (3 puntos)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="brazo" value="4" id="brazo4">
+                    <label for="brazo4">>90° flexión (4 puntos)</label>
+                </div>
+                
+                <h4>Ajustes del Brazo:</h4>
+                <div class="score-option">
+                    <input type="checkbox" id="brazo_elevado">
+                    <label for="brazo_elevado">Hombro elevado (+1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="checkbox" id="brazo_abducido">
+                    <label for="brazo_abducido">Brazo abducido/rotado (+1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="checkbox" id="brazo_apoyo">
+                    <label for="brazo_apoyo">Apoyo para el brazo (-1)</label>
+                </div>
+            </div>
+
+            <div class="posture-section">
+                <h3>🔧 Antebrazo</h3>
+                <div class="score-option">
+                    <input type="radio" name="antebrazo" value="1" id="antebrazo1">
+                    <label for="antebrazo1">60-100° flexión (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="antebrazo" value="2" id="antebrazo2">
+                    <label for="antebrazo2"><60° o >100° flexión (2 puntos)</label>
+                </div>
+                
+                <h4>Ajustes del Antebrazo:</h4>
+                <div class="score-option">
+                    <input type="checkbox" id="antebrazo_cruzado">
+                    <label for="antebrazo_cruzado">Cruzando línea media o hacia afuera (+1)</label>
+                </div>
+            </div>
+
+            <div class="posture-section">
+                <h3>✋ Muñeca</h3>
+                <div class="score-option">
+                    <input type="radio" name="muneca" value="1" id="muneca1">
+                    <label for="muneca1">0-15° flexión/extensión (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="muneca" value="2" id="muneca2">
+                    <label for="muneca2">>15° flexión/extensión (2 puntos)</label>
+                </div>
+                
+                <h4>Ajustes de Muñeca:</h4>
+                <div class="score-option">
+                    <input type="checkbox" id="muneca_desviada">
+                    <label for="muneca_desviada">Desviación radial/cubital (+1)</label>
+                </div>
+            </div>
+        </div>
+
+        <h2>⚖️ Factores Adicionales</h2>
+        
+        <div class="posture-grid">
+            <div class="posture-section">
+                <h3>📦 Carga/Fuerza</h3>
+                <div class="score-option">
+                    <input type="radio" name="carga" value="0" id="carga0">
+                    <label for="carga0"><5 kg (0 puntos)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="carga" value="1" id="carga1">
+                    <label for="carga1">5-10 kg (1 punto)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="carga" value="2" id="carga2">
+                    <label for="carga2">>10 kg (2 puntos)</label>
+                </div>
+                <div class="score-option">
+                    <input type="radio" name="carga" value="3" id="carga3">
+                    <label for="carga3">Cargas o fuerzas aplicadas bruscamente (3 puntos)</label>
+                </div>
+            </div>
+
+            <div class="posture-section">
+                <h3>🔄 Actividad</h3>
+                <div class="score-option">
+                    <input type="checkbox" id="actividad1">
+                    <label for="actividad1">Una o más partes estáticas >1 min (+1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="checkbox" id="actividad2">
+                    <label for="actividad2">Movimientos repetitivos >4x/min (+1)</label>
+                </div>
+                <div class="score-option">
+                    <input type="checkbox" id="actividad3">
+                    <label for="actividad3">Cambios posturales importantes (+1)</label>
+                </div>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateREBA()">🔍 CALCULAR PUNTUACIÓN REBA</button>
+
+        <h2>📊 Tablas de Consulta REBA</h2>
+        
+        <h3>Tabla A - Tronco, Cuello y Piernas</h3>
+        <table class="table-lookup">
+            <thead>
+                <tr>
+                    <th rowspan="2">Tronco</th>
+                    <th colspan="6">Cuello</th>
+                </tr>
+                <tr>
+                    <th colspan="3">1</th>
+                    <th colspan="3">2</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>1</th><th>2</th><th>3</th>
+                    <th>1</th><th>2</th><th>3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>1</td><td>2</td><td>3</td><td>2</td><td>3</td><td>4</td></tr>
+                <tr><td>2</td><td>2</td><td>3</td><td>4</td><td>3</td><td>4</td><td>5</td></tr>
+                <tr><td>3</td><td>2</td><td>4</td><td>5</td><td>4</td><td>5</td><td>6</td></tr>
+                <tr><td>4</td><td>3</td><td>5</td><td>6</td><td>5</td><td>6</td><td>7</td></tr>
+                <tr><td>5</td><td>4</td><td>6</td><td>7</td><td>6</td><td>7</td><td>8</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Tabla B - Brazo, Antebrazo y Muñeca</h3>
+        <table class="table-lookup">
+            <thead>
+                <tr>
+                    <th rowspan="2">Brazo</th>
+                    <th colspan="6">Antebrazo</th>
+                </tr>
+                <tr>
+                    <th colspan="3">1</th>
+                    <th colspan="3">2</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>1</th><th>2</th><th>3</th>
+                    <th>1</th><th>2</th><th>3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>1</td><td>2</td><td>2</td><td>1</td><td>2</td><td>3</td></tr>
+                <tr><td>2</td><td>1</td><td>2</td><td>3</td><td>2</td><td>3</td><td>4</td></tr>
+                <tr><td>3</td><td>3</td><td>4</td><td>5</td><td>4</td><td>5</td><td>5</td></tr>
+                <tr><td>4</td><td>4</td><td>5</td><td>5</td><td>5</td><td>6</td><td>7</td></tr>
+                <tr><td>5</td><td>6</td><td>7</td><td>8</td><td>7</td><td>8</td><td>8</td></tr>
+                <tr><td>6</td><td>7</td><td>8</td><td>8</td><td>8</td><td>9</td><td>9</td></tr>
+            </tbody>
+        </table>
+
+        <div id="results" class="results" style="display: none;">
+            <h2>🎯 Resultados REBA</h2>
+            <div class="result-grid">
+                <div class="result-item">
+                    <h3>Puntuación Grupo A</h3>
+                    <div class="score-display" id="scoreA">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Puntuación Grupo B</h3>
+                    <div class="score-display" id="scoreB">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Puntuación REBA Final</h3>
+                    <div class="score-display" id="scoreFinal">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Nivel de Riesgo</h3>
+                    <div id="riskLevel">-</div>
+                </div>
+            </div>
+            
+            <div class="interpretation">
+                <h3>📋 Interpretación y Recomendaciones</h3>
+                <div id="recommendations"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tablas de consulta REBA
+        const tableA = [
+            [1, 2, 3, 2, 3, 4],
+            [2, 3, 4, 3, 4, 5],
+            [2, 4, 5, 4, 5, 6],
+            [3, 5, 6, 5, 6, 7],
+            [4, 6, 7, 6, 7, 8]
+        ];
+
+        const tableB = [
+            [1, 2, 2, 1, 2, 3],
+            [1, 2, 3, 2, 3, 4],
+            [3, 4, 5, 4, 5, 5],
+            [4, 5, 5, 5, 6, 7],
+            [6, 7, 8, 7, 8, 8],
+            [7, 8, 8, 8, 9, 9]
+        ];
+
+        const tableC = [
+            [1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 7, 7],
+            [1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 8],
+            [2, 3, 3, 3, 4, 5, 6, 7, 7, 8, 8, 8],
+            [3, 4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9],
+            [4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9, 9],
+            [6, 6, 6, 7, 8, 8, 9, 9, 10, 10, 10, 10],
+            [7, 7, 7, 8, 9, 9, 9, 10, 10, 11, 11, 11],
+            [8, 8, 8, 9, 10, 10, 10, 10, 10, 11, 11, 11],
+            [9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12],
+            [10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12],
+            [11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12],
+            [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+        ];
+
+        function calculateREBA() {
+            // Obtener valores del Grupo A
+            let troncoScore = parseInt(document.querySelector('input[name="tronco"]:checked')?.value || 0);
+            if (document.getElementById('tronco_twist').checked) troncoScore += 1;
+
+            let cuelloScore = parseInt(document.querySelector('input[name="cuello"]:checked')?.value || 0);
+            if (document.getElementById('cuello_twist').checked) cuelloScore += 1;
+
+            let piernasScore = parseInt(document.querySelector('input[name="piernas"]:checked')?.value || 0);
+            if (document.getElementById('piernas_flex1').checked) piernasScore += 1;
+            if (document.getElementById('piernas_flex2').checked) piernasScore += 2;
+
+            // Obtener valores del Grupo B
+            let brazoScore = parseInt(document.querySelector('input[name="brazo"]:checked')?.value || 0);
+            if (document.getElementById('brazo_elevado').checked) brazoScore += 1;
+            if (document.getElementById('brazo_abducido').checked) brazoScore += 1;
+            if (document.getElementById('brazo_apoyo').checked) brazoScore -= 1;
+
+            let antebrazoScore = parseInt(document.querySelector('input[name="antebrazo"]:checked')?.value || 0);
+            if (document.getElementById('antebrazo_cruzado').checked) antebrazoScore += 1;
+
+            let munecaScore = parseInt(document.querySelector('input[name="muneca"]:checked')?.value || 0);
+            if (document.getElementById('muneca_desviada').checked) munecaScore += 1;
+
+            // Validar que se hayan seleccionado todas las opciones
+            if (troncoScore === 0 || cuelloScore === 0 || piernasScore === 0 || 
+                brazoScore === 0 || antebrazoScore === 0 || munecaScore === 0) {
+                alert('Por favor, complete todas las evaluaciones posturales');
+                return;
+            }
+
+            // Calcular puntuaciones de las tablas
+            const scoreA = tableA[Math.min(troncoScore-1, 4)][(cuelloScore-1)*3 + (piernasScore-1)];
+            const scoreB = tableB[Math.min(brazoScore-1, 5)][(antebrazoScore-1)*3 + (munecaScore-1)];
+
+            // Factores adicionales
+            const cargaScore = parseInt(document.querySelector('input[name="carga"]:checked')?.value || 0);
+            let actividadScore = 0;
+            if (document.getElementById('actividad1').checked) actividadScore += 1;
+            if (document.getElementById('actividad2').checked) actividadScore += 1;
+            if (document.getElementById('actividad3').checked) actividadScore += 1;
+
+            // Puntuación final
+            const finalScore = tableC[Math.min(scoreA-1, 11)][Math.min(scoreB-1, 11)] + cargaScore + actividadScore;
+
+            // Determinar nivel de riesgo
+            let riskLevel, riskClass, recommendations;
+            if (finalScore === 1) {
+                riskLevel = "RIESGO NEGLIGIBLE";
+                riskClass = "risk-negligible";
+                recommendations = `
+                    <ul>
+                        <li>✅ No es necesaria actuación</li>
+                        <li>📊 Seguimiento rutinario recomendado</li>
+                    </ul>
+                `;
+            } else if (finalScore >= 2 && finalScore <= 3) {
+                riskLevel = "RIESGO BAJO";
+                riskClass = "risk-low";
+                recommendations = `
+                    <ul>
+                        <li>⚠️ Puede ser necesaria actuación</li>
+                        <li>📋 Revisión y mejoras menores</li>
+                        <li>🔍 Monitoreo periódico</li>
+                    </ul>
+                `;
+            } else if (finalScore >= 4 && finalScore <= 7) {
+                riskLevel = "RIESGO MEDIO";
+                riskClass = "risk-medium";
+                recommendations = `
+                    <ul>
+                        <li>🚨 Actuación necesaria</li>
+                        <li>🏗️ Implementar mejoras ergonómicas</li>
+                        <li>📚 Capacitación en posturas</li>
+                        <li>🔄 Considerar rotación de tareas</li>
+                    </ul>
+                `;
+            } else if (finalScore >= 8 && finalScore <= 10) {
+                riskLevel = "RIESGO ALTO";
+                riskClass = "risk-high";
+                recommendations = `
+                    <ul>
+                        <li>🚨 Actuación necesaria pronto</li>
+                        <li>🏗️ Rediseño del puesto de trabajo</li>
+                        <li>⚡ Implementar controles inmediatos</li>
+                        <li>📚 Capacitación específica obligatoria</li>
+                        <li>🏥 Evaluación médica del personal</li>
+                    </ul>
+                `;
+            } else {
+                riskLevel = "RIESGO MUY ALTO";
+                riskClass = "risk-very-high";
+                recommendations = `
+                    <ul>
+                        <li>⛔ Actuación inmediata</li>
+                        <li>🚫 Suspender tarea hasta mejoras</li>
+                        <li>🏗️ Rediseño completo obligatorio</li>
+                        <li>🤖 Implementar automatización</li>
+                        <li>🏥 Evaluación médica inmediata</li>
+                        <li>📋 Seguimiento médico continuo</li>
+                    </ul>
+                `;
+            }
+
+            // Mostrar resultados
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('scoreA').textContent = scoreA;
+            document.getElementById('scoreB').textContent = scoreB;
+            document.getElementById('scoreFinal').textContent = finalScore;
+            document.getElementById('riskLevel').innerHTML = `<span class="${riskClass}">${riskLevel}</span>`;
+            document.getElementById('recommendations').innerHTML = recommendations;
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Establec

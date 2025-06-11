@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora NIOSH Automática</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .input-field {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .calculate-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .calculate-btn:hover {
+            background-color: #229954;
+        }
+        .results {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        .risk-low { color: #27ae60; font-weight: bold; }
+        .risk-medium { color: #f39c12; font-weight: bold; }
+        .risk-high { color: #e74c3c; font-weight: bold; }
+        .frequency-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .frequency-table th, .frequency-table td {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            text-align: center;
+        }
+        .frequency-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .interpretation {
+            background-color: #d5f4e6;
+            border: 1px solid #27ae60;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏭 Calculadora NIOSH - Ecuación Revisada 1991</h1>
+        
+        <h2>📊 Datos de Entrada</h2>
+        
+        <div class="input-group">
+            <div>
+                <div class="input-field">
+                    <label for="weight">Peso del Objeto (kg):</label>
+                    <input type="number" id="weight" step="0.1" min="0" placeholder="Ej: 15.5">
+                </div>
+                
+                <div class="input-field">
+                    <label for="h1">Distancia Horizontal Origen (cm):</label>
+                    <input type="number" id="h1" step="0.1" min="25" placeholder="Mínimo 25 cm">
+                </div>
+                
+                <div class="input-field">
+                    <label for="v1">Altura Vertical Origen (cm):</label>
+                    <input type="number" id="v1" step="0.1" min="0" placeholder="Desde el suelo">
+                </div>
+                
+                <div class="input-field">
+                    <label for="a1">Ángulo Asimetría Origen (°):</label>
+                    <input type="number" id="a1" step="1" min="0" max="135" placeholder="0-135 grados">
+                </div>
+                
+                <div class="input-field">
+                    <label for="frequency">Frecuencia (levantamientos/min):</label>
+                    <input type="number" id="frequency" step="0.1" min="0" placeholder="Ej: 2.5">
+                </div>
+            </div>
+            
+            <div>
+                <div class="input-field">
+                    <label for="h2">Distancia Horizontal Destino (cm):</label>
+                    <input type="number" id="h2" step="0.1" min="25" placeholder="Mínimo 25 cm">
+                </div>
+                
+                <div class="input-field">
+                    <label for="v2">Altura Vertical Destino (cm):</label>
+                    <input type="number" id="v2" step="0.1" min="0" placeholder="Desde el suelo">
+                </div>
+                
+                <div class="input-field">
+                    <label for="a2">Ángulo Asimetría Destino (°):</label>
+                    <input type="number" id="a2" step="1" min="0" max="135" placeholder="0-135 grados">
+                </div>
+                
+                <div class="input-field">
+                    <label for="duration">Duración de la Tarea:</label>
+                    <select id="duration">
+                        <option value="1">≤ 1 hora</option>
+                        <option value="2">> 1-2 horas</option>
+                        <option value="8">> 2-8 horas</option>
+                    </select>
+                </div>
+                
+                <div class="input-field">
+                    <label for="grip">Calidad del Agarre:</label>
+                    <select id="grip">
+                        <option value="good">Bueno (1.00)</option>
+                        <option value="fair">Regular (0.95)</option>
+                        <option value="poor">Malo (0.90)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <button class="calculate-btn" id="calcular-niosh-btn">🔍 CALCULAR NIOSH</button>
+        
+        <h2>📋 Tabla de Referencia - Factor de Frecuencia</h2>
+        <table class="frequency-table">
+            <thead>
+                <tr>
+                    <th>Levantamientos/min</th>
+                    <th>≤ 1 hora</th>
+                    <th>> 1-2 horas</th>
+                    <th>> 2-8 horas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>≤ 0.2</td><td>1.00</td><td>0.95</td><td>0.85</td></tr>
+                <tr><td>0.5</td><td>0.97</td><td>0.92</td><td>0.81</td></tr>
+                <tr><td>1</td><td>0.94</td><td>0.88</td><td>0.75</td></tr>
+                <tr><td>2</td><td>0.91</td><td>0.84</td><td>0.65</td></tr>
+                <tr><td>3</td><td>0.88</td><td>0.79</td><td>0.55</td></tr>
+                <tr><td>4</td><td>0.84</td><td>0.72</td><td>0.45</td></tr>
+                <tr><td>5</td><td>0.80</td><td>0.60</td><td>0.35</td></tr>
+                <tr><td>> 5</td><td>0.75</td><td>0.50</td><td>0.30</td></tr>
+            </tbody>
+        </table>
+        
+        <div id="results" class="results" style="display: none;">
+            <h2>🎯 Resultados del Cálculo</h2>
+            <div id="multipliers"></div>
+            <div id="final-results"></div>
+            <div id="interpretation"></div>
+        </div>
+    </div>
+
+    <script>
+        function getFrequencyMultiplier(freq, duration) {
+            const table = {
+                1: { // ≤ 1 hora
+                    0.2: 1.00, 0.5: 0.97, 1: 0.94, 2: 0.91, 3: 0.88, 4: 0.84, 5: 0.80, 999: 0.75
+                },
+                2: { // > 1-2 horas
+                    0.2: 0.95, 0.5: 0.92, 1: 0.88, 2: 0.84, 3: 0.79, 4: 0.72, 5: 0.60, 999: 0.50
+                },
+                8: { // > 2-8 horas
+                    0.2: 0.85, 0.5: 0.81, 1: 0.75, 2: 0.65, 3: 0.55, 4: 0.45, 5: 0.35, 999: 0.30
+                }
+            };
+            
+            const durationTable = table[duration];
+            
+            if (freq <= 0.2) return durationTable[0.2];
+            if (freq <= 0.5) return durationTable[0.5];
+            if (freq <= 1) return durationTable[1];
+            if (freq <= 2) return durationTable[2];
+            if (freq <= 3) return durationTable[3];
+            if (freq <= 4) return durationTable[4];
+            if (freq <= 5) return durationTable[5];
+            return durationTable[999];
+        }
+        
+        function getGripMultiplier(grip) {
+            const gripValues = {
+                'good': 1.00,
+                'fair': 0.95,
+                'poor': 0.90
+            };
+            return gripValues[grip];
+        }
+        
+        function calculateNIOSH() {
+            // Obtener valores de entrada
+            const weight = parseFloat(document.getElementById('weight').value);
+            const h1 = Math.max(25, parseFloat(document.getElementById('h1').value));
+            const h2 = Math.max(25, parseFloat(document.getElementById('h2').value));
+            const v1 = parseFloat(document.getElementById('v1').value);
+            const v2 = parseFloat(document.getElementById('v2').value);
+            const a1 = parseFloat(document.getElementById('a1').value);
+            const a2 = parseFloat(document.getElementById('a2').value);
+            const frequency = parseFloat(document.getElementById('frequency').value);
+            const duration = parseInt(document.getElementById('duration').value);
+            const grip = document.getElementById('grip').value;
+            
+            // Validar entrada
+            if (isNaN(weight) || isNaN(h1) || isNaN(h2) || isNaN(v1) || isNaN(v2) || 
+                isNaN(a1) || isNaN(a2) || isNaN(frequency)) {
+                alert('Por favor, complete todos los campos numéricos');
+                return;
+            }
+            
+            // Calcular multiplicadores
+            const HM = Math.min(25 / Math.max(h1, h2), 1);
+            const VM1 = 1 - (0.003 * Math.abs(v1 - 75));
+            const VM2 = 1 - (0.003 * Math.abs(v2 - 75));
+            const VM = Math.min(VM1, VM2);
+            
+            const D = Math.abs(v2 - v1);
+            const DM = D < 25 ? 1 : (0.82 + (4.5 / D));
+            
+            const AM1 = 1 - (0.0032 * a1);
+            const AM2 = 1 - (0.0032 * a2);
+            const AM = Math.min(AM1, AM2);
+            
+            const FM = getFrequencyMultiplier(frequency, duration);
+            const CM = getGripMultiplier(grip);
+            
+            // Calcular RWL y LI
+            const LC = 23; // Constante de carga
+            const RWL = LC * HM * VM * DM * AM * FM * CM;
+            const LI = weight / RWL;
+            
+            // Mostrar resultados
+            document.getElementById('results').style.display = 'block';
+            
+            document.getElementById('multipliers').innerHTML = `
+                <h3>Multiplicadores Calculados:</h3>
+                <div class="result-item"><span>HM (Horizontal):</span><span>${HM.toFixed(3)}</span></div>
+                <div class="result-item"><span>VM (Vertical):</span><span>${VM.toFixed(3)}</span></div>
+                <div class="result-item"><span>DM (Distancia):</span><span>${DM.toFixed(3)}</span></div>
+                <div class="result-item"><span>AM (Asimetría):</span><span>${AM.toFixed(3)}</span></div>
+                <div class="result-item"><span>FM (Frecuencia):</span><span>${FM.toFixed(3)}</span></div>
+                <div class="result-item"><span>CM (Agarre):</span><span>${CM.toFixed(3)}</span></div>
+            `;
+            
+            let riskClass = 'risk-low';
+            let riskText = 'BAJO RIESGO';
+            if (LI > 3.0) {
+                riskClass = 'risk-high';
+                riskText = 'ALTO RIESGO';
+            } else if (LI > 1.0) {
+                riskClass = 'risk-medium';
+                riskText = 'RIESGO MODERADO';
+            }
+            
+            document.getElementById('final-results').innerHTML = `
+                <h3>Resultados Finales:</h3>
+                <div class="result-item"><span>RWL (Peso Límite Recomendado):</span><span><strong>${RWL.toFixed(2)} kg</strong></span></div>
+                <div class="result-item"><span>LI (Índice de Levantamiento):</span><span class="${riskClass}"><strong>${LI.toFixed(2)}</strong></span></div>
+                <div class="result-item"><span>Nivel de Riesgo:</span><span class="${riskClass}"><strong>${riskText}</strong></span></div>
+            `;
+            
+            let recommendations = '';
+            if (LI > 3.0) {
+                recommendations = `
+                    <strong>Recomendaciones (ALTO RIESGO):</strong>
+                    <ul>
+                        <li>🚨 Rediseño inmediato del puesto de trabajo</li>
+                        <li>🏗️ Implementar ayudas mecánicas obligatorias</li>
+                        <li>👥 Reducir peso o usar dos personas</li>
+                        <li>📚 Capacitación específica en técnicas de levantamiento</li>
+                        <li>🔄 Rotación frecuente de personal</li>
+                    </ul>
+                `;
+            } else if (LI > 1.0) {
+                recommendations = `
+                    <strong>Recomendaciones (RIESGO MODERADO):</strong>
+                    <ul>
+                        <li>⚠️ Implementar mejoras ergonómicas</li>
+                        <li>📏 Optimizar alturas y distancias de trabajo</li>
+                        <li>🔄 Considerar rotación de personal</li>
+                        <li>📊 Monitoreo periódico de la tarea</li>
+                        <li>🎓 Capacitación en técnicas seguras</li>
+                    </ul>
+                `;
+            } else {
+                recommendations = `
+                    <strong>Recomendaciones (BAJO RIESGO):</strong>
+                    <ul>
+                        <li>✅ Mantener las condiciones actuales</li>
+                        <li>👀 Seguimiento rutinario</li>
+                        <li>📚 Capacitación preventiva ocasional</li>
+                        <li>🔍 Revisión anual de la evaluación</li>
+                    </ul>
+                `;
+            }
+            
+            document.getElementById('interpretation').innerHTML = `
+                <div class="interpretation">
+                    <h3>🎯 Interpretación y Recomendaciones</h3>
+                    <p><strong>Criterios de Interpretación:</strong></p>
+                    <ul>
+                        <li><span class="risk-low">LI ≤ 1.0:</span> La mayoría de trabajadores pueden realizar la tarea sin riesgo aumentado</li>
+                        <li><span class="risk-medium">1.0 < LI ≤ 3.0:</span> Algunos trabajadores pueden experimentar problemas, se requieren controles</li>
+                        <li><span class="risk-high">LI > 3.0:</span> La mayoría de trabajadores experimentarán problemas, riesgo inaceptable</li>
+                    </ul>
+                    ${recommendations}
+                </div>
+            `;
+        }
+                document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('calcular-niosh-btn').addEventListener('click', calculateNIOSH);
+        });
+    </script>
+</body>
+</html>
+    
