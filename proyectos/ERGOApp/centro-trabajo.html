@@ -107,8 +107,8 @@
         /* Estilos para la sección de fotos */
         .fotos-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
             margin-bottom: 1rem;
         }
 
@@ -373,7 +373,16 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease;
 }
-
+@media (max-width: 768px) {
+    .foto-modal-image {
+        max-height: 70vh; /* Era 80vh */
+    }
+    
+    .foto-modal-controls {
+        bottom: 20px; /* Mover abajo para mejor acceso */
+        top: auto;
+    }
+}
 .foto-modal-info {
     background: rgba(255, 255, 255, 0.95);
     padding: 1rem 1.5rem;
@@ -511,7 +520,7 @@
         <!-- Header del centro -->
         <header class="centro-header">
             <nav class="breadcrumb">
-                <a href="index.html">Áreas</a>
+                <a href="areas.html">Áreas</a>
                 <span class="separator">/</span>
                 <a href="#" id="breadcrumb-area">Área</a>
                 <span class="separator">/</span>
@@ -525,8 +534,8 @@
                 </div>
                 
                 <div class="score-container">
-                    <div id="score-value" class="score-value">60%</div>
-                    <div id="score-category" class="score-category">Para mejorar</div>
+                    <div id="score-value" class="score-value">--</div>
+                    <div id="score-category" class="score-category">Sin evaluar</div>
                     <button class="btn-add-note" onclick="openNotaModal()">
                         + AGREGAR NOTA
                     </button>
@@ -658,6 +667,100 @@
         let notasActuales = [];
         let evaluacionesEspecificas = [];
 
+        // Sistema de permisos
+function getCurrentUser() {
+    try {
+        const userData = localStorage.getItem('currentUser');
+        return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+        console.error('Error obteniendo usuario:', error);
+        return null;
+    }
+}
+
+        function hasPermission(action) {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return false;
+
+            const rango = currentUser.rango;
+            
+            switch (action) {
+                case 'read':
+                    return [1, 2, 3].includes(rango); // Todos pueden leer
+                case 'create':
+                    return [1, 2].includes(rango); // Admin y Editor
+                case 'update':
+                    return [1].includes(rango); // Solo Admin
+                case 'delete':
+                    return [1].includes(rango); // Solo Admin
+                default:
+                    return false;
+            }
+        }
+
+        function checkPermissionAndShowError(action) {
+            if (!hasPermission(action)) {
+                alert('No tienes permisos para realizar esta acción');
+                return false;
+            }
+            return true;
+        }
+
+function applyPermissionControls() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        console.warn('No hay usuario logueado');
+        return;
+    }
+    
+    console.log(`👤 Usuario: ${currentUser.nombre} - Rango: ${currentUser.rango}`);
+    
+    // Ocultar botones según permisos
+    if (!hasPermission('create')) {
+        // Ocultar botón "AGREGAR NOTA"
+        const addNoteBtn = document.querySelector('.btn-add-note');
+        if (addNoteBtn) {
+            addNoteBtn.style.display = 'none';
+            console.log('🚫 Botón "Agregar Nota" ocultado');
+        }
+        
+        // Ocultar botón "AGREGAR EVALUACIÓN"
+        const addEvalBtn = document.querySelector('button[onclick="openEvaluacionModal()"]');
+        if (addEvalBtn) {
+            addEvalBtn.style.display = 'none';
+            console.log('🚫 Botón "Agregar Evaluación" ocultado');
+        }
+        
+        // Ocultar slots de fotos vacíos (para subir fotos)
+        setTimeout(() => {
+            const fotoSlots = document.querySelectorAll('.foto-slot:not(.occupied)');
+            fotoSlots.forEach(slot => {
+                slot.style.cursor = 'not-allowed';
+                slot.style.opacity = '0.5';
+                slot.onclick = function() {
+                    alert('No tienes permisos para agregar fotos');
+                    return false;
+                };
+            });
+            console.log(`🚫 ${fotoSlots.length} slots de fotos deshabilitados`);
+        }, 500);
+    }
+    
+    if (!hasPermission('delete')) {
+        console.log('🚫 Permisos de eliminación denegados');
+        // Los botones de eliminar se manejan en renderFotosGrid()
+    }
+    
+    // Mostrar indicador de permisos en consola
+    const rangoTexto = {
+        1: 'Administrador (CRUD completo)',
+        2: 'Editor (Crear y leer)', 
+        3: 'Visualizador (Solo lectura)'
+    };
+    
+    console.log(`✅ Permisos aplicados: ${rangoTexto[currentUser.rango] || 'Rango desconocido'}`);
+}
+
         // Obtener parámetros de URL
         const urlParams = new URLSearchParams(window.location.search);
         const workCenterId = urlParams.get('workCenter');
@@ -671,12 +774,21 @@
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Iniciando aplicación...');
+            
+            // === VERIFICACIONES INICIALES ===
             if (!workCenterId || !areaId) {
                 alert('Error: Parámetros de URL faltantes');
-                window.location.href = 'index.html';
+                window.location.href = 'areas.html';
                 return;
             }
 
+            // Verificar que Supabase esté disponible (si lo necesitas)
+            if (typeof supabase === 'undefined') {
+                console.warn('⚠️ Supabase no disponible, usando localStorage');
+            }
+
+            // === CONFIGURACIÓN INICIAL ===
             // Configurar datos del centro
             currentCenterData = {
                 id: workCenterId,
@@ -685,27 +797,33 @@
                 areaId: areaId
             };
 
-            // Actualizar UI
+            // Actualizar UI básica
             document.getElementById('centro-name').textContent = currentCenterData.name;
             document.getElementById('centro-responsable').textContent = `Responsable: ${currentCenterData.responsible}`;
             document.getElementById('breadcrumb-area').textContent = decodeURIComponent(areaName || 'Área');
             document.getElementById('breadcrumb-centro').textContent = currentCenterData.name;
+            document.getElementById('breadcrumb-area').href = `areas.html#area-${areaId}`;
 
-            // Configurar breadcrumb link
-            document.getElementById('breadcrumb-area').href = `index.html#area-${areaId}`;
+            // === CARGA DE DATOS ===
+            try {
+                await Promise.all([
+                    loadEvaluacionInicial(),
+                    loadFotos(),
+                    loadNotas(),
+                    loadEvaluacionesEspecificas()
+                ]);
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            }
 
-            // Cargar datos
-            await Promise.all([
-                loadEvaluacionInicial(),
-                loadFotos(),
-                loadNotas(),
-                loadEvaluacionesEspecificas()
-            ]);
-
-            // Configurar eventos
+            // === CONFIGURACIÓN DE EVENTOS ===
             setupEventListeners();
-        });
 
+            // === CONTROL DE PERMISOS ===
+            applyPermissionControls();
+
+            console.log('✅ Aplicación inicializada correctamente');
+        });
         function setupEventListeners() {
             // Input de fotos
             document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
@@ -719,59 +837,91 @@
         }
 
         // Funciones de carga de datos
-        async function loadEvaluacionInicial() {
+    async function loadEvaluacionInicial() {
+        try {
+            
+            let evaluaciones = [];
+            
+              if (USE_SUPABASE) {
             try {
-                let evaluaciones = [];
-                
-                if (USE_SUPABASE) {
-                    try {
-                        evaluaciones = await supabase.getEvaluaciones(workCenterId) || [];
-                    } catch (error) {
-                        console.log('Supabase no disponible, usando localStorage');
-                    }
-                }
-
-                // Fallback a localStorage
-                if (evaluaciones.length === 0) {
-                    const localEvals = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-                    evaluaciones = localEvals.filter(e => e.workCenterId === workCenterId);
-                }
-
-                if (evaluaciones.length > 0) {
-                    const eval = evaluaciones[0];
-                    const score = eval.scoreFinal || eval.score_final || '0';
-                    const categoria = eval.categoriaRiesgo || eval.categoria_riesgo || 'Sin evaluar';
-                    const fecha = eval.fechaEvaluacion || eval.fecha_evaluacion || 'No especificada';
-
-                    // Actualizar score principal
-                    document.getElementById('score-value').textContent = `${score}%`;
-                    document.getElementById('score-category').textContent = categoria;
-                    
-                    // Aplicar color según score
-                    const scoreNum = parseFloat(score);
-                    const color = getScoreColor(scoreNum);
-                    document.getElementById('score-value').style.color = color;
-
-                    // Actualizar info de evaluación inicial
-                    document.getElementById('eval-fecha').textContent = fecha;
-                    document.getElementById('eval-score').textContent = `${score}%`;
-                    
-                    // Determinar métodos sugeridos basado en score
-                    const metodosRecomendados = getMetodosRecomendados(scoreNum);
-                    document.getElementById('eval-sugeridas').textContent = metodosRecomendados;
-                } else {
-                    // Sin evaluación
-                    document.getElementById('score-value').textContent = '--';
-                    document.getElementById('score-category').textContent = 'Sin evaluar';
-                    document.getElementById('eval-fecha').textContent = 'Sin evaluación';
-                    document.getElementById('eval-score').textContent = '--';
-                    document.getElementById('eval-sugeridas').textContent = 'Realizar evaluación inicial';
-                }
+                console.log('🔍 Consultando Supabase...');
+                evaluaciones = await supabase.getEvaluaciones(workCenterId) || [];
+                console.log('🔍 DEBUG: Evaluaciones desde Supabase:', evaluaciones);
+                console.log('🔍 DEBUG: Primera evaluación:', evaluaciones[0]);
             } catch (error) {
-                console.error('Error cargando evaluación inicial:', error);
+                console.log('Supabase no disponible, usando localStorage');
             }
         }
 
+            // Fallback a localStorage
+            if (evaluaciones.length > 0) {
+            evaluaciones = evaluaciones.filter(e => e.work_center_id === workCenterId);
+            console.log('🔍 DEBUG: Evaluaciones filtradas para este centro:', evaluaciones);
+        }
+
+        // Fallback a localStorage si no hay en Supabase
+        if (evaluaciones.length === 0) {
+            const localEvals = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+            evaluaciones = localEvals.filter(e => e.workCenterId === workCenterId);
+            console.log('🔍 DEBUG: Usando localStorage fallback:', evaluaciones);
+        }
+        
+        console.log('🔍 Evaluaciones encontradas para este centro:', evaluaciones.length);
+
+         if (evaluaciones.length > 0) {
+            const eval = evaluaciones[0];
+            console.log('🔍 DEBUG: Estructura de la evaluación:', eval);
+            console.log('🔍 DEBUG: Campos disponibles:', Object.keys(eval));
+            const score = eval.score_final || eval.scoreFinal || '0';
+            const categoria = eval.categoria_riesgo || eval.categoriaRiesgo || 'Sin evaluar';
+            const fecha = eval.fecha_evaluacion || eval.fechaEvaluacion || 'No especificada';
+
+            // Actualizar score principal
+            document.getElementById('score-value').textContent = `${score}%`;
+            document.getElementById('score-category').textContent = categoria;
+            
+            // Aplicar color según score
+            const scoreNum = parseFloat(score);
+            const color = getScoreColor(scoreNum);
+            document.getElementById('score-value').style.color = color;
+
+            // Actualizar info de evaluación inicial
+            document.getElementById('eval-fecha').textContent = fecha;
+            document.getElementById('eval-score').textContent = `${score}%`;
+            
+            // Determinar métodos sugeridos basado en score
+            const metodosRecomendados = getMetodosRecomendados(scoreNum);
+            document.getElementById('eval-sugeridas').textContent = metodosRecomendados;
+            
+            console.log('✅ Datos de evaluación cargados');
+        } else {
+            // NO EXISTE EVALUACIÓN - Mostrar valores por defecto limpios
+            console.log('🆕 Centro nuevo - estableciendo valores por defecto');
+            
+            // Limpiar score principal
+            document.getElementById('score-value').textContent = '--';
+            document.getElementById('score-category').textContent = 'Sin evaluar';
+            document.getElementById('score-value').style.color = '#6b7280'; // Color gris
+            
+            // Limpiar info de evaluación inicial
+            document.getElementById('eval-fecha').textContent = 'Pendiente';
+            document.getElementById('eval-score').textContent = '--';
+            document.getElementById('eval-sugeridas').textContent = 'Realizar evaluación inicial';
+            
+            console.log('🧹 Valores limpiados para centro nuevo');
+        }
+    } catch (error) {
+        console.error('Error cargando evaluación inicial:', error);
+        
+        // En caso de error, también limpiar valores
+        document.getElementById('score-value').textContent = '--';
+        document.getElementById('score-category').textContent = 'Error al cargar';
+        document.getElementById('score-value').style.color = '#ef4444'; // Color rojo
+        document.getElementById('eval-fecha').textContent = 'Error';
+        document.getElementById('eval-score').textContent = '--';
+        document.getElementById('eval-sugeridas').textContent = 'Error al cargar datos';
+    }
+}
         async function loadFotos() {
             try {
                 if (USE_SUPABASE) {
@@ -836,8 +986,7 @@
                     <div class="foto-slot occupied" onclick="openFotoModal(${index})"> <!-- AGREGAR onclick aquí -->
                         <img src="${publicUrl}" alt="${foto.foto_name || `Foto ${index + 1}`}" 
                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjYwIiB5PSI2NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZW4gTm8gRGlzcG9uaWJsZTwvdGV4dD4KPHN2Zz4='" />
-                        <button class="foto-delete" onclick="event.stopPropagation(); deleteFoto('${foto.id || index}')">×</button>
-                    </div>
+                            ${hasPermission('delete') ? `<button class="foto-delete" onclick="event.stopPropagation(); deleteFoto('${foto.id || index}')">×</button>` : ''}                    </div>
                 `;
             });
             
@@ -993,6 +1142,7 @@ function renderEvaluacionesEspecificas() {
         }
 
         async function deleteFoto(fotoId) {
+            if (!checkPermissionAndShowError('delete')) return;
             if (confirm('¿Eliminar esta foto?')) {
                 try {
                     if (USE_SUPABASE) {
@@ -1014,6 +1164,7 @@ function renderEvaluacionesEspecificas() {
         }
 
         function openNotaModal() {
+            if (!checkPermissionAndShowError('create')) return;
             document.getElementById('modal-nota').classList.add('show');
             document.getElementById('nota-texto').focus();
         }
@@ -1024,6 +1175,7 @@ function renderEvaluacionesEspecificas() {
         }
 
         function guardarNota() {
+            if (!checkPermissionAndShowError('create')) return;
             const texto = document.getElementById('nota-texto').value.trim();
             
             if (!texto) {
@@ -1046,6 +1198,7 @@ function renderEvaluacionesEspecificas() {
         }
 
 function openEvaluacionModal() {
+    if (!checkPermissionAndShowError('create')) return;
     const metodos = [
         { nombre: 'REBA', archivo: 'especificas/formulario_reba_completo.html', descripcion: 'Evaluación de cuerpo completo' },
         { nombre: 'RULA', archivo: 'especificas/formulario_rula_completo.html', descripcion: 'Evaluación de miembros superiores' },
@@ -1112,7 +1265,7 @@ function verEvaluacionEspecifica(evalId, tipo) {
         }
 
         function volverACentros() {
-            window.location.href = `index.html#area-${areaId}`;
+            window.location.href = `areas.html#area-${areaId}`;
         }
 
         async function exportarPDFCompleto() {
@@ -1357,35 +1510,7 @@ function toggleZoom() {
 }
 
 // Event listeners para el modal
-document.addEventListener('DOMContentLoaded', function() {
-    // Click fuera del modal para cerrar
-    document.getElementById('foto-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeFotoModal();
-        }
-    });
-    
-    // Click en imagen para zoom
-    document.getElementById('foto-modal-image').addEventListener('click', toggleZoom);
-    
-    // Teclado para navegación
-    document.addEventListener('keydown', function(e) {
-        const modal = document.getElementById('foto-modal');
-        if (!modal.classList.contains('show')) return;
-        
-        switch(e.key) {
-            case 'Escape':
-                closeFotoModal();
-                break;
-            case 'ArrowLeft':
-                prevFoto();
-                break;
-            case 'ArrowRight':
-                nextFoto();
-                break;
-        }
-    });
-});
+
     </script>
 </body>
 </html>

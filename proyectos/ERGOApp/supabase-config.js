@@ -54,6 +54,39 @@ async query(table, method = 'GET', data = null, filters = '') {
     async getAreas() {
         return await this.query('areas');
     }
+    // AGREGAR estas 2 funciones después de getAreas():
+
+    async getArea(areaId) {
+        try {
+            if (!areaId) {
+                console.log('❌ areaId requerido para getArea');
+                return null;
+            }
+            
+            const result = await this.query('areas', 'GET', null, `?id=eq.${areaId}`);
+            console.log('📊 Área específica consultada:', areaId, 'Resultado:', result);
+            return result && result.length > 0 ? result[0] : null;
+        } catch (error) {
+            console.error('❌ Error obteniendo área específica:', error);
+            return null;
+        }
+    }
+
+    async getWorkCenter(workCenterId) {
+        try {
+            if (!workCenterId) {
+                console.log('❌ workCenterId requerido para getWorkCenter');
+                return null;
+            }
+            
+            const result = await this.query('work_centers', 'GET', null, `?id=eq.${workCenterId}`);
+            console.log('📊 Work center específico consultado:', workCenterId, 'Resultado:', result);
+            return result && result.length > 0 ? result[0] : null;
+        } catch (error) {
+            console.error('❌ Error obteniendo work center específico:', error);
+            return null;
+        }
+    }
 
     async createArea(area) {
         return await this.query('areas', 'POST', area);
@@ -87,8 +120,17 @@ async query(table, method = 'GET', data = null, filters = '') {
     }
 
     async getEvaluaciones(workCenterId = null) {
-        const filter = workCenterId ? `?work_center_id=eq.${workCenterId}` : '';
-        return await this.query('evaluaciones', 'GET', null, filter);
+        if (workCenterId) {
+            // Buscar por work_center_id específico
+            const filter = `?work_center_id=eq.${workCenterId}`;
+            console.log('📡 Consultando Supabase con filtro:', filter);
+            const result = await this.query('evaluaciones', 'GET', null, filter);
+            console.log('📡 Respuesta Supabase:', result);
+            return result;
+        } else {
+            // Sin filtro, devolver todas
+            return await this.query('evaluaciones', 'GET', null, '');
+        }
     }
 
     async createEvaluacion(evaluacion) {
@@ -427,6 +469,71 @@ async actualizarScoreResumen(workCenterId, areaId, scoreData) {
         throw error;
     }
 }
+// === AUTENTICACIÓN DE USUARIOS ===
+async loginUser(usuario, password) {
+    try {
+        // Método con encoding para caracteres especiales
+        const result = await this.query('usuarios', 'GET', null, `?usuario=eq.${encodeURIComponent(usuario)}&password=eq.${encodeURIComponent(password)}`);
+        return result && result.length > 0 ? result[0] : null;
+    } catch (error) {
+        console.error('Error en login:', error);
+        return null;
+    }
+}
+
+async getUsuario(id) {
+    try {
+        const result = await this.query('usuarios', 'GET', null, `?id=eq.${id}`);
+        return result && result.length > 0 ? result[0] : null;
+    } catch (error) {
+        console.error('Error obteniendo usuario:', error);
+        return null;
+    }
+}
+// === DASHBOARD DATOS ===
+async getDashboardData() {
+    try {
+        // Obtener datos de scores_resumen para el dashboard
+        const scoresData = await this.query('scores_resumen', 'GET', null, '?order=score_actual.desc');
+        
+        if (!scoresData) return { areas: [], topRisk: [] };
+        
+        // Calcular promedios por área
+        const areaScores = {};
+        scoresData.forEach(score => {
+            if (!areaScores[score.area_id]) {
+                areaScores[score.area_id] = {
+                    total: 0,
+                    count: 0,
+                    name: `Área ${score.area_id}`
+                };
+            }
+            areaScores[score.area_id].total += parseFloat(score.score_actual);
+            areaScores[score.area_id].count += 1;
+        });
+        
+        // Convertir a array y calcular promedios
+        const areas = Object.entries(areaScores).map(([areaId, data]) => ({
+            id: areaId,
+            name: data.name,
+            promedio: (data.total / data.count).toFixed(2)
+        })).sort((a, b) => parseFloat(b.promedio) - parseFloat(a.promedio));
+        
+        // Top 10 centros con más riesgo
+        const topRisk = scoresData.slice(0, 10).map(score => ({
+            area_name: `Área ${score.area_id}`,
+            center_name: `C.T. (${score.work_center_id.slice(-2)})`,
+            score: parseFloat(score.score_actual).toFixed(2),
+            categoria: score.categoria_riesgo
+        }));
+        
+        return { areas, topRisk };
+    } catch (error) {
+        console.error('Error getting dashboard data:', error);
+        return { areas: [], topRisk: [] };
+    }
+}
+
 }
 
 // Instancia global

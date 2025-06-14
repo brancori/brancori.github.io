@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Áreas</title>
+    <link rel="stylesheet" href="areas.css">
+    <script src="supabase-config.js"></script>
+</head>
+<body>
+    <!-- Página Principal de Áreas -->
+    <div id="areas-page" class="page active">
+        <div class="container">
+            <header class="header">
+                <div class="header-content">
+                    <h1>Gestión de Áreas</h1>
+                    <p class="subtitle">Administra las áreas y centros de trabajo de tu organización</p>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <h2>Áreas registradas</h2>
+                        <span id="areas-count" class="count-badge">0 áreas</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAreaModal()">
+                        <span class="icon">+</span>
+                        Nueva Área
+                    </button>
+                </div>
+                
+                <div id="areas-container" class="content-grid">
+                    <!-- Las áreas se renderizan aquí -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Página de Área Individual -->
+    <div id="area-detail-page" class="page">
+        <div class="container">
+            <header class="header">
+                <div class="header-content">
+                    <nav class="breadcrumb">
+                        <a href="#" onclick="showAreasPage()">Áreas</a>
+                        <span class="separator">/</span>
+                        <span id="breadcrumb-area">Área</span>
+                    </nav>
+                    <h1 id="area-detail-title">Área</h1>
+                    <p id="area-detail-subtitle" class="subtitle">Responsable: </p>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn btn-ghost" onclick="showAreasPage()">
+                            <span class="icon">←</span>
+                            Volver
+                        </button>
+                        <div class="toolbar-info">
+                            <h2>Centros de Trabajo</h2>
+                            <span id="centers-count" class="count-badge">0 centros</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openWorkCenterModal()">
+                        <span class="icon">+</span>
+                        Nuevo Centro
+                    </button>
+                </div>
+                
+                <div id="work-centers-container" class="content-grid">
+                    <!-- Los centros de trabajo se renderizan aquí -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Área -->
+    <div id="area-modal" class="modal">
+        <div class="modal-overlay" onclick="closeAreaModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Área</h3>
+                <button class="modal-close" onclick="closeAreaModal()">
+                    <span>×</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="area-form">
+                    <input type="hidden" id="area-id-hidden">
+                    <div class="form-group">
+                        <label for="area-name">Nombre del área</label>
+                        <input 
+                            type="text" 
+                            id="area-name" 
+                            placeholder="Ej. Recursos Humanos"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="area-responsible">Responsable del área</label>
+                        <input 
+                            type="text" 
+                            id="area-responsible" 
+                            placeholder="Nombre del responsable"
+                            required
+                        >
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeAreaModal()">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="saveArea()">
+                    Crear Área
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Centro de Trabajo -->
+    <div id="work-center-modal" class="modal">
+        <div class="modal-overlay" onclick="closeWorkCenterModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Centro de Trabajo</h3>
+                <button class="modal-close" onclick="closeWorkCenterModal()">
+                    <span>×</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="work-center-form">
+                    <input type="hidden" id="work-center-id-hidden">
+                    <div class="form-group">
+                        <label for="work-center-name">Nombre del centro</label>
+                        <input 
+                            type="text" 
+                            id="work-center-name" 
+                            placeholder="Ej. Estación de Trabajo A1"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="work-center-responsible">Responsable</label>
+                        <input 
+                            type="text" 
+                            id="work-center-responsible" 
+                            placeholder="Nombre del responsable"
+                            required
+                        >
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeWorkCenterModal()">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="saveWorkCenter()">
+                    Crear Centro
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+    <script src="./componentes/header-component.js"></script>
+    <script src="areas.js"></script>
+</body>
+</html>

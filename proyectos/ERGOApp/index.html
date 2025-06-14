@@ -3,179 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Áreas</title>
+    <title>Sistema de Evaluación Ergonómica</title>
     <link rel="stylesheet" href="index.css">
-    <script src="supabase-config.js"></script>
 </head>
 <body>
-    <!-- Página Principal de Áreas -->
-    <div id="areas-page" class="page active">
-        <div class="container">
-            <header class="header">
-                <div class="header-content">
-                    <h1>Gestión de Áreas</h1>
-                    <p class="subtitle">Administra las áreas y centros de trabajo de tu organización</p>
-                </div>
-            </header>
-            
-            <main class="main-content">
-                <div class="toolbar">
-                    <div class="toolbar-left">
-                        <h2>Áreas registradas</h2>
-                        <span id="areas-count" class="count-badge">0 áreas</span>
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal show">
+        <div class="modal-overlay"></div>
+        <div class="modal-content login-modal">
+            <div class="modal-header">
+                <h3>Iniciar Sesión</h3>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="usuario">Usuario</label>
+                        <input type="text" id="usuario" name="usuario" required placeholder="Ingresa tu usuario">
                     </div>
-                    <button class="btn btn-primary" onclick="openAreaModal()">
-                        <span class="icon">+</span>
-                        Nueva Área
-                    </button>
-                </div>
-                
-                <div id="areas-container" class="content-grid">
-                    <!-- Las áreas se renderizan aquí -->
-                </div>
-            </main>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required placeholder="Ingresa tu contraseña">
+                    </div>
+                    <div class="login-error" id="loginError" style="display: none;">
+                        Usuario o contraseña incorrectos
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="loginForm" class="btn btn-primary" id="loginBtn">
+                    <span class="icon">🔐</span>
+                    Iniciar Sesión
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Página de Área Individual -->
-    <div id="area-detail-page" class="page">
-        <div class="container">
-            <header class="header">
-                <div class="header-content">
-                    <nav class="breadcrumb">
-                        <a href="#" onclick="showAreasPage()">Áreas</a>
-                        <span class="separator">/</span>
-                        <span id="breadcrumb-area">Área</span>
-                    </nav>
-                    <h1 id="area-detail-title">Área</h1>
-                    <p id="area-detail-subtitle" class="subtitle">Responsable: </p>
+    <!-- Contenido Principal -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-main">
+                    <h1>Sistema de Evaluación Ergonómica</h1>
+                    <p class="subtitle">Dashboard de Control y Monitoreo</p>
                 </div>
-            </header>
-            
-            <main class="main-content">
-                <div class="toolbar">
-                    <div class="toolbar-left">
-                        <button class="btn btn-ghost" onclick="showAreasPage()">
-                            <span class="icon">←</span>
-                            Volver
-                        </button>
-                        <div class="toolbar-info">
-                            <h2>Centros de Trabajo</h2>
-                            <span id="centers-count" class="count-badge">0 centros</span>
+                <div class="user-info">
+                    <div class="user-avatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Usuario</span>
+                        <span class="user-role" id="userRole">Cargo</span>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" id="logoutBtn">
+                        <span class="icon">🚪</span>
+                        Salir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- KPIs Section -->
+            <section class="dashboard-section">
+                <h2>Indicadores Principales</h2>
+<div class="kpi-grid">
+    <!-- Tabla 1: Porcentaje por Área -->
+    <div class="kpi-table-container">
+        <h3 class="table-title">Porcentaje por Área</h3>
+        <div class="data-table">
+            <div class="table-header" id="areas-table-header">
+                <div class="header-cell">Áreas</div>
+                <div class="header-cell">Promedio</div>
+            </div>
+            <div class="table-body" id="areas-table-body">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            <div class="table-footer">
+                <div class="footer-cell">Prom. Gral.</div>
+                <div class="footer-cell summary-value" id="promedio-general">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla 2: Top 10 Centros con más Riesgo -->
+    <div class="kpi-table-container">
+        <h3 class="table-title">Top 10 Centros con más Riesgo</h3>
+        <div class="data-table">
+            <div class="table-header" id="top-risk-table-header">
+                <div class="header-cell">Área</div>
+                <div class="header-cell">Nombre Área</div>
+                <div class="header-cell">Riesgo</div>
+            </div>
+            <div class="table-body" id="top-risk-table-body">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
-                    <button class="btn btn-primary" onclick="openWorkCenterModal()">
-                        <span class="icon">+</span>
-                        Nuevo Centro
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="dashboard-section">
+                <h2>Acciones Rápidas</h2>
+                <div class="actions-grid">
+                    <button class="action-card" id="goToAreasBtn">
+                        <div class="action-icon">🏢</div>
+                        <h3>Ir a Áreas</h3>
+                        <p>Gestionar áreas y centros de trabajo</p>
+                    </button>
+                    
+                    <button class="action-card disabled">
+                        <div class="action-icon">📈</div>
+                        <h3>Reportes</h3>
+                        <p>Generar reportes de evaluación</p>
+                        <span class="coming-soon">Próximamente</span>
+                    </button>
+                    
+                    <button class="action-card disabled">
+                        <div class="action-icon">⚙️</div>
+                        <h3>Configuración</h3>
+                        <p>Ajustes del sistema</p>
+                        <span class="coming-soon">Próximamente</span>
                     </button>
                 </div>
-                
-                <div id="work-centers-container" class="content-grid">
-                    <!-- Los centros de trabajo se renderizan aquí -->
+            </section>
+
+            <!-- Map Section -->
+            <section class="dashboard-section">
+                <h2>Mapa de Riesgos</h2>
+                <div class="map-container">
+                    <div class="map-placeholder">
+                        <div class="map-icon">🗺️</div>
+                        <h3>Mapa en Desarrollo</h3>
+                        <p>Aquí se mostrará el mapa interactivo de riesgos por área</p>
+                    </div>
                 </div>
-            </main>
+            </section>
         </div>
     </div>
 
-    <!-- Modal para Agregar Área -->
-    <div id="area-modal" class="modal">
-        <div class="modal-overlay" onclick="closeAreaModal()"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Nueva Área</h3>
-                <button class="modal-close" onclick="closeAreaModal()">
-                    <span>×</span>
-                </button>
-            </div>
-            
-            <div class="modal-body">
-                <form id="area-form">
-                    <input type="hidden" id="area-id-hidden">
-                    <div class="form-group">
-                        <label for="area-name">Nombre del área</label>
-                        <input 
-                            type="text" 
-                            id="area-name" 
-                            placeholder="Ej. Recursos Humanos"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="area-responsible">Responsable del área</label>
-                        <input 
-                            type="text" 
-                            id="area-responsible" 
-                            placeholder="Nombre del responsable"
-                            required
-                        >
-                    </div>
-                </form>
-            </div>
-            
-            <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeAreaModal()">
-                    Cancelar
-                </button>
-                <button class="btn btn-primary" onclick="saveArea()">
-                    Crear Área
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
 
-    <!-- Modal para Agregar Centro de Trabajo -->
-    <div id="work-center-modal" class="modal">
-        <div class="modal-overlay" onclick="closeWorkCenterModal()"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Nuevo Centro de Trabajo</h3>
-                <button class="modal-close" onclick="closeWorkCenterModal()">
-                    <span>×</span>
-                </button>
-            </div>
-            
-            <div class="modal-body">
-                <form id="work-center-form">
-                    <input type="hidden" id="work-center-id-hidden">
-                    <div class="form-group">
-                        <label for="work-center-name">Nombre del centro</label>
-                        <input 
-                            type="text" 
-                            id="work-center-name" 
-                            placeholder="Ej. Estación de Trabajo A1"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="work-center-responsible">Responsable</label>
-                        <input 
-                            type="text" 
-                            id="work-center-responsible" 
-                            placeholder="Nombre del responsable"
-                            required
-                        >
-                    </div>
-                </form>
-            </div>
-            
-            <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeWorkCenterModal()">
-                    Cancelar
-                </button>
-                <button class="btn btn-primary" onclick="saveWorkCenter()">
-                    Crear Centro
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast para notificaciones -->
-    <div id="toast" class="toast">
-        <span id="toast-message"></span>
-    </div>
-
+    <!-- Scripts -->
+    <script src="supabase-config.js"></script>
     <script src="index.js"></script>
 </body>
 </html>

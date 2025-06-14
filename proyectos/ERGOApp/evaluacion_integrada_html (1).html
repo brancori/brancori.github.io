@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluación Ergonómica Áreas</title>
     <!-- Bibliotecas PDF mejoradas -->
@@ -256,6 +257,25 @@
             color: #f57c00;
             font-weight: bold;
         }
+        @media (max-width: 768px) {
+    .question-group {
+        margin-bottom: 1.5rem; /* Era 30px */
+    }
+    
+    .question {
+        padding: 1rem; /* Era 15px */
+    }
+    
+    .options {
+        flex-direction: column; /* Apilar opciones verticalmente */
+        gap: 0.5rem;
+    }
+    
+    .radio-label {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -398,58 +418,150 @@
         let isEditMode = false;
         let originalData = null;
 
+        // Sistema de permisos
+        function getCurrentUser() {
+            try {
+                const userData = localStorage.getItem('currentUser');
+                return userData ? JSON.parse(userData) : null;
+            } catch (error) {
+                console.error('Error obteniendo usuario:', error);
+                return null;
+            }
+        }
+
+        function hasPermission(action) {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return false;
+
+            const rango = currentUser.rango;
+            
+            switch (action) {
+                case 'read':
+                    return [1, 2, 3].includes(rango);
+                case 'create':
+                    return [1, 2].includes(rango);
+                case 'update':
+                    return [1].includes(rango);
+                case 'delete':
+                    return [1].includes(rango);
+                default:
+                    return false;
+            }
+        }
+
 // Configuración para usar Supabase
 const USE_SUPABASE_EVAL = true;
 
 // Función para guardar en Supabase
-async function guardarEvaluacionSupabase(evaluacion) {
-    if (USE_SUPABASE_EVAL) {
-        try {
-        const evaluacionSupabase = {
-            id: evaluacion.id,
-            work_center_id: evaluacion.workCenterId,
-            area_id: evaluacion.areaId,
-            fecha_evaluacion: evaluacion.fechaEvaluacion,
-            nombre_area: evaluacion.nombreArea,        // Consistente con snake_case
-            ubicacion_area: evaluacion.ubicacionArea,  // Consistente con snake_case  
-            responsable_area: evaluacion.responsableArea, // Consistente con snake_case
-            criterios: evaluacion.criterios,
-            respuestas: evaluacion.respuestas,
-            score_final: parseFloat(evaluacion.scoreFinal),
-            categoria_riesgo: evaluacion.categoriaRiesgo,
-            nivel_riesgo_ergonomico: evaluacion.nivelRiesgoErgonomico,
-            color_riesgo: evaluacion.colorRiesgo
-        };
-            
-            // Verificar si ya existe
-            const existing = await supabase.getEvaluaciones(evaluacion.workCenterId);
-            if (existing && existing.length > 0) {
-                await supabase.updateEvaluacion(evaluacion.id, evaluacionSupabase);
-            } else {
-                await supabase.createEvaluacion(evaluacionSupabase);
-            }
-            
-            console.log('Evaluación guardada en Supabase');
-        } catch (error) {
-            console.error('Error guardando en Supabase:', error);
-            // Fallback a localStorage
+async function guardarEvaluacion() {
+    if (!workCenterId || !areaId) {
+        console.warn('No se pueden guardar los datos: faltan parámetros de URL');
+        return;
+    }
+    
+    // Generar ID ÚNICO E INMUTABLE para esta evaluación
+    const evaluacionId = `EVAL_${workCenterId}_${areaId}`;
+    console.log('💾 Guardando evaluación con ID:', evaluacionId);
+    
+    // Recopilar todas las respuestas
+    const respuestas = {};
+    const preguntas = document.querySelectorAll('.question');
+    
+    preguntas.forEach(pregunta => {
+        const radioSeleccionado = pregunta.querySelector('input[type="radio"]:checked');
+        if (radioSeleccionado) {
+            respuestas[radioSeleccionado.name] = radioSeleccionado.value;
         }
+    });
+    
+    // Recopilar criterios seleccionados
+    const criterios = {
+        manipulaCargas: document.getElementById('manipulaCargas').checked,
+        usaPantallas: document.getElementById('usaPantallas').checked,
+        usaHerramientas: document.getElementById('usaHerramientas').checked,
+        mantienePosturas: document.getElementById('mantienePosturas').checked
+    };
+    
+    // Calcular score
+    const scoreFinal = calcularScoreFinal();
+    const categoria = obtenerCategoriaRiesgo(parseFloat(scoreFinal));
+    
+    // Crear evaluación con ID único
+    const evaluacion = {
+        id: evaluacionId, // ID único e inmutable
+        workCenterId: workCenterId,
+        areaId: areaId,
+        fechaEvaluacion: document.getElementById('fechaEvaluacion').value,
+        nombreArea: document.getElementById('nombreArea').value,
+        ubicacionArea: document.getElementById('ubicacionArea').value,
+        responsableArea: document.getElementById('responsableArea').value,
+        criterios: criterios,
+        respuestas: respuestas,
+        scoreFinal: scoreFinal,
+        categoriaRiesgo: categoria.texto,
+        nivelRiesgoErgonomico: `${scoreFinal}%`,
+        colorRiesgo: categoria.color,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    // Guardar en localStorage con lógica mejorada
+    let evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+    console.log('📊 Evaluaciones existentes:', evaluaciones.length);
+    
+    // Buscar por ID exacto (no por workCenterId)
+    const existingIndex = evaluaciones.findIndex(e => e.id === evaluacionId);
+    
+    if (existingIndex !== -1) {
+        // Actualizar existente
+        evaluacion.createdAt = evaluaciones[existingIndex].createdAt; // Mantener fecha original
+        evaluaciones[existingIndex] = evaluacion;
+        console.log('🔄 Evaluación actualizada:', evaluacionId);
+    } else {
+        // Crear nueva
+        evaluaciones.push(evaluacion);
+        console.log('🆕 Nueva evaluación creada:', evaluacionId);
+    }
+    
+    localStorage.setItem('evaluaciones', JSON.stringify(evaluaciones));
+    console.log('✅ Evaluación guardada exitosamente');
+    
+    // Guardar en Supabase
+    await guardarEvaluacionSupabase(evaluacion);
+    
+    // Notificar actualización
+    if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({
+            type: 'evaluacionActualizada',
+            workCenterId: workCenterId,
+            score: scoreFinal,
+            categoria: categoria.texto
+        }, '*');
     }
 }
-
 // Función para cargar desde Supabase
-async function cargarEvaluacionSupabase(workCenterId) {
-    if (USE_SUPABASE_EVAL) {
-        try {
-            const evaluaciones = await supabase.getEvaluaciones(workCenterId);
-            return evaluaciones && evaluaciones.length > 0 ? evaluaciones[0] : null;
-        } catch (error) {
-            console.error('Error cargando desde Supabase:', error);
+        async function cargarEvaluacionSupabase(workCenterId) {
+            if (USE_SUPABASE_EVAL) {
+                try {
+                    // Buscar evaluación específica por work_center_id
+                    const evaluaciones = await supabase.getEvaluaciones(workCenterId);
+                    console.log('🔍 Búsqueda Supabase para workCenter:', workCenterId, 'Resultado:', evaluaciones);
+                    
+                    if (evaluaciones && evaluaciones.length > 0) {
+                        console.log('✅ Evaluación encontrada en Supabase');
+                        return evaluaciones[0];
+                    } else {
+                        console.log('🆕 No hay evaluación previa en Supabase');
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('❌ Error cargando desde Supabase:', error);
+                    return null;
+                }
+            }
+            console.log('🚫 Supabase deshabilitado');
             return null;
         }
-    }
-    return null;
-}
 
         // Datos con preguntas, ponderaciones y mapeo de métodos
         const data = {
@@ -916,6 +1028,7 @@ async function cargarEvaluacionSupabase(workCenterId) {
             metodosContainer.scrollIntoView({ behavior: 'smooth' });
         }
 
+        
         // Función auxiliar para obtener datos de la tabla
         function obtenerDatosTabla(seccionId) {
             const seccion = document.getElementById(seccionId);
@@ -1040,12 +1153,34 @@ function enterEditMode() {
             actualizarPreguntas();
             
             setTimeout(() => {
-                Object.keys(originalData.respuestas).forEach(key => {
-                    const radio = document.querySelector(`input[name="${key}"][value="${originalData.respuestas[key]}"]`);
-                    if (radio) radio.checked = true;
-                });
+                if (evaluacion.respuestas) {
+                    Object.keys(evaluacion.respuestas).forEach(key => {
+                        const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
+                        if (radio) radio.checked = true;
+                    });
+                }
                 calcularScoreAutomatico();
-                enterViewMode();
+                
+                // Solo permitir edición si tiene permisos
+                if (hasPermission('update')) {
+                    enterViewMode();
+                } else {
+                    // Modo solo lectura permanente para usuarios sin permisos
+                    isEditMode = false;
+                    document.body.classList.add('view-mode');
+                    document.getElementById('view-mode-buttons').classList.add('hidden');
+                    document.getElementById('edit-mode-buttons').classList.add('hidden');
+                    
+                    // Mostrar solo botón de exportar
+                    const readOnlyButtons = document.createElement('div');
+                    readOnlyButtons.innerHTML = `
+                        <button class="btn" onclick="exportarPDFCompleto()">📄 Exportar PDF</button>
+                    `;
+                    document.querySelector('.btn-container').appendChild(readOnlyButtons);
+                    
+                    const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
+                    inputs.forEach(input => input.disabled = true);
+                }
             }, 100);
         }
 
@@ -1087,7 +1222,7 @@ function enterEditMode() {
     
     // Crear evaluación
     const evaluacion = {
-        id: 'EVAL_' + workCenterId,
+        id: `EVAL_${workCenterId}_${areaId}`,
         workCenterId: workCenterId,
         areaId: areaId,
         fechaEvaluacion: document.getElementById('fechaEvaluacion').value,
@@ -1127,6 +1262,96 @@ function enterEditMode() {
         categoria: categoria.texto
     }, '*');
 }
+}
+function inicializarEvaluacionBlanco() {
+    // Limpiar completamente todos los campos - SIN datos de URL
+    document.getElementById('nombreArea').value = '';
+    document.getElementById('ubicacionArea').value = '';
+    document.getElementById('responsableArea').value = '';
+    
+    // NO cargar NADA de URL - debe estar completamente en blanco
+    
+    // Limpiar todos los checkboxes
+    document.getElementById('manipulaCargas').checked = false;
+    document.getElementById('usaPantallas').checked = false;
+    document.getElementById('usaHerramientas').checked = false;
+    document.getElementById('mantienePosturas').checked = false;
+    
+    // Limpiar todas las preguntas
+    const preguntas = document.querySelectorAll('.question input[type="radio"]');
+    preguntas.forEach(radio => radio.checked = false);
+    
+    // Actualizar preguntas (esto limpiará las secciones condicionales)
+    actualizarPreguntas();
+    
+    // Resetear score
+    document.getElementById('scoreFinal').textContent = '0%';
+    document.getElementById('textoCategoria').textContent = 'Sin evaluar';
+    
+    // Iniciar en modo edición si tiene permisos
+    if (hasPermission('create') || hasPermission('update')) {
+        isEditMode = true;
+        document.body.classList.remove('view-mode');
+        document.getElementById('view-mode-banner').classList.add('hidden');
+        document.getElementById('edit-mode-banner').classList.remove('hidden');
+        document.getElementById('view-mode-buttons').classList.add('hidden');
+        document.getElementById('edit-mode-buttons').classList.remove('hidden');
+        
+        const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
+        inputs.forEach(input => input.disabled = false);
+    } else {
+        enterViewMode();
+        const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
+        inputs.forEach(input => input.disabled = true);
+    }
+}
+
+
+function cargarEvaluacionExistente(evaluacion) {
+    // Cargar datos guardados
+    document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
+    document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
+    document.getElementById('responsableArea').value = evaluacion.responsableArea || evaluacion.responsable_area || '';
+    document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion || evaluacion.fecha_evaluacion || '';
+    
+    // Cargar criterios
+    if (evaluacion.criterios) {
+        document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
+        document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
+        document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
+        document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
+    }
+    
+    // Actualizar preguntas y cargar respuestas
+    actualizarPreguntas();
+    
+    setTimeout(() => {
+        if (evaluacion.respuestas) {
+            Object.keys(evaluacion.respuestas).forEach(key => {
+                const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
+                if (radio) radio.checked = true;
+            });
+        }
+        calcularScoreAutomatico();
+        
+        // Solo permitir edición si tiene permisos
+        if (hasPermission('update')) {
+            enterViewMode();
+        } else {
+            // Modo solo lectura permanente
+            isEditMode = false;
+            document.body.classList.add('view-mode');
+            document.getElementById('view-mode-buttons').classList.add('hidden');
+            document.getElementById('edit-mode-buttons').classList.add('hidden');
+            
+            const readOnlyButtons = document.createElement('div');
+            readOnlyButtons.innerHTML = `<button class="btn" onclick="exportarPDFCompleto()">📄 Exportar PDF</button>`;
+            document.querySelector('.btn-container').appendChild(readOnlyButtons);
+            
+            const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
+            inputs.forEach(input => input.disabled = true);
+        }
+    }, 100);
 }
 
 // REEMPLAZAR toda la función cargarDatosExistentes()
@@ -1180,7 +1405,55 @@ async function cargarDatosExistentes() {
         console.log('ℹ️ Nueva evaluación - datos básicos cargados desde URL');
     }
 }
-        // 4. Luego sigue tu función existente
+
+function cargarEvaluacionExistente(evaluacion) {
+    // Cargar datos guardados
+    document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
+    document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
+    document.getElementById('responsableArea').value = evaluacion.responsableArea || evaluacion.responsable_area || '';
+    document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion || evaluacion.fecha_evaluacion || '';
+    
+    // Cargar criterios
+    if (evaluacion.criterios) {
+        document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
+        document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
+        document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
+        document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
+    }
+    
+    // Actualizar preguntas y cargar respuestas
+    actualizarPreguntas();
+    
+    setTimeout(() => {
+        if (evaluacion.respuestas) {
+            Object.keys(evaluacion.respuestas).forEach(key => {
+                const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
+                if (radio) radio.checked = true;
+            });
+        }
+        calcularScoreAutomatico();
+        
+        // Solo permitir edición si tiene permisos
+        if (hasPermission('update')) {
+            enterViewMode();
+        } else {
+            // Modo solo lectura permanente
+            isEditMode = false;
+            document.body.classList.add('view-mode');
+            document.getElementById('view-mode-buttons').classList.add('hidden');
+            document.getElementById('edit-mode-buttons').classList.add('hidden');
+            
+            const readOnlyButtons = document.createElement('div');
+            readOnlyButtons.innerHTML = `<button class="btn" onclick="exportarPDFCompleto()">📄 Exportar PDF</button>`;
+            document.querySelector('.btn-container').appendChild(readOnlyButtons);
+            
+            const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
+            inputs.forEach(input => input.disabled = true);
+        }
+    }, 100);
+}
+
+// 4. Luego sigue tu función existente
         function exportarPDFCompleto() {
             // AGREGAR guardarEvaluacion(); al inicio
             guardarEvaluacion();
