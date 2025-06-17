@@ -1,9 +1,21 @@
+// Verificar que hay usuario logueado antes de continuar
+document.addEventListener('DOMContentLoaded', function() {
+    const userData = localStorage.getItem('currentUser');
+    if (!userData) {
+        console.log('❌ No hay usuario en areas.js, redirigiendo...');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    console.log('✅ Usuario verificado en areas.js');
+});
+
 // Configuración para usar Supabase o localStorage
 const USE_SUPABASE = true; // Cambiar a false para usar localStorage
 // Sistema de permisos
 function getCurrentUser() {
     try {
-        const userData = localStorage.getItem('currentUser');
+        const userData = sessionStorage.getItem('currentUser');     
         return userData ? JSON.parse(userData) : null;
     } catch (error) {
         console.error('Error obteniendo usuario:', error);
@@ -641,6 +653,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
 applyPermissionControls();
 });
+
+
 function applyPermissionControls() {
     const currentUser = getCurrentUser();
     if (!currentUser) return;

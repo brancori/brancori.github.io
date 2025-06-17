@@ -29,17 +29,21 @@ async query(table, method = 'GET', data = null, filters = '') {
     
     if (data && (method === 'POST' || method === 'PATCH')) {
         options.body = JSON.stringify(data);
+        console.log('🔍 Datos enviados a Supabase:', JSON.stringify(data, null, 2));
     }
     
     try {
         const response = await fetch(url, options);
+        
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorBody = await response.text();
+            console.error('❌ Error response body:', errorBody);
+            throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`);
         }
         
         // Para métodos que no devuelven datos
         if (method === 'POST' || method === 'PATCH' || method === 'DELETE') {
-            return { success: true }; // Devolver un objeto simple para indicar éxito
+            return { success: true };
         }
         
         // Solo para GET, intentar parsear JSON
@@ -416,7 +420,7 @@ async migrarDatosAScoresResumen() {
                         score_actual: parseFloat(evaluacion.scoreFinal),
                         categoria_riesgo: evaluacion.categoriaRiesgo || 'Evaluado',
                         color_riesgo: this.calcularColorRiesgo(parseFloat(evaluacion.scoreFinal)),
-                        fecha_ultima_evaluacion: evaluacion.fechaEvaluacion || evaluacion.createdAt || new Date().toISOString(),
+                        fecha_ultima_evaluacion: evaluacion.fechaEvaluacion || evaluacion.created_at || new Date().toISOString(),
                         total_evaluaciones: 1
                     };
                     

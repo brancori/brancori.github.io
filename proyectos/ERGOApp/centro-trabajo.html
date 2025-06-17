@@ -670,7 +670,7 @@
         // Sistema de permisos
 function getCurrentUser() {
     try {
-        const userData = localStorage.getItem('currentUser');
+        const userData = sessionStorage.getItem('currentUser');
         return userData ? JSON.parse(userData) : null;
     } catch (error) {
         console.error('Error obteniendo usuario:', error);

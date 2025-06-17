@@ -486,6 +486,13 @@ setupScrollBehavior() {
 
     // Navegación: Ir al inicio
     goHome() {
+        console.log('🏠 Navegando a Home...');
+        
+        // Actualizar actividad antes de navegar para mantener la sesión
+        const now = new Date().getTime();
+        localStorage.setItem('lastActivity', now.toString());
+        
+        console.log('✅ Actividad actualizada, navegando...');
         window.location.href = 'index.html';
     }
 

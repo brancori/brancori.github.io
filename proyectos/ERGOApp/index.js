@@ -6,27 +6,37 @@ class IndexApp {
     }
 
     init() {
-        this.checkExistingSession();
         this.setupEventListeners();
-        this.showLoginModal();
+        this.checkExistingSession(); // Mover antes de showLoginModal
+        
+        // SOLO mostrar login si NO hay usuario logueado
+        if (!this.currentUser) {
+            this.showLoginModal();
+        }
     }
 
 checkExistingSession() {
-    const userData = localStorage.getItem('currentUser');
-    const sessionExpiry = localStorage.getItem('sessionExpiry');
-    const lastActivity = localStorage.getItem('lastActivity');
+    const userData = sessionStorage.getItem('currentUser');
+    const sessionExpiry = sessionStorage.getItem('sessionExpiry');
+    
+    console.log('🔍 Verificando sesión existente...', {
+        userData: !!userData,
+        sessionExpiry: sessionExpiry,
+        now: new Date().getTime()
+    });
     
     if (userData && sessionExpiry) {
         const now = new Date().getTime();
-        const thirtyMinutes = 30 * 60 * 1000; // 30 minutos en ms
-        const lastActivityTime = lastActivity ? parseInt(lastActivity) : now;
         
-        // Verificar si la sesión no ha expirado Y no han pasado 30 min de inactividad
-        if (now < parseInt(sessionExpiry) && (now - lastActivityTime) < thirtyMinutes) {
+        // SOLO verificar si la sesión no ha expirado (24 horas) - SIN verificar inactividad
+        if (now < parseInt(sessionExpiry)) {
             try {
                 this.currentUser = JSON.parse(userData);
+                console.log('✅ Sesión válida, usuario:', this.currentUser.nombre);
+                
                 // Actualizar última actividad
                 localStorage.setItem('lastActivity', now.toString());
+                
                 this.hideLoginModal();
                 this.showMainContent();
                 this.updateUserInterface();
@@ -35,10 +45,15 @@ checkExistingSession() {
             } catch (error) {
                 console.error('Error al cargar sesión:', error);
             }
+        } else {
+            console.log('⏰ Sesión expirada por tiempo (24h)');
         }
+    } else {
+        console.log('❌ No hay datos de sesión');
     }
     
-    // Si no hay sesión válida o ha expirado, limpiar y mostrar login
+    // Solo limpiar si realmente no hay sesión válida
+    console.log('🧹 Limpiando sesión...');
     this.hideMainContent();
     localStorage.removeItem('currentUser');
     localStorage.removeItem('sessionExpiry');
@@ -107,9 +122,9 @@ checkExistingSession() {
                 this.currentUser = userData;
                const expiryTime = new Date().getTime() + (24 * 60 * 60 * 1000); // 24 horas (se controla por inactividad)
                 const now = new Date().getTime();
-                localStorage.setItem('lastActivity', now.toString());
-                localStorage.setItem('currentUser', JSON.stringify(userData));
-                localStorage.setItem('sessionExpiry', expiryTime.toString());
+                sessionStorage.setItem('lastActivity', now.toString());
+                sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                sessionStorage.setItem('sessionExpiry', expiryTime.toString());
                 
                 this.hideLoginModal();
                 this.showMainContent();

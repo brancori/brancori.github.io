@@ -421,7 +421,7 @@
         // Sistema de permisos
         function getCurrentUser() {
             try {
-                const userData = localStorage.getItem('currentUser');
+                const userData = sessionStorage.getItem('currentUser');
                 return userData ? JSON.parse(userData) : null;
             } catch (error) {
                 console.error('Error obteniendo usuario:', error);
@@ -486,23 +486,23 @@ async function guardarEvaluacion() {
     const scoreFinal = calcularScoreFinal();
     const categoria = obtenerCategoriaRiesgo(parseFloat(scoreFinal));
     
-    // Crear evaluación con ID único
+// Crear evaluación con nombres de campos que coinciden con Supabase
     const evaluacion = {
-        id: evaluacionId, // ID único e inmutable
-        workCenterId: workCenterId,
-        areaId: areaId,
-        fechaEvaluacion: document.getElementById('fechaEvaluacion').value,
-        nombreArea: document.getElementById('nombreArea').value,
-        ubicacionArea: document.getElementById('ubicacionArea').value,
-        responsableArea: document.getElementById('responsableArea').value,
-        criterios: criterios,
-        respuestas: respuestas,
-        scoreFinal: scoreFinal,
-        categoriaRiesgo: categoria.texto,
-        nivelRiesgoErgonomico: `${scoreFinal}%`,
-        colorRiesgo: categoria.color,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        id: evaluacionId,
+        work_center_id: workCenterId,
+        area_id: areaId,
+        fecha_evaluacion: document.getElementById('fechaEvaluacion').value,
+        nombre_area: document.getElementById('nombreArea').value,
+        ubicacion_area: document.getElementById('ubicacionArea').value,
+        responsable_area: document.getElementById('responsableArea').value,
+        criterios: JSON.stringify(criterios),
+        respuestas: JSON.stringify(respuestas),
+        score_final: parseFloat(scoreFinal),
+        categoria_riesgo: categoria.texto,
+        nivel_riesgo_ergonomico: `${scoreFinal}%`,
+        color_riesgo: categoria.color,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
     };
     
     // Guardar en localStorage con lógica mejorada
@@ -512,12 +512,12 @@ async function guardarEvaluacion() {
     // Buscar por ID exacto (no por workCenterId)
     const existingIndex = evaluaciones.findIndex(e => e.id === evaluacionId);
     
-    if (existingIndex !== -1) {
-        // Actualizar existente
-        evaluacion.createdAt = evaluaciones[existingIndex].createdAt; // Mantener fecha original
-        evaluaciones[existingIndex] = evaluacion;
-        console.log('🔄 Evaluación actualizada:', evaluacionId);
-    } else {
+        if (existingIndex !== -1) {
+            // Actualizar existente
+            evaluacion.created_at = evaluaciones[existingIndex].createdAt || evaluaciones[existingIndex].created_at; // Mantener fecha original
+            evaluaciones[existingIndex] = evaluacion;
+            console.log('🔄 Evaluación actualizada:', evaluacionId);
+        } else {
         // Crear nueva
         evaluaciones.push(evaluacion);
         console.log('🆕 Nueva evaluación creada:', evaluacionId);
@@ -526,8 +526,32 @@ async function guardarEvaluacion() {
     localStorage.setItem('evaluaciones', JSON.stringify(evaluaciones));
     console.log('✅ Evaluación guardada exitosamente');
     
+
+    // DEBUG: Verificar datos antes de enviar a Supabase
+    console.log('🔍 DEBUG: Datos a guardar en Supabase:', evaluacion);
+    console.log('🔍 DEBUG: USE_SUPABASE_EVAL:', USE_SUPABASE_EVAL);
+    console.log('🔍 DEBUG: workCenterId:', workCenterId);
     // Guardar en Supabase
-    await guardarEvaluacionSupabase(evaluacion);
+    if (USE_SUPABASE_EVAL) {
+        try {
+            console.log('💾 Intentando guardar en Supabase...');
+            const existingEval = await supabase.getEvaluaciones(workCenterId);
+            console.log('🔍 Evaluación existente encontrada:', existingEval);
+            
+            if (existingEval && existingEval.length > 0) {
+                console.log('🔄 Actualizando evaluación existente...');
+                const result = await supabase.updateEvaluacion(existingEval[0].id, evaluacion);
+                console.log('✅ Actualización resultado:', result);
+            } else {
+                console.log('🆕 Creando nueva evaluación...');
+                const result = await supabase.createEvaluacion(evaluacion);
+                console.log('✅ Creación resultado:', result);
+            }
+        } catch (error) {
+            console.error('❌ Error guardando en Supabase:', error);
+            alert('Error al guardar en base de datos: ' + error.message);
+        }
+    }
     
     // Notificar actualización
     if (window.parent && window.parent.postMessage) {
@@ -1191,78 +1215,7 @@ function enterEditMode() {
         }
         
         // Función para guardar evaluación en localStorage
-        async function guardarEvaluacion() {
-    if (!workCenterId || !areaId) {
-        console.warn('No se pueden guardar los datos: faltan parámetros de URL');
-        return;
-    }
-    
-    // Recopilar todas las respuestas
-    const respuestas = {};
-    const preguntas = document.querySelectorAll('.question');
-    
-    preguntas.forEach(pregunta => {
-        const radioSeleccionado = pregunta.querySelector('input[type="radio"]:checked');
-        if (radioSeleccionado) {
-            respuestas[radioSeleccionado.name] = radioSeleccionado.value;
-        }
-    });
-    
-    // Recopilar criterios seleccionados
-    const criterios = {
-        manipulaCargas: document.getElementById('manipulaCargas').checked,
-        usaPantallas: document.getElementById('usaPantallas').checked,
-        usaHerramientas: document.getElementById('usaHerramientas').checked,
-        mantienePosturas: document.getElementById('mantienePosturas').checked
-    };
-    
-    // Calcular score
-    const scoreFinal = calcularScoreFinal();
-    const categoria = obtenerCategoriaRiesgo(parseFloat(scoreFinal));
-    
-    // Crear evaluación
-    const evaluacion = {
-        id: `EVAL_${workCenterId}_${areaId}`,
-        workCenterId: workCenterId,
-        areaId: areaId,
-        fechaEvaluacion: document.getElementById('fechaEvaluacion').value,
-        nombreArea: document.getElementById('nombreArea').value,
-        ubicacionArea: document.getElementById('ubicacionArea').value,
-        responsableArea: document.getElementById('responsableArea').value,
-        criterios: criterios,
-        respuestas: respuestas,
-        scoreFinal: scoreFinal,
-        categoriaRiesgo: categoria.texto,
-        nivelRiesgoErgonomico: `${scoreFinal}%`,
-        colorRiesgo: categoria.color,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    };
-    
-    // Guardar en localStorage
-    let evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-    const existingIndex = evaluaciones.findIndex(e => e.workCenterId === workCenterId);
-    
-    if (existingIndex !== -1) {
-        evaluacion.createdAt = evaluaciones[existingIndex].createdAt;
-        evaluaciones[existingIndex] = evaluacion;
-    } else {
-        evaluaciones.push(evaluacion);
-    }
-    
-    localStorage.setItem('evaluaciones', JSON.stringify(evaluaciones));
-    console.log('Evaluación guardada exitosamente');
-    await guardarEvaluacionSupabase(evaluacion);
-    
-    if (window.parent && window.parent.postMessage) {
-    window.parent.postMessage({
-        type: 'evaluacionActualizada',
-        workCenterId: workCenterId,
-        score: scoreFinal,
-        categoria: categoria.texto
-    }, '*');
-}
-}
+
 function inicializarEvaluacionBlanco() {
     // Limpiar completamente todos los campos - SIN datos de URL
     document.getElementById('nombreArea').value = '';
@@ -1366,7 +1319,6 @@ async function cargarDatosExistentes() {
     }
     
     if (evaluacion) {
-        // EXISTE EVALUACIÓN - Cargar datos guardados
         // Manejar ambos formatos de nombres de campos
         document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
         document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
@@ -1375,22 +1327,44 @@ async function cargarDatosExistentes() {
         
         // Cargar criterios
         if (evaluacion.criterios) {
-            document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
-            document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
-            document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
-            document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
+        // Cargar criterios con parsing seguro
+        let criterios = {};
+        if (evaluacion.criterios) {
+            try {
+                criterios = typeof evaluacion.criterios === 'string' ? 
+                        JSON.parse(evaluacion.criterios) : evaluacion.criterios;
+            } catch (e) {
+                console.warn('Error parsing criterios:', e);
+                criterios = {};
+            }
+            
+            document.getElementById('manipulaCargas').checked = criterios.manipulaCargas || false;
+            document.getElementById('usaPantallas').checked = criterios.usaPantallas || false;
+            document.getElementById('usaHerramientas').checked = criterios.usaHerramientas || false;
+            document.getElementById('mantienePosturas').checked = criterios.mantienePosturas || false;
+        }
         }
         
         // Actualizar preguntas y cargar respuestas
         actualizarPreguntas();
         
         setTimeout(() => {
-            if (evaluacion.respuestas) {
-                Object.keys(evaluacion.respuestas).forEach(key => {
-                    const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
-                    if (radio) radio.checked = true;
-                });
+        // Cargar respuestas con parsing seguro
+        let respuestas = {};
+        if (evaluacion.respuestas) {
+            try {
+                respuestas = typeof evaluacion.respuestas === 'string' ? 
+                            JSON.parse(evaluacion.respuestas) : evaluacion.respuestas;
+            } catch (e) {
+                console.warn('Error parsing respuestas:', e);
+                respuestas = {};
             }
+            
+            Object.keys(respuestas).forEach(key => {
+                const radio = document.querySelector(`input[name="${key}"][value="${respuestas[key]}"]`);
+                if (radio) radio.checked = true;
+            });
+        }
             calcularScoreAutomatico();
             enterViewMode();
         }, 100);
@@ -1453,13 +1427,6 @@ function cargarEvaluacionExistente(evaluacion) {
     }, 100);
 }
 
-// 4. Luego sigue tu función existente
-        function exportarPDFCompleto() {
-            // AGREGAR guardarEvaluacion(); al inicio
-            guardarEvaluacion();
-            
-            // ... resto de tu código existente
-        }
         // Función mejorada para exportar PDF con recomendaciones de métodos
         function exportarPDFCompleto() {
             guardarEvaluacion();
