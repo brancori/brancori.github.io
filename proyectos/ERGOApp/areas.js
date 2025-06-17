@@ -320,7 +320,7 @@ async function renderAreas() {
     const summary = summaries[index];
     
     const centerCount = summary.total_centros;
-    const promedioScore = summary.promedio_score;
+    const promedioScore = parseFloat(summary.promedio_score || 0).toFixed(2);
     const colorPromedio = summary.color_promedio;
     const centrosEvaluados = summary.centros_evaluados;
     
@@ -864,7 +864,7 @@ async function calcularPromedioAreaFromSupabase(area_id) {
             
             if (scores && scores.length > 0) {
                 const sumaScores = scores.reduce((sum, s) => sum + s.score_actual, 0);
-                const promedio = (sumaScores / scores.length).toFixed(1);
+                const promedio = (sumaScores / scores.length).toFixed(2);
                 
                 // Calcular color basado en el promedio
                 let colorPromedio = '#d1d5db';
@@ -873,11 +873,12 @@ async function calcularPromedioAreaFromSupabase(area_id) {
                 else colorPromedio = '#dc3545';
                 
                 return {
-                    promedio_score: promedio,
-                    color_promedio: colorPromedio,
-                    centros_evaluados: scores.length,
-                    total_centros: workCentersData ? workCentersData.length : 0
-                };
+                promedio_score: promedio,                    // Para mostrar (2 decimales)
+                promedio_calculo: promedioCompleto,          // Para cálculos (sin redondear)
+                color_promedio: colorPromedio,
+                centros_evaluados: scores.length,
+                total_centros: workCentersData ? workCentersData.length : 0
+            };
             }
         } catch (error) {
             console.error('Error calculando promedio desde Supabase:', error);
@@ -910,8 +911,10 @@ function calcularPromedioFromLocalStorage(area_id) {
             }
         });
         
+        const promedioCompleto = centrosConEvaluacion > 0 ? (sumaScores / centrosConEvaluacion) : 0;
         const result = {
-            promedio_score: centrosConEvaluacion > 0 ? (sumaScores / centrosConEvaluacion).toFixed(1) : 0,
+            promedio_score: promedioCompleto.toFixed(2),  // Para mostrar
+            promedio_calculo: promedioCompleto,           // Para cálculos
             color_promedio: '#d1d5db',
             centros_evaluados: centrosConEvaluacion,
             total_centros: areaCenters.length

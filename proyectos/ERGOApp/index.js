@@ -130,6 +130,7 @@ checkExistingSession() {
                 this.showMainContent();
                 this.updateUserInterface();
                 this.showToast('Bienvenido al sistema', 'success');
+                this.loadDashboardData();
                 
                 // Opcional: log de acceso
                 console.log('Usuario logueado:', {
@@ -386,21 +387,17 @@ navigateToWorkCenter(evaluacion) {
     window.location.href = `centro-trabajo.html?${params.toString()}`;
 }
 
-async loadDashboardData() {
-    try {
-        const [areas, evaluaciones] = await Promise.all([
-            supabase.getAreas(),
-            supabase.getEvaluaciones()
-        ]);
-        
-        this.updateDashboardTables({ areas, evaluaciones });
-    } catch (error) {
-        console.error('Error cargando datos del dashboard:', error);
+    async loadDashboardData() {
+        try {
+            const dashboardData = await supabase.getDashboardData();
+            this.updateDashboardTables(dashboardData);
+        } catch (error) {
+            console.error('Error cargando datos del dashboard:', error);
+        }
     }
-}
 
 updateDashboardTables(data) {
-    const { areas, evaluaciones } = data;
+    const { areas, topRisk } = data;
     
     // === TABLA 1: ÁREAS ===
     const areasTableBody = document.getElementById('areas-table-body');
@@ -414,8 +411,8 @@ updateDashboardTables(data) {
             const row = document.createElement('div');
             row.className = 'table-row clickable';
             
-            const promedio = parseFloat(area.promedio_score || 0);
-            totalPromedio += promedio;
+            const promedioParaCalculo = parseFloat(area.promedio_calculo || area.promedio_score || 0);
+            totalPromedio += promedioParaCalculo;
             
             // Agregar evento click para navegar a los centros de trabajo del área
             row.onclick = () => {
@@ -424,7 +421,7 @@ updateDashboardTables(data) {
             
             row.innerHTML = `
                 <div class="cell">${area.name || 'Área sin nombre'}</div>
-                <div class="cell">${promedio.toFixed(2)}%</div>
+                <div class="cell">${parseFloat(area.promedio_score || 0).toFixed(2)}%</div>
             `;
             
             areasTableBody.appendChild(row);
@@ -440,22 +437,16 @@ updateDashboardTables(data) {
     
     // === TABLA 2: TOP 10 RIESGO ===
     const topRiskTableBody = document.getElementById('top-risk-table-body');
-    if (topRiskTableBody && evaluaciones) {
+    if (topRiskTableBody && topRisk) {
         // Limpiar tabla
         topRiskTableBody.innerHTML = '';
         
-        // Ordenar por nivel_riesgo_ergonomico descendente y tomar top 10
-        const topRisk = evaluaciones
-            .filter(evaluacion => evaluacion.nivel_riesgo_ergonomico != null && evaluacion.nivel_riesgo_ergonomico !== '')
-            .sort((a, b) => parseFloat(b.nivel_riesgo_ergonomico) - parseFloat(a.nivel_riesgo_ergonomico))
-            .slice(0, 10);
-        
-        // Crear filas
-        topRisk.forEach((evaluacion, index) => {
+        // Crear filas directamente desde topRisk
+        topRisk.forEach((item, index) => {
             const row = document.createElement('div');
             
             // Determinar clase de riesgo
-            const riesgo = parseFloat(evaluacion.nivel_riesgo_ergonomico);
+            const riesgo = parseFloat(item.score);
             let rowClass = 'table-row clickable';
             let scoreClass = 'cell';
             
@@ -467,15 +458,10 @@ updateDashboardTables(data) {
                 scoreClass += ' score-medium';
             }
             
-            // Agregar evento click para navegar al centro de trabajo específico
-            row.onclick = () => {
-                this.navigateToWorkCenter(evaluacion);
-            };
-            
             row.className = rowClass;
             row.innerHTML = `
-                <div class="cell">${evaluacion.ubicacion_area || 'N/A'}</div>
-                <div class="cell">${evaluacion.nombre_area || 'N/A'}</div>
+                <div class="cell">${item.area_name || 'N/A'}</div>
+                <div class="cell">${item.center_name || 'N/A'}</div>
                 <div class="${scoreClass}">${riesgo.toFixed(2)}%</div>
             `;
             

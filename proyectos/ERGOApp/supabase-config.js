@@ -124,9 +124,44 @@ async query(table, method = 'GET', data = null, filters = '') {
         return await this.query('work_centers', 'POST', workCenter);
     }
 
-    async deleteWorkCenter(id) {
-        return await this.query('work_centers', 'DELETE', null, `?id=eq.${id}`);
+async deleteWorkCenter(id) {
+    try {
+        console.log(`🗑️ Eliminando centro: ${id}`);
+        
+        // SOLO eliminar las tablas donde SÍ tienes permisos confirmados
+        try {
+            await this.query('scores_resumen', 'DELETE', null, `?work_center_id=eq.${id}`);
+            console.log(`✅ Scores eliminados`);
+        } catch (error) {
+            console.log(`ℹ️ Sin scores para eliminar`);
+        }
+        
+        try {
+            await this.query('evaluaciones', 'DELETE', null, `?work_center_id=eq.${id}`);
+            console.log(`✅ Evaluaciones eliminadas`);
+        } catch (error) {
+            console.log(`ℹ️ Sin evaluaciones para eliminar`);
+        }
+        
+        try {
+            await this.query('fotos_centros', 'DELETE', null, `?work_center_id=eq.${id}`);
+            console.log(`✅ Fotos eliminadas`);
+        } catch (error) {
+            console.log(`ℹ️ Sin fotos para eliminar`);
+        }
+        
+        // NO intentar eliminar las tablas problemáticas
+        
+        // Eliminar el centro de trabajo
+        const result = await this.query('work_centers', 'DELETE', null, `?id=eq.${id}`);
+        console.log(`✅ Centro eliminado: ${id}`);
+        
+        return result;
+    } catch (error) {
+        console.error(`❌ Error eliminando centro ${id}:`, error);
+        throw error;
     }
+}
 
     async getEvaluaciones(workCenterId = null) {
         if (workCenterId) {
@@ -499,13 +534,33 @@ async getUsuario(id) {
         return null;
     }
 }
-// === DASHBOARD DATOS ===
+// REEMPLAZAR TODA LA FUNCIÓN getDashboardData() POR ESTA:
 async getDashboardData() {
     try {
-        // Obtener datos de scores_resumen para el dashboard
-        const scoresData = await this.query('scores_resumen', 'GET', null, '?order=score_actual.desc');
+        // Obtener todos los datos necesarios
+        const [scoresData, areasData, workCentersData] = await Promise.all([
+            this.query('scores_resumen', 'GET', null, '?order=score_actual.desc'),
+            this.query('areas', 'GET', null, ''),
+            this.query('work_centers', 'GET', null, '')
+        ]);
         
         if (!scoresData) return { areas: [], topRisk: [] };
+        
+        // Crear mapas para acceso rápido
+        const areasMap = {};
+        const workCentersMap = {};
+        
+        if (areasData) {
+            areasData.forEach(area => {
+                areasMap[area.id] = area.name;
+            });
+        }
+        
+        if (workCentersData) {
+            workCentersData.forEach(center => {
+                workCentersMap[center.id] = center.name;
+            });
+        }
         
         // Calcular promedios por área
         const areaScores = {};
@@ -514,7 +569,7 @@ async getDashboardData() {
                 areaScores[score.area_id] = {
                     total: 0,
                     count: 0,
-                    name: `Área ${score.area_id}`
+                    name: areasMap[score.area_id] || `Área ${score.area_id}`
                 };
             }
             areaScores[score.area_id].total += parseFloat(score.score_actual);
@@ -522,16 +577,20 @@ async getDashboardData() {
         });
         
         // Convertir a array y calcular promedios
-        const areas = Object.entries(areaScores).map(([areaId, data]) => ({
-            id: areaId,
-            name: data.name,
-            promedio: (data.total / data.count).toFixed(2)
-        })).sort((a, b) => parseFloat(b.promedio) - parseFloat(a.promedio));
+        const areas = Object.entries(areaScores).map(([areaId, data]) => {
+            const promedioCompleto = data.total / data.count;
+            return {
+                id: areaId,
+                name: data.name,
+                promedio_score: promedioCompleto.toFixed(2),
+                promedio_calculo: promedioCompleto
+            };
+        }).sort((a, b) => parseFloat(b.promedio_calculo) - parseFloat(a.promedio_calculo));
         
         // Top 10 centros con más riesgo
         const topRisk = scoresData.slice(0, 10).map(score => ({
-            area_name: `Área ${score.area_id}`,
-            center_name: `C.T. (${score.work_center_id.slice(-2)})`,
+            area_name: areasMap[score.area_id] || `Área ${score.area_id}`,
+            center_name: workCentersMap[score.work_center_id] || `Centro ${score.work_center_id}`,
             score: parseFloat(score.score_actual).toFixed(2),
             categoria: score.categoria_riesgo
         }));
