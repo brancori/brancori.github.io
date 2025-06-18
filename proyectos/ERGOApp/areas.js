@@ -11,45 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Configuración para usar Supabase o localStorage
-const USE_SUPABASE = true; // Cambiar a false para usar localStorage
-// Sistema de permisos
-function getCurrentUser() {
-    try {
-        const userData = sessionStorage.getItem('currentUser');     
-        return userData ? JSON.parse(userData) : null;
-    } catch (error) {
-        console.error('Error obteniendo usuario:', error);
-        return null;
-    }
-}
-
-function hasPermission(action) {
-    const currentUser = getCurrentUser();
-    if (!currentUser) return false;
-
-    const rango = currentUser.rango;
-    
-    switch (action) {
-        case 'read':
-            return [1, 2, 3].includes(rango); // Todos pueden leer
-        case 'create':
-            return [1, 2].includes(rango); // Admin y Editor
-        case 'update':
-            return [1].includes(rango); // Solo Admin
-        case 'delete':
-            return [1].includes(rango); // Solo Admin
-        default:
-            return false;
-    }
-}
-
-function checkPermissionAndShowError(action) {
-    if (!hasPermission(action)) {
-        showToast('No tienes permisos para realizar esta acción', 'error');
-        return false;
-    }
-    return true;
-}
+const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
 // Funciones híbridas que usan Supabase o localStorage
 async function loadAreas() {
@@ -67,7 +29,7 @@ async function loadAreas() {
 }
 
 async function saveAreaToStorage(area) {
-    if (!checkPermissionAndShowError('create')) return;
+    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
     if (USE_SUPABASE) {
         try {
             await supabase.createArea(area);
@@ -106,34 +68,6 @@ const area_id = urlParams.get('area');
 const areaName = urlParams.get('areaName');
 const centerName = urlParams.get('centerName');
 const responsibleName = urlParams.get('responsible');
-
-// Utilidades
-function generateShortId() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 6; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    // Verificar que el ID no exista
-    const existingIds = [...areas.map(a => a.id), ...workCenters.map(wc => wc.id)];
-    if (existingIds.includes(result)) {
-        return generateShortId(); // Recursión si existe
-    }
-    return result;
-}
-
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toast-message');
-    
-    toastMessage.textContent = message;
-    toast.className = `toast ${type}`;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
 
 function updateAreasCount() {
     const count = areas.length;
@@ -181,7 +115,7 @@ async function saveArea() {
     const responsible = document.getElementById('area-responsible').value.trim();
     
     if (!name || !responsible) {
-        showToast('Por favor, completa todos los campos', 'error');
+        ERGOUtils.showToast('Por favor, completa todos los campos', 'error');
         return;
     }
     
@@ -191,7 +125,7 @@ async function saveArea() {
     if (editingId) {
         // ES EDICIÓN - UPDATE
         if (areas.some(area => area.id !== editingId && area.name.toLowerCase() === name.toLowerCase())) {
-            showToast('Ya existe un área con ese nombre', 'error');
+            ERGOUtils.showToast('Ya existe un área con ese nombre', 'error');
             return;
         }
 
@@ -216,20 +150,20 @@ async function saveArea() {
             
             closeAreaModal();
             await renderAreas();
-            showToast(`Área "${name}" actualizada exitosamente`);
+            ERGOUtils.showToast(`Área "${name}" actualizada exitosamente`);
         } catch (error) {
             console.error('Error updating area:', error);
-            showToast('Error al actualizar el área', 'error');
+            ERGOUtils.showToast('Error al actualizar el área', 'error');
         }
     } else {
         // ES CREACIÓN - CREATE (código existente)
         if (areas.some(area => area.name.toLowerCase() === name.toLowerCase())) {
-            showToast('Ya existe un área con ese nombre', 'error');
+            ERGOUtils.showToast('Ya existe un área con ese nombre', 'error');
             return;
         }
 
         const newArea = {
-            id: generateShortId(),
+            id: ERGOUtils.generateShortId(),
             name: name,
             responsible: responsible,
             created_at: new Date().toISOString()
@@ -246,17 +180,17 @@ async function saveArea() {
             
             closeAreaModal();
             await renderAreas();
-            showToast(`Área "${name}" creada exitosamente`);
+            ERGOUtils.showToast(`Área "${name}" creada exitosamente`);
         } catch (error) {
             console.error('Error saving area:', error);
-            showToast('Error al crear el área', 'error');
+            ERGOUtils.showToast('Error al crear el área', 'error');
         }
     }
 }
 
 async function deleteArea(area_id, event) {
     event.stopPropagation();
-    if (!checkPermissionAndShowError('delete')) return;
+    if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
     const area = areas.find(a => a.id === area_id);
     if (!area) return;
     
@@ -288,10 +222,10 @@ async function deleteArea(area_id, event) {
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
             
             await renderAreas();
-            showToast(`Área "${area.name}" eliminada`);
+            ERGOUtils.showToast(`Área "${area.name}" eliminada`);
         } catch (error) {
             console.error('Error deleting area:', error);
-            showToast('Error al eliminar el área', 'error');
+            ERGOUtils.showToast('Error al eliminar el área', 'error');
         }
     }
 }
@@ -325,7 +259,7 @@ async function renderAreas() {
     const centrosEvaluados = summary.centros_evaluados;
     
     // Verificar permisos para mostrar botón eliminar
-    const showDeleteButton = hasPermission('delete');
+    const showDeleteButton = ERGOAuth.hasPermission('delete');
     
     return `
         <div class="card" onclick="showAreaDetail('${area.id}')">
@@ -378,7 +312,7 @@ function showAreasPage() {
 async function showAreaDetail(area_id) {
     const area = areas.find(a => a.id === area_id);
     if (!area) {
-        showToast('Área no encontrada', 'error');
+        ERGOUtils.showToast('Área no encontrada', 'error');
         return;
     }
 
@@ -400,7 +334,7 @@ async function showAreaDetail(area_id) {
 // Gestión de centros de trabajo
 function openWorkCenterModal() {
     if (!current_area_id) {
-        showToast('Error: No hay área seleccionada', 'error');
+        ERGOUtils.showToast('Error: No hay área seleccionada', 'error');
         return;
     }
     
@@ -425,17 +359,17 @@ function closeWorkCenterModal() {
 }
 
 async function saveWorkCenter() {
-    if (!checkPermissionAndShowError('create')) return;
+    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
     const name = document.getElementById('work-center-name').value.trim();
     const responsible = document.getElementById('work-center-responsible').value.trim();
     
     if (!name || !responsible) {
-        showToast('Por favor, completa todos los campos', 'error');
+        ERGOUtils.showToast('Por favor, completa todos los campos', 'error');
         return;
     }
     
     if (!current_area_id) {
-        showToast('Error: No hay área seleccionada', 'error');
+        ERGOUtils.showToast('Error: No hay área seleccionada', 'error');
         return;
     }
     
@@ -446,7 +380,7 @@ async function saveWorkCenter() {
         // ES EDICIÓN - UPDATE
         const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
         if (areaCenters.some(center => center.id !== editingId && center.name.toLowerCase() === name.toLowerCase())) {
-            showToast('Ya existe un centro con ese nombre en esta área', 'error');
+            ERGOUtils.showToast('Ya existe un centro con ese nombre en esta área', 'error');
             return;
         }
 
@@ -472,21 +406,21 @@ async function saveWorkCenter() {
             closeWorkCenterModal();
             await renderWorkCenters();
             await renderAreas();
-            showToast(`Centro "${name}" actualizado exitosamente`);
+            ERGOUtils.showToast(`Centro "${name}" actualizado exitosamente`);
         } catch (error) {
             console.error('Error updating work center:', error);
-            showToast('Error al actualizar el centro de trabajo', 'error');
+            ERGOUtils.showToast('Error al actualizar el centro de trabajo', 'error');
         }
     } else {
         // ES CREACIÓN - CREATE (código existente)
         const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
         if (areaCenters.some(center => center.name.toLowerCase() === name.toLowerCase())) {
-            showToast('Ya existe un centro con ese nombre en esta área', 'error');
+            ERGOUtils.showToast('Ya existe un centro con ese nombre en esta área', 'error');
             return;
         }
 
         const newWorkCenter = {
-            id: generateShortId(),
+            id: ERGOUtils.generateShortId(),
             name: name,
             responsible: responsible,
             area_id: current_area_id,
@@ -505,17 +439,17 @@ async function saveWorkCenter() {
             closeWorkCenterModal();
             await renderWorkCenters();
             await renderAreas();
-            showToast(`Centro de trabajo "${name}" creado exitosamente`);
+            ERGOUtils.showToast(`Centro de trabajo "${name}" creado exitosamente`);
         } catch (error) {
             console.error('Error saving work center:', error);
-            showToast('Error al crear el centro de trabajo', 'error');
+            ERGOUtils.showToast('Error al crear el centro de trabajo', 'error');
         }
     }
 }
 
 async function deleteWorkCenter(centerId, event) {
     event.stopPropagation();
-    if (!checkPermissionAndShowError('delete')) return;
+    if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
     
     const center = workCenters.find(wc => wc.id === centerId);
     if (!center) return;
@@ -534,10 +468,10 @@ async function deleteWorkCenter(centerId, event) {
             
             await renderWorkCenters();
             await renderAreas(); // Actualizar contador en vista principal
-            showToast(`Centro "${center.name}" eliminado`);
+            ERGOUtils.showToast(`Centro "${center.name}" eliminado`);
         } catch (error) {
             console.error('Error deleting work center:', error);
-            showToast('Error al eliminar el centro de trabajo', 'error');
+            ERGOUtils.showToast('Error al eliminar el centro de trabajo', 'error');
         }
     }
 }
@@ -589,7 +523,7 @@ async function renderWorkCenters() {
                 
                 <div class="card-footer">
                     <div class="card-stats">
-                        Creado ${formatDate(center.created_at)}
+                        Creado ${ERGOUtils.formatDate(center.created_at)}
                     </div>
                     <button class="btn btn-danger" onclick="deleteWorkCenter('${center.id}', event)">
                         Eliminar
@@ -598,29 +532,6 @@ async function renderWorkCenters() {
             </div>
         `;
     }).join('');
-}
-
-// Utilidades adicionales
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) {
-        return 'hace 1 día';
-    } else if (diffDays < 7) {
-        return `hace ${diffDays} días`;
-    } else if (diffDays < 30) {
-        const weeks = Math.floor(diffDays / 7);
-        return `hace ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
-    } else {
-        return date.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    }
 }
 
 // Event listeners
@@ -651,36 +562,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         cargarScoresExistentes();
     }, 100);
     
-applyPermissionControls();
+ERGOAuth.applyPermissionControls();
 });
-
-
-function applyPermissionControls() {
-    const currentUser = getCurrentUser();
-    if (!currentUser) return;
-    
-    // Ocultar botones según permisos
-    const newAreaBtn = document.querySelector('button[onclick="openAreaModal()"]');
-    const newCenterBtn = document.querySelector('button[onclick="openWorkCenterModal()"]');
-    
-    if (!hasPermission('create')) {
-        if (newAreaBtn) {
-            newAreaBtn.style.display = 'none';
-        }
-        if (newCenterBtn) {
-            newCenterBtn.style.display = 'none';
-        }
-    }
-    
-    // Mostrar indicador de permisos en consola
-    const rangoTexto = {
-        1: 'Administrador (CRUD completo)',
-        2: 'Editor (Crear y leer)',
-        3: 'Visualizador (Solo lectura)'
-    };
-    
-    console.log(`👤 Usuario: ${currentUser.nombre} - ${rangoTexto[currentUser.rango] || 'Rango desconocido'}`);
-}
 
 // Funciones de exportación e importación (para futuro uso)
 function exportData() {
@@ -714,12 +597,12 @@ function importData(file) {
                 localStorage.setItem('workCenters', JSON.stringify(workCenters));
                 
                 renderAreas();
-                showToast('Datos importados exitosamente');
+                ERGOUtils.showToast('Datos importados exitosamente');
             } else {
                 throw new Error('Formato de archivo inválido');
             }
         } catch (error) {
-            showToast('Error al importar el archivo', 'error');
+            ERGOUtils.showToast('Error al importar el archivo', 'error');
             console.error('Error importing data:', error);
         }
     };
@@ -735,16 +618,8 @@ function clearAllData() {
         workCenters = [];
         current_area_id = null;
         showAreasPage();
-        showToast('Todos los datos han sido eliminados');
+        ERGOUtils.showToast('Todos los datos han sido eliminados');
     }
-}
-
-// Función para obtener color según el score de riesgo
-function obtenerColorRiesgo(score) {
-    if (score <= 25) return "#28a745";
-    else if (score <= 50) return "#ffc107";
-    else if (score <= 75) return "#fd7e14";
-    else return "#dc3545";
 }
 
 // Función para actualizar el score visualmente en el centro
@@ -766,7 +641,7 @@ function actualizarScoreEnCentro(workCenterId, score, categoria) {
             padding: 4px 8px;
             background-color: #f8f9fa;
             border-radius: 4px;
-            border-left: 3px solid ${obtenerColorRiesgo(parseFloat(score))};
+            border-left: 3px solid ${ERGOUtils.getScoreColor(parseFloat(score))};
             font-weight: 500;
         `;
         scoreElement.innerHTML = `📊 Riesgo Ergonómico: ${score}%`;

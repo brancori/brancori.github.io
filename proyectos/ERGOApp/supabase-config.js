@@ -4,8 +4,8 @@ const CorsHeaders ={
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'
 };
-const SUPABASE_URL = 'https://ywfmcvmpzvqzkatbkvqo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3Zm1jdm1wenZxemthdGJrdnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMzcxMjUsImV4cCI6MjA2NDkxMzEyNX0.WNW_EkEvhyw5p0xrQ4SYv4DORidnONhsr-8vUbdzNKM';
+const SUPABASE_URL = window.ERGOConfig.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.ERGOConfig.SUPABASE_ANON_KEY;
 
 // Cliente básico de Supabase
 class SupabaseClient {

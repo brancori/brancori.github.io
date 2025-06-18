@@ -40,39 +40,8 @@
         let isEditMode = false;
         let originalData = null;
 
-        // Sistema de permisos
-        function getCurrentUser() {
-            try {
-                const userData = sessionStorage.getItem('currentUser');
-                return userData ? JSON.parse(userData) : null;
-            } catch (error) {
-                console.error('Error obteniendo usuario:', error);
-                return null;
-            }
-        }
-
-        function hasPermission(action) {
-            const currentUser = getCurrentUser();
-            if (!currentUser) return false;
-
-            const rango = currentUser.rango;
-            
-            switch (action) {
-                case 'read':
-                    return [1, 2, 3].includes(rango);
-                case 'create':
-                    return [1, 2].includes(rango);
-                case 'update':
-                    return [1].includes(rango);
-                case 'delete':
-                    return [1].includes(rango);
-                default:
-                    return false;
-            }
-        }
-
 // Configuración para usar Supabase
-const USE_SUPABASE_EVAL = true;
+const USE_SUPABASE_EVAL = window.ERGOConfig.USE_SUPABASE;
 
 // Función para guardar en Supabase
 async function guardarEvaluacion() {
@@ -106,7 +75,7 @@ async function guardarEvaluacion() {
     
     // Calcular score
     const scoreFinal = calcularScoreFinal();
-    const categoria = obtenerCategoriaRiesgo(parseFloat(scoreFinal));
+    const categoria = ERGOUtils.getScoreCategory(parseFloat(scoreFinal));
     
 // Crear evaluación con nombres de campos que coinciden con Supabase
     const evaluacion = {
@@ -365,7 +334,7 @@ async function guardarEvaluacion() {
                 document.getElementById('scoreFinal').textContent = score + '%';
                 
                 // Actualizar categoría y mostrar alerta
-                const categoria = obtenerCategoriaRiesgo(parseFloat(score));
+                const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
                 const elementoCategoria = document.getElementById('textoCategoria');
                 const elementoScore = document.getElementById('scoreFinal');
                 
@@ -451,7 +420,7 @@ async function guardarEvaluacion() {
             document.getElementById('scoreFinal').textContent = score + '%';
             
             // Actualizar categoría
-            const categoria = obtenerCategoriaRiesgo(parseFloat(score));
+            const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
             const elementoCategoria = document.getElementById('textoCategoria');
             const elementoScore = document.getElementById('scoreFinal');
             
@@ -539,25 +508,12 @@ async function guardarEvaluacion() {
             document.getElementById('scoreFinal').textContent = score + '%';
             
             // Actualizar categoría de riesgo y color
-            const categoria = obtenerCategoriaRiesgo(parseFloat(score));
+            const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
             const elementoCategoria = document.getElementById('textoCategoria');
             const elementoScore = document.getElementById('scoreFinal');
             
             elementoCategoria.textContent = categoria.texto;
             elementoScore.style.color = categoria.color;
-        }
-
-        // Función para determinar categoría de riesgo
-        function obtenerCategoriaRiesgo(score) {
-            if (score <= 25) {
-                return {texto: "Riesgo Bajo - Condiciones ergonómicas aceptables", color: "#28a745"};
-            } else if (score <= 50) {
-                return {texto: "Riesgo Moderado - Se requieren mejoras", color: "#ffc107"};
-            } else if (score <= 75) {
-                return {texto: "Riesgo Alto - Intervención necesaria", color: "#fd7e14"};
-            } else {
-                return {texto: "Riesgo Crítico - Intervención urgente", color: "#dc3545"};
-            }
         }
 
         // Nueva función para analizar métodos requeridos
@@ -1339,7 +1295,7 @@ function cargarEvaluacionExistente(evaluacion) {
                     // Notificar actualización del score después de exportar
                     if (window.parent && window.parent.postMessage) {
                         const score = calcularScoreFinal();
-                        const categoria = obtenerCategoriaRiesgo(parseFloat(score));
+                        const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
                         window.parent.postMessage({
                             type: 'evaluacionActualizada',
                             workCenterId: workCenterId,

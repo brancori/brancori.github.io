@@ -6,6 +6,7 @@
     <title>Centro de Trabajo</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
+    <script src="./componentes/globals.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="supabase-config.js"></script>
@@ -669,100 +670,6 @@
         let notasActuales = [];
         let evaluacionesEspecificas = [];
 
-        // Sistema de permisos
-function getCurrentUser() {
-    try {
-        const userData = sessionStorage.getItem('currentUser');
-        return userData ? JSON.parse(userData) : null;
-    } catch (error) {
-        console.error('Error obteniendo usuario:', error);
-        return null;
-    }
-}
-
-        function hasPermission(action) {
-            const currentUser = getCurrentUser();
-            if (!currentUser) return false;
-
-            const rango = currentUser.rango;
-            
-            switch (action) {
-                case 'read':
-                    return [1, 2, 3].includes(rango); // Todos pueden leer
-                case 'create':
-                    return [1, 2].includes(rango); // Admin y Editor
-                case 'update':
-                    return [1].includes(rango); // Solo Admin
-                case 'delete':
-                    return [1].includes(rango); // Solo Admin
-                default:
-                    return false;
-            }
-        }
-
-        function checkPermissionAndShowError(action) {
-            if (!hasPermission(action)) {
-                alert('No tienes permisos para realizar esta acción');
-                return false;
-            }
-            return true;
-        }
-
-function applyPermissionControls() {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-        console.warn('No hay usuario logueado');
-        return;
-    }
-    
-    console.log(`👤 Usuario: ${currentUser.nombre} - Rango: ${currentUser.rango}`);
-    
-    // Ocultar botones según permisos
-    if (!hasPermission('create')) {
-        // Ocultar botón "AGREGAR NOTA"
-        const addNoteBtn = document.querySelector('.btn-add-note');
-        if (addNoteBtn) {
-            addNoteBtn.style.display = 'none';
-            console.log('🚫 Botón "Agregar Nota" ocultado');
-        }
-        
-        // Ocultar botón "AGREGAR EVALUACIÓN"
-        const addEvalBtn = document.querySelector('button[onclick="openEvaluacionModal()"]');
-        if (addEvalBtn) {
-            addEvalBtn.style.display = 'none';
-            console.log('🚫 Botón "Agregar Evaluación" ocultado');
-        }
-        
-        // Ocultar slots de fotos vacíos (para subir fotos)
-        setTimeout(() => {
-            const fotoSlots = document.querySelectorAll('.foto-slot:not(.occupied)');
-            fotoSlots.forEach(slot => {
-                slot.style.cursor = 'not-allowed';
-                slot.style.opacity = '0.5';
-                slot.onclick = function() {
-                    alert('No tienes permisos para agregar fotos');
-                    return false;
-                };
-            });
-            console.log(`🚫 ${fotoSlots.length} slots de fotos deshabilitados`);
-        }, 500);
-    }
-    
-    if (!hasPermission('delete')) {
-        console.log('🚫 Permisos de eliminación denegados');
-        // Los botones de eliminar se manejan en renderFotosGrid()
-    }
-    
-    // Mostrar indicador de permisos en consola
-    const rangoTexto = {
-        1: 'Administrador (CRUD completo)',
-        2: 'Editor (Crear y leer)', 
-        3: 'Visualizador (Solo lectura)'
-    };
-    
-    console.log(`✅ Permisos aplicados: ${rangoTexto[currentUser.rango] || 'Rango desconocido'}`);
-}
-
         // Obtener parámetros de URL
         const urlParams = new URLSearchParams(window.location.search);
         const workCenterId = urlParams.get('workCenter');
@@ -772,7 +679,7 @@ function applyPermissionControls() {
         const responsibleName = urlParams.get('responsible');
 
         // Configuración Supabase
-        const USE_SUPABASE = true;
+        const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', async function() {
@@ -822,7 +729,7 @@ function applyPermissionControls() {
             setupEventListeners();
 
             // === CONTROL DE PERMISOS ===
-            applyPermissionControls();
+            ERGOAuth.applyPermissionControls();
 
             console.log('✅ Aplicación inicializada correctamente');
         });
@@ -988,7 +895,7 @@ function applyPermissionControls() {
                     <div class="foto-slot occupied" onclick="openFotoModal(${index})"> <!-- AGREGAR onclick aquí -->
                         <img src="${publicUrl}" alt="${foto.foto_name || `Foto ${index + 1}`}" 
                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjYwIiB5PSI2NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZW4gTm8gRGlzcG9uaWJsZTwvdGV4dD4KPHN2Zz4='" />
-                            ${hasPermission('delete') ? `<button class="foto-delete" onclick="event.stopPropagation(); deleteFoto('${foto.id || index}')">×</button>` : ''}                    </div>
+                            ${ERGOAuth.hasPermission('delete') ? `<button class="foto-delete" onclick="event.stopPropagation(); deleteFoto('${foto.id || index}')">×</button>` : ''}                    </div>
                 `;
             });
             
@@ -1027,7 +934,7 @@ function applyPermissionControls() {
             
             container.innerHTML = notasActuales.map(nota => `
                 <div class="nota-item">
-                    <div class="nota-fecha">${formatDate(nota.fecha)}</div>
+                    <div class="nota-fecha">${ERGOUtils.formatDate(nota.fecha)}</div>
                     <div class="nota-texto">${nota.texto}</div>
                 </div>
             `).reverse().join(''); // Mostrar más recientes primero
@@ -1060,7 +967,7 @@ function renderEvaluacionesEspecificas() {
                     <span class="evaluacion-metodo">${eval.tipo}</span>
                     <span class="evaluacion-score">Score: ${scoreText}</span>
                 </div>
-                <div class="evaluacion-fecha">Realizada: ${formatDate(eval.created_at)}</div>
+                <div class="evaluacion-fecha">Realizada: ${ERGOUtils.formatDate(eval.created_at)}</div>
                 ${eval.nivel_riesgo ? `<div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">${eval.nivel_riesgo}</div>` : ''}
             </div>
         `;
@@ -1080,17 +987,6 @@ function renderEvaluacionesEspecificas() {
             else if (score <= 50) return "RULA, observación postural";
             else if (score <= 75) return "REBA, RULA, evaluación de cargas";
             else return "REBA, NIOSH, OCRA - Evaluación completa";
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
         }
 
         // Funciones de interacción
@@ -1144,7 +1040,7 @@ function renderEvaluacionesEspecificas() {
         }
 
         async function deleteFoto(fotoId) {
-            if (!checkPermissionAndShowError('delete')) return;
+            if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
             if (confirm('¿Eliminar esta foto?')) {
                 try {
                     if (USE_SUPABASE) {
@@ -1166,7 +1062,7 @@ function renderEvaluacionesEspecificas() {
         }
 
         function openNotaModal() {
-            if (!checkPermissionAndShowError('create')) return;
+            if (!ERGOAuth.checkPermissionAndShowError('create')) return;
             document.getElementById('modal-nota').classList.add('show');
             document.getElementById('nota-texto').focus();
         }
@@ -1177,7 +1073,7 @@ function renderEvaluacionesEspecificas() {
         }
 
         function guardarNota() {
-            if (!checkPermissionAndShowError('create')) return;
+            if (!ERGOAuth.checkPermissionAndShowError('create')) return;
             const texto = document.getElementById('nota-texto').value.trim();
             
             if (!texto) {
@@ -1200,7 +1096,7 @@ function renderEvaluacionesEspecificas() {
         }
 
 function openEvaluacionModal() {
-    if (!checkPermissionAndShowError('create')) return;
+    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
     const metodos = [
         { nombre: 'REBA', archivo: './evaluacion_ini/especificas/formulario_reba_completo.html', descripcion: 'Evaluación de cuerpo completo' },
         { nombre: 'RULA', archivo: './evaluacion_ini/especificas/formulario_rula_completo.html', descripcion: 'Evaluación de miembros superiores' },
@@ -1257,7 +1153,7 @@ function verEvaluacionEspecifica(evalId, tipo) {
         function verEvaluacionEspecifica(evalId) {
             const evaluacion = evaluacionesEspecificas.find(e => e.id === evalId);
             if (evaluacion) {
-                alert(`Ver evaluación ${evaluacion.metodo}\nScore: ${evaluacion.score}\nFecha: ${formatDate(evaluacion.fecha)}`);
+                alert(`Ver evaluación ${evaluacion.metodo}\nScore: ${evaluacion.score}\nFecha: ${ERGOUtils.formatDate(evaluacion.fecha)}`);
             }
         }
 
@@ -1398,7 +1294,7 @@ function verEvaluacionEspecifica(evalId, tipo) {
                         }
 
                         doc.setFontSize(10);
-                        doc.text(`${formatDate(nota.fecha)}:`, 14, posY);
+                        doc.text(`${ERGOUtils.formatDate(nota.fecha)}:`, 14, posY);
                         posY += 6;
                         
                         doc.setFontSize(9);
