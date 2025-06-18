@@ -862,19 +862,20 @@ async function calcularPromedioAreaFromSupabase(area_id) {
             const scores = await supabase.getScoresArea(area_id);
             const workCentersData = await supabase.getWorkCenters(area_id);
             
-            if (scores && scores.length > 0) {
-                const sumaScores = scores.reduce((sum, s) => sum + s.score_actual, 0);
-                const promedio = (sumaScores / scores.length).toFixed(2);
-                
-                // Calcular color basado en el promedio
-                let colorPromedio = '#d1d5db';
-                if (promedio <= 25) colorPromedio = '#28a745';
-                else if (promedio <= 60) colorPromedio = '#fd7e14';
-                else colorPromedio = '#dc3545';
-                
-                return {
+        if (scores && scores.length > 0) {
+            const sumaScores = scores.reduce((sum, s) => sum + s.score_actual, 0);
+            const promedioCompleto = sumaScores / scores.length;  // ← AGREGAR ESTA LÍNEA
+            const promedio = promedioCompleto.toFixed(2);
+            
+            // Calcular color basado en el promedio
+            let colorPromedio = '#d1d5db';
+            if (promedioCompleto <= 25) colorPromedio = '#28a745';  // ← Usar promedioCompleto aquí también
+            else if (promedioCompleto <= 60) colorPromedio = '#fd7e14';
+            else colorPromedio = '#dc3545';
+            
+            return {
                 promedio_score: promedio,                    // Para mostrar (2 decimales)
-                promedio_calculo: promedioCompleto,          // Para cálculos (sin redondear)
+                promedio_calculo: promedioCompleto,          // ← AHORA SÍ ESTÁ DEFINIDO
                 color_promedio: colorPromedio,
                 centros_evaluados: scores.length,
                 total_centros: workCentersData ? workCentersData.length : 0

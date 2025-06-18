@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Trabajo</title>
+    <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -1201,10 +1202,10 @@ function renderEvaluacionesEspecificas() {
 function openEvaluacionModal() {
     if (!checkPermissionAndShowError('create')) return;
     const metodos = [
-        { nombre: 'REBA', archivo: 'especificas/formulario_reba_completo.html', descripcion: 'Evaluación de cuerpo completo' },
-        { nombre: 'RULA', archivo: 'especificas/formulario_rula_completo.html', descripcion: 'Evaluación de miembros superiores' },
-        { nombre: 'OCRA', archivo: 'especificas/formulario_ocra_completo.html', descripcion: 'Movimientos repetitivos' },
-        { nombre: 'NIOSH', archivo: 'especificas/calculadora_niosh_excel.html', descripcion: 'Levantamiento de cargas' }
+        { nombre: 'REBA', archivo: './evaluacion_ini/especificas/formulario_reba_completo.html', descripcion: 'Evaluación de cuerpo completo' },
+        { nombre: 'RULA', archivo: './evaluacion_ini/especificas/formulario_rula_completo.html', descripcion: 'Evaluación de miembros superiores' },
+        { nombre: 'OCRA', archivo: './evaluacion_ini/especificas/formulario_ocra_completo.html', descripcion: 'Movimientos repetitivos' },
+        { nombre: 'NIOSH', archivo: './evaluacion_ini/especificas/calculadora_niosh_excel.html', descripcion: 'Levantamiento de cargas' }
     ];
     
     let modalHTML = `
@@ -1261,7 +1262,7 @@ function verEvaluacionEspecifica(evalId, tipo) {
         }
 
         function abrirEvaluacion() {
-            const url = `evaluacion_integrada_html (1).html?workCenter=${workCenterId}&area=${areaId}&areaName=${encodeURIComponent(areaName || '')}&centerName=${encodeURIComponent(centerName || '')}&responsible=${encodeURIComponent(responsibleName || '')}`;
+            const url = `./evaluacion_ini/eval_int.html?workCenter=${workCenterId}&area=${areaId}&areaName=${encodeURIComponent(areaName || '')}&centerName=${encodeURIComponent(centerName || '')}&responsible=${encodeURIComponent(responsibleName || '')}`;
             window.location.href = url;
         }
 

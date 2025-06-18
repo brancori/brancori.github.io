@@ -459,6 +459,13 @@ updateDashboardTables(data) {
             }
             
             row.className = rowClass;
+            
+            // ✅ AGREGAR ESTE EVENTO CLICK:
+            row.onclick = () => {
+                // Buscar la evaluación completa para obtener todos los datos necesarios
+                this.navigateToSpecificEvaluation(item);
+            };
+            
             row.innerHTML = `
                 <div class="cell">${item.area_name || 'N/A'}</div>
                 <div class="cell">${item.center_name || 'N/A'}</div>
@@ -495,6 +502,39 @@ updateDashboardTables(data) {
     updateActivity() {
         const now = new Date().getTime();
         localStorage.setItem('lastActivity', now.toString());
+    }
+    async navigateToSpecificEvaluation(item) {
+        if (!this.currentUser) {
+            this.showToast('Debes iniciar sesión primero', 'error');
+            this.showLoginModal();
+            return;
+        }
+
+        this.updateActivity();
+
+        try {
+            // Buscar el work center ID y área ID desde la base de datos
+            const workCenters = await supabase.getWorkCenters();
+            const workCenter = workCenters.find(wc => wc.name === item.center_name);
+            
+            if (workCenter) {
+                // Construir URL para ir al centro de trabajo
+                const params = new URLSearchParams({
+                    workCenter: workCenter.id,
+                    area: workCenter.area_id,
+                    areaName: item.area_name,
+                    centerName: item.center_name,
+                    responsible: workCenter.responsible || 'N/A'
+                });
+
+                window.location.href = `centro-trabajo.html?${params.toString()}`;
+            } else {
+                this.showToast('No se pudo encontrar el centro de trabajo', 'error');
+            }
+        } catch (error) {
+            console.error('Error navegando a evaluación:', error);
+            this.showToast('Error al navegar al centro', 'error');
+        }
     }
 
 }

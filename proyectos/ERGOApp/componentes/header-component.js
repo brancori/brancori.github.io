@@ -4,8 +4,24 @@ class HeaderComponent {
         this.currentUser = null;
         this.navigationStack = ['Dashboard'];
         this.pageHistory = [{ title: 'Dashboard', subtitle: 'Dashboard de Control y Monitoreo', url: 'index.html' }];
+        this.basePath = this.detectBasePath(); // ← AGREGAR ESTA LÍNEA
         this.init();
     }
+    detectBasePath() {
+    const currentPath = window.location.pathname;
+    const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+    
+    // Si estamos en una subcarpeta, necesitamos subir un nivel
+    if (currentDir.includes('/evaluacion_ini') || 
+        currentDir.includes('/especificas') || 
+        currentDir.includes('/reportes') ||
+        currentDir.includes('/componentes')) {
+        return '../';  // Subir un nivel
+    }
+    
+    // Si estamos en la raíz
+    return './';
+}
 
     init() {
         this.injectCSS();
@@ -480,27 +496,41 @@ setupScrollBehavior() {
             this.navigationStack.pop();
             
             const previousPage = this.pageHistory[this.pageHistory.length - 1];
-            window.location.href = previousPage.url;
+            
+            // ← AGREGAR ESTA LÓGICA:
+            let targetUrl = previousPage.url;
+            
+            // Si la URL no tiene protocolo ni es relativa, ajustar con basePath
+            if (!targetUrl.includes('://') && !targetUrl.startsWith('../') && !targetUrl.startsWith('./')) {
+                targetUrl = `${this.basePath}${targetUrl}`;
+            }
+            
+            window.location.href = targetUrl;
         }
     }
 
-    // Navegación: Ir al inicio
-    goHome() {
-        console.log('🏠 Navegando a Home...');
-        
-        // Actualizar actividad antes de navegar para mantener la sesión
-        const now = new Date().getTime();
-        localStorage.setItem('lastActivity', now.toString());
-        
-        console.log('✅ Actividad actualizada, navegando...');
-        window.location.href = 'index.html';
-    }
+// Navegación: Ir al inicio
+goHome() {
+    console.log('🏠 Navegando a Home...');
+    
+    // Actualizar actividad antes de navegar para mantener la sesión
+    const now = new Date().getTime();
+    localStorage.setItem('lastActivity', now.toString());
+    
+    console.log('✅ Actividad actualizada, navegando...');
+    
+    // ← CAMBIAR ESTA LÍNEA:
+    // window.location.href = 'index.html';  // ❌ ELIMINAR
+    window.location.href = `${this.basePath}index.html`; // ✅ AGREGAR
+}
 
     // Logout
     logout() {
         if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
             localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
+            localStorage.removeItem('sessionExpiry'); // ← AGREGAR
+            localStorage.removeItem('lastActivity');  // ← AGREGAR
+            window.location.href = `${this.basePath}index.html`; // ← CAMBIAR
         }
     }
 

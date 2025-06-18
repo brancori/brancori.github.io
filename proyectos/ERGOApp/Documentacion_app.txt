@@ -1,0 +1,64 @@
+*Nombre de la APP:* ERGOApp
+Propósito, es una aplicación de ergonomía, donde se evalúan las áreas
+
+*Tecnologías usadas* 
+HTML, CSS y JavaScript
+
+Backend
+“Estoy usando Supabase como backend. Es un sistema basado en PostgreSQL que me permite gestionar tablas, autenticación, archivos y eventos en tiempo real. Quiero que todas las consultas y estructuras respeten esa tecnología.”
+
+
+## Tabla: evaluaciones
+| column_name             | data_type                | 
+| ----------------------- | ------------------------ |
+| id                      | text                     |
+| work_center_id          | text                     |
+| area_id                 | text                     |
+| fecha_evaluacion        | date                     |
+| nombre_area             | text                     |
+| ubicacion_area          | text                     |
+| responsable_area        | text                     |
+| criterios               | jsonb                    |
+| respuestas              | jsonb                    |
+| score_final             | numeric                  |
+| categoria_riesgo        | text                     |
+| nivel_riesgo_ergonomico | text                     |
+| color_riesgo            | text                     |
+| created_at              | timestamp with time zone |
+| updated_at              | timestamp with time zone |
+
+## Tabla: work_centers
+| column_name | data_type                |
+| ----------- | ------------------------ |
+| id          | text                     |
+| name        | text                     |
+| responsible | text                     |
+| area_id     | text                     |
+| created_at  | timestamp with time zone |
+
+## Tabla: fotos_centros
+| column_name    | data_type                |
+| -------------- | ------------------------ |
+| id             | uuid                     |
+| area_id        | text                     |
+| work_center_id | text                     |
+| foto_url       | character varying        |
+| foto_name      | text                     |
+| created_at     | timestamp with time zone |
+
+## Tabla: areas
+| column_name          | data_type                |
+| -------------------- | ------------------------ |
+| id                   | text                     |
+| name                 | text                     |
+| responsible          | text                     |
+| created_at           | timestamp with time zone |
+| total_centros        | integer                  |
+| centros_evaluados    | integer                  |
+| promedio_score       | numeric                  |
+| color_promedio       | text                     |
+| ultima_actualizacion | timestamp with time zone |
+
+*Usuarios y roles 
+- bran: acceso total, contraseña 7563, rango 1
+- invitado: acceso R, contraseña 1234 rango 3
