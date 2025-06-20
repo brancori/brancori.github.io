@@ -420,3 +420,46 @@ body {
         padding: 1rem;
     }
 }
+
+/* ===== TABLETS OPTIMIZATION ===== */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .modal-content {
+        width: 80%;
+        max-width: 600px;
+    }
+    
+    .container {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .btn {
+        min-height: 48px; /* Mejor área de toque para tablets */
+        padding: 0.875rem 1.25rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .modal-content {
+        max-height: 85vh;
+    }
+    
+    .header, .main-content {
+        padding: 1.5rem 3rem;
+    }
+}
+/* ===== TOUCH IMPROVEMENTS ===== */
+@media (hover: none) and (pointer: coarse) {
+    .btn, .card, .radio-label, .checkbox-label {
+        min-height: 48px; /* Apple/Google guidelines */
+    }
+    
+    .card:active {
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+    }
+    
+    .btn:active {
+        transform: scale(0.95);
+    }
+}
