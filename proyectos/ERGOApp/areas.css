@@ -1,3 +1,12 @@
+.header{
+    background: var(--gray-50);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+}
 .header-content h1 {
     font-size: 1.875rem;
     font-weight: 700;
@@ -39,12 +48,16 @@
     align-items: center;
     margin-bottom: 2rem;
     gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .toolbar-left {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex: 1;
+    min-width: 0;
 }
 
 .toolbar-info {
@@ -57,16 +70,20 @@
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--gray-900);
+    margin: 0;
+    white-space: nowrap;
 }
 
 /* Contador */
 .count-badge {
     background: var(--gray-100);
     color: var(--gray-600);
-    padding: 0.25rem 0.75rem;
+    padding: 0.375rem 0.875rem;
     border-radius: var(--border-radius-md);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 500;
+    border: 1px solid var(--gray-200);
+    white-space: nowrap;
 }
 /* Grids */
 .content-grid {
@@ -179,5 +196,283 @@
 
     .separator {
         display: none; /* Ocultar separadores en móvil */
+    }
+}
+
+/* ===== SISTEMA DE VISTAS Y FILTROS ===== */
+
+/* Toolbar Actions */
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Filtros */
+.filters-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--gray-200);
+    margin-bottom: 2rem;
+    animation: slideDown 0.3s ease-out;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 200px;
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+}
+
+.filter-input, .filter-select {
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-md);
+    font-size: 0.875rem;
+    background: white;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1), var(--shadow-sm);
+}
+
+.filter-input {
+    min-width: 220px;
+    flex: 1;
+}
+
+.filter-select {
+    min-width: 180px;
+}
+.filter-input::placeholder {
+    color: var(--gray-400);
+}
+
+/* Vista de Lista */
+.content-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card-list {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-md);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.card-list:hover {
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-sm);
+    transform: translateX(4px);
+}
+
+.card-list-content {
+    display: grid;
+    grid-template-columns: 80px 2fr 1fr 1fr 120px auto;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.card-list-id {
+    background: var(--primary-50);
+    color: var(--primary-700);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    text-align: center;
+}
+
+.card-list-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.card-list-responsible {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.card-list-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.score-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.card-list-stats {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-align: center;
+}
+
+.card-list-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Estados de filtrado */
+.filtered-out {
+    display: none !important;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--gray-500);
+}
+
+.no-results h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+.no-results p {
+    font-size: 0.875rem;
+}
+
+/* Responsive para filtros y listas */
+@media (max-width: 768px) {
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .toolbar-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-list-content {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .card-list-actions {
+        justify-content: flex-start;
+    }
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .toolbar-left {
+        justify-content: space-between;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .toolbar-actions {
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .filter-input, .filter-select {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .card-list-content {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .card-list-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-input, .filter-select {
+        width: 100%;
+    }
+     .header, .main-content {
+        padding: 1rem;
+    }
+    
+    .toolbar-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .toolbar-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+    
+    .toolbar-actions .btn {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .toolbar h2 {
+        font-size: 1.125rem;
+    }
+    
+    .filter-input, .filter-select {
+        width: 100%;
+    }
+    
+    .breadcrumb {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .separator {
+        display: none;
     }
 }

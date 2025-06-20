@@ -18,19 +18,51 @@
                     <h1>Gestión de Áreas</h1>
                     <p class="subtitle">Administra las áreas y centros de trabajo de tu organización</p>
                 </div>
-            </header>
-            
-            <main class="main-content">
-                <div class="toolbar">
-                    <div class="toolbar-left">
-                        <h2>Áreas registradas</h2>
-                        <span id="areas-count" class="count-badge">0 áreas</span>
-                    </div>
+                <div lass="header-content">
                     <button class="btn btn-primary" onclick="openAreaModal()">
                         <span class="icon">+</span>
                         Nueva Área
                     </button>
                 </div>
+
+            </header>
+            
+            <main class="main-content">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <h2>Áreas registradas</h2>
+                    <span id="areas-count" class="count-badge">0 áreas</span>
+                </div>
+                
+                <div class="toolbar-actions">
+                    <button class="btn btn-ghost" onclick="toggleAreasFilters()">
+                        <span class="icon">🔍</span>
+                        Filtros
+                    </button>
+                    <button class="btn btn-ghost" onclick="toggleAreasView()">
+                        <span class="icon" id="view-toggle-icon">📋</span>
+                        <span id="view-toggle-text">Lista</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros para áreas (fuera del toolbar) -->
+            <div class="filters-container" id="areas-filters" style="display: none;">
+                <input type="text" id="filter-area-name" placeholder="Buscar por nombre..." class="filter-input">
+                <select id="filter-area-score" class="filter-select">
+                    <option value="">Todos los riesgos</option>
+                    <option value="low">Riesgo Bajo (≤25%)</option>
+                    <option value="moderate">Riesgo Moderado (26-60%)</option>
+                    <option value="high">Riesgo Alto (61-75%)</option>
+                    <option value="critical">Riesgo Crítico (>75%)</option>
+                </select>
+                <select id="filter-area-status" class="filter-select">
+                    <option value="">Todos los estados</option>
+                    <option value="evaluated">Con evaluaciones</option>
+                    <option value="pending">Sin evaluar</option>
+                </select>
+                <button class="btn btn-ghost btn-sm" onclick="clearAreasFilters()">Limpiar filtros</button>
+            </div>
                 
                 <div id="areas-container" class="content-grid">
                     <!-- Las áreas se renderizan aquí -->
@@ -55,22 +87,47 @@
             </header>
             
             <main class="main-content">
-                <div class="toolbar">
-                    <div class="toolbar-left">
-                        <button class="btn btn-ghost" onclick="showAreasPage()">
-                            <span class="icon">←</span>
-                            Volver
-                        </button>
-                        <div class="toolbar-info">
-                            <h2>Centros de Trabajo</h2>
-                            <span id="centers-count" class="count-badge">0 centros</span>
-                        </div>
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-ghost" onclick="showAreasPage()">
+                        <span class="icon">←</span>
+                        Volver
+                    </button>
+                    <div class="toolbar-info">
+                        <h2>Centros de Trabajo</h2>
+                        <span id="centers-count" class="count-badge">0 centros</span>
                     </div>
+                </div>
+                
+                <div class="toolbar-actions">
+                    <button class="btn btn-ghost" onclick="toggleCentersFilters()">
+                        <span class="icon">🔍</span>
+                        Filtros
+                    </button>
+                    <button class="btn btn-ghost" onclick="toggleCentersView()">
+                        <span class="icon" id="centers-view-toggle-icon">📋</span>
+                        <span id="centers-view-toggle-text">Lista</span>
+                    </button>
                     <button class="btn btn-primary" onclick="openWorkCenterModal()">
                         <span class="icon">+</span>
                         Nuevo Centro
                     </button>
                 </div>
+            </div>
+
+            <!-- Filtros para centros (fuera del toolbar) -->
+            <div class="filters-container" id="centers-filters" style="display: none;">
+                <input type="text" id="filter-center-name" placeholder="Buscar por nombre..." class="filter-input">
+                <select id="filter-center-score" class="filter-select">
+                    <option value="">Todos los riesgos</option>
+                    <option value="low">Riesgo Bajo (≤25%)</option>
+                    <option value="moderate">Riesgo Moderado (26-60%)</option>
+                    <option value="high">Riesgo Alto (61-75%)</option>
+                    <option value="critical">Riesgo Crítico (>75%)</option>
+                </select>
+                <input type="text" id="filter-center-responsible" placeholder="Buscar responsable..." class="filter-input">
+                <button class="btn btn-ghost btn-sm" onclick="clearCentersFilters()">Limpiar filtros</button>
+            </div>
                 
                 <div id="work-centers-container" class="content-grid">
                     <!-- Los centros de trabajo se renderizan aquí -->

@@ -26,6 +26,12 @@ checkExistingSession() {
         this.showMainContent();
         this.updateUserInterface();
         this.loadDashboardData();
+        
+        // ← AGREGAR ESTA LÍNEA NUEVA:
+        setTimeout(async () => {
+            await this.debugAcondicionadoCalculation();
+        }, 3000);
+        
         return;
     }
     
@@ -290,14 +296,24 @@ navigateToWorkCenter(evaluacion) {
     );
 }
 
-    async loadDashboardData() {
-        try {
-            const dashboardData = await supabase.getDashboardData();
-            this.updateDashboardTables(dashboardData);
-        } catch (error) {
-            console.error('Error cargando datos del dashboard:', error);
-        }
+async loadDashboardData() {
+    try {
+        const dashboardData = await supabase.getDashboardData();
+        this.updateDashboardTables(dashboardData);
+        this.updateTopKPIs(dashboardData);
+        this.initializeMap(dashboardData);
+    } catch (error) {
+        console.error('Error cargando datos del dashboard:', error);
     }
+}
+
+async initializeMap(dashboardData) {
+    if (typeof ERGOMap !== 'undefined') {
+        this.map = new ERGOMap('risk-map', dashboardData);
+        await this.map.loadSVG('./assets/acondi.svg');
+        this.map.updateRiskData(dashboardData.areas);
+    }
+}
 
 updateDashboardTables(data) {
     const { areas, topRisk } = data;
@@ -392,6 +408,164 @@ updateDashboardTables(data) {
     }
 }
 
+// Actualizar KPIs superiores
+updateTopKPIs(data) {
+    const { areas, topRisk, totalWorkCenters, totalEvaluaciones } = data;
+    
+    // Usar los totales correctos de la base de datos
+    const totalAreas = totalWorkCenters || 0; // ← Centros de trabajo, no áreas
+    const totalEvals = totalEvaluaciones || 0; // ← Total de evaluaciones real
+    
+    // Calcular score global promedio CON 2 DECIMALES
+    const scoreGlobal = areas.length > 0 
+        ? (areas.reduce((sum, area) => sum + parseFloat(area.promedio_calculo || 0), 0) / areas.length).toFixed(2) // ← CAMBIAR a .toFixed(2)
+        : '0.00'; // ← CAMBIAR a 0.00
+
+    // Actualizar DOM de los KPIs superiores
+    const kpiAreasTotal = document.getElementById('kpi-areas-total');
+    const kpiEvaluacionesTotal = document.getElementById('kpi-evaluaciones-total');
+    const kpiScoreGlobal = document.getElementById('kpi-score-global');
+
+    if (kpiAreasTotal) kpiAreasTotal.textContent = totalAreas;
+    if (kpiEvaluacionesTotal) kpiEvaluacionesTotal.textContent = totalEvals;
+    if (kpiScoreGlobal) kpiScoreGlobal.textContent = `${scoreGlobal}%`;
+
+    // Debug - mostrar en consola los valores
+    console.log('📊 KPIs actualizados:', {
+        totalWorkCenters: totalAreas,
+        totalEvaluaciones: totalEvals,
+        scoreGlobal: scoreGlobal,
+        areasConDatos: areas.length
+    });
+
+    // Actualizar gráfico de riesgos
+    this.updateRiskChart(topRisk);
+}
+
+// Actualizar gráfico de riesgos
+updateRiskChart(topRisk) {
+    const chartContainer = document.getElementById('risk-chart');
+    
+    if (!chartContainer || !topRisk) return;
+
+    // Agrupar por rangos de riesgo
+    const riskRanges = {
+        'R01': { count: 0, label: 'Bajo', color: '#28a745' },
+        'R02': { count: 0, label: 'Medio', color: '#ffc107' },
+        'R03': { count: 0, label: 'Alto', color: '#fd7e14' },
+        'R04': { count: 0, label: 'Crítico', color: '#dc3545' }
+    };
+
+    topRisk.forEach(item => {
+        const score = parseFloat(item.score);
+        if (score <= 25) riskRanges.R01.count++;
+        else if (score <= 50) riskRanges.R02.count++;
+        else if (score <= 75) riskRanges.R03.count++;
+        else riskRanges.R04.count++;
+    });
+
+    // Generar barras
+    const maxCount = Math.max(...Object.values(riskRanges).map(r => r.count));
+    const maxHeight = 80;
+
+    chartContainer.innerHTML = Object.entries(riskRanges).map(([key, data]) => {
+        const height = maxCount > 0 ? (data.count / maxCount) * maxHeight : 20;
+        
+        return `
+            <div class="graf" style="height: ${height}px; background-color: ${data.color};">
+                <h4>${key}</h4>
+            </div>
+        `;
+    }).join('');
+}
+
+// Debug específico para el problema de Acondicionado
+async debugAcondicionadoCalculation() {
+    console.log('🔍 === DEBUG ESPECÍFICO ACONDICIONADO ===');
+    
+    try {
+        // 1. Obtener todos los datos
+        const [scores, areas, workCenters] = await Promise.all([
+            supabase.query('scores_resumen', 'GET', null, ''),
+            supabase.query('areas', 'GET', null, ''),
+            supabase.query('work_centers', 'GET', null, '')
+        ]);
+        
+        console.log('📊 Datos totales:', {
+            scores: scores?.length || 0,
+            areas: areas?.length || 0,
+            workCenters: workCenters?.length || 0
+        });
+        
+        // 2. Buscar el área "Acondicionado"
+        const acondicionadoArea = areas?.find(area => 
+            area.name.toLowerCase().includes('acondicionado')
+        );
+        
+        if (!acondicionadoArea) {
+            console.log('❌ No se encontró área Acondicionado');
+            console.log('🏢 Áreas disponibles:', areas?.map(a => a.name) || []);
+            return;
+        }
+        
+        console.log('✅ Área Acondicionado encontrada:', {
+            id: acondicionadoArea.id,
+            name: acondicionadoArea.name,
+            promedio_score: acondicionadoArea.promedio_score
+        });
+        
+        // 3. Buscar todos los scores de esta área
+        const scoresAcondicionado = scores?.filter(score => 
+            score.area_id === acondicionadoArea.id
+        ) || [];
+        
+        console.log('📊 Scores de Acondicionado:', {
+            cantidad: scoresAcondicionado.length,
+            scores: scoresAcondicionado.map(s => ({
+                work_center_id: s.work_center_id,
+                score_actual: parseFloat(s.score_actual),
+                categoria_riesgo: s.categoria_riesgo
+            }))
+        });
+        
+        // 4. Calcular promedio manualmente
+        if (scoresAcondicionado.length > 0) {
+            const suma = scoresAcondicionado.reduce((total, score) => {
+                return total + parseFloat(score.score_actual);
+            }, 0);
+            
+            const promedioCalculado = suma / scoresAcondicionado.length;
+            
+            console.log('🧮 Cálculo manual:', {
+                suma: suma.toFixed(2),
+                cantidad: scoresAcondicionado.length,
+                promedio: promedioCalculado.toFixed(2)
+            });
+            
+            // 5. Comparar con lo que muestra la tabla
+            const dashboardData = await supabase.getDashboardData();
+            const areaEnDashboard = dashboardData.areas?.find(area => 
+                area.id === acondicionadoArea.id
+            );
+            
+            console.log('📋 En dashboard:', {
+                promedio_score: areaEnDashboard?.promedio_score || 'No encontrado',
+                promedio_calculo: areaEnDashboard?.promedio_calculo || 'No encontrado'
+            });
+            
+        } else {
+            console.log('❌ No hay scores para Acondicionado');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en debug Acondicionado:', error);
+    }
+    
+    console.log('🔍 === FIN DEBUG ACONDICIONADO ===');
+}
+
+
+
     // Método para verificar el estado de la conexión
     async checkConnection() {
         try {
@@ -435,6 +609,30 @@ updateDashboardTables(data) {
             ERGOUtils.showToast('Error al navegar al centro', 'error');
         }
     }
+// Función de debug para verificar cálculos por área
+async debugAreaCalculations() {
+    console.log('🔍 Debug de cálculos iniciado...');
+    
+    try {
+        const scores = await supabase.query('scores_resumen', 'GET', null, '');
+        const areas = await supabase.query('areas', 'GET', null, '');
+        
+        console.log('✅ Scores obtenidos:', scores?.length || 0);
+        console.log('✅ Áreas obtenidas:', areas?.length || 0);
+        
+        if (scores && scores.length > 0) {
+            console.log('📊 Primeros 3 scores:', scores.slice(0, 3));
+        }
+        
+        if (areas && areas.length > 0) {
+            console.log('🏢 Áreas disponibles:', areas.map(a => ({ id: a.id, name: a.name })));
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en debug:', error);
+    }
+}
+
 
 }
 
@@ -467,3 +665,132 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
     console.error('Promesa rechazada:', e.reason);
 });
+
+// === FUNCIONES DEL DASHBOARD ===
+window.ERGODashboard = {
+    // Navegación desde botones del dashboard
+    navigateTo(section) {
+        switch(section) {
+            case 'centros':
+                window.location.href = 'areas.html';
+                break;
+            case 'mapas':
+                ERGOUtils.showToast('Funcionalidad de mapas en desarrollo', 'info');
+                break;
+            case 'riesgos':
+                ERGOUtils.showToast('Vista de riesgos en desarrollo', 'info');
+                break;
+            case 'ruido':
+                ERGOUtils.showToast('Medición de ruido en desarrollo', 'info');
+                break;
+        }
+    },
+
+    // Mostrar panel de detalles
+    showDetailsPanel(type, data) {
+        const panel = document.getElementById('details-panel');
+        const title = document.getElementById('details-title');
+        const body = document.getElementById('details-body');
+
+        if (!panel || !title || !body) return;
+
+        // Configurar título
+        title.textContent = type === 'area' ? 'Detalles del Área' : 'Detalles del Centro';
+
+        // Generar contenido según tipo
+        if (type === 'area') {
+            body.innerHTML = this.generateAreaDetails(data);
+        } else if (type === 'workCenter') {
+            body.innerHTML = this.generateWorkCenterDetails(data);
+        }
+
+        // Mostrar panel
+        panel.classList.remove('hidden');
+        panel.classList.add('show');
+    },
+
+    // Cerrar panel de detalles
+    closeDetailsPanel() {
+        const panel = document.getElementById('details-panel');
+        if (panel) {
+            panel.classList.remove('show');
+            setTimeout(() => {
+                panel.classList.add('hidden');
+            }, 300);
+        }
+    },
+
+    // Generar detalles de área
+    generateAreaDetails(area) {
+        const scoreColor = ERGOUtils.getScoreColor(parseFloat(area.promedio_score || 0));
+        
+        return `
+            <div class="detail-item">
+                <div class="detail-label">ID del Área</div>
+                <div class="detail-value">${area.id}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Nombre</div>
+                <div class="detail-value">${area.name}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Responsable</div>
+                <div class="detail-value">${area.responsible || 'No especificado'}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Score Promedio</div>
+                <div class="detail-score" style="background-color: ${scoreColor}20; color: ${scoreColor};">
+                    ${area.promedio_score || '0.00'}%
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Centros de Trabajo</div>
+                <div class="detail-value">${area.total_centros || 0} total</div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" 
+                    onclick="ERGONavigation.navigateToAreas('${area.id}')">
+                Ver Área Completa
+            </button>
+        `;
+    },
+
+    // Generar detalles de centro de trabajo
+    generateWorkCenterDetails(center) {
+        const scoreColor = ERGOUtils.getScoreColor(center.score_final || 0);
+        
+        return `
+            <div class="detail-item">
+                <div class="detail-label">ID del Centro</div>
+                <div class="detail-value">${center.id}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Nombre</div>
+                <div class="detail-value">${center.name}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Responsable</div>
+                <div class="detail-value">${center.responsible || 'No especificado'}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Score Actual</div>
+                <div class="detail-score" style="background-color: ${scoreColor}20; color: ${scoreColor};">
+                    ${center.score_final || '0.00'}%
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" 
+                    onclick="window.indexApp.navigateToWorkCenter({id: '${center.id}', area_id: '${center.area_id}', center_name: '${center.name}', responsible: '${center.responsible}'})">
+                Ver Centro Completo
+            </button>
+        `;
+    }
+};
+

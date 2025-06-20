@@ -60,6 +60,171 @@ async function loadWorkCenters(area_id = null) {
 let areas = JSON.parse(localStorage.getItem('areas')) || [];
 let workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
 let current_area_id = null;
+// ===== SISTEMA DE VISTAS Y FILTROS =====
+let currentAreasView = 'grid'; // 'grid' o 'list'
+let currentCentersView = 'grid'; // 'grid' o 'list'
+let areasFiltersVisible = false;
+let centersFiltersVisible = false;
+
+// Funciones de vista para áreas
+function toggleAreasView() {
+    currentAreasView = currentAreasView === 'grid' ? 'list' : 'grid';
+    const icon = document.getElementById('view-toggle-icon');
+    const text = document.getElementById('view-toggle-text');
+    
+    if (currentAreasView === 'list') {
+        icon.textContent = '⊞';
+        text.textContent = 'Tarjetas';
+    } else {
+        icon.textContent = '📋';
+        text.textContent = 'Lista';
+    }
+    
+    renderAreas();
+}
+
+function toggleCentersView() {
+    currentCentersView = currentCentersView === 'grid' ? 'list' : 'grid';
+    const icon = document.getElementById('centers-view-toggle-icon');
+    const text = document.getElementById('centers-view-toggle-text');
+    
+    if (currentCentersView === 'list') {
+        icon.textContent = '⊞';
+        text.textContent = 'Tarjetas';
+    } else {
+        icon.textContent = '📋';
+        text.textContent = 'Lista';
+    }
+    
+    renderWorkCenters();
+}
+
+// Funciones de filtros para áreas
+function toggleAreasFilters() {
+    areasFiltersVisible = !areasFiltersVisible;
+    const filtersContainer = document.getElementById('areas-filters');
+    if (filtersContainer) {
+        filtersContainer.style.display = areasFiltersVisible ? 'flex' : 'none';
+    }
+}
+
+function toggleCentersFilters() {
+    centersFiltersVisible = !centersFiltersVisible;
+    const filtersContainer = document.getElementById('centers-filters');
+    if (filtersContainer) {
+        filtersContainer.style.display = centersFiltersVisible ? 'flex' : 'none';
+    }
+}
+
+function clearAreasFilters() {
+    const nameFilter = document.getElementById('filter-area-name');
+    const scoreFilter = document.getElementById('filter-area-score');
+    const statusFilter = document.getElementById('filter-area-status');
+    
+    if (nameFilter) nameFilter.value = '';
+    if (scoreFilter) scoreFilter.value = '';
+    if (statusFilter) statusFilter.value = '';
+    
+    renderAreas();
+}
+
+function clearCentersFilters() {
+    const nameFilter = document.getElementById('filter-center-name');
+    const scoreFilter = document.getElementById('filter-center-score');
+    const responsibleFilter = document.getElementById('filter-center-responsible');
+    
+    if (nameFilter) nameFilter.value = '';
+    if (scoreFilter) scoreFilter.value = '';
+    if (responsibleFilter) responsibleFilter.value = '';
+    
+    renderWorkCenters();
+}
+
+// Función para filtrar áreas
+function filterAreas(areasToFilter, summaries) {
+    const nameFilter = document.getElementById('filter-area-name')?.value.toLowerCase() || '';
+    const scoreFilter = document.getElementById('filter-area-score')?.value || '';
+    const statusFilter = document.getElementById('filter-area-status')?.value || '';
+    
+    return areasToFilter.filter((area, index) => {
+        const summary = summaries[index];
+        
+        // Filtro por nombre
+        if (nameFilter && !area.name.toLowerCase().includes(nameFilter)) {
+            return false;
+        }
+        
+        // Filtro por score
+        if (scoreFilter) {
+            const score = parseFloat(summary.promedio_score || 0);
+            switch (scoreFilter) {
+                case 'low':
+                    if (score > 25) return false;
+                    break;
+                case 'moderate':
+                    if (score <= 25 || score > 60) return false;
+                    break;
+                case 'high':
+                    if (score <= 60 || score > 75) return false;
+                    break;
+                case 'critical':
+                    if (score <= 75) return false;
+                    break;
+            }
+        }
+        
+        // Filtro por estado
+        if (statusFilter) {
+            const hasEvaluations = summary.centros_evaluados > 0;
+            if (statusFilter === 'evaluated' && !hasEvaluations) return false;
+            if (statusFilter === 'pending' && hasEvaluations) return false;
+        }
+        
+        return true;
+    });
+}
+
+// Función para filtrar centros
+function filterWorkCenters(centersToFilter, scoreInfos) {
+    const nameFilter = document.getElementById('filter-center-name')?.value.toLowerCase() || '';
+    const scoreFilter = document.getElementById('filter-center-score')?.value || '';
+    const responsibleFilter = document.getElementById('filter-center-responsible')?.value.toLowerCase() || '';
+    
+    return centersToFilter.filter((center, index) => {
+        const scoreInfo = scoreInfos[index];
+        
+        // Filtro por nombre
+        if (nameFilter && !center.name.toLowerCase().includes(nameFilter)) {
+            return false;
+        }
+        
+        // Filtro por responsable
+        if (responsibleFilter && !center.responsible.toLowerCase().includes(responsibleFilter)) {
+            return false;
+        }
+        
+        // Filtro por score
+        if (scoreFilter) {
+            const score = parseFloat(scoreInfo.score_actual || 0);
+            switch (scoreFilter) {
+                case 'low':
+                    if (score > 25) return false;
+                    break;
+                case 'moderate':
+                    if (score <= 25 || score > 60) return false;
+                    break;
+                case 'high':
+                    if (score <= 60 || score > 75) return false;
+                    break;
+                case 'critical':
+                    if (score <= 75) return false;
+                    break;
+            }
+        }
+        
+        return true;
+    });
+}
 
 // Obtener parámetros de URL para identificar el centro
 const urlParams = new URLSearchParams(window.location.search);
@@ -250,55 +415,104 @@ async function renderAreas() {
     const summariesPromises = areas.map(area => calcularPromedioAreaFromSupabase(area.id));
     const summaries = await Promise.all(summariesPromises);
 
-    container.innerHTML = areas.map((area, index) => {
-    const summary = summaries[index];
-    
-    const centerCount = summary.total_centros;
-    const promedioScore = parseFloat(summary.promedio_score || 0).toFixed(2);
-    const colorPromedio = summary.color_promedio;
-    const centrosEvaluados = summary.centros_evaluados;
-    
-    // Verificar permisos para mostrar botón eliminar
-    const showDeleteButton = ERGOAuth.hasPermission('delete');
-    
-    return `
-        <div class="card" onclick="showAreaDetail('${area.id}')">
-            <div class="card-header">
-                <div class="card-id">${area.id}</div>
+    // Aplicar filtros
+    const filteredAreas = filterAreas(areas, summaries);
+    const filteredSummaries = summaries.filter((_, index) => filteredAreas.includes(areas[index]));
+
+    // Configurar contenedor según vista
+    container.className = currentAreasView === 'list' ? 'content-list' : 'content-grid';
+
+    if (filteredAreas.length === 0) {
+        container.innerHTML = `
+            <div class="no-results">
+                <h3>No se encontraron áreas</h3>
+                <p>Intenta ajustar los filtros de búsqueda</p>
             </div>
-            <h3>${area.name}</h3>
-            <div class="card-responsible">Responsable: ${area.responsible}</div>
+        `;
+        return;
+    }
+
+    if (currentAreasView === 'list') {
+        // Vista de lista
+        container.innerHTML = filteredAreas.map((area, index) => {
+            const summary = filteredSummaries[index];
+            const centerCount = summary.total_centros;
+            const promedioScore = parseFloat(summary.promedio_score || 0).toFixed(2);
+            const colorPromedio = summary.color_promedio;
+            const centrosEvaluados = summary.centros_evaluados;
+            const showDeleteButton = ERGOAuth.hasPermission('delete');
             
-            <div style="
-                font-size: 11px;
-                color: #666;
-                margin: 8px 0;
-                padding: 6px 10px;
-                background-color: #f8f9fa;
-                border-radius: 4px;
-                border-left: 3px solid ${colorPromedio};
-                font-weight: 500;
-            ">
-                📊 Promedio: ${promedioScore}%
-                <br>
-                <small style="font-size: 10px; color: #888;">
-                    ${centrosEvaluados}/${centerCount} evaluados
-                </small>
-            </div>
-            
-            <div class="card-footer">
-                <div class="card-stats">
-                    ${centerCount} ${centerCount === 1 ? 'centro' : 'centros'} de trabajo
+            return `
+                <div class="card-list" onclick="showAreaDetail('${area.id}')">
+                    <div class="card-list-content">
+                        <div class="card-list-id">${area.id}</div>
+                        <div class="card-list-name">${area.name}</div>
+                        <div class="card-list-responsible">${area.responsible}</div>
+                        <div class="card-list-score">
+                            <span class="score-indicator" style="background-color: ${colorPromedio}"></span>
+                            ${promedioScore}% (${centrosEvaluados}/${centerCount})
+                        </div>
+                        <div class="card-list-stats">${centerCount} ${centerCount === 1 ? 'centro' : 'centros'}</div>
+                        <div class="card-list-actions">
+                            ${showDeleteButton ? `
+                                <button class="btn btn-danger btn-sm" onclick="deleteArea('${area.id}', event)">
+                                    Eliminar
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
                 </div>
-                ${showDeleteButton ? `
-                    <button class="btn btn-danger" onclick="deleteArea('${area.id}', event)">
-                        Eliminar
-                    </button>
-                ` : ''}
-            </div>
-        </div>
-    `;
-}).join('');
+            `;
+        }).join('');
+    } else {
+        // Vista de tarjetas (código original)
+        container.innerHTML = filteredAreas.map((area, index) => {
+            const summary = filteredSummaries[index];
+            const centerCount = summary.total_centros;
+            const promedioScore = parseFloat(summary.promedio_score || 0).toFixed(2);
+            const colorPromedio = summary.color_promedio;
+            const centrosEvaluados = summary.centros_evaluados;
+            const showDeleteButton = ERGOAuth.hasPermission('delete');
+            
+            return `
+                <div class="card" onclick="showAreaDetail('${area.id}')">
+                    <div class="card-header">
+                        <div class="card-id">${area.id}</div>
+                    </div>
+                    <h3>${area.name}</h3>
+                    <div class="card-responsible">Responsable: ${area.responsible}</div>
+                    
+                    <div style="
+                        font-size: 11px;
+                        color: #666;
+                        margin: 8px 0;
+                        padding: 6px 10px;
+                        background-color: #f8f9fa;
+                        border-radius: 4px;
+                        border-left: 3px solid ${colorPromedio};
+                        font-weight: 500;
+                    ">
+                        📊 Promedio: ${promedioScore}%
+                        <br>
+                        <small style="font-size: 10px; color: #888;">
+                            ${centrosEvaluados}/${centerCount} evaluados
+                        </small>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="card-stats">
+                            ${centerCount} ${centerCount === 1 ? 'centro' : 'centros'} de trabajo
+                        </div>
+                        ${showDeleteButton ? `
+                            <button class="btn btn-danger" onclick="deleteArea('${area.id}', event)">
+                                Eliminar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 // Navegación
@@ -496,42 +710,86 @@ async function renderWorkCenters() {
     const scoreInfoPromises = areaCenters.map(center => obtenerScoreFromSupabase(center.id));
     const scoreInfos = await Promise.all(scoreInfoPromises);
 
-    container.innerHTML = areaCenters.map((center, index) => {
-        const scoreInfo = scoreInfos[index];
-        
-        return `
-            <div class="card" data-work-center-id="${center.id}" onclick="window.location.href='centro-trabajo.html?workCenter=${center.id}&area=${current_area_id}&areaName=${encodeURIComponent(areas.find(a => a.id === current_area_id)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}'">        
-                <div class="card-header">
-                    <div class="card-id">${center.id}</div>
-                </div>
-                <h3>${center.name}</h3>
-                <div class="card-responsible">Responsable: ${center.responsible}</div>
-                
-                <!-- Score ergonómico -->
-                <div class="score-ergonomico" style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-top: 4px;
-                    padding: 4px 8px;
-                    background-color: #f8f9fa;
-                    border-radius: 4px;
-                    border-left: 3px solid ${scoreInfo.color_riesgo};
-                    font-weight: 500;
-                ">
-                    📊 Riesgo: ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
-                </div>
-                
-                <div class="card-footer">
-                    <div class="card-stats">
-                        Creado ${ERGOUtils.formatDate(center.created_at)}
-                    </div>
-                    <button class="btn btn-danger" onclick="deleteWorkCenter('${center.id}', event)">
-                        Eliminar
-                    </button>
-                </div>
+    // Aplicar filtros
+    const filteredCenters = filterWorkCenters(areaCenters, scoreInfos);
+    const filteredScoreInfos = scoreInfos.filter((_, index) => filteredCenters.includes(areaCenters[index]));
+
+    // Configurar contenedor según vista
+    container.className = currentCentersView === 'list' ? 'content-list' : 'content-grid';
+
+    if (filteredCenters.length === 0) {
+        container.innerHTML = `
+            <div class="no-results">
+                <h3>No se encontraron centros</h3>
+                <p>Intenta ajustar los filtros de búsqueda</p>
             </div>
         `;
-    }).join('');
+        return;
+    }
+
+    if (currentCentersView === 'list') {
+        // Vista de lista
+        container.innerHTML = filteredCenters.map((center, index) => {
+            const scoreInfo = filteredScoreInfos[index];
+            
+            return `
+                <div class="card-list" onclick="window.location.href='centro-trabajo.html?workCenter=${center.id}&area=${current_area_id}&areaName=${encodeURIComponent(areas.find(a => a.id === current_area_id)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}'">
+                    <div class="card-list-content">
+                        <div class="card-list-id">${center.id}</div>
+                        <div class="card-list-name">${center.name}</div>
+                        <div class="card-list-responsible">${center.responsible}</div>
+                        <div class="card-list-score">
+                            <span class="score-indicator" style="background-color: ${scoreInfo.color_riesgo}"></span>
+                            ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
+                        </div>
+                        <div class="card-list-stats">${ERGOUtils.formatDate(center.created_at)}</div>
+                        <div class="card-list-actions">
+                            <button class="btn btn-danger btn-sm" onclick="deleteWorkCenter('${center.id}', event)">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        // Vista de tarjetas (código original)
+        container.innerHTML = filteredCenters.map((center, index) => {
+            const scoreInfo = filteredScoreInfos[index];
+            
+            return `
+                <div class="card" data-work-center-id="${center.id}" onclick="window.location.href='centro-trabajo.html?workCenter=${center.id}&area=${current_area_id}&areaName=${encodeURIComponent(areas.find(a => a.id === current_area_id)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}'">        
+                    <div class="card-header">
+                        <div class="card-id">${center.id}</div>
+                    </div>
+                    <h3>${center.name}</h3>
+                    <div class="card-responsible">Responsable: ${center.responsible}</div>
+                    
+                    <div class="score-ergonomico" style="
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 4px;
+                        padding: 4px 8px;
+                        background-color: #f8f9fa;
+                        border-radius: 4px;
+                        border-left: 3px solid ${scoreInfo.color_riesgo};
+                        font-weight: 500;
+                    ">
+                        📊 Riesgo: ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="card-stats">
+                            Creado ${ERGOUtils.formatDate(center.created_at)}
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteWorkCenter('${center.id}', event)">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 // Event listeners
@@ -563,6 +821,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, 100);
     
 ERGOAuth.applyPermissionControls();
+// Setup filtros en tiempo real
+const setupFilters = () => {
+    const areaNameFilter = document.getElementById('filter-area-name');
+    const areaScoreFilter = document.getElementById('filter-area-score');
+    const areaStatusFilter = document.getElementById('filter-area-status');
+    
+    if (areaNameFilter) areaNameFilter.addEventListener('input', ERGOUtils.debounce(renderAreas, 300));
+    if (areaScoreFilter) areaScoreFilter.addEventListener('change', renderAreas);
+    if (areaStatusFilter) areaStatusFilter.addEventListener('change', renderAreas);
+    
+    const centerNameFilter = document.getElementById('filter-center-name');
+    const centerScoreFilter = document.getElementById('filter-center-score');
+    const centerResponsibleFilter = document.getElementById('filter-center-responsible');
+    
+    if (centerNameFilter) centerNameFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
+    if (centerScoreFilter) centerScoreFilter.addEventListener('change', renderWorkCenters);
+    if (centerResponsibleFilter) centerResponsibleFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
+};
+
+setTimeout(setupFilters, 500);
 });
 
 // Funciones de exportación e importación (para futuro uso)

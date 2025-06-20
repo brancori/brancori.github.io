@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centros de Trabajo - Vista Concentrada</title>
+    <link rel="stylesheet" href="./componentes/globals.css">
+    <link rel="stylesheet" href="areas.css">
+    <script src="./componentes/globals.js"></script>
+    <script src="supabase-config.js"></script>
+</head>
+<body>
+    <!-- Página Principal de Centros Concentrado -->
+    <div id="centros-concentrado-page" class="page active">
+        <div class="container">
+            <header class="header">
+                <div class="header-content">
+                    <button class="btn btn-ghost" onclick="goBack()">
+                        <span class="icon">←</span>
+                        Regresar
+                    </button>
+                    <button class="btn btn-ghost" onclick="window.location.href='areas.html'">
+                        <span class="icon">🏢</span>
+                        Ver por Áreas
+                    </button>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <h2>Todos los centros</h2>
+                        <span id="centros-count" class="count-badge">0 centros</span>
+                    </div>
+                    
+                    <div class="toolbar-actions">
+                        <button class="btn btn-ghost" onclick="toggleCentrosFilters()">
+                            <span class="icon">🔍</span>
+                            Filtros
+                        </button>
+                        <button class="btn btn-ghost" onclick="toggleCentrosView()">
+                            <span class="icon" id="view-toggle-icon">📋</span>
+                            <span id="view-toggle-text">Lista</span>
+                        </button>
+                        <button class="btn btn-ghost" onclick="exportCentrosPDF()">
+                            <span class="icon">📄</span>
+                            Exportar PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros para centros -->
+                <div class="filters-container" id="centros-filters" style="display: none;">
+                    <input type="text" id="filter-centro-name" placeholder="Buscar por nombre..." class="filter-input">
+                    <select id="filter-centro-area" class="filter-select">
+                        <option value="">Todas las áreas</option>
+                    </select>
+                    <input type="text" id="filter-centro-responsible" placeholder="Buscar responsable..." class="filter-input">
+                    <select id="filter-centro-score" class="filter-select">
+                        <option value="">Todos los riesgos</option>
+                        <option value="low">Riesgo Bajo (≤25%)</option>
+                        <option value="moderate">Riesgo Moderado (26-60%)</option>
+                        <option value="high">Riesgo Alto (61-75%)</option>
+                        <option value="critical">Riesgo Crítico (>75%)</option>
+                    </select>
+                    <select id="filter-centro-status" class="filter-select">
+                        <option value="">Todos los estados</option>
+                        <option value="evaluated">Con evaluaciones</option>
+                        <option value="pending">Sin evaluar</option>
+                    </select>
+                    <select id="filter-centro-orden" class="filter-select">
+                        <option value="">Orden predeterminado</option>
+                        <option value="riesgo-desc">Mayor a menor riesgo</option>
+                        <option value="riesgo-asc">Menor a mayor riesgo</option>
+                        <option value="nombre">Por nombre A-Z</option>
+                    </select>
+                    <button class="btn btn-ghost btn-sm" onclick="clearCentrosFilters()">Limpiar filtros</button>
+                </div>
+                
+                <div id="centros-container" class="content-grid">
+                    <!-- Los centros se renderizan aquí -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // Verificar que hay usuario logueado antes de continuar
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = sessionStorage.getItem('currentUser');
+            if (!userData) {
+                console.log('❌ No hay usuario en centros_concentrado.js, redirigiendo...');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            console.log('✅ Usuario verificado en centros_concentrado.js');
+        });
+
+        // Configuración para usar Supabase o localStorage
+        const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
+
+        // Variables globales
+        let areas = [];
+        let workCenters = [];
+        let currentView = 'grid'; // 'grid' o 'list'
+        let filtersVisible = false;
+
+        // Funciones híbridas que usan Supabase o localStorage
+        async function loadAreas() {
+            if (USE_SUPABASE) {
+                try {
+                    areas = await supabase.getAreas();
+                } catch (error) {
+                    console.error('Error loading areas from Supabase:', error);
+                    areas = JSON.parse(localStorage.getItem('areas')) || [];
+                }
+            } else {
+                areas = JSON.parse(localStorage.getItem('areas')) || [];
+            }
+            return areas;
+        }
+
+        async function loadAllWorkCenters() {
+            if (USE_SUPABASE) {
+                try {
+                    workCenters = await supabase.getWorkCenters(); // Sin filtro de area_id para obtener todos
+                } catch (error) {
+                    console.error('Error loading work centers from Supabase:', error);
+                    workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
+                }
+            } else {
+                workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
+            }
+            return workCenters;
+        }
+
+        // Funciones de vista
+        function toggleCentrosView() {
+            currentView = currentView === 'grid' ? 'list' : 'grid';
+            const icon = document.getElementById('view-toggle-icon');
+            const text = document.getElementById('view-toggle-text');
+            
+            if (currentView === 'list') {
+                icon.textContent = '⊞';
+                text.textContent = 'Tarjetas';
+            } else {
+                icon.textContent = '📋';
+                text.textContent = 'Lista';
+            }
+            
+            renderCentros();
+        }
+
+        // Funciones de filtros
+        function toggleCentrosFilters() {
+            filtersVisible = !filtersVisible;
+            const filtersContainer = document.getElementById('centros-filters');
+            if (filtersContainer) {
+                filtersContainer.style.display = filtersVisible ? 'flex' : 'none';
+            }
+        }
+
+        function clearCentrosFilters() {
+            const nameFilter = document.getElementById('filter-centro-name');
+            const areaFilter = document.getElementById('filter-centro-area');
+            const responsibleFilter = document.getElementById('filter-centro-responsible');
+            const scoreFilter = document.getElementById('filter-centro-score');
+            const statusFilter = document.getElementById('filter-centro-status');
+            const ordenFilter = document.getElementById('filter-centro-orden');
+            
+            if (ordenFilter) ordenFilter.value = '';
+            if (nameFilter) nameFilter.value = '';
+            if (areaFilter) areaFilter.value = '';
+            if (responsibleFilter) responsibleFilter.value = '';
+            if (scoreFilter) scoreFilter.value = '';
+            if (statusFilter) statusFilter.value = '';
+            
+            renderCentros();
+        }
+
+        // Función para filtrar centros
+        function filterCentros(centrosToFilter, scoreInfos) {
+            const nameFilter = document.getElementById('filter-centro-name')?.value.toLowerCase() || '';
+            const areaFilter = document.getElementById('filter-centro-area')?.value || '';
+            const responsibleFilter = document.getElementById('filter-centro-responsible')?.value.toLowerCase() || '';
+            const scoreFilter = document.getElementById('filter-centro-score')?.value || '';
+            const statusFilter = document.getElementById('filter-centro-status')?.value || '';
+            
+            return centrosToFilter.filter((center, index) => {
+                const scoreInfo = scoreInfos[index];
+                
+                // Filtro por nombre
+                if (nameFilter && !center.name.toLowerCase().includes(nameFilter)) {
+                    return false;
+                }
+
+                // Filtro por área
+                if (areaFilter && center.area_id !== areaFilter) {
+                    return false;
+                }
+                
+                // Filtro por responsable
+                if (responsibleFilter && !center.responsible.toLowerCase().includes(responsibleFilter)) {
+                    return false;
+                }
+                
+                // Filtro por score
+                if (scoreFilter) {
+                    const score = parseFloat(scoreInfo.score_actual || 0);
+                    switch (scoreFilter) {
+                        case 'low':
+                            if (score > 25) return false;
+                            break;
+                        case 'moderate':
+                            if (score <= 25 || score > 60) return false;
+                            break;
+                        case 'high':
+                            if (score <= 60 || score > 75) return false;
+                            break;
+                        case 'critical':
+                            if (score <= 75) return false;
+                            break;
+                    }
+                }
+
+                // Filtro por estado de evaluación
+                if (statusFilter) {
+                    const hasEvaluation = scoreInfo.score_actual > 0;
+                    if (statusFilter === 'evaluated' && !hasEvaluation) return false;
+                    if (statusFilter === 'pending' && hasEvaluation) return false;
+                }
+                
+                return true;
+            });
+        }
+
+        function sortCentros(centrosToSort, scoreInfos) {
+            const ordenFilter = document.getElementById('filter-centro-orden')?.value || '';
+            
+            if (!ordenFilter) return { centros: centrosToSort, scoreInfos: scoreInfos };
+            
+            const centrosWithIndex = centrosToSort.map((centro, index) => ({
+                centro,
+                scoreInfo: scoreInfos[index],
+                originalIndex: index
+            }));
+            
+            centrosWithIndex.sort((a, b) => {
+                switch (ordenFilter) {
+                    case 'riesgo-desc':
+                        return (b.scoreInfo.score_actual || 0) - (a.scoreInfo.score_actual || 0);
+                    case 'riesgo-asc':
+                        return (a.scoreInfo.score_actual || 0) - (b.scoreInfo.score_actual || 0);
+                    case 'nombre':
+                        return a.centro.name.localeCompare(b.centro.name);
+                    default:
+                        return 0;
+                }
+            });
+            
+            return {
+                centros: centrosWithIndex.map(item => item.centro),
+                scoreInfos: centrosWithIndex.map(item => item.scoreInfo)
+            };
+        }
+
+        function updateCentrosCount() {
+            const count = workCenters.length;
+            const countElement = document.getElementById('centros-count');
+            if (countElement) {
+                countElement.textContent = `${count} ${count === 1 ? 'centro' : 'centros'}`;
+            }
+        }
+
+        // Función para poblar el filtro de áreas
+        function populateAreaFilter() {
+            const areaFilter = document.getElementById('filter-centro-area');
+            if (!areaFilter) return;
+
+            // Limpiar opciones existentes (excepto la primera)
+            areaFilter.innerHTML = '<option value="">Todas las áreas</option>';
+
+            // Agregar áreas disponibles
+            areas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area.id;
+                option.textContent = area.name;
+                areaFilter.appendChild(option);
+            });
+        }
+
+        // Función para obtener score desde Supabase con fallback a localStorage
+        async function obtenerScoreFromSupabase(workCenterId) {
+            if (USE_SUPABASE) {
+                try {
+                    const score = await supabase.getScoreWorkCenter(workCenterId);
+                    if (score) {
+                        return {
+                            score_actual: score.score_actual,
+                            categoria_riesgo: score.categoria_riesgo,
+                            color_riesgo: score.color_riesgo
+                        };
+                    }
+                } catch (error) {
+                    console.error('Error obteniendo score de Supabase:', error);
+                }
+            }
+            
+            // Fallback a localStorage
+            try {
+                const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+                const evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+                
+                if (evaluacion && evaluacion.scoreFinal) {
+                    const score = parseFloat(evaluacion.scoreFinal);
+                    let color = '#d1d5db';
+                    let categoria = evaluacion.categoriaRiesgo || 'Evaluado';
+                    
+                    if (score <= 25) color = '#28a745';
+                    else if (score <= 60) color = '#fd7e14';
+                    else color = '#dc3545';
+                    
+                    return {
+                        score_actual: score,
+                        categoria_riesgo: categoria,
+                        color_riesgo: color
+                    };
+                }
+                
+                return {
+                    score_actual: 0,
+                    categoria_riesgo: 'Sin evaluación',
+                    color_riesgo: '#d1d5db'
+                };
+            } catch (error) {
+                console.error('Error obteniendo score:', error);
+                return {
+                    score_actual: 0,
+                    categoria_riesgo: 'Sin evaluación',
+                    color_riesgo: '#d1d5db'
+                };
+            }
+        }
+
+        // Función principal para renderizar centros
+        async function renderCentros() {
+            const container = document.getElementById('centros-container');
+            updateCentrosCount();
+            
+            if (workCenters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No hay centros de trabajo registrados</h3>
+                        <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Obtener scores de todos los centros de forma paralela
+            const scoreInfoPromises = workCenters.map(center => obtenerScoreFromSupabase(center.id));
+            const scoreInfos = await Promise.all(scoreInfoPromises);
+
+            // Aplicar filtros
+            const filteredCentros = filterCentros(workCenters, scoreInfos);
+            const filteredScoreInfos = scoreInfos.filter((_, index) => filteredCentros.includes(workCenters[index]));
+            const sorted = sortCentros(filteredCentros, filteredScoreInfos);
+            const sortedCentros = sorted.centros;
+            const sortedScoreInfos = sorted.scoreInfos;
+
+            // Configurar contenedor según vista
+            container.className = currentView === 'list' ? 'content-list' : 'content-grid';
+
+            if (sortedCentros.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <h3>No se encontraron centros</h3>
+                        <p>Intenta ajustar los filtros de búsqueda</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (currentView === 'list') {
+                // Vista de lista
+                container.innerHTML = sortedCentros.map((center, index) => {
+                    const scoreInfo = sortedScoreInfos[index];
+                    const area = areas.find(a => a.id === center.area_id);
+                    const areaName = area ? area.name : 'Área no encontrada';
+                    
+                    return `
+                        <div class="card-list" onclick="navigateToAreaDetail('${center.area_id}', '${encodeURIComponent(areaName)}')"                            <div class="card-list-content">
+                                <div class="card-list-id">${center.id}</div>
+                                <div class="card-list-name">
+                                    <div style="font-weight: 600;">${center.name}</div>
+                                    <div style="font-size: 0.75rem; color: var(--gray-500);">📍 ${areaName}</div>
+                                </div>
+                                <div class="card-list-responsible">${center.responsible}</div>
+                                <div class="card-list-score">
+                                    <span class="score-indicator" style="background-color: ${scoreInfo.color_riesgo}"></span>
+                                    ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
+                                </div>
+                                <div class="card-list-stats">${ERGOUtils.formatDate(center.created_at)}</div>
+                                <div class="card-list-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                                        Ver Detalle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                // Vista de tarjetas
+                container.innerHTML = sortedCentros.map((center, index) => {
+                    const scoreInfo = sortedScoreInfos[index];
+                    const area = areas.find(a => a.id === center.area_id);
+                    const areaName = area ? area.name : 'Área no encontrada';
+                    
+                    return `
+                        <div class="card" onclick="navigateToAreaCenter('${center.area_id}', '${center.id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                            <div class="card-header">
+                                <div class="card-id">${center.id}</div>
+                            </div>
+                            <h3>${center.name}</h3>
+                            <div class="card-responsible">
+                                <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">
+                                    📍 ${areaName}
+                                </div>
+                            </div>
+                            
+                            <div class="score-ergonomico" style="
+                                font-size: 12px;
+                                color: #666;
+                                margin-top: 8px;
+                                padding: 6px 10px;
+                                background-color: #f8f9fa;
+                                border-radius: 4px;
+                                border-left: 3px solid ${scoreInfo.color_riesgo};
+                                font-weight: 500;
+                            ">
+                                📊 Riesgo: ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
+                            </div>
+                            
+                            <div class="card-footer">
+                                <div class="card-stats">
+                                    Creado ${ERGOUtils.formatDate(center.created_at)}
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                                    Ver Detalle
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Función para navegar al área específica con el centro seleccionado
+        function navigateToAreaCenter(areaId, centerId, areaName, centerName, responsible) {
+            const url = `areas.html?area=${areaId}&areaName=${areaName}&fromConcentrado=true`;
+            window.location.href = url;
+        }
+
+        // Función para navegar al detalle del centro
+        function navigateToCenterDetail(centerId, areaId, areaName, centerName, responsible) {
+            const url = `centro-trabajo.html?workCenter=${centerId}&area=${areaId}&areaName=${areaName}&centerName=${centerName}&responsible=${responsible}`;
+            window.location.href = url;
+        }
+
+        // Función para exportar datos
+        function exportCentrosData() {
+            const data = {
+                centros: workCenters.map(center => {
+                    const area = areas.find(a => a.id === center.area_id);
+                    return {
+                        id: center.id,
+                        nombre: center.name,
+                        responsable: center.responsible,
+                        area: area ? area.name : 'Área no encontrada',
+                        fecha_creacion: center.created_at
+                    };
+                }),
+                exportDate: new Date().toISOString(),
+                totalCentros: workCenters.length,
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `centros-concentrado-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            ERGOUtils.showToast('Datos exportados exitosamente');
+        }
+
+        // Event listeners e inicialización
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Cargar datos
+            try {
+                await loadAreas();
+                await loadAllWorkCenters();
+                
+                // Poblar filtro de áreas
+                populateAreaFilter();
+                
+                // Renderizar centros
+                await renderCentros();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                ERGOUtils.showToast('Error al cargar los datos', 'error');
+            }
+            
+            // Aplicar controles de permisos
+            ERGOAuth.applyPermissionControls();
+            
+            // Setup filtros en tiempo real
+            const setupFilters = () => {
+                const nameFilter = document.getElementById('filter-centro-name');
+                const areaFilter = document.getElementById('filter-centro-area');
+                const responsibleFilter = document.getElementById('filter-centro-responsible');
+                const scoreFilter = document.getElementById('filter-centro-score');
+                const statusFilter = document.getElementById('filter-centro-status');
+                const ordenFilter = document.getElementById('filter-centro-orden');
+                
+                if (nameFilter) nameFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
+                if (areaFilter) areaFilter.addEventListener('change', renderCentros);
+                if (responsibleFilter) responsibleFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
+                if (scoreFilter) scoreFilter.addEventListener('change', renderCentros);
+                if (statusFilter) statusFilter.addEventListener('change', renderCentros);
+                if (ordenFilter) ordenFilter.addEventListener('change', renderCentros);
+            };
+
+            setTimeout(setupFilters, 500);
+        });
+
+        // Manejar navegación de vuelta desde areas.html
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // La página se está mostrando desde el cache del navegador
+                renderCentros();
+            }
+        });
+    </script>
+        <script src="./componentes/header-component.js"></script>
+
+</body>
+</html>

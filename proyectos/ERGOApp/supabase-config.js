@@ -534,17 +534,18 @@ async getUsuario(id) {
         return null;
     }
 }
-// REEMPLAZAR TODA LA FUNCIÓN getDashboardData() POR ESTA:
+
 async getDashboardData() {
     try {
         // Obtener todos los datos necesarios
-        const [scoresData, areasData, workCentersData] = await Promise.all([
+        const [scoresData, areasData, workCentersData, evaluacionesData] = await Promise.all([
             this.query('scores_resumen', 'GET', null, '?order=score_actual.desc'),
             this.query('areas', 'GET', null, ''),
-            this.query('work_centers', 'GET', null, '')
+            this.query('work_centers', 'GET', null, ''), // ← AGREGAR ESTO
+            this.query('evaluaciones', 'GET', null, '') // ← AGREGAR ESTO
         ]);
         
-        if (!scoresData) return { areas: [], topRisk: [] };
+        if (!scoresData) return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
         
         // Crear mapas para acceso rápido
         const areasMap = {};
@@ -582,7 +583,7 @@ async getDashboardData() {
             return {
                 id: areaId,
                 name: data.name,
-                promedio_score: promedioCompleto.toFixed(2),
+                promedio_score: promedioCompleto.toFixed(2), // ← 2 decimales
                 promedio_calculo: promedioCompleto
             };
         }).sort((a, b) => parseFloat(b.promedio_calculo) - parseFloat(a.promedio_calculo));
@@ -595,10 +596,15 @@ async getDashboardData() {
             categoria: score.categoria_riesgo
         }));
         
-        return { areas, topRisk };
+        return { 
+            areas, 
+            topRisk,
+            totalWorkCenters: workCentersData ? workCentersData.length : 0, // ← NUEVO
+            totalEvaluaciones: evaluacionesData ? evaluacionesData.length : 0 // ← NUEVO
+        };
     } catch (error) {
         console.error('Error getting dashboard data:', error);
-        return { areas: [], topRisk: [] };
+        return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
     }
 }
 

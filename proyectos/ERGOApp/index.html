@@ -6,6 +6,7 @@
     <title>Sistema de Evaluación Ergonómica</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <!-- Modal de Login -->
@@ -58,6 +59,47 @@
                         <span class="icon">🚪</span>
                         Salir
                     </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard KPIs Bar -->
+        <div class="kapis_conteniner">
+            <div class="kpi_item">
+                <h3>Areas <br> Totales</h3>
+                <h2 id="kpi-areas-total">0</h2>
+            </div>
+            <div class="kpi_item">
+                <h3>Evaluaciones <br> Totales</h3>
+                <h2 id="kpi-evaluaciones-total">0</h2>
+            </div>
+            <div class="kpi_item">
+                <h3>Score <br> Global</h3>
+                <h2 id="kpi-score-global">0%</h2>
+            </div>
+            <div class="kpi_item" id="graf">
+                <h3>Riesgo <br>por grupo</h3>
+                <div class="kpi_item-graf" id="risk-chart">
+                    <!-- Se generará dinámicamente -->
+                </div>
+            </div>
+            <div class="nav_module">
+                <button type="button" class="btn" onclick="window.location.href='centros_concentrado.html'"('centros')">Centros de trabajo</button>
+                <button type="button" class="btn" onclick="ERGODashboard.navigateTo('mapas')">Mapas</button>
+                <button type="button" class="btn" onclick="ERGODashboard.navigateTo('riesgos')">Riesgos</button>
+                <button type="button" class="btn" onclick="ERGODashboard.navigateTo('ruido')">Ruido</button>
+            </div>
+        </div>
+
+        <!-- Panel lateral de detalles -->
+        <div id="details-panel" class="details-panel hidden">
+            <div class="details-content">
+                <div class="details-header">
+                    <h3 id="details-title">Detalles</h3>
+                    <button class="btn-close" onclick="ERGODashboard.closeDetailsPanel()">×</button>
+                </div>
+                <div class="details-body" id="details-body">
+                    <!-- Se generará dinámicamente -->
                 </div>
             </div>
         </div>
@@ -135,13 +177,11 @@
             <!-- Map Section -->
             <section class="dashboard-section">
                 <h2>Mapa de Riesgos</h2>
-                <div class="map-container">
-                    <div class="map-placeholder">
-                        <div class="map-icon">🗺️</div>
-                        <h3>Mapa en Desarrollo</h3>
-                        <p>Aquí se mostrará el mapa interactivo de riesgos por área</p>
-                    </div>
-                </div>
+                            <div class="map-container">
+                            <div id="risk-map" class="map-svg-container">
+                            <!-- El mapa se generará aquí -->
+                            </div>
+
             </section>
         </div>
     </div>
@@ -150,6 +190,7 @@
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->
+     <script src="./componentes/map.js"></script>
     <script src="./componentes/globals.js"></script>
     <script src="supabase-config.js"></script>
     <script src="index.js"></script>
