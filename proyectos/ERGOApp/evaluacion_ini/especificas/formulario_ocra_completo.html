@@ -189,6 +189,9 @@
             margin: 15px 0;
         }
     </style>
+    <script src="../componentes/globals.js"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="../ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
     <div class="container">
@@ -453,7 +456,8 @@
         </div>
 
         <button class="calculate-btn" onclick="calculateOCRA()">🔍 CALCULAR ÍNDICE OCRA</button>
-
+        <div id="save-evaluation-container" style="text-align: center; margin: 20px 0;"></div>        
+        
         <div id="results" class="results" style="display: none;">
             <h2>🎯 Resultados OCRA</h2>
             <div class="result-grid">

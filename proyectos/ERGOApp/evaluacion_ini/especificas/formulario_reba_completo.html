@@ -150,6 +150,9 @@
             color: white;
         }
     </style>
+    <script src="../../componentes/globals.js"></script>
+    <script src="../../supabase-config.js"></script>
+    <script src="./ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
     <div class="container">
@@ -372,6 +375,7 @@
         </div>
 
         <button class="calculate-btn" onclick="calculateREBA()">🔍 CALCULAR PUNTUACIÓN REBA</button>
+        <div id="save-evaluation-container" style="text-align: center; margin: 20px 0;"></div>
 
         <h2>📊 Tablas de Consulta REBA</h2>
         
@@ -456,154 +460,147 @@
         </div>
     </div>
 
-    <script>
-        // Tablas de consulta REBA
-        const tableA = [
-            [1, 2, 3, 2, 3, 4],
-            [2, 3, 4, 3, 4, 5],
-            [2, 4, 5, 4, 5, 6],
-            [3, 5, 6, 5, 6, 7],
-            [4, 6, 7, 6, 7, 8]
-        ];
+<script>
+// Correct, standard REBA lookup tables
+const tableA_correct = [
+    // Corresponds to Neck Score (1-3) and Leg Score (1-4)
+    // Neck 1(L:1-4),     Neck 2(L:1-4),     Neck 3(L:1-4)
+    [1, 2, 3, 4,   2, 3, 4, 5,   3, 4, 5, 6], // Trunk 1
+    [2, 3, 4, 5,   3, 4, 5, 6,   4, 5, 6, 7], // Trunk 2
+    [3, 4, 5, 6,   4, 5, 6, 7,   5, 6, 7, 8], // Trunk 3
+    [4, 5, 6, 7,   5, 6, 7, 8,   6, 7, 8, 9], // Trunk 4
+    [5, 6, 7, 8,   6, 7, 8, 9,   7, 8, 9, 9]  // Trunk 5
+];
 
-        const tableB = [
-            [1, 2, 2, 1, 2, 3],
-            [1, 2, 3, 2, 3, 4],
-            [3, 4, 5, 4, 5, 5],
-            [4, 5, 5, 5, 6, 7],
-            [6, 7, 8, 7, 8, 8],
-            [7, 8, 8, 8, 9, 9]
-        ];
+const tableB_correct = [
+    // Corresponds to Forearm Score (1-2) and Wrist Score (1-3)
+    // Forearm 1(W:1-3), Forearm 2(W:1-3)
+    [1, 2, 2,   2, 3, 3], // Upper Arm 1
+    [2, 3, 4,   3, 4, 5], // Upper Arm 2
+    [3, 4, 5,   4, 5, 6], // Upper Arm 3
+    [4, 5, 6,   5, 6, 7], // Upper Arm 4
+    [5, 6, 7,   6, 7, 8], // Upper Arm 5
+    [6, 7, 8,   7, 8, 9]  // Upper Arm 6
+];
 
-        const tableC = [
-            [1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 7, 7],
-            [1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 8],
-            [2, 3, 3, 3, 4, 5, 6, 7, 7, 8, 8, 8],
-            [3, 4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9],
-            [4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9, 9],
-            [6, 6, 6, 7, 8, 8, 9, 9, 10, 10, 10, 10],
-            [7, 7, 7, 8, 9, 9, 9, 10, 10, 11, 11, 11],
-            [8, 8, 8, 9, 10, 10, 10, 10, 10, 11, 11, 11],
-            [9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12],
-            [10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12],
-            [11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12],
-            [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
-        ];
+const tableC = [
+    // Standard REBA Table C
+    [1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 7, 7],
+    [1, 2, 2, 3, 4, 4, 5, 6, 6, 7, 7, 8],
+    [2, 3, 3, 3, 4, 5, 6, 7, 7, 8, 8, 8],
+    [3, 4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9],
+    [4, 4, 4, 5, 6, 7, 8, 8, 9, 9, 9, 9],
+    [6, 6, 6, 7, 8, 8, 9, 9, 10, 10, 10, 10],
+    [7, 7, 7, 8, 9, 9, 9, 10, 10, 11, 11, 11],
+    [8, 8, 8, 9, 10, 10, 10, 10, 10, 11, 11, 11],
+    [9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12],
+    [10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12],
+    [11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12],
+    [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+];
 
-        function calculateREBA() {
-            // Obtener valores del Grupo A
-            let troncoScore = parseInt(document.querySelector('input[name="tronco"]:checked')?.value || 0);
-            if (document.getElementById('tronco_twist').checked) troncoScore += 1;
+// VERSIÓN DE DEPURACIÓN DE LA FUNCIÓN
+function calculateREBA() {
+    console.log("--- Iniciando cálculo REBA ---");
 
-            let cuelloScore = parseInt(document.querySelector('input[name="cuello"]:checked')?.value || 0);
-            if (document.getElementById('cuello_twist').checked) cuelloScore += 1;
+    // --- Step 1: Score Group A (Trunk, Neck, Legs) ---
+    let troncoScore = parseInt(document.querySelector('input[name="tronco"]:checked')?.value || 0);
+    if (document.getElementById('tronco_twist').checked) troncoScore += 1;
 
-            let piernasScore = parseInt(document.querySelector('input[name="piernas"]:checked')?.value || 0);
-            if (document.getElementById('piernas_flex1').checked) piernasScore += 1;
-            if (document.getElementById('piernas_flex2').checked) piernasScore += 2;
+    let cuelloScore = parseInt(document.querySelector('input[name="cuello"]:checked')?.value || 0);
+    if (document.getElementById('cuello_twist').checked) cuelloScore += 1;
 
-            // Obtener valores del Grupo B
-            let brazoScore = parseInt(document.querySelector('input[name="brazo"]:checked')?.value || 0);
-            if (document.getElementById('brazo_elevado').checked) brazoScore += 1;
-            if (document.getElementById('brazo_abducido').checked) brazoScore += 1;
-            if (document.getElementById('brazo_apoyo').checked) brazoScore -= 1;
+    let piernasScore = parseInt(document.querySelector('input[name="piernas"]:checked')?.value || 0);
+    if (document.getElementById('piernas_flex2').checked) {
+        piernasScore += 2;
+    } else if (document.getElementById('piernas_flex1').checked) {
+        piernasScore += 1;
+    }
 
-            let antebrazoScore = parseInt(document.querySelector('input[name="antebrazo"]:checked')?.value || 0);
-            if (document.getElementById('antebrazo_cruzado').checked) antebrazoScore += 1;
+    // --- Step 2: Score Group B (Upper Arms, Forearms, Wrists) ---
+    let brazoScore = parseInt(document.querySelector('input[name="brazo"]:checked')?.value || 0);
+    if (document.getElementById('brazo_elevado').checked) brazoScore += 1;
+    if (document.getElementById('brazo_abducido').checked) brazoScore += 1;
+    if (document.getElementById('brazo_apoyo').checked) brazoScore -= 1;
+    brazoScore = Math.max(1, brazoScore);
 
-            let munecaScore = parseInt(document.querySelector('input[name="muneca"]:checked')?.value || 0);
-            if (document.getElementById('muneca_desviada').checked) munecaScore += 1;
+    let antebrazoScore = parseInt(document.querySelector('input[name="antebrazo"]:checked')?.value || 0);
+    let munecaScore = parseInt(document.querySelector('input[name="muneca"]:checked')?.value || 0);
+    if (document.getElementById('muneca_desviada').checked) munecaScore += 1;
 
-            // Validar que se hayan seleccionado todas las opciones
-            if (troncoScore === 0 || cuelloScore === 0 || piernasScore === 0 || 
-                brazoScore === 0 || antebrazoScore === 0 || munecaScore === 0) {
-                alert('Por favor, complete todas las evaluaciones posturales');
-                return;
-            }
+    // --- Validation ---
+    if (troncoScore === 0 || cuelloScore === 0 || piernasScore === 0 || 
+        brazoScore === 0 || antebrazoScore === 0 || munecaScore === 0) {
+        alert('Por favor, complete todas las evaluaciones posturales para continuar.');
+        console.error("Validación fallida: Faltan selecciones.");
+        return;
+    }
+    
+    console.log(`Valores brutos: Tronco=${troncoScore}, Cuello=${cuelloScore}, Piernas=${piernasScore}, Brazo=${brazoScore}, Antebrazo=${antebrazoScore}, Muñeca=${munecaScore}`);
 
-            // Calcular puntuaciones de las tablas
-            const scoreA = tableA[Math.min(troncoScore-1, 4)][(cuelloScore-1)*3 + (piernasScore-1)];
-            const scoreB = tableB[Math.min(brazoScore-1, 5)][(antebrazoScore-1)*3 + (munecaScore-1)];
+    // --- Clamp scores to valid ranges for table lookup ---
+    const finalTroncoScore = Math.min(Math.max(troncoScore, 1), 5);
+    const finalCuelloScore = Math.min(Math.max(cuelloScore, 1), 3);
+    const finalPiernasScore = Math.min(Math.max(piernasScore, 1), 4);
+    const finalBrazoScore = Math.min(Math.max(brazoScore, 1), 6);
+    const finalAntebrazoScore = Math.min(Math.max(antebrazoScore, 1), 2);
+    const finalMunecaScore = Math.min(Math.max(munecaScore, 1), 3);
+    
+    console.log(`Valores acotados: Tronco=${finalTroncoScore}, Cuello=${finalCuelloScore}, Piernas=${finalPiernasScore}, Brazo=${finalBrazoScore}, Antebrazo=${finalAntebrazoScore}, Muñeca=${finalMunecaScore}`);
 
-            // Factores adicionales
-            const cargaScore = parseInt(document.querySelector('input[name="carga"]:checked')?.value || 0);
-            let actividadScore = 0;
-            if (document.getElementById('actividad1').checked) actividadScore += 1;
-            if (document.getElementById('actividad2').checked) actividadScore += 1;
-            if (document.getElementById('actividad3').checked) actividadScore += 1;
+    // --- Step 3: Lookup Posture Scores from Tables A and B ---
+    console.log(`Índices para Tabla A: Fila=${finalTroncoScore - 1}, Columna=${(finalCuelloScore - 1) * 4 + (finalPiernasScore - 1)}`);
+    const postureScoreA = tableA_correct[finalTroncoScore - 1][(finalCuelloScore - 1) * 4 + (finalPiernasScore - 1)];
+    
+    console.log(`Índices para Tabla B: Fila=${finalBrazoScore - 1}, Columna=${(finalAntebrazoScore - 1) * 3 + (finalMunecaScore - 1)}`);
+    const postureScoreB = tableB_correct[finalBrazoScore - 1][(finalAntebrazoScore - 1) * 3 + (finalMunecaScore - 1)];
+    
+    console.log(`Puntuaciones posturales: ScoreA=${postureScoreA}, ScoreB=${postureScoreB}`);
 
-            // Puntuación final
-            const finalScore = tableC[Math.min(scoreA-1, 11)][Math.min(scoreB-1, 11)] + cargaScore + actividadScore;
 
-            // Determinar nivel de riesgo
-            let riskLevel, riskClass, recommendations;
-            if (finalScore === 1) {
-                riskLevel = "RIESGO NEGLIGIBLE";
-                riskClass = "risk-negligible";
-                recommendations = `
-                    <ul>
-                        <li>✅ No es necesaria actuación</li>
-                        <li>📊 Seguimiento rutinario recomendado</li>
-                    </ul>
-                `;
-            } else if (finalScore >= 2 && finalScore <= 3) {
-                riskLevel = "RIESGO BAJO";
-                riskClass = "risk-low";
-                recommendations = `
-                    <ul>
-                        <li>⚠️ Puede ser necesaria actuación</li>
-                        <li>📋 Revisión y mejoras menores</li>
-                        <li>🔍 Monitoreo periódico</li>
-                    </ul>
-                `;
-            } else if (finalScore >= 4 && finalScore <= 7) {
-                riskLevel = "RIESGO MEDIO";
-                riskClass = "risk-medium";
-                recommendations = `
-                    <ul>
-                        <li>🚨 Actuación necesaria</li>
-                        <li>🏗️ Implementar mejoras ergonómicas</li>
-                        <li>📚 Capacitación en posturas</li>
-                        <li>🔄 Considerar rotación de tareas</li>
-                    </ul>
-                `;
-            } else if (finalScore >= 8 && finalScore <= 10) {
-                riskLevel = "RIESGO ALTO";
-                riskClass = "risk-high";
-                recommendations = `
-                    <ul>
-                        <li>🚨 Actuación necesaria pronto</li>
-                        <li>🏗️ Rediseño del puesto de trabajo</li>
-                        <li>⚡ Implementar controles inmediatos</li>
-                        <li>📚 Capacitación específica obligatoria</li>
-                        <li>🏥 Evaluación médica del personal</li>
-                    </ul>
-                `;
-            } else {
-                riskLevel = "RIESGO MUY ALTO";
-                riskClass = "risk-very-high";
-                recommendations = `
-                    <ul>
-                        <li>⛔ Actuación inmediata</li>
-                        <li>🚫 Suspender tarea hasta mejoras</li>
-                        <li>🏗️ Rediseño completo obligatorio</li>
-                        <li>🤖 Implementar automatización</li>
-                        <li>🏥 Evaluación médica inmediata</li>
-                        <li>📋 Seguimiento médico continuo</li>
-                    </ul>
-                `;
-            }
+    // --- El resto de la función (sin cambios) ---
+    const cargaScore = parseInt(document.querySelector('input[name="carga"]:checked')?.value || 0);
+    const actividadScore = (document.getElementById('actividad1').checked || document.getElementById('actividad2').checked || document.getElementById('actividad3').checked) ? 1 : 0;
+    const scoreA = postureScoreA + cargaScore;
+    const scoreB = postureScoreB;
+    const scoreA_idx = Math.min(scoreA - 1, 11);
+    const scoreB_idx = Math.min(scoreB - 1, 11);
+    const scoreC = tableC[scoreA_idx < 0 ? 0 : scoreA_idx][scoreB_idx < 0 ? 0 : scoreB_idx];
+    const finalScore = scoreC + actividadScore;
 
-            // Mostrar resultados
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('scoreA').textContent = scoreA;
-            document.getElementById('scoreB').textContent = scoreB;
-            document.getElementById('scoreFinal').textContent = finalScore;
-            document.getElementById('riskLevel').innerHTML = `<span class="${riskClass}">${riskLevel}</span>`;
-            document.getElementById('recommendations').innerHTML = recommendations;
+    let riskLevel, riskClass, recommendations;
+    if (finalScore === 1) {
+        riskLevel = "RIESGO NEGLIGIBLE";
+        riskClass = "risk-negligible";
+        recommendations = `<ul><li>✅ No es necesaria actuación</li><li>📊 Seguimiento rutinario recomendado</li></ul>`;
+    } else if (finalScore >= 2 && finalScore <= 3) {
+        riskLevel = "RIESGO BAJO";
+        riskClass = "risk-low";
+        recommendations = `<ul><li>⚠️ Puede ser necesaria actuación</li><li>📋 Revisión y mejoras menores</li><li>🔍 Monitoreo periódico</li></ul>`;
+    } else if (finalScore >= 4 && finalScore <= 7) {
+        riskLevel = "RIESGO MEDIO";
+        riskClass = "risk-medium";
+        recommendations = `<ul><li>🚨 Actuación necesaria</li><li>🏗️ Implementar mejoras ergonómicas</li><li>📚 Capacitación en posturas</li><li>🔄 Considerar rotación de tareas</li></ul>`;
+    } else if (finalScore >= 8 && finalScore <= 10) {
+        riskLevel = "RIESGO ALTO";
+        riskClass = "risk-high";
+        recommendations = `<ul><li>🚨 Actuación necesaria pronto</li><li>🏗️ Rediseño del puesto de trabajo</li><li>⚡ Implementar controles inmediatos</li><li>🏥 Evaluación médica del personal</li></ul>`;
+    } else {
+        riskLevel = "RIESGO MUY ALTO";
+        riskClass = "risk-very-high";
+        recommendations = `<ul><li>⛔ Actuación inmediata</li><li>🚫 Suspender tarea hasta mejoras</li><li>🏗️ Rediseño completo obligatorio</li><li>🤖 Considerar automatización o ayudas mecánicas</li><li>🏥 Evaluación médica inmediata</li></ul>`;
+    }
 
-            // Scroll to results
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Establec
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('scoreA').textContent = scoreA;
+    document.getElementById('scoreB').textContent = scoreB;
+    document.getElementById('scoreFinal').textContent = finalScore;
+    document.getElementById('riskLevel').innerHTML = `<span class="${riskClass}">${riskLevel}</span>`;
+    document.getElementById('recommendations').innerHTML = recommendations;
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+// Set default date
+document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

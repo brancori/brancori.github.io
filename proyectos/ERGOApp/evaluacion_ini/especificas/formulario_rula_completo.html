@@ -156,6 +156,9 @@
             margin-bottom: 20px;
         }
     </style>
+    <script src="../componentes/globals.js"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="../ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
     <div class="container">
@@ -413,7 +416,7 @@
         </div>
 
         <button class="calculate-btn" onclick="calculateRULA()">🔍 CALCULAR PUNTUACIÓN RULA</button>
-
+        <div id="save-evaluation-container" style="text-align: center; margin: 20px 0;"></div>
         <h2>📊 Tablas de Consulta RULA</h2>
         
         <h3>Tabla A - Brazo, Antebrazo, Muñeca</h3>

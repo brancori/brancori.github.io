@@ -1,6 +1,3 @@
-// ergo-evaluaciones-especificas.js
-// Módulo modular para guardar evaluaciones específicas en Supabase
-// Compatible con REBA, RULA, OCRA y NIOSH
 
 window.ERGOEvaluacionesEspecificas = {
     // Configuración de tipos de evaluación según las tablas de Supabase
@@ -287,94 +284,105 @@ window.ERGOEvaluacionesEspecificas = {
     },
 
     // Extraer datos específicos de OCRA
-    extraerDatosOCRA() {
-        const datos = {};
-        
-        try {
-            // Información general
-            datos.lado = this.obtenerValorElemento('lado');
-            datos.duracion_turno = this.obtenerValorElemento('duracion_turno');
+extraerDatosOCRA() {
+    const datos = {};
+    
+    try {
+        // Información general
+        datos.lado = this.obtenerValorElemento('lado') || 'derecho';
+        datos.duracion_turno = this.obtenerValorElemento('duracion_turno') || 8;
 
-            // Factor de recuperación
-            datos.tiempo_trabajo = this.obtenerValorElemento('tiempo_trabajo');
-            datos.pausas_oficiales = this.obtenerValorElemento('pausas_oficiales');
-            datos.pausas_no_repetitivas = this.obtenerValorElemento('pausas_no_repetitivas');
-            datos.factor_recuperacion = this.obtenerValorElemento('fr_result', true);
+        // Factor de recuperación
+        datos.tiempo_trabajo = this.obtenerValorElemento('tiempo_trabajo');
+        datos.pausas_oficiales = this.obtenerValorElemento('pausas_oficiales');
+        datos.pausas_no_repetitivas = this.obtenerValorElemento('pausas_no_repetitivas');
+        datos.factor_recuperacion = this.obtenerValorElemento('fr_result', true);
 
-            // Factor de frecuencia
-            datos.acciones_minuto = this.obtenerValorElemento('acciones_minuto');
-            datos.tipo_accion = this.obtenerValorRadio('tipo_accion');
-            datos.factor_frecuencia = this.obtenerValorElemento('ff_result', true);
+        // Factor de frecuencia
+        datos.acciones_minuto = this.obtenerValorElemento('acciones_minuto');
+        datos.tipo_accion = this.obtenerValorRadio('tipo_accion') || 'dinamica';
+        datos.factor_frecuencia = this.obtenerValorElemento('ff_result', true);
 
-            // Factor de fuerza
-            datos.tiempo_borg_0_2 = this.obtenerValorElemento('tiempo_borg_0_2');
-            datos.tiempo_borg_3_4 = this.obtenerValorElemento('tiempo_borg_3_4');
-            datos.tiempo_borg_5_plus = this.obtenerValorElemento('tiempo_borg_5_plus');
-            datos.factor_fuerza = this.obtenerValorElemento('ffu_result', true);
+        // Factor de fuerza
+        datos.tiempo_borg_0_2 = this.obtenerValorElemento('tiempo_borg_0_2');
+        datos.tiempo_borg_3_4 = this.obtenerValorElemento('tiempo_borg_3_4');
+        datos.tiempo_borg_5_plus = this.obtenerValorElemento('tiempo_borg_5_plus');
+        datos.factor_fuerza = this.obtenerValorElemento('ffu_result', true);
 
-            // Factor de postura
-            datos.hombro = this.obtenerValorRadio('hombro');
-            datos.codo = this.obtenerValorRadio('codo');
-            datos.muneca = this.obtenerValorRadio('muneca');
-            datos.agarre = this.obtenerValorRadio('agarre');
-            datos.factor_postura = this.obtenerValorElemento('fp_result');
+        // Factor de posturaextraerDatosNIOSH
+        datos.hombro = this.obtenerValorRadio('hombro');
+        datos.codo = this.obtenerValorRadio('codo');
+        datos.muneca = this.obtenerValorRadio('muneca');
+        datos.agarre = this.obtenerValorRadio('agarre');
+        datos.factor_postura = this.obtenerValorElemento('fp_result');
 
-            // Factores adicionales
-            datos.fa_vibracion = document.getElementById('fa_vibracion')?.checked || false;
-            datos.fa_compresion = document.getElementById('fa_compresion')?.checked || false;
-            datos.fa_frio = document.getElementById('fa_frio')?.checked || false;
-            datos.fa_guantes = document.getElementById('fa_guantes')?.checked || false;
-            datos.fa_ritmo = document.getElementById('fa_ritmo')?.checked || false;
-            datos.fa_precision = document.getElementById('fa_precision')?.checked || false;
-            datos.factores_adicionales = this.obtenerValorElemento('fa_result');
+        // Factores adicionales
+        datos.fa_vibracion = document.getElementById('fa_vibracion')?.checked || false;
+        datos.fa_compresion = document.getElementById('fa_compresion')?.checked || false;
+        datos.fa_frio = document.getElementById('fa_frio')?.checked || false;
+        datos.fa_guantes = document.getElementById('fa_guantes')?.checked || false;
+        datos.fa_ritmo = document.getElementById('fa_ritmo')?.checked || false;
+        datos.fa_precision = document.getElementById('fa_precision')?.checked || false;
+        datos.factores_adicionales = this.obtenerValorElemento('fa_result');
 
-            // Resultados
-            datos.indice_ocra = this.obtenerValorElemento('ocra_final', true);
-            datos.nivel_riesgo = this.obtenerTextoElemento('recommendations');
+        // Resultados
+        datos.indice_ocra = this.obtenerValorElemento('ocra_final', true);
+        datos.nivel_riesgo = this.obtenerTextoElemento('recommendations');
 
-            return datos;
-        } catch (error) {
-            console.error('Error extrayendo datos OCRA:', error);
-            return null;
-        }
-    },
+        return datos;
+    } catch (error) {
+        console.error('Error extrayendo datos OCRA:', error);
+        return null;
+    }
+},
 
     // Extraer datos específicos de NIOSH
-    extraerDatosNIOSH() {
-        const datos = {};
+extraerDatosNIOSH() {
+    const datos = {};
+    
+    try {
+        // Datos de entrada
+        datos.peso_objeto = this.obtenerValorElemento('weight');
+        datos.distancia_h_origen = this.obtenerValorElemento('h1');
+        datos.altura_v_origen = this.obtenerValorElemento('v1');
+        datos.angulo_asimetria_origen = this.obtenerValorElemento('a1');
+        datos.distancia_h_destino = this.obtenerValorElemento('h2');
+        datos.altura_v_destino = this.obtenerValorElemento('v2');
+        datos.angulo_asimetria_destino = this.obtenerValorElemento('a2');
+        datos.frecuencia = this.obtenerValorElemento('frequency');
+        datos.duracion = this.obtenerValorElemento('duration');
+        datos.calidad_agarre = this.obtenerValorElemento('grip');
+
+        // Multiplicadores (calcular si no están disponibles)
+        datos.multiplicador_horizontal = this.calcularMultiplicadorHorizontal(datos.distancia_h_origen, datos.distancia_h_destino);
+        datos.multiplicador_vertical = this.calcularMultiplicadorVertical(datos.altura_v_origen, datos.altura_v_destino);
+        datos.multiplicador_distancia = this.calcularMultiplicadorDistancia(datos.altura_v_origen, datos.altura_v_destino);
+        datos.multiplicador_asimetria = this.calcularMultiplicadorAsimetria(datos.angulo_asimetria_origen, datos.angulo_asimetria_destino);
+        datos.multiplicador_frecuencia = this.calcularMultiplicadorFrecuencia(datos.frecuencia, datos.duracion);
+        datos.multiplicador_agarre = this.calcularMultiplicadorAgarre(datos.calidad_agarre);
+
+        // Calcular RWL y LI
+        const LC = 23; // Constante de carga
+        datos.rwl = LC * datos.multiplicador_horizontal * datos.multiplicador_vertical * 
+                   datos.multiplicador_distancia * datos.multiplicador_asimetria * 
+                   datos.multiplicador_frecuencia * datos.multiplicador_agarre;
+        datos.indice_levantamiento = datos.peso_objeto / datos.rwl;
         
-        try {
-            // Datos de entrada
-            datos.peso_objeto = this.obtenerValorElemento('weight');
-            datos.distancia_h_origen = this.obtenerValorElemento('h1');
-            datos.altura_v_origen = this.obtenerValorElemento('v1');
-            datos.angulo_asimetria_origen = this.obtenerValorElemento('a1');
-            datos.distancia_h_destino = this.obtenerValorElemento('h2');
-            datos.altura_v_destino = this.obtenerValorElemento('v2');
-            datos.angulo_asimetria_destino = this.obtenerValorElemento('a2');
-            datos.frecuencia = this.obtenerValorElemento('frequency');
-            datos.duracion = this.obtenerValorElemento('duration');
-            datos.calidad_agarre = this.obtenerValorElemento('grip');
-
-            // Multiplicadores (si están calculados)
-            datos.multiplicador_horizontal = this.obtenerValorElemento('HM_result', true);
-            datos.multiplicador_vertical = this.obtenerValorElemento('VM_result', true);
-            datos.multiplicador_distancia = this.obtenerValorElemento('DM_result', true);
-            datos.multiplicador_asimetria = this.obtenerValorElemento('AM_result', true);
-            datos.multiplicador_frecuencia = this.obtenerValorElemento('FM_result', true);
-            datos.multiplicador_agarre = this.obtenerValorElemento('CM_result', true);
-
-            // Resultados finales
-            datos.rwl = this.obtenerValorElemento('RWL_result', true);
-            datos.indice_levantamiento = this.obtenerValorElemento('LI_result', true);
-            datos.nivel_riesgo = this.obtenerTextoElemento('risk_interpretation');
-
-            return datos;
-        } catch (error) {
-            console.error('Error extrayendo datos NIOSH:', error);
-            return null;
+        // Determinar nivel de riesgo
+        if (datos.indice_levantamiento <= 1.0) {
+            datos.nivel_riesgo = 'BAJO RIESGO';
+        } else if (datos.indice_levantamiento <= 3.0) {
+            datos.nivel_riesgo = 'RIESGO MODERADO';
+        } else {
+            datos.nivel_riesgo = 'ALTO RIESGO';
         }
-    },
+
+        return datos;
+    } catch (error) {
+        console.error('Error extrayendo datos NIOSH:', error);
+        return null;
+    }
+},
 
     // Funciones auxiliares para extraer valores
     obtenerValorRadio(name) {
@@ -476,23 +484,67 @@ window.ERGOEvaluacionesEspecificas = {
         }
     },
 
+                // Funciones auxiliares para cálculos NIOSH
+        calcularMultiplicadorHorizontal(h1, h2) {
+            const hMax = Math.max(h1, h2);
+            return Math.min(25 / hMax, 1);
+        },
+
+        calcularMultiplicadorVertical(v1, v2) {
+            const vm1 = 1 - (0.003 * Math.abs(v1 - 75));
+            const vm2 = 1 - (0.003 * Math.abs(v2 - 75));
+            return Math.min(vm1, vm2);
+        },
+
+        calcularMultiplicadorDistancia(v1, v2) {
+            const D = Math.abs(v2 - v1);
+            return D < 25 ? 1 : (0.82 + (4.5 / D));
+        },
+
+        calcularMultiplicadorAsimetria(a1, a2) {
+            const am1 = 1 - (0.0032 * a1);
+            const am2 = 1 - (0.0032 * a2);
+            return Math.min(am1, am2);
+        },
+
+        calcularMultiplicadorFrecuencia(frecuencia, duracion) {
+            // Tabla simplificada de factores de frecuencia
+            const tabla = {
+                1: { 0.2: 1.00, 0.5: 0.97, 1: 0.94, 2: 0.91, 3: 0.88, 4: 0.84, 5: 0.80, 999: 0.75 },
+                2: { 0.2: 0.95, 0.5: 0.92, 1: 0.88, 2: 0.84, 3: 0.79, 4: 0.72, 5: 0.60, 999: 0.50 },
+                8: { 0.2: 0.85, 0.5: 0.81, 1: 0.75, 2: 0.65, 3: 0.55, 4: 0.45, 5: 0.35, 999: 0.30 }
+            };
+            
+            const duracionTabla = tabla[duracion] || tabla[8];
+            if (frecuencia <= 0.2) return duracionTabla[0.2];
+            if (frecuencia <= 0.5) return duracionTabla[0.5];
+            if (frecuencia <= 1) return duracionTabla[1];
+            if (frecuencia <= 2) return duracionTabla[2];
+            if (frecuencia <= 3) return duracionTabla[3];
+            if (frecuencia <= 4) return duracionTabla[4];
+            if (frecuencia <= 5) return duracionTabla[5];
+            return duracionTabla[999];
+        },
+
     // Inicializar módulo
-    init(containerId = null) {
-        console.log('🔧 Inicializando ERGOEvaluacionesEspecificas');
-        
-        // Verificar sesión
-        if (!ERGOAuth.checkSession()) {
-            console.log('❌ No hay sesión válida');
-            return;
-        }
 
-        // Crear botón si no existe
-        if (!document.getElementById('ergo-save-container')) {
-            this.crearBotonGuardar(containerId);
-        }
+init(containerId = null) {
+    console.log('🔧 Inicializando ERGOEvaluacionesEspecificas');
+    
+    // --- MODIFICACIÓN ---
+    // Se ha eliminado la verificación de sesión de esta parte para asegurar
+    // que los botones de guardar/ver siempre sean visibles.
+    // La lógica de verificación se mantiene dentro de la función de guardado
+    // para que el usuario deba iniciar sesión para USAR el botón, pero no para VERLO.
 
-        console.log('✅ ERGOEvaluacionesEspecificas inicializado');
+    // Crear botón si no existe en la página
+    if (!document.getElementById('ergo-save-container')) {
+        this.crearBotonGuardar(containerId);
     }
+
+    console.log('✅ ERGOEvaluacionesEspecificas inicializado y botones visibles.');
+}
+
 };
 
 // Auto-inicialización cuando el DOM esté listo
@@ -504,3 +556,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 500);
 });
+

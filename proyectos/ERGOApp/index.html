@@ -6,9 +6,14 @@
     <title>Sistema de Evaluación Ergonómica</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js" defer></script>
 </head>
 <body>
+        <div id="preloader-overlay">
+        <div class="preloader-content">
+            <div class="spinner"></div>
+        </div>
+    </div>
     <!-- Modal de Login -->
     <div id="loginModal" class="modal show">
         <div class="modal-overlay"></div>
@@ -66,8 +71,12 @@
         <!-- Dashboard KPIs Bar -->
         <div class="kapis_conteniner">
             <div class="kpi_item">
-                <h3>Areas <br> Totales</h3>
+                <h3>Áreas <br> Totales</h3>
                 <h2 id="kpi-areas-total">0</h2>
+            </div>
+            <div class="kpi_item">
+                <h3>Centros <br> Totales</h3>
+                <h2 id="kpi-centros-total">0</h2>
             </div>
             <div class="kpi_item">
                 <h3>Evaluaciones <br> Totales</h3>
@@ -80,43 +89,31 @@
             <div class="kpi_item" id="graf">
                 <h3>Riesgo <br>por grupo</h3>
                 <div class="kpi_item-graf" id="risk-chart">
-                    <!-- Se generará dinámicamente -->
-                </div>
-            </div>
-            <div class="nav_module">
-                <button type="button" class="btn" onclick="window.location.href='centros_concentrado.html'"('centros')">Centros de trabajo</button>
-                <button type="button" class="btn" onclick="ERGODashboard.navigateTo('mapas')">Mapas</button>
-                <button type="button" class="btn" onclick="ERGODashboard.navigateTo('riesgos')">Riesgos</button>
-                <button type="button" class="btn" onclick="ERGODashboard.navigateTo('ruido')">Ruido</button>
+                    </div>
             </div>
         </div>
 
-        <!-- Panel lateral de detalles -->
-        <div id="details-panel" class="details-panel hidden">
-            <div class="details-content">
-                <div class="details-header">
-                    <h3 id="details-title">Detalles</h3>
-                    <button class="btn-close" onclick="ERGODashboard.closeDetailsPanel()">×</button>
-                </div>
-                <div class="details-body" id="details-body">
-                    <!-- Se generará dinámicamente -->
-                </div>
-            </div>
+        <div class="nav_module">
+            <button type="button" class="btn" onclick="window.location.href='centros_concentrado.html'">Centros de trabajo</button>
+            <button type="button" class="btn" onclick="ERGODashboard.navigateTo('mapas')">Mapas</button>
+            <button type="button" class="btn" onclick="ERGODashboard.navigateTo('riesgos')">Riesgos</button>
+            <button type="button" class="btn" onclick="ERGODashboard.navigateTo('ruido')">Ruido</button>
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="main-content ergonomic-pattern">
             <!-- KPIs Section -->
             <section class="dashboard-section">
                 <h2>Indicadores Principales</h2>
 <div class="kpi-grid">
     <!-- Tabla 1: Porcentaje por Área -->
-    <div class="kpi-table-container">
+    <div id="areas-table-container" class="kpi-table-container">
         <h3 class="table-title">Porcentaje por Área</h3>
         <div class="data-table">
             <div class="table-header" id="areas-table-header">
                 <div class="header-cell">Áreas</div>
                 <div class="header-cell">Promedio</div>
+                <div class="header-cell">Centros</div>                
             </div>
             <div class="table-body" id="areas-table-body">
                 <!-- Se llenará dinámicamente -->
@@ -124,12 +121,14 @@
             <div class="table-footer">
                 <div class="footer-cell">Prom. Gral.</div>
                 <div class="footer-cell summary-value" id="promedio-general">0%</div>
+                <div class="footer-cell"></div>
             </div>
         </div>
+        
     </div>
 
     <!-- Tabla 2: Top 10 Centros con más Riesgo -->
-    <div class="kpi-table-container">
+    <div id="top-risk-table-container" class="kpi-table-container">
         <h3 class="table-title">Top 10 Centros con más Riesgo</h3>
         <div class="data-table">
             <div class="table-header" id="top-risk-table-header">

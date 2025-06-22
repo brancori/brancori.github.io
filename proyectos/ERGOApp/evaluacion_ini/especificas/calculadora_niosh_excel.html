@@ -108,6 +108,9 @@
             margin-top: 20px;
         }
     </style>
+    <script src="../componentes/globals.js"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="../ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
     <div class="container">
@@ -180,6 +183,14 @@
         </div>
         
         <button class="calculate-btn" id="calcular-niosh-btn">🔍 CALCULAR NIOSH</button>
+        <div id="save-evaluation-container" style="text-align: center; margin: 20px 0;">
+            <button id="btn-save-niosh" class="calculate-btn" style="background: linear-gradient(135deg, #27ae60, #229954); margin-top: 10px;">
+                💾 Guardar Evaluación NIOSH
+            </button>
+            <button id="btn-view-center" class="calculate-btn" style="background: linear-gradient(135deg, #3498db, #2980b9); margin-top: 10px;">
+                📋 Ver Centro de Trabajo
+            </button>
+        </div>
         
         
         <h2>📋 Tabla de Referencia - Factor de Frecuencia</h2>

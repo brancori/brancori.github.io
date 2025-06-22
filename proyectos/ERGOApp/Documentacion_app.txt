@@ -1,64 +1,347 @@
-*Nombre de la APP:* ERGOApp
-Propósito, es una aplicación de ergonomía, donde se evalúan las áreas
+##INSTRUCCIONES PARA PROMPT
+no reescribas todo el código sólo dame las partes que hay que cambias modificar editar o eliminar, si hay código que no se usa por favor indicarlo para eliminarlo, y dame las instrucciones exactas para implementar el código, que me das, procura la optimización de recursos. 
 
-*Tecnologías usadas* 
-HTML, CSS y JavaScript
+# ERGOApp - Documentación Completa del Sistema
 
-Backend
-“Estoy usando Supabase como backend. Es un sistema basado en PostgreSQL que me permite gestionar tablas, autenticación, archivos y eventos en tiempo real. Quiero que todas las consultas y estructuras respeten esa tecnología.”
+**Nombre de la APP:** ERGOApp  
+**Propósito:** Sistema de evaluación ergonómica para evaluar áreas y centros de trabajo
+
+## 🚀 Tecnologías
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Supabase (PostgreSQL, autenticación, almacenamiento de archivos y eventos en tiempo real)
 
 
-## Tabla: evaluaciones
-| column_name             | data_type                | 
-| ----------------------- | ------------------------ |
-| id                      | text                     |
-| work_center_id          | text                     |
-| area_id                 | text                     |
-| fecha_evaluacion        | date                     |
-| nombre_area             | text                     |
-| ubicacion_area          | text                     |
-| responsable_area        | text                     |
-| criterios               | jsonb                    |
-| respuestas              | jsonb                    |
-| score_final             | numeric                  |
-| categoria_riesgo        | text                     |
-| nivel_riesgo_ergonomico | text                     |
-| color_riesgo            | text                     |
-| created_at              | timestamp with time zone |
-| updated_at              | timestamp with time zone |
+**Arquitectura:**
+- Patrón MVC simplificado
+- Funciones globales centralizadas (globals.js)
+- Manejo híbrido Supabase/localStorage para compatibilidad
 
-## Tabla: work_centers
-| column_name | data_type                |
-| ----------- | ------------------------ |
-| id          | text                     |
-| name        | text                     |
-| responsible | text                     |
-| area_id     | text                     |
-| created_at  | timestamp with time zone |
+---
 
-## Tabla: fotos_centros
-| column_name    | data_type                |
-| -------------- | ------------------------ |
-| id             | uuid                     |
-| area_id        | text                     |
-| work_center_id | text                     |
-| foto_url       | character varying        |
-| foto_name      | text                     |
-| created_at     | timestamp with time zone |
+## Estructura de Base de Datos (Supabase)
 
-## Tabla: areas
-| column_name          | data_type                |
-| -------------------- | ------------------------ |
-| id                   | text                     |
-| name                 | text                     |
-| responsible          | text                     |
-| created_at           | timestamp with time zone |
-| total_centros        | integer                  |
-| centros_evaluados    | integer                  |
-| promedio_score       | numeric                  |
-| color_promedio       | text                     |
-| ultima_actualizacion | timestamp with time zone |
+### Tabla: `usuarios`
+Gestión de autenticación y permisos del sistema.
 
-*Usuarios y roles 
-- bran: acceso total, contraseña 7563, rango 1
-- invitado: acceso R, contraseña 1234 rango 3
+| column_name | data_type                | descripción |
+| ----------- | ------------------------ | ----------- |
+| id          | serial PRIMARY KEY       | ID único del usuario |
+| usuario     | text UNIQUE              | Nombre de usuario para login |
+| password    | text                     | Contraseña (sin encriptar) |
+| nombre      | text                     | Nombre completo para UI |
+| puesto      | text                     | Cargo/rol para mostrar |
+| rango       | integer                  | Nivel de permisos (1=Admin, 2=Editor, 3=Visualizador) |
+
+### Tabla: `areas`
+Gestión de áreas de trabajo con métricas calculadas.
+
+| column_name          | data_type                | descripción |
+| -------------------- | ------------------------ | ----------- |
+| id                   | text                     | ID único del área |
+| name                 | text                     | Nombre del área |
+| responsible          | text                     | Responsable del área |
+| created_at           | timestamp with time zone | Fecha de creación |
+| total_centros        | integer                  | Total de centros en el área |
+| centros_evaluados    | integer                  | Centros con evaluación |
+| promedio_score       | numeric                  | Promedio de riesgo del área |
+| color_promedio       | text                     | Color para UI según riesgo |
+| ultima_actualizacion | timestamp with time zone | Última actualización |
+
+### Tabla: `work_centers`
+Centros de trabajo vinculados a áreas.
+
+| column_name | data_type                | descripción |
+| ----------- | ------------------------ | ----------- |
+| id          | text                     | ID único del centro |
+| name        | text                     | Nombre del centro |
+| responsible | text                     | Responsable del centro |
+| area_id     | text                     | FK a tabla areas |
+| created_at  | timestamp with time zone | Fecha de creación |
+
+### Tabla: `evaluaciones`
+Evaluaciones ergonómicas principales con resultados.
+
+| column_name             | data_type                | descripción |
+| ----------------------- | ------------------------ | ----------- |
+| id                      | text                     | ID único de evaluación |
+| work_center_id          | text                     | FK a work_centers |
+| area_id                 | text                     | FK a areas |
+| fecha_evaluacion        | date                     | Fecha de la evaluación |
+| nombre_area             | text                     | Nombre del área evaluada |
+| ubicacion_area          | text                     | Ubicación del área |
+| responsable_area        | text                     | Responsable del área |
+| criterios               | jsonb                    | Criterios seleccionados |
+| respuestas              | jsonb                    | Respuestas del cuestionario |
+| score_final             | numeric                  | Score final de riesgo (0-100) |
+| categoria_riesgo        | text                     | Categoría de riesgo textual |
+| nivel_riesgo_ergonomico | text                     | Nivel de riesgo como % |
+| color_riesgo            | text                     | Color para UI según riesgo |
+| created_at              | timestamp with time zone | Fecha de creación |
+| updated_at              | timestamp with time zone | Última actualización |
+
+### Tabla: `fotos_centros`
+Gestión de fotos de los centros de trabajo.
+
+| column_name    | data_type                | descripción |
+| -------------- | ------------------------ | ----------- |
+| id             | uuid                     | ID único de la foto |
+| area_id        | text                     | FK a areas |
+| work_center_id | text                     | FK a work_centers |
+| foto_url       | character varying        | URL/path de la foto |
+| foto_name      | text                     | Nombre original del archivo |
+| created_at     | timestamp with time zone | Fecha de subida |
+
+### Tabla: `scores_resumen` (Optimización)
+Tabla optimizada para consultas rápidas de scores.
+
+| column_name              | data_type                | descripción |
+| ------------------------ | ------------------------ | ----------- |
+| work_center_id           | text PRIMARY KEY         | FK a work_centers |
+| area_id                  | text                     | FK a areas |
+| score_actual             | numeric                  | Último score del centro |
+| categoria_riesgo         | text                     | Categoría actual |
+| color_riesgo             | text                     | Color para UI |
+| fecha_ultima_evaluacion  | timestamp with time zone | Última evaluación |
+| total_evaluaciones       | integer                  | Total de evaluaciones |
+| updated_at              | timestamp with time zone | Última actualización |
+
+## 🎨 Notas de diseño UX/UI
+
+- Estética general basada en **glassmorphism**: transparencias, desenfoques (`backdrop-filter`) y bordes suaves.
+- Transiciones suaves (`transition: all 0.3s ease-in-out`) en botones e inputs.
+- Uso de **fuentes sans-serif modernas**: `Inter`, `Poppins` o `Roboto`.
+- Layout basado en **grid flexible** (CSS Grid o Flexbox).
+- Efecto **parallax** en la pantalla principal (fondo animado con `transform: translateZ()`).
+- Compatibilidad optimizada para dispositivos Android con EMUI y Android 14.
+
+
+## Sistema de Usuarios y Permisos
+
+### Usuarios Configurados
+
+| Usuario    | Contraseña | Rango | Permisos | Descripción |
+| ---------- | ---------- | ----- | -------- | ----------- |
+| `bran`     | `7563`     | 1     | CRUD completo | Administrador total |
+| `invitado` | `1234`     | 3     | Solo lectura | Visualizador |
+
+### Niveles de Permisos
+
+**Rango 1 - Administrador:**
+- ✅ Read (Leer)
+- ✅ Create (Crear)
+- ✅ Update (Editar)
+- ✅ Delete (Eliminar)
+
+**Rango 2 - Editor:**
+- ✅ Read (Leer)
+- ✅ Create (Crear)
+- ❌ Update (Editar)
+- ❌ Delete (Eliminar)
+
+**Rango 3 - Visualizador:**
+- ✅ Read (Leer)
+- ❌ Create (Crear)
+- ❌ Update (Editar)
+- ❌ Delete (Eliminar)
+
+---
+
+## Arquitectura del Sistema
+
+### Archivos Principales
+
+**📁 Archivos Core:**
+- `globals.js` - Funciones globales centralizadas
+- `supabase-config.js` - Configuración y cliente de Supabase
+- `index.js` - Aplicación principal y dashboard
+- `areas.js` - Gestión de áreas y centros de trabajo
+- `eval_int.js` - Sistema de evaluaciones ergonómicas
+
+**📁 Archivos HTML:**
+- `index.html` - Página de login y dashboard
+- `areas.html` - Gestión de áreas y centros
+- `centro-trabajo.html` - Vista detallada de centros
+- `eval_int.html` - Formulario de evaluación inicial
+
+### globals.js - Sistema Centralizado
+
+**Funciones principales organizadas en módulos:**
+
+```javascript
+// Configuración global
+window.ERGOConfig = {
+    USE_SUPABASE: true,
+    SUPABASE_URL: '...',
+    SUPABASE_ANON_KEY: '...',
+    SESSION_DURATION: 8 * 60 * 60 * 1000, // 8 horas
+    ACTIVITY_CHECK_INTERVAL: 60000 // 1 minuto
+}
+
+// Sistema de autenticación y permisos
+window.ERGOAuth = {
+    getCurrentUser(),
+    hasPermission(action),
+    checkPermissionAndShowError(action),
+    checkSession(),
+    updateActivity(),
+    logout(reason),
+    redirectToLogin(),
+    applyPermissionControls(),
+    hideCreateButtons(),
+    hideDeleteButtons(),
+    setupSessionMonitoring()
+}
+
+// Utilidades generales
+window.ERGOUtils = {
+    generateShortId(),
+    formatDate(dateString),
+    formatDateTime(dateString),
+    showToast(message, type),
+    getScoreColor(score),
+    getScoreCategory(score),
+    sanitizeFilename(filename),
+    debounce(func, wait)
+}
+
+// Navegación unificada
+window.ERGONavigation = {
+    getUrlParams(),
+    getParam(paramName),
+    buildUrl(basePath, params),
+    navigateToAreas(areaId),
+    navigateToWorkCenter(workCenterId, areaId, areaName, centerName, responsible),
+    navigateToEvaluation(workCenterId, areaId, areaName, centerName, responsible),
+    navigateToSpecificEvaluation(type, workCenterId, areaId, areaName, centerName, responsible)
+}
+
+// Manejo de almacenamiento
+window.ERGOStorage = {
+    setLocal(key, value),
+    getLocal(key, defaultValue),
+    removeLocal(key),
+    setSession(key, value),
+    getSession(key, defaultValue),
+    removeSession(key),
+    clearAll()
+}
+
+// Sistema de modales
+window.ERGOModal = {
+    open(modalId),
+    close(modalId),
+    setupCloseOnOverlay(modalId)
+}
+
+// Validaciones
+window.ERGOValidation = {
+    isValidEmail(email),
+    isValidPhone(phone),
+    isValidId(id),
+    validateRequired(fields),
+    clearValidationErrors()
+}
+```
+
+---
+
+## Funcionalidades Principales
+
+### 1. Dashboard Principal (index.html)
+- **Login seguro** con validación de usuarios
+- **Tablas dinámicas** con datos de Supabase
+- **Indicadores KPI** por área
+- **Top 10 centros con más riesgo**
+- **Navegación directa** a áreas y centros específicos
+
+### 2. Gestión de Áreas (areas.html)
+- **CRUD completo** de áreas (según permisos)
+- **Vista de centros** por área
+- **Scores en tiempo real** con colores por riesgo
+- **Navegación breadcrumb** mejorada
+
+### 3. Centros de Trabajo (centro-trabajo.html)
+- **Vista detallada** del centro
+- **Gestión de fotos** (máx. 5 por centro)
+- **Notas y observaciones**
+- **Evaluaciones específicas** (REBA, RULA, OCRA, NIOSH)
+- **Exportación a PDF** completa
+
+### 4. Sistema de Evaluaciones (eval_int.html)
+- **Cuestionario ergonómico** completo
+- **Cálculo automático** de scores de riesgo
+- **Recomendaciones de métodos** específicos
+- **Guardado híbrido** Supabase/localStorage
+
+---
+
+## Mejoras Implementadas en v2.0
+
+### 🚀 Refactoring Completo
+- **Eliminación de código duplicado** (~800 líneas menos)
+- **Funciones centralizadas** en globals.js
+- **Consistencia** en toda la aplicación
+- **Mantenimiento simplificado**
+
+### 🔐 Sistema de Seguridad Mejorado
+- **Sesiones con expiración** (8 horas + inactividad 30 min)
+- **Monitoreo de actividad** automático
+- **Permisos granulares** por función
+- **Redirección segura** entre páginas
+
+### 📊 Optimización de Rendimiento
+- **Tabla scores_resumen** para consultas rápidas
+- **Consultas híbridas** Supabase/localStorage
+- **Carga asíncrona** de datos
+- **Manejo eficiente** de errores
+
+### 🎨 Experiencia de Usuario
+- **Navegación unificada** con URLs limpias
+- **Modales centralizados** con manejo consistente
+- **Toasts informativos** para feedback
+- **Breadcrumbs inteligentes**
+
+### 🛠️ Mantenibilidad
+- **Funciones puras** y testeables
+- **Separación de responsabilidades**
+- **Configuración centralizada**
+- **Documentación completa**
+
+---
+
+## Flujos de Trabajo
+
+### Login y Autenticación
+```mermaid
+graph TD
+    A[Usuario ingresa credenciales] --> B[Validación en Supabase]
+    B --> C{¿Usuario válido?}
+    C -->|Sí| D[Crear sesión + permisos]
+    C -->|No| E[Mostrar error]
+    D --> F[Redirigir a dashboard]
+    E --> A
+```
+
+### Evaluación Ergonómica
+```mermaid
+graph TD
+    A[Seleccionar centro] --> B[Cargar evaluación existente o nueva]
+    B --> C[Completar cuestionario]
+    C --> D[Calcular score automático]
+    D --> E[Mostrar categoría de riesgo]
+    E --> F[Recomendar métodos específicos]
+    F --> G[Guardar en Supabase + localStorage]
+```
+
+### Gestión de Permisos
+```mermaid
+graph TD
+    A[Usuario logueado] --> B[Verificar rango]
+    B --> C{¿Rango 1?}
+    C -->|Sí| D[Mostrar todos los botones]
+    B --> E{¿Rango 2?}
+    E -->|Sí| F[Ocultar botones de edición/eliminación]
+    B --> G{¿Rango 3?}
+    G -->|Sí| H[Solo mostrar botones de lectura]
+```

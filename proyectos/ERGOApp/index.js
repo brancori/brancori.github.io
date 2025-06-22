@@ -22,6 +22,7 @@ checkExistingSession() {
         this.currentUser = ERGOAuth.getCurrentUser();
         console.log('✅ Sesión válida, usuario:', this.currentUser.nombre);
         
+        this.hidePreloader();
         this.hideLoginModal();
         this.showMainContent();
         this.updateUserInterface();
@@ -104,10 +105,10 @@ checkExistingSession() {
                 ERGOStorage.setSession('sessionExpiry', expiryTime);
                 ERGOAuth.updateActivity();
                 
+                this.hidePreloader();
                 this.hideLoginModal();
                 this.showMainContent();
                 this.updateUserInterface();
-                ERGOUtils.showToast('Bienvenido al sistema', 'success');
                 this.loadDashboardData();
                 
                 // Opcional: log de acceso
@@ -166,6 +167,19 @@ hideLoginModal() {
     }
     ERGOModal.close('loginModal');
 }
+    hidePreloader() {
+        const preloader = document.getElementById('preloader-overlay');
+        if (preloader) {
+            // Inicia la transición de desvanecimiento
+            preloader.classList.add('hidden');
+            
+            // Después de que la animación termine, oculta el elemento
+            // para que no ocupe recursos.
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500); // Debe coincidir con la duración de la transición en CSS
+        }
+    }
 
     // Actualizar interfaz con datos del usuario
     updateUserInterface() {
@@ -245,27 +259,17 @@ navigateToAreas() {
 
     // Manejar logout
 handleLogout() {
-    if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-        // Limpiar datos localmente (sin usar ERGOAuth.logout)
-        this.currentUser = null;
-        this.hideMainContent();
-        
-        // Limpiar storage directamente
-        sessionStorage.removeItem('currentUser');
-        sessionStorage.removeItem('sessionExpiry');
-        localStorage.removeItem('lastActivity');
-        
-        ERGOUtils.showToast('Sesión cerrada correctamente', 'success');
-        
-        // Mostrar modal de login
-        setTimeout(() => {
-            this.showLoginModal();
-            document.getElementById('usuario').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('loginError').style.display = 'none';
-        }, 1000);
-    }
+    this.currentUser = null;
+    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('sessionExpiry');
+    localStorage.removeItem('lastActivity');
+    
+    
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000); // Wait 1 second before reloading
 }
+
 
     // Navegar a los centros de trabajo de un área específica
 navigateToAreaWorkCenters(areaId, areaName) {
@@ -298,7 +302,13 @@ navigateToWorkCenter(evaluacion) {
 
 async loadDashboardData() {
     try {
-        const dashboardData = await supabase.getDashboardData();
+        const [dashboardData, allWorkCenters] = await Promise.all([
+            supabase.getDashboardData(),
+            supabase.query('work_centers', 'GET', null, '') // Obtenemos la lista completa de centros
+        ]);
+
+        dashboardData.allWorkCenters = allWorkCenters || [];
+
         this.updateDashboardTables(dashboardData);
         this.updateTopKPIs(dashboardData);
         this.initializeMap(dashboardData);
@@ -316,123 +326,141 @@ async initializeMap(dashboardData) {
 }
 
 updateDashboardTables(data) {
-    const { areas, topRisk } = data;
-    
-    // === TABLA 1: ÁREAS ===
+    const { areas, topRisk, allWorkCenters } = data;
+
+    // ===================================
+    // === TABLA 1: PORCENTAJE POR ÁREA ===
+    // ===================================
     const areasTableBody = document.getElementById('areas-table-body');
     if (areasTableBody && areas) {
-        // Limpiar tabla
         areasTableBody.innerHTML = '';
-        
-        // Crear filas dinámicamente
+        const fragment = document.createDocumentFragment();
         let totalPromedio = 0;
+
         areas.forEach(area => {
             const row = document.createElement('div');
-            row.className = 'table-row clickable';
-            
+            row.className = 'table-row'; // Clase genérica para la fila
+            row.onclick = () => this.navigateToAreaWorkCenters(area.id, area.name);
+
             const promedioParaCalculo = parseFloat(area.promedio_calculo || area.promedio_score || 0);
             totalPromedio += promedioParaCalculo;
-            
-            // Agregar evento click para navegar a los centros de trabajo del área
-            row.onclick = () => {
-                this.navigateToAreaWorkCenters(area.id, area.name);
-            };
-            
+
+            const centerCount = allWorkCenters ? allWorkCenters.filter(wc => wc.area_id === area.id).length : 0;
+            const centerText = `${centerCount} ${centerCount === 1 ? 'centro' : 'centros'}`;
+
+            // Agregamos clases específicas para alinear cada celda
             row.innerHTML = `
-                <div class="cell">${area.name || 'Área sin nombre'}</div>
-                <div class="cell">${parseFloat(area.promedio_score || 0).toFixed(2)}%</div>
+                <div class="cell cell-text">${area.name || 'Área sin nombre'}</div>
+                <div class="cell cell-number">${parseFloat(area.promedio_score || 0).toFixed(2)}%</div>
+                <div class="cell cell-number">${centerText}</div>
             `;
-            
-            areasTableBody.appendChild(row);
+            // NOTA: Ocultamos la columna de "centros" para coincidir con el diseño de la imagen. Si la necesitas, puedes añadirla aquí.
+
+            fragment.appendChild(row);
         });
-        
-        // Actualizar promedio general
+
+        areasTableBody.appendChild(fragment);
+
         if (areas.length > 0) {
             const promedioGeneral = (totalPromedio / areas.length).toFixed(2);
             const promGeneralCell = document.getElementById('promedio-general');
             if (promGeneralCell) promGeneralCell.textContent = `${promedioGeneral}%`;
         }
     }
-    
-    // === TABLA 2: TOP 10 RIESGO ===
-    const topRiskTableBody = document.getElementById('top-risk-table-body');
-    if (topRiskTableBody && topRisk) {
-        // Limpiar tabla
-        topRiskTableBody.innerHTML = '';
+
+    // ========================================
+    // === TABLA 2: TOP 10 CENTROS CON RIESGO ===
+    // ========================================
+const topRiskTableBody = document.getElementById('top-risk-table-body');
+if (topRiskTableBody && topRisk) {
+    topRiskTableBody.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
+    topRisk.forEach(item => {
+        const row = document.createElement('div');
+        const riesgo = parseFloat(item.score);
         
-        // Crear filas directamente desde topRisk
-        topRisk.forEach((item, index) => {
-            const row = document.createElement('div');
-            
-            // Determinar clase de riesgo
-            const riesgo = parseFloat(item.score);
-            let rowClass = 'table-row clickable';
-            let scoreClass = 'cell';
-            
-            if (index < 3) { // Primeros 3 en rojo
-                rowClass += ' high-risk';
-                scoreClass += ' score-high';
-            } else if (riesgo >= 50) {
-                rowClass += ' medium-risk';
-                scoreClass += ' score-medium';
-            }
-            
-            row.className = rowClass;
-            
-            // ✅ AGREGAR ESTE EVENTO CLICK:
-            row.onclick = () => {
-                // Buscar la evaluación completa para obtener todos los datos necesarios
-                this.navigateToSpecificEvaluation(item);
-            };
-            
-            row.innerHTML = `
-                <div class="cell">${item.area_name || 'N/A'}</div>
-                <div class="cell">${item.center_name || 'N/A'}</div>
-                <div class="${scoreClass}">${riesgo.toFixed(2)}%</div>
-            `;
-            
-            topRiskTableBody.appendChild(row);
-        });
+        // Determinar las clases según el score
+        let riskClass = '';
+        let rowClass = 'table-row';
         
-        // Rellenar filas vacías si hay menos de 10
-        for (let i = topRisk.length; i < 10; i++) {
-            const row = document.createElement('div');
-            row.className = 'table-row placeholder';
-            row.innerHTML = `
-                <div class="cell">---</div>
-                <div class="cell">---</div>
-                <div class="cell">---</div>
-            `;
-            topRiskTableBody.appendChild(row);
+        if (riesgo > 80) {
+            riskClass = 'critical-risk-glass';
+            rowClass = 'table-row high-risk-row';
+        } else if (riesgo > 60) {
+            riskClass = 'high-risk-glass';
+            rowClass = 'table-row high-risk-row';
+        } else {
+            // Para scores menores, usar el sistema original
+            const categoriaRiesgo = ERGOUtils.getScoreCategory(riesgo);
+            riskClass = 'normal-risk';
         }
-    }
+        
+        row.className = rowClass;
+        row.onclick = () => this.navigateToSpecificEvaluation(item);
+
+        // Generar el HTML según si es riesgo alto o normal
+        if (riesgo > 60) {
+            // Riesgo alto - usar efecto cristal
+            row.innerHTML = `
+                <div class="cell cell-text">${item.area_name || 'N/A'}</div>
+                <div class="cell cell-text">${item.center_name || 'N/A'}</div>
+                <div class="cell cell-risk">
+                    <span class="risk-pill ${riskClass}">
+                        ${riesgo.toFixed(1)}%
+                    </span>
+                </div>
+            `;
+        } else {
+            // Riesgo normal - usar sistema original
+            const categoriaRiesgo = ERGOUtils.getScoreCategory(riesgo);
+            row.innerHTML = `
+                <div class="cell cell-text">${item.area_name || 'N/A'}</div>
+                <div class="cell cell-text">${item.center_name || 'N/A'}</div>
+                <div class="cell cell-risk">
+                    <span class="risk-pill" style="background-color: ${categoriaRiesgo.color};">
+                        ${riesgo.toFixed(2)}%
+                    </span>
+                </div>
+            `;
+        }
+        
+        fragment.appendChild(row);
+    });
+
+    topRiskTableBody.appendChild(fragment);
+}
 }
 
 // Actualizar KPIs superiores
 updateTopKPIs(data) {
     const { areas, topRisk, totalWorkCenters, totalEvaluaciones } = data;
     
-    // Usar los totales correctos de la base de datos
-    const totalAreas = totalWorkCenters || 0; // ← Centros de trabajo, no áreas
-    const totalEvals = totalEvaluaciones || 0; // ← Total de evaluaciones real
+    // Corrección: Hacemos que el KPI "Areas Totales" muestre el conteo del array de áreas.
+    const totalDeAreas = areas ? areas.length : 0;
+    const totalEvals = totalEvaluaciones || 0;
     
     // Calcular score global promedio CON 2 DECIMALES
     const scoreGlobal = areas.length > 0 
-        ? (areas.reduce((sum, area) => sum + parseFloat(area.promedio_calculo || 0), 0) / areas.length).toFixed(2) // ← CAMBIAR a .toFixed(2)
-        : '0.00'; // ← CAMBIAR a 0.00
+        ? (areas.reduce((sum, area) => sum + parseFloat(area.promedio_calculo || 0), 0) / areas.length).toFixed(2)
+        : '0.00';
+    const totalCentros = data.allWorkCenters ? data.allWorkCenters.length : 0;
 
     // Actualizar DOM de los KPIs superiores
     const kpiAreasTotal = document.getElementById('kpi-areas-total');
+    const kpiCentrosTotal = document.getElementById('kpi-centros-total'); // Nuevo elemento
     const kpiEvaluacionesTotal = document.getElementById('kpi-evaluaciones-total');
     const kpiScoreGlobal = document.getElementById('kpi-score-global');
 
-    if (kpiAreasTotal) kpiAreasTotal.textContent = totalAreas;
+    // Ahora 'kpi-areas-total' muestra el número correcto de áreas.
+    if (kpiAreasTotal) kpiAreasTotal.textContent = totalDeAreas;
+    if (kpiCentrosTotal) kpiCentrosTotal.textContent = totalCentros; // Asignamos el valor
     if (kpiEvaluacionesTotal) kpiEvaluacionesTotal.textContent = totalEvals;
     if (kpiScoreGlobal) kpiScoreGlobal.textContent = `${scoreGlobal}%`;
 
     // Debug - mostrar en consola los valores
     console.log('📊 KPIs actualizados:', {
-        totalWorkCenters: totalAreas,
+        totalDeAreas: totalDeAreas, // Actualizado para claridad
         totalEvaluaciones: totalEvals,
         scoreGlobal: scoreGlobal,
         areasConDatos: areas.length
@@ -634,7 +662,7 @@ async debugAreaCalculations() {
 }
 
 
-}
+} //FIN DE INDEXAPP
 
 // Funciones auxiliares globales
 window.indexApp = null;
@@ -686,111 +714,13 @@ window.ERGODashboard = {
         }
     },
 
-    // Mostrar panel de detalles
-    showDetailsPanel(type, data) {
-        const panel = document.getElementById('details-panel');
-        const title = document.getElementById('details-title');
-        const body = document.getElementById('details-body');
-
-        if (!panel || !title || !body) return;
-
-        // Configurar título
-        title.textContent = type === 'area' ? 'Detalles del Área' : 'Detalles del Centro';
-
-        // Generar contenido según tipo
-        if (type === 'area') {
-            body.innerHTML = this.generateAreaDetails(data);
-        } else if (type === 'workCenter') {
-            body.innerHTML = this.generateWorkCenterDetails(data);
-        }
-
-        // Mostrar panel
-        panel.classList.remove('hidden');
-        panel.classList.add('show');
-    },
-
-    // Cerrar panel de detalles
-    closeDetailsPanel() {
-        const panel = document.getElementById('details-panel');
-        if (panel) {
-            panel.classList.remove('show');
-            setTimeout(() => {
-                panel.classList.add('hidden');
-            }, 300);
-        }
-    },
-
-    // Generar detalles de área
-    generateAreaDetails(area) {
-        const scoreColor = ERGOUtils.getScoreColor(parseFloat(area.promedio_score || 0));
-        
-        return `
-            <div class="detail-item">
-                <div class="detail-label">ID del Área</div>
-                <div class="detail-value">${area.id}</div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Nombre</div>
-                <div class="detail-value">${area.name}</div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Responsable</div>
-                <div class="detail-value">${area.responsible || 'No especificado'}</div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Score Promedio</div>
-                <div class="detail-score" style="background-color: ${scoreColor}20; color: ${scoreColor};">
-                    ${area.promedio_score || '0.00'}%
-                </div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Centros de Trabajo</div>
-                <div class="detail-value">${area.total_centros || 0} total</div>
-            </div>
-            
-            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" 
-                    onclick="ERGONavigation.navigateToAreas('${area.id}')">
-                Ver Área Completa
-            </button>
-        `;
-    },
-
-    // Generar detalles de centro de trabajo
-    generateWorkCenterDetails(center) {
-        const scoreColor = ERGOUtils.getScoreColor(center.score_final || 0);
-        
-        return `
-            <div class="detail-item">
-                <div class="detail-label">ID del Centro</div>
-                <div class="detail-value">${center.id}</div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Nombre</div>
-                <div class="detail-value">${center.name}</div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Responsable</div>
-                <div class="detail-value">${center.responsible || 'No especificado'}</div>
-            </div>
-            
-            <div class="detail-item">
-                <div class="detail-label">Score Actual</div>
-                <div class="detail-score" style="background-color: ${scoreColor}20; color: ${scoreColor};">
-                    ${center.score_final || '0.00'}%
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" 
-                    onclick="window.indexApp.navigateToWorkCenter({id: '${center.id}', area_id: '${center.area_id}', center_name: '${center.name}', responsible: '${center.responsible}'})">
-                Ver Centro Completo
-            </button>
-        `;
-    }
 };
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const main = document.querySelector('.main-content');
+    if (main) {
+        main.style.setProperty('--scroll-y', scrolled);
+        main.classList.add('parallax-scroll');
+    }
+});
 
