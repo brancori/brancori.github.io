@@ -263,40 +263,47 @@ window.ERGOUtils = {
     }
 };
 
-// ===== MANEJO DE URL Y NAVEGACIÓN =====
+
 window.ERGONavigation = {
-    getUrlParams() {
-        return new URLSearchParams(window.location.search);
-    },
+    /**
+     * Detecta la ruta base de la aplicación de forma automática.
+     * Ejemplo: si estás en "/proyectos/ERGOApp/index.html", esto devolverá "/proyectos/ERGOApp/"
+     */
+    basePath: (() => {
+        const path = window.location.pathname;
+        return path.substring(0, path.lastIndexOf('/') + 1);
+    })(),
 
-    getParam(paramName) {
-        return this.getUrlParams().get(paramName);
-    },
-
-    buildUrl(basePath, params = {}) {
-        const url = new URL(basePath, window.location.origin);
-        Object.keys(params).forEach(key => {
-            if (params[key] !== null && params[key] !== undefined) {
-                url.searchParams.set(key, params[key]);
-            }
-        });
-        return url.toString();
+    /**
+     * Construye una URL completa y segura a partir de la ruta base detectada.
+     */
+    buildUrl(filePath, params = {}) {
+        // Une la ruta base con el nombre del archivo
+        let url = this.basePath + filePath;
+        
+        // Añade los parámetros
+        const queryString = new URLSearchParams(params).toString();
+        if (queryString) {
+            url += '?' + queryString;
+        }
+        return url;
     },
 
     navigateToAreas(areaId = null) {
+        // La ruta ahora es solo el nombre del archivo
         const url = areaId ? `areas.html#area-${areaId}` : 'areas.html';
-        window.location.href = url;
+        window.location.href = this.basePath + url;
     },
 
     navigateToWorkCenter(workCenterId, areaId, areaName, centerName, responsible) {
         const params = {
             workCenter: workCenterId,
             area: areaId,
-            areaName: encodeURIComponent(areaName || ''),
-            centerName: encodeURIComponent(centerName || ''),
-            responsible: encodeURIComponent(responsible || '')
+            areaName: areaName || '',
+            centerName: centerName || '',
+            responsible: responsible || ''
         };
-        
+        // La ruta ahora es solo el nombre del archivo, sin './'
         const url = this.buildUrl('centro-trabajo.html', params);
         window.location.href = url;
     },
@@ -305,34 +312,34 @@ window.ERGONavigation = {
         const params = {
             workCenter: workCenterId,
             area: areaId,
-            areaName: encodeURIComponent(areaName || ''),
-            centerName: encodeURIComponent(centerName || ''),
-            responsible: encodeURIComponent(responsible || '')
+            areaName: areaName || '',
+            centerName: centerName || '',
+            responsible: responsible || ''
         };
-        
-        const url = this.buildUrl('./evaluacion_ini/eval_int.html', params);
+        // La ruta incluye su carpeta
+        const url = this.buildUrl('evaluacion_ini/eval_int.html', params);
         window.location.href = url;
     },
 
     navigateToSpecificEvaluation(type, workCenterId, areaId, areaName, centerName, responsible) {
         const evaluationFiles = {
-            'REBA': './evaluacion_ini/especificas/formulario_reba_completo.html',
-            'RULA': './evaluacion_ini/especificas/formulario_rula_completo.html', 
-            'OCRA': './evaluacion_ini/especificas/formulario_ocra_completo.html',
-            'NIOSH': './evaluacion_ini/especificas/calculadora_niosh_excel.html'
+            'REBA': 'evaluacion_ini/especificas/formulario_reba_completo.html',
+            'RULA': 'evaluacion_ini/especificas/formulario_rula_completo.html', 
+            'OCRA': 'evaluacion_ini/especificas/formulario_ocra_completo.html',
+            'NIOSH': 'evaluacion_ini/especificas/calculadora_niosh_excel.html'
         };
         
         const params = {
             workCenter: workCenterId,
             area: areaId,
-            areaName: encodeURIComponent(areaName || ''),
-            centerName: encodeURIComponent(centerName || ''),
-            responsible: encodeURIComponent(responsible || ''),
+            areaName: areaName || '',
+            centerName: centerName || '',
+            responsible: responsible || '',
             tipo: type
         };
         
-        const basePath = evaluationFiles[type] || evaluationFiles['REBA'];
-        const url = this.buildUrl(basePath, params);
+        const filePath = evaluationFiles[type] || evaluationFiles['REBA'];
+        const url = this.buildUrl(filePath, params);
         window.location.href = url;
     }
 };

@@ -566,7 +566,6 @@ async getUsuario(id) {
 
 async getDashboardData() {
     try {
-        // Obtenemos todos los datos necesarios en paralelo
         const [scoresData, areasData, workCentersData, evaluacionesData] = await Promise.all([
             this.query('scores_resumen', 'GET', null, '?order=score_actual.desc'),
             this.query('areas', 'GET', null, '?select=*,resumen_pictogramas'),
@@ -576,42 +575,33 @@ async getDashboardData() {
 
         if (!areasData) return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
 
-        // Crear mapas para acceso rápido
         const areasMap = {};
-        areasData.forEach(area => {
-            areasMap[area.id] = area.name;
-        });
+        areasData.forEach(area => { areasMap[area.id] = area.name; });
 
         const workCentersMap = {};
         if (workCentersData) {
-            workCentersData.forEach(center => {
-                workCentersMap[center.id] = center.name;
-            });
+            workCentersData.forEach(center => { workCentersMap[center.id] = center.name; });
         }
 
-        // --- INICIO DE LA LÓGICA DE CÁLCULO MEJORADA ---
         const areasCombinadas = areasData.map(area => {
-            // Filtrar los scores y centros que pertenecen a esta área
             const scoresDeArea = scoresData ? scoresData.filter(s => s.area_id === area.id) : [];
             const centrosDeArea = workCentersData ? workCentersData.filter(wc => wc.area_id === area.id) : [];
-
-            // Calcular el promedio del score para esta área
             const totalScore = scoresDeArea.reduce((sum, s) => sum + parseFloat(s.score_actual), 0);
             const promedio = scoresDeArea.length > 0 ? (totalScore / scoresDeArea.length) : 0;
 
-            // Devolver un objeto de área con los totales CORRECTOS calculados ahora mismo
             return {
-                ...area, // Mantiene datos originales como el resumen de pictogramas
+                ...area,
                 promedio_score: promedio.toFixed(2),
                 promedio_calculo: promedio,
                 total_centros: centrosDeArea.length,
                 centros_evaluados: scoresDeArea.length
             };
         }).sort((a, b) => b.promedio_calculo - a.promedio_calculo);
-        // --- FIN DE LA LÓGICA DE CÁLCULO MEJORADA ---
 
-        // Top 10 centros con más riesgo (esto ya estaba bien)
+        // CORRECCIÓN CLAVE: Nos aseguramos de incluir el area_id en los datos de topRisk
         const topRisk = scoresData ? scoresData.slice(0, 10).map(score => ({
+            work_center_id: score.work_center_id,
+            area_id: score.area_id, // <-- ESTA LÍNEA ES LA QUE FALTABA
             area_name: areasMap[score.area_id] || 'Sin área',
             center_name: workCentersMap[score.work_center_id] || `Centro ${score.work_center_id}`,
             score: parseFloat(score.score_actual).toFixed(2),
@@ -711,38 +701,72 @@ window.ERGOAnalytics = {
         }
     },
 
+// REEMPLAZA las funciones de análisis en el objeto ERGOAnalytics
+
+    /**
+     * Analiza las respuestas y determina el NIVEL DE SEVERIDAD MÁXIMO para cada pictograma.
+     * @param {object} respuestas - Objeto con las respuestas del formulario.
+     * @param {object} dataPreguntas - El objeto 'data' completo con las definiciones de preguntas.
+     * @returns {object} Un objeto con la severidad para cada pictograma (R01, R02, etc.).
+     */
     analizarRiesgosPorPictograma: function(respuestas, dataPreguntas) {
         const resultados = {};
         const mapaPreguntas = this.mapearPreguntas(dataPreguntas);
 
         for (const [id, config] of Object.entries(this.pictogramasConfig)) {
-            let pesoTotal = 0;
-            let pesoRiesgo = 0;
+            let severidadMaxima = 0; // 0=Sin Riesgo, 1=Verde, 2=Naranja, 3=Rojo
 
             config.preguntas_asociadas.forEach(textoPregunta => {
                 const preguntaInfo = mapaPreguntas[textoPregunta];
                 if (preguntaInfo) {
                     const respuesta = respuestas[preguntaInfo.nombreRespuesta];
-                    if (respuesta === 'si' || respuesta === 'no') {
-                        pesoTotal += preguntaInfo.peso;
-                        if (respuesta === 'no') {
-                            pesoRiesgo += preguntaInfo.peso;
+                    
+                    // Solo nos interesan las respuestas 'no' (que indican un riesgo)
+                    if (respuesta === 'no') {
+                        const peso = preguntaInfo.peso;
+                        const esCritica = preguntaInfo.critica === true;
+
+                        // Ignoramos preguntas con peso 1
+                        if (peso === 1) return;
+
+                        let severidadActual = 0;
+                        if (esCritica) {
+                            severidadActual = 3; // Rojo
+                        } else if (peso === 3) {
+                            severidadActual = 2; // Naranja
+                        } else if (peso === 2) {
+                            severidadActual = 1; // Verde
+                        }
+
+                        // Actualizamos con la severidad más alta encontrada para este pictograma
+                        if (severidadActual > severidadMaxima) {
+                            severidadMaxima = severidadActual;
                         }
                     }
                 }
             });
             
-            const score = (pesoTotal > 0) ? (pesoRiesgo / pesoTotal) * 100 : 0;
-            
             resultados[id] = {
-                score: parseFloat(score.toFixed(2)),
-                color: this.getNivelRiesgoPictograma(score),
-                activo: score > 0
+                severidad: severidadMaxima,
+                nivel: this.getNivelSeveridad(severidadMaxima).nivel,
+                color: this.getNivelSeveridad(severidadMaxima).color
             };
         }
-
-        resultados.resumen = this.calcularSemaforoGlobal(resultados);
         return resultados;
+    },
+
+    /**
+     * Devuelve el nombre y color basado en un número de severidad.
+     * @param {number} severidad - Número de 0 a 3.
+     * @returns {object} Objeto con {nivel, color}.
+     */
+    getNivelSeveridad: function(severidad) {
+        switch (severidad) {
+            case 3: return { nivel: 'Crítico', color: '#e74c3c' }; // Rojo
+            case 2: return { nivel: 'Alto', color: '#f39c12' };    // Naranja
+            case 1: return { nivel: 'Medio', color: '#2ecc71' };    // Verde
+            default: return { nivel: 'Bajo/Nulo', color: '#bdc3c7' }; // Gris
+        }
     },
     
     getNivelRiesgoPictograma: function(score) {

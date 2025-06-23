@@ -24,6 +24,9 @@ class IndexApp {
             this.showMainContent();
             this.updateUserInterface();
             this.loadDashboardData();
+                    new ERGOMap('risk-map');
+        
+        return;
         } else {
             console.log('🧹 Limpiando sesión...');
             this.hideMainContent();
@@ -154,7 +157,7 @@ class IndexApp {
     }
     
 
-// REEMPLAZA esta función en index.js
+    // REEMPLAZA esta función en index.js por su versión final y definitiva
 
     updateDashboardTables(data) {
         if (!data) return;
@@ -166,17 +169,15 @@ class IndexApp {
         if (areasTbody) areasTbody.innerHTML = '';
         if (topRiskTbody) topRiskTbody.innerHTML = '';
 
-        // Rellenar la tabla de Áreas con el número de centros correcto
+        // Rellenar la tabla de Áreas
         if (areas && areas.length > 0 && areasTbody) {
             areas.forEach(area => {
                 const score = parseFloat(area.promedio_score || 0);
                 const color = ERGOUtils.getScoreColor(score);
-
                 const row = document.createElement('div');
-                row.className = 'table-row';
+                row.className = 'table-row clickable';
+                row.setAttribute('onclick', `ERGONavigation.navigateToAreas('${area.id}')`);
                 if (score > 60) row.classList.add('high-risk-row');
-                
-                // CORRECCIÓN: Se añade la columna 'Centros' que faltaba
                 row.innerHTML = `
                     <div class="cell">${area.name || 'Sin nombre'}</div>
                     <div class="cell">
@@ -191,30 +192,33 @@ class IndexApp {
             areasTbody.innerHTML = '<div class="table-row placeholder"><div class="cell" colspan="3">No hay datos de áreas.</div></div>';
         }
 
-        // Rellenar la tabla de Top 10 Riesgos con píldoras de colores
+        // Rellenar la tabla de Top 10 Riesgos con la nueva lógica de estilos
         if (topRisk && topRisk.length > 0 && topRiskTbody) {
             topRisk.forEach(centro => {
                 const score = parseFloat(centro.score || 0);
-                
-                // Lógica para determinar la clase de la píldora de riesgo
-                let riskClass = '';
-                if (score >= 80) riskClass = 'risk-pill critical-risk-glass';
-                else if (score >= 60) riskClass = 'risk-pill high-risk-glass';
-                else riskClass = 'risk-pill'; // Clase base para estilos de píldora si la tienes
-                
-                const color = ERGOUtils.getScoreColor(score); // El color de fondo se puede controlar por CSS o aquí
-
                 const row = document.createElement('div');
-                row.className = 'table-row';
+                row.className = 'table-row clickable';
+                row.setAttribute('onclick', `ERGONavigation.navigateToWorkCenter('${centro.work_center_id}', '${centro.area_id}', '${encodeURIComponent(centro.area_name)}', '${encodeURIComponent(centro.center_name)}', '')`);
+                
+                // --- INICIO DE LA NUEVA LÓGICA DE ESTILOS ---
+                let riesgoHtml = '';
+                // Solo si el riesgo es alto (>60%), usamos la píldora de color.
+                if (score >= 60) {
+                    const riskClass = score >= 80 ? 'risk-pill critical-risk-glass' : 'risk-pill high-risk-glass';
+                    riesgoHtml = `<div class="${riskClass}">${score.toFixed(2)}%</div>`;
+                } else {
+                    // Para scores más bajos, solo mostramos el texto.
+                    riesgoHtml = `<span>${score.toFixed(2)}%</span>`;
+                }
+                // --- FIN DE LA NUEVA LÓGICA DE ESTILOS ---
+
+                // Si el score general de la fila es alto, se mantiene el hover rojo
                 if (score > 60) row.classList.add('high-risk-row');
                 
-                // CORRECCIÓN: Se añade el div con las clases para la píldora de color
                 row.innerHTML = `
                     <div class="cell">${centro.area_name || 'Sin área'}</div>
                     <div class="cell">${centro.center_name || 'Sin nombre'}</div>
-                    <div class="cell">
-                        <div class="${riskClass}" style="background-color: ${score < 60 ? color : ''};">${score.toFixed(2)}%</div>
-                    </div>
+                    <div class="cell">${riesgoHtml}</div>
                 `;
                 topRiskTbody.appendChild(row);
             });
@@ -232,6 +236,56 @@ class IndexApp {
         }
     }
 
+    updateRiskChart(areasData) {
+        const chartContainer = document.getElementById('risk-chart');
+        if (!chartContainer || !areasData) return;
+        
+        const pictogramasInfo = ERGOAnalytics.pictogramasConfig;
+        const maxSeveridades = {};
+
+        // Inicializar todas las severidades en 0
+        for (const id in pictogramasInfo) {
+            maxSeveridades[id] = 0;
+        }
+
+        areasData.forEach(area => {
+            if (area.resumen_pictogramas) {
+                for (const key in area.resumen_pictogramas) {
+                    const severidadEnArea = area.resumen_pictogramas[key].severidad;
+                    if (maxSeveridades[key] < severidadEnArea) {
+                        maxSeveridades[key] = severidadEnArea;
+                    }
+                }
+            }
+        });
+
+        const riesgosDetectados = Object.entries(maxSeveridades)
+            .map(([id, severidad]) => ({ id, severidad, ...pictogramasInfo[id] }))
+            //.filter(p => p.severidad >= 2) // <-- LÍNEA TEMPORALMENTE COMENTADA PARA VER TODOS
+            .sort((a, b) => b.severidad - a.severidad);
+
+        if (riesgosDetectados.every(r => r.severidad === 0)) {
+            chartContainer.innerHTML = '<p class="no-data-chart">✅<br>Sin riesgos detectados en ninguna categoría.</p>';
+            return;
+        }
+        
+        chartContainer.innerHTML = riesgosDetectados.map(data => {
+            const severidadInfo = ERGOAnalytics.getNivelSeveridad(data.severidad);
+            let height = 2; // Altura mínima para riesgos nulos
+            if (data.severidad === 1) height = 30; // Verde
+            if (data.severidad === 2) height = 65; // Naranja
+            if (data.severidad === 3) height = 100; // Rojo
+
+            return `
+                <div class="graf-container" title="${data.nombre}: Riesgo ${severidadInfo.nivel}">
+                    <div class="graf" style="height: ${height}px; background-color: ${severidadInfo.color};">
+                    </div>
+                    <h4 class="graf-label">${data.pictograma}</h4>
+                </div>
+            `;
+        }).join('');
+    }
+
     updateTopKPIs(data) {
         const { areas, totalWorkCenters, totalEvaluaciones } = data;
         const scoreGlobal = areas && areas.length > 0 
@@ -246,48 +300,56 @@ class IndexApp {
         this.updateRiskChart(areas);
     }
 
+// REEMPLAZA esta función en index.js
+
     updateRiskChart(areasData) {
         const chartContainer = document.getElementById('risk-chart');
-        if (!chartContainer) return;
-
-        const pictogramasBase = {
-            R01: { count: 0, nombre: 'Carga Manual', pictograma: '▲', color: '#3498db' },
-            R02: { count: 0, nombre: 'Posturas Forzadas', pictograma: '●', color: '#e74c3c' },
-            R03: { count: 0, nombre: 'Mov. Repetitivos', pictograma: '↻', color: '#f1c40f' },
-            R04: { count: 0, nombre: 'Empuje/Tracción', pictograma: '→', color: '#9b59b6' },
-            R05: { count: 0, nombre: 'Circulación y Rampas', pictograma: '⇘', color: '#e67e22' },
-            R06: { count: 0, nombre: 'Alcance y Herramientas', pictograma: '🛠️', color: '#34495e' },
-            R07: { count: 0, nombre: 'Entorno Visual', pictograma: '💻', color: '#1abc9c' }
+        if (!chartContainer || !areasData) return;
+        
+        // Catálogo base de pictogramas
+        const pictogramasInfo = {
+            R01: { nombre: 'Carga Manual', pictograma: '▲' },
+            R02: { nombre: 'Posturas Forzadas', pictograma: '●' },
+            R03: { nombre: 'Mov. Repetitivos', pictograma: '↻' },
+            R04: { nombre: 'Empuje/Tracción', pictograma: '→' },
+            R05: { nombre: 'Circulación y Rampas', pictograma: '⇘' },
+            R06: { nombre: 'Alcance y Herramientas', pictograma: '🛠️' },
+            R07: { nombre: 'Entorno Visual', pictograma: '💻' }
         };
 
-        if (areasData) {
-            areasData.forEach(area => {
-                if (area.resumen_pictogramas) {
-                    for (const key in area.resumen_pictogramas) {
-                        if (pictogramasBase[key]) {
-                            pictogramasBase[key].count += area.resumen_pictogramas[key].count;
-                        }
+        const maxSeveridades = {};
+
+        // 1. Encontrar la MÁXIMA severidad para cada pictograma en TODA la empresa
+        areasData.forEach(area => {
+            if (area.resumen_pictogramas) {
+                for (const key in area.resumen_pictogramas) { // key es R01, R02...
+                    const severidadEnArea = area.resumen_pictogramas[key].severidad;
+                    if (!maxSeveridades[key] || severidadEnArea > maxSeveridades[key]) {
+                        maxSeveridades[key] = severidadEnArea;
                     }
                 }
-            });
-        }
-        
-        const pictogramasParaGraficar = Object.values(pictogramasBase);
-        const maxCount = Math.max(...pictogramasParaGraficar.map(p => p.count));
+            }
+        });
 
-        if (maxCount === 0) {
-            chartContainer.innerHTML = '<p class="no-data-chart">Aún no hay datos de pictogramas para mostrar.</p>';
+        // 2. Filtrar para mostrar solo riesgos Naranja (2) o Rojos (3)
+        const riesgosPrioritarios = Object.entries(maxSeveridades)
+            .map(([id, severidad]) => ({ id, severidad, ...pictogramasInfo[id] }))
+            .filter(p => p.severidad >= 2) // <-- ¡AQUÍ ESTÁ LA MAGIA! Solo Naranja y Rojo.
+            .sort((a, b) => b.severidad - a.severidad); // Ordenar por más severo primero
+
+        if (riesgosPrioritarios.length === 0) {
+            chartContainer.innerHTML = '<p class="no-data-chart">✅<br>Sin riesgos de alta prioridad detectados.</p>';
             return;
         }
         
-        chartContainer.innerHTML = pictogramasParaGraficar.map(data => {
-            const height = data.count > 0 ? Math.max(10, (data.count / maxCount) * 100) : 2;
-            const barClass = data.count === 0 ? 'empty' : '';
+        // 3. Generar el HTML del gráfico
+        chartContainer.innerHTML = riesgosPrioritarios.map(data => {
+            const severidadInfo = ERGOAnalytics.getNivelSeveridad(data.severidad);
+            const height = data.severidad === 3 ? 100 : 60; // Barra roja más alta que la naranja
 
             return `
-                <div class="graf-container" title="${data.nombre}: ${data.count} casos">
-                    <div class="graf ${barClass}" style="height: ${height}px; background-color: ${data.color};">
-                        <span class="graf-count">${data.count}</span>
+                <div class="graf-container" title="${data.nombre}: Riesgo ${severidadInfo.nivel}">
+                    <div class="graf" style="height: ${height}px; background-color: ${severidadInfo.color};">
                     </div>
                     <h4 class="graf-label">${data.pictograma}</h4>
                 </div>
@@ -308,7 +370,6 @@ class IndexApp {
         }
     }
 
-
     async procesarEvaluacionesAntiguas() {
         if (!confirm("Este proceso actualizará TODAS las evaluaciones antiguas con el nuevo análisis de pictogramas. Es lento y solo debe hacerse una vez. ¿Continuar?")) return;
 
@@ -326,41 +387,27 @@ class IndexApp {
             }
 
             alert(`Se procesarán ${todasLasEvals.length} evaluaciones. Por favor, ten paciencia y no cierres esta ventana. Revisa la consola (F12) para ver el progreso.`);
-            let evaluacionesProcesadas = 0;
 
             for (let i = 0; i < todasLasEvals.length; i++) {
                 const evaluacion = todasLasEvals[i];
-                
-                // --- INICIO DEL BLOQUE DE DEPURACIÓN ---
                 try {
-                    // Solo procesar si no tiene el nuevo análisis
-                    if (!evaluacion.riesgos_por_categoria || !evaluacion.riesgos_por_categoria.resumen) {
-                        
-                        // Validar que 'respuestas' no sea nulo o inválido
-                        if (!evaluacion.respuestas) {
-                            console.warn(`Saltando evaluación ${evaluacion.id} porque no tiene respuestas.`);
-                            continue; // Saltar a la siguiente iteración
-                        }
-
-                        const respuestas = JSON.parse(evaluacion.respuestas);
-                        const resultadosPictogramas = ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
-                        
-                        await supabase.updateEvaluacion(evaluacion.id, { riesgos_por_categoria: resultadosPictogramas });
-                        
-                        console.log(`✅ (${i + 1}/${todasLasEvals.length}) Evaluación ${evaluacion.id} procesada.`);
-                        evaluacionesProcesadas++;
+                    // CORRECCIÓN: Verificamos si las respuestas son un JSON válido antes de procesar
+                    if (typeof evaluacion.respuestas !== 'string' || !evaluacion.respuestas.startsWith('{')) {
+                        console.warn(`Saltando evaluación ${evaluacion.id} porque sus 'respuestas' no son un JSON válido.`);
+                        continue; // Ignora esta evaluación y continúa con la siguiente
                     }
+
+                    const respuestas = JSON.parse(evaluacion.respuestas);
+                    const resultadosPictogramas = ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
+                    await supabase.updateEvaluacion(evaluacion.id, { riesgos_por_categoria: resultadosPictogramas });
+                    console.log(`✅ (${i + 1}/${todasLasEvals.length}) Evaluación ${evaluacion.id} procesada.`);
+
                 } catch (error) {
-                    // Si una evaluación falla, nos dirá cuál es y continuará con las demás
                     console.error(`❌ Error procesando la evaluación ${evaluacion.id}. Causa:`, error);
                 }
-                // --- FIN DEL BLOQUE DE DEPURACIÓN ---
             }
             
-            console.log(`Terminado el procesamiento individual. ${evaluacionesProcesadas} evaluaciones fueron actualizadas.`);
-
-            // Una vez que todas las evaluaciones individuales están actualizadas,
-            // ahora sí, ejecutamos el script para recalcular los resúmenes por área.
+            console.log("Procesamiento individual terminado. Creando resúmenes por área...");
             await this.backfillPictogramSummaries();
 
         } catch (error) {
@@ -369,14 +416,15 @@ class IndexApp {
         }
     }
     
+
     async backfillPictogramSummaries() {
-        console.log('--- INICIANDO RELLENO DE RESÚMENES POR ÁREA ---');
+        console.log('--- INICIANDO RELLENO DE RESÚMENES DE SEVERIDAD POR ÁREA ---');
         try {
             const todasLasEvaluaciones = await supabase.getAllEvaluations();
             const todasLasAreas = await supabase.getAllAreas();
 
             if (!todasLasEvaluaciones || !todasLasAreas) {
-                ERGOUtils.showToast('No se pudieron obtener los datos para actualizar los resúmenes.', 'error');
+                ERGOUtils.showToast('No se pudieron obtener datos para actualizar resúmenes.', 'error');
                 return;
             }
 
@@ -384,34 +432,38 @@ class IndexApp {
                 const evalsDeEstaArea = todasLasEvaluaciones.filter(ev => ev.area_id === area.id);
                 if (evalsDeEstaArea.length === 0) continue;
 
-                const resumen = {};
+                // Objeto para guardar la MÁXIMA severidad encontrada en el área para cada pictograma
+                const resumenSeveridad = {};
+
                 evalsDeEstaArea.forEach(ev => {
                     if (ev.riesgos_por_categoria) {
-                        for (const key in ev.riesgos_por_categoria) {
-                            if(key === 'resumen') continue; // Ignorar la clave de resumen
-                            const pictoInfo = ev.riesgos_por_categoria[key];
-                            if (!resumen[key]) {
-                                resumen[key] = {
-                                    count: 0,
-                                    nombre: ERGOAnalytics.pictogramasConfig[key].nombre,
-                                    pictograma: ERGOAnalytics.pictogramasConfig[key].pictograma || '?'
-                                };
+                        for (const key in ev.riesgos_por_categoria) { // key es R01, R02...
+                            const pictoResultado = ev.riesgos_por_categoria[key];
+                            if (!pictoResultado || typeof pictoResultado.severidad === 'undefined') continue;
+
+                            // Inicializar si no existe
+                            if (!resumenSeveridad[key]) {
+                                resumenSeveridad[key] = { severidad: 0 };
                             }
-                            resumen[key].count++;
+
+                            // Guardar siempre la severidad MÁS ALTA
+                            if (pictoResultado.severidad > resumenSeveridad[key].severidad) {
+                                resumenSeveridad[key].severidad = pictoResultado.severidad;
+                            }
                         }
                     }
                 });
 
-                await supabase.updateArea(area.id, { resumen_pictogramas: resumen });
-                console.log(`✅ Área '${area.name}' actualizada con ${Object.keys(resumen).length} tipos de pictogramas.`);
+                await supabase.updateArea(area.id, { resumen_pictogramas: resumenSeveridad });
+                console.log(`✅ Área '${area.name}' actualizada con resumen de severidad.`);
             }
 
             ERGOUtils.showToast('¡Actualización de datos completada! Recargando...', 'success');
             setTimeout(() => window.location.reload(), 2000);
 
         } catch (error) {
-            console.error("Error durante el relleno de resúmenes:", error);
-            ERGOUtils.showToast('Ocurrió un error durante la actualización de resúmenes.', 'error');
+            console.error("Error durante el relleno de resúmenes de severidad:", error);
+            ERGOUtils.showToast('Ocurrió un error durante la actualización.', 'error');
         }
     }
 }

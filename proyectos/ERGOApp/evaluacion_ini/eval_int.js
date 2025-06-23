@@ -856,6 +856,45 @@ function poblarFormularioConDatos(evaluacionData) {
     }, 200); // Aumentado ligeramente para mayor seguridad
 }
 
+        // PEGA esta función que falta en eval_int.js
+
+        function actualizarVistaPictogramas(scoresPorCategoria) {
+            const container = document.getElementById('pictogramas-riesgo-container');
+            if(!container) return;
+            container.innerHTML = ''; 
+
+            // 'scoresPorCategoria' ahora viene del nuevo módulo ERGOAnalytics
+            // y tiene el formato { R01: {severidad: 2, nivel: 'Alto'}, ... }
+            const resultados = scoresPorCategoria || {};
+
+            // Filtrar solo los que tienen riesgo (severidad > 0)
+            const riesgosVisibles = Object.entries(resultados)
+                .filter(([id, data]) => id !== 'resumen' && data && data.severidad > 0)
+                .sort(([, a], [, b]) => b.severidad - a.severidad);
+
+            if (riesgosVisibles.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+            riesgosVisibles.forEach(([id, data]) => {
+                const pictogramaInfo = ERGOAnalytics.pictogramasConfig[id];
+                if (!pictogramaInfo) return;
+
+                const pictogramaDiv = document.createElement('div');
+                pictogramaDiv.className = 'pictograma-item';
+                pictogramaDiv.style.backgroundColor = data.color + '20';
+                pictogramaDiv.style.borderColor = data.color;
+                
+                pictogramaDiv.innerHTML = `
+                    <span class="pictograma-char" style="color: ${data.color};" title="${pictogramaInfo.nombre}">${pictogramaInfo.pictograma}</span>
+                    <span class="pictograma-score">${data.nivel}</span>
+                `;
+                container.appendChild(pictogramaDiv);
+            });
+        }
+
         // Función mejorada para exportar PDF con recomendaciones de métodos
         function exportarPDFCompleto() {
             guardarEvaluacion();
