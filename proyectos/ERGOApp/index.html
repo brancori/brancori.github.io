@@ -17,30 +17,41 @@
     <!-- Modal de Login -->
     <div id="loginModal" class="modal show">
         <div class="modal-overlay"></div>
+        
+        <img src="assets/logo_.png" alt="Logo ERGOApp" class="login-page-logo">
+
         <div class="modal-content login-modal">
-            <div class="modal-header">
-                <h3>Iniciar Sesión</h3>
+            <div class="login-visual">
+                <img src="assets/login_gif.gif" alt="Animación de ergonomía" class="login-gif">
             </div>
-            <div class="modal-body">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="usuario">Usuario</label>
-                        <input type="text" id="usuario" name="usuario" required placeholder="Ingresa tu usuario">
+
+            <div class="login-form-container">
+                <div class="login-form-wrapper"> 
+                    <div class="modal-header">
+                        <h3>Iniciar Sesión</h3>
                     </div>
-                    <div class="form-group">
-                        <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" required placeholder="Ingresa tu contraseña">
+                    <div class="modal-body">
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label for="usuario">Usuario</label>
+                                <input type="text" id="usuario" name="usuario" required="" placeholder="Ingresa tu usuario">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Contraseña</label>
+                                <input type="password" id="password" name="password" required="" placeholder="Ingresa tu contraseña">
+                            </div>
+                            <div class="login-error" id="loginError" style="display: none;">
+                                Usuario o contraseña incorrectos
+                            </div>
+                        </form>
                     </div>
-                    <div class="login-error" id="loginError" style="display: none;">
-                        Usuario o contraseña incorrectos
+                    <div class="modal-footer">
+                        <button type="submit" form="loginForm" class="btn btn-primary" id="loginBtn">
+                            <span class="icon">🔐</span>
+                            Iniciar Sesión
+                        </button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="loginForm" class="btn btn-primary" id="loginBtn">
-                    <span class="icon">🔐</span>
-                    Iniciar Sesión
-                </button>
+                </div>
             </div>
         </div>
     </div>
@@ -177,10 +188,9 @@
             <section class="dashboard-section">
                 <h2>Mapa de Riesgos</h2>
                             <div class="map-container">
-                            <div id="risk-map" class="map-svg-container">
+                            <div id="risk-map" class="map-svg-container" data-map-source="./assets/acondi.svg">
                             <!-- El mapa se generará aquí -->
                             </div>
-
             </section>
         </div>
     </div>
@@ -189,9 +199,9 @@
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->
-     <script src="./componentes/map.js"></script>
     <script src="./componentes/globals.js"></script>
     <script src="supabase-config.js"></script>
-    <script src="index.js"></script>
+    <script src="./componentes/map.js"></script>
+    <script type="module" src="index.js"></script>
 </body>
 </html>

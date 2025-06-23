@@ -506,47 +506,43 @@ window.ERGOValidation = {
 
 // ===== INICIALIZACIÓN GLOBAL =====
 window.ERGOGlobal = {
-init() {
-    console.log('🌐 ERGOGlobal iniciado');
-    
-    // SOLO verificar sesión si NO estamos en la página de login
-    const currentPath = window.location.pathname;
-    const isLoginPage = currentPath === '/index.html' || 
-                       currentPath === '/' || 
-                       currentPath.endsWith('/index.html') || 
-                       currentPath.endsWith('/');
-    
-    if (!isLoginPage) {
-        console.log('📍 No estamos en login, verificando sesión...');
-        if (!ERGOAuth.checkSession()) {
-            console.log('❌ Sesión inválida, redirigiendo a login');
-            window.location.href = 'index.html';
-            return;
+    init() {
+        console.log('🌐 ERGOGlobal iniciado');
+
+        const currentPath = window.location.pathname;
+        const isLoginPage = currentPath.endsWith('/index.html') || currentPath === '/';
+
+        if (!isLoginPage) {
+            console.log('📍 No estamos en login, verificando sesión...');
+            if (!ERGOAuth.checkSession()) {
+                console.log('❌ Sesión inválida, redirigiendo a login');
+                window.location.href = 'index.html'; // Ajusta la ruta si es necesario
+                return;
+            }
+        } else {
+            console.log('📍 Estamos en página de login, omitiendo verificación de sesión');
         }
-    } else {
-        console.log('📍 Estamos en página de login, omitiendo verificación de sesión');
+
+        setInterval(() => {
+            if (ERGOAuth.getCurrentUser()) {
+                ERGOAuth.updateActivity();
+            }
+        }, ERGOConfig.ACTIVITY_CHECK_INTERVAL);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ERGOAuth.applyPermissionControls();
+        });
+
+        window.addEventListener('error', (event) => {
+            console.error('Error global:', event.error);
+        });
+
+        console.log('✅ ERGOGlobal configurado correctamente');
     }
-    
-    // Actualizar actividad cada minuto (solo si hay usuario)
-    setInterval(() => {
-        if (ERGOAuth.getCurrentUser()) {
-            ERGOAuth.updateActivity();
-        }
-    }, ERGOConfig.ACTIVITY_CHECK_INTERVAL);
-    
-    // Aplicar controles de permisos
-    document.addEventListener('DOMContentLoaded', () => {
-        ERGOAuth.applyPermissionControls();
-    });
-    
-    // Setup global error handler
-    window.addEventListener('error', (event) => {
-        console.error('Error global:', event.error);
-    });
-    
-    console.log('✅ ERGOGlobal configurado correctamente');
-}
 };
+
+// ===== AUTO-INICIALIZACIÓN =====
+ERGOGlobal.init();
 
 // ===== AUTO-INICIALIZACIÓN =====
 // Inicializar automáticamente cuando se carga el script

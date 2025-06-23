@@ -1,14 +1,10 @@
 // Verificar que hay usuario logueado antes de continuar
-document.addEventListener('DOMContentLoaded', function() {
-    const userData = localStorage.getItem('currentUser');
-    if (!userData) {
-        console.log('❌ No hay usuario en areas.js, redirigiendo...');
-        window.location.href = 'index.html';
-        return;
-    }
-    
-    console.log('✅ Usuario verificado en areas.js');
-});
+if (!ERGOAuth.checkSession()) {
+    console.log('❌ Sesión inválida detectada por ERGOAuth, redirigiendo...');
+    ERGOAuth.redirectToLogin();
+} else {
+    console.log('✅ Sesión verificada correctamente en areas.js');
+}
 
 // Configuración para usar Supabase o localStorage
 const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;

@@ -419,12 +419,102 @@
 .map-placeholder p {
     font-size: 0.875rem;
 }
+.login-page-logo {
+    display: block;
+    max-width: 220px;
+    margin-bottom: -1rem; 
+}
 
 /* Login Modal */
 .login-modal {
-    max-width: 400px;
+    padding: 0; 
+    width: 850px;
+}
+#loginModal .modal-content {
+    display: flex;
+    flex-direction: row;
+    height: 400px; 
+    max-height: 80vh;
+    overflow: hidden;
+    border-radius: var(--border-radius-lg);
+}
+.login-visual {
+    flex-basis: 50%;
+    flex-shrink: 0;
+    display: flex;
+    background-color: var(--gray-100);
+    overflow: hidden;
+}
+.login-logo {
+    display: block;
+    max-width: 180px;
+    margin: 0 auto 1.5rem auto;
 }
 
+.login-form-container .modal-header {
+    border-bottom: none;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.login-form-container .modal-header h3 {
+    width: 100%;
+    font-size: 1.5rem;
+    color: var(--gray-800);
+}
+.login-form-container .modal-body,
+.login-form-container .modal-footer {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.login-form-container .modal-body {
+    padding: 0;
+}
+
+.login-form-container .modal-footer {
+    border-top: none;
+    background: transparent;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.login-form-container .btn-primary {
+    width: 100%; /* Botón ocupa todo el ancho */
+    padding: 0.875rem;
+    font-size: 1rem;
+}
+.login-form-container {
+    flex-basis: 50%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.login-form-wrapper {
+    width: 100%;
+    max-width: 320px;
+}
+
+/* ===== Responsive para el Login ===== */
+@media (max-width: 768px) {
+    .login-modal {
+        max-width: 400px; /* Ancho original en móviles */
+    }
+
+    /* Ocultamos la columna del GIF en pantallas pequeñas para optimizar el espacio */
+    .login-visual {
+        display: none;
+    }
+
+    .login-form-container {
+        flex-basis: 100%; /* El formulario ocupa todo el ancho */
+        padding: 2rem;
+    }
+}
 .login-error {
     background: var(--red-50);
     color: var(--red-600);

@@ -417,16 +417,10 @@ class HeaderComponent {
     }
 
     // Cargar datos del usuario
-    loadUserData() {
-        const userData = localStorage.getItem('currentUser');
-        if (userData) {
-            try {
-                this.currentUser = JSON.parse(userData);
-            } catch (error) {
-                console.error('Error cargando datos del usuario:', error);
-            }
-        }
-    }
+loadUserData() {
+    // Usamos la función global que ya sabe dónde buscar al usuario (sessionStorage)
+    this.currentUser = ERGOAuth.getCurrentUser();
+}
 
     // Actualizar interfaz de usuario
     updateUserInterface() {
@@ -525,14 +519,10 @@ goHome() {
 }
 
     // Logout
-    logout() {
-        if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('sessionExpiry'); // ← AGREGAR
-            localStorage.removeItem('lastActivity');  // ← AGREGAR
-            window.location.href = `${this.basePath}index.html`; // ← CAMBIAR
-        }
-    }
+logout() {
+    // Usamos la función global que ya sabe cómo cerrar la sesión y redirigir
+    ERGOAuth.logout('Has cerrado la sesión.');
+}
 
     // Actualizar breadcrumb
     updateBreadcrumb() {

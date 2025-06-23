@@ -1,4 +1,6 @@
-        // Función para solicitar permisos de almacenamiento en Android
+       import data from '../componentes/cuestionario-data.js';
+
+       // Función para solicitar permisos de almacenamiento en Android
         function solicitarPermisosAlmacenamiento() {
             if (window.cordova && cordova.plugins && cordova.plugins.permissions) {
                 const permissions = cordova.plugins.permissions;
@@ -43,29 +45,21 @@
 // Configuración para usar Supabase
 const USE_SUPABASE_EVAL = window.ERGOConfig.USE_SUPABASE;
 
-// Función para guardar en Supabase
 async function guardarEvaluacion() {
     if (!workCenterId || !areaId) {
         console.warn('No se pueden guardar los datos: faltan parámetros de URL');
+        ERGOUtils.showToast('Error: Faltan identificadores del centro de trabajo.', 'error');
         return;
     }
     
-    // Generar ID ÚNICO E INMUTABLE para esta evaluación
     const evaluacionId = `EVAL_${workCenterId}_${areaId}`;
     console.log('💾 Guardando evaluación con ID:', evaluacionId);
     
-    // Recopilar todas las respuestas
     const respuestas = {};
-    const preguntas = document.querySelectorAll('.question');
-    
-    preguntas.forEach(pregunta => {
-        const radioSeleccionado = pregunta.querySelector('input[type="radio"]:checked');
-        if (radioSeleccionado) {
-            respuestas[radioSeleccionado.name] = radioSeleccionado.value;
-        }
+    document.querySelectorAll('.question input[type="radio"]:checked').forEach(radio => {
+        respuestas[radio.name] = radio.value;
     });
     
-    // Recopilar criterios seleccionados
     const criterios = {
         manipulaCargas: document.getElementById('manipulaCargas').checked,
         usaPantallas: document.getElementById('usaPantallas').checked,
@@ -73,87 +67,99 @@ async function guardarEvaluacion() {
         mantienePosturas: document.getElementById('mantienePosturas').checked
     };
     
-    // Calcular score
-    const scoreFinal = calcularScoreFinal();
-    const categoria = ERGOUtils.getScoreCategory(parseFloat(scoreFinal));
-    
-// Crear evaluación con nombres de campos que coinciden con Supabase
-    const evaluacion = {
-        id: evaluacionId,
-        work_center_id: workCenterId,
-        area_id: areaId,
-        fecha_evaluacion: document.getElementById('fechaEvaluacion').value,
-        nombre_area: document.getElementById('nombreArea').value,
-        ubicacion_area: document.getElementById('ubicacionArea').value,
-        responsable_area: document.getElementById('responsableArea').value,
-        criterios: JSON.stringify(criterios),
-        respuestas: JSON.stringify(respuestas),
-        score_final: parseFloat(scoreFinal),
-        categoria_riesgo: categoria.texto,
-        nivel_riesgo_ergonomico: `${scoreFinal}%`,
-        color_riesgo: categoria.color,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    };
-    
-    // Guardar en localStorage con lógica mejorada
-    let evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-    console.log('📊 Evaluaciones existentes:', evaluaciones.length);
-    
-    // Buscar por ID exacto (no por workCenterId)
-    const existingIndex = evaluaciones.findIndex(e => e.id === evaluacionId);
-    
-        if (existingIndex !== -1) {
-            // Actualizar existente
-            evaluacion.created_at = evaluaciones[existingIndex].createdAt || evaluaciones[existingIndex].created_at; // Mantener fecha original
-            evaluaciones[existingIndex] = evaluacion;
-            console.log('🔄 Evaluación actualizada:', evaluacionId);
-        } else {
-        // Crear nueva
-        evaluaciones.push(evaluacion);
-        console.log('🆕 Nueva evaluación creada:', evaluacionId);
-    }
-    
-    localStorage.setItem('evaluaciones', JSON.stringify(evaluaciones));
-    console.log('✅ Evaluación guardada exitosamente');
-    
+    const resultadosPictogramas = ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
 
-    // DEBUG: Verificar datos antes de enviar a Supabase
-    console.log('🔍 DEBUG: Datos a guardar en Supabase:', evaluacion);
-    console.log('🔍 DEBUG: USE_SUPABASE_EVAL:', USE_SUPABASE_EVAL);
-    console.log('🔍 DEBUG: workCenterId:', workCenterId);
-    // Guardar en Supabase
-    if (USE_SUPABASE_EVAL) {
+    // 2. Calcular el score global a partir de los scores de los pictogramas
+    const scoresIndividuales = Object.values(resultadosPictogramas)
+                                    .filter(p => p.score) // Filtra los que no son scores (como 'resumen')
+                                    .map(p => p.score);
+
+    const scoreFinal = scoresIndividuales.length > 0
+        ? (scoresIndividuales.reduce((a, b) => a + b, 0) / scoresIndividuales.length).toFixed(2)
+        : 0;
+
+    const categoria = ERGOUtils.getScoreCategory(parseFloat(scoreFinal));
+    const analisisRiesgo = window.ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
+
+        const evaluacion = {
+            id: evaluacionId,
+            work_center_id: workCenterId,
+            area_id: areaId,
+            fecha_evaluacion: document.getElementById('fechaEvaluacion').value,
+            nombre_area: document.getElementById('nombreArea').value,
+            ubicacion_area: document.getElementById('ubicacionArea').value,
+            responsable_area: document.getElementById('responsableArea').value,
+            criterios: JSON.stringify(criterios),
+            respuestas: JSON.stringify(respuestas),
+            score_final: parseFloat(scoreFinal), // Usa el nuevo scoreFinal calculado
+            categoria_riesgo: categoria.texto, // Usa la nueva categoría calculada
+            nivel_riesgo_ergonomico: `${scoreFinal}%`,
+            color_riesgo: categoria.color,
+            riesgos_por_categoria: resultadosPictogramas, // <-- CAMPO NUEVO Y CRÍTICO
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+    
+    // --- Lógica de guardado dual (Supabase y LocalStorage) ---
+    // Primero, siempre guardar localmente para consistencia inmediata.
+    guardarLocalmente(evaluacion, evaluacionId);
+
+    // Luego, intentar guardar en Supabase.
+    if (window.ERGOConfig.USE_SUPABASE && window.supabase) {
         try {
             console.log('💾 Intentando guardar en Supabase...');
-            const existingEval = await supabase.getEvaluaciones(workCenterId);
-            console.log('🔍 Evaluación existente encontrada:', existingEval);
+            const existente = await supabase.getEvaluacionPorId(evaluacionId); // Usando el método preciso
             
-            if (existingEval && existingEval.length > 0) {
-                console.log('🔄 Actualizando evaluación existente...');
-                const result = await supabase.updateEvaluacion(existingEval[0].id, evaluacion);
-                console.log('✅ Actualización resultado:', result);
+            if (existente) {
+                console.log('🔄 Actualizando evaluación existente en Supabase...');
+                await supabase.updateEvaluacion(evaluacionId, evaluacion);
             } else {
-                console.log('🆕 Creando nueva evaluación...');
-                const result = await supabase.createEvaluacion(evaluacion);
-                console.log('✅ Creación resultado:', result);
+                console.log('🆕 Creando nueva evaluación en Supabase...');
+                // La fecha de creación solo se añade si es un registro nuevo en la BD
+                evaluacion.created_at = new Date().toISOString();
+                await supabase.createEvaluacion(evaluacion);
             }
+            console.log('✅ Evaluación sincronizada con Supabase.');
+            ERGOUtils.showToast('Evaluación guardada en la nube.', 'success');
         } catch (error) {
             console.error('❌ Error guardando en Supabase:', error);
-            alert('Error al guardar en base de datos: ' + error.message);
+            ERGOUtils.showToast(`Error de red, los datos se guardaron localmente.`, 'error');
         }
     }
-    
-    // Notificar actualización
-    if (window.parent && window.parent.postMessage) {
-        window.parent.postMessage({
-            type: 'evaluacionActualizada',
-            workCenterId: workCenterId,
-            score: scoreFinal,
-            categoria: categoria.texto
-        }, '*');
+
+    if (USE_SUPABASE_EVAL) {
+    try {
+        // ... (código existente para crear o actualizar la evaluación) ...
+        console.log('✅ Creación/Actualización resultado:', result);
+
+        // AÑADE ESTA LLAMADA JUSTO AQUÍ
+        await actualizarResumenDePictogramasPorArea(evaluacion.area_id);
+
+    } catch (error) {
+        // ...
     }
 }
+}
+
+// Asegúrate de que esta función auxiliar también esté en eval_int.js
+function guardarLocalmente(evaluacion, evaluacionId) {
+    let evaluaciones = ERGOStorage.getLocal('evaluaciones', []);
+    const existingIndex = evaluaciones.findIndex(e => e.id === evaluacionId);
+    
+    if (existingIndex !== -1) {
+        evaluacion.created_at = evaluaciones[existingIndex].created_at; // Mantener fecha original
+        evaluaciones[existingIndex] = evaluacion;
+        console.log('🔄 Evaluación actualizada localmente:', evaluacionId);
+    } else {
+        evaluacion.created_at = new Date().toISOString();
+        evaluaciones.push(evaluacion);
+        console.log('🆕 Nueva evaluación creada localmente:', evaluacionId);
+    }
+    
+    ERGOStorage.setLocal('evaluaciones', evaluaciones);
+}
+
+
 // Función para cargar desde Supabase
         async function cargarEvaluacionSupabase(workCenterId) {
             if (USE_SUPABASE_EVAL) {
@@ -178,90 +184,6 @@ async function guardarEvaluacion() {
             return null;
         }
 
-        // Datos con preguntas, ponderaciones y mapeo de métodos
-        const data = {
-            generales: [
-                {pregunta: "¿La altura del área de trabajo es ajustable o adecuada a la estatura del operador (nivel de codo o ligeramente por debajo)?", peso: 3, metodo: 'REBA'},
-                {pregunta: "¿Herramientas, materiales y controles de uso frecuente están ubicados dentro de la zona de alcance cómodo?", peso: 3, metodo: 'RULA'},
-                {pregunta: "¿Las superficies de trabajo son estables, limpias y permiten distintos tipos de tareas?", peso: 1},
-                {pregunta: "¿Se permite trabajar sentado para tareas de precisión o inspección visual detallada?", peso: 1},
-                {pregunta: "¿Se aprovecha al máximo la iluminación natural en áreas de trabajo?", peso: 2},
-                {pregunta: "¿Se emplean colores claros en paredes y techos para mejorar la iluminación indirecta y reducir la fatiga visual?", peso: 1},
-                {pregunta: "¿La zona de trabajo está iluminada uniformemente, evitando contrastes extremos?", peso: 2},
-                {pregunta: "¿Cada trabajador dispone de iluminación suficiente para operar de forma segura y eficiente?", peso: 3},
-                {pregunta: "¿Se usa iluminación localizada en tareas de inspección o precisión?", peso: 2, metodo: 'RULA'},
-                {pregunta: "¿Las fuentes de luz están apantalladas o reubicadas para evitar deslumbramientos?", peso: 2},
-                {pregunta: "¿Se han eliminado reflejos molestos o superficies brillantes que obliguen al trabajador a modificar su postura visual?", peso: 2, metodo: 'RULA'},
-                {pregunta: "¿El fondo de la tarea visual favorece la visibilidad en tareas continuas?", peso: 1},
-                {pregunta: "¿Se cuenta con extracción localizada eficaz en zonas críticas?", peso: 3},
-                {pregunta: "¿Se usa ventilación natural cuando es posible para mantener el confort térmico?", peso: 1},
-                {pregunta: "¿Se mantiene en buen estado el sistema de ventilación general y local?", peso: 2},
-                {pregunta: "¿El ruido no interfiere con la comunicación, seguridad ni eficiencia del trabajo?", peso: 3},
-                {pregunta: "¿Se han implementado soluciones que reduzcan el ruido ambiental en estaciones de trabajo donde se requiere concentración?", peso: 2},
-                {pregunta: "¿El nivel de ruido en el área permite una comunicación efectiva y no genera fatiga auditiva durante tareas prolongadas?", peso: 3},
-                {pregunta: "¿Se dispone de vestuarios y servicios higiénicos limpios y en buen estado?", peso: 1},
-                {pregunta: "¿Hay áreas designadas para comidas, descanso y bebidas disponibles?", peso: 1},
-                {pregunta: "¿Se han identificado previamente quejas musculoesqueléticas o lesiones por parte del personal en esta área?", peso: 3},
-                {pregunta: "¿Se ubican stocks intermedios entre procesos para evitar presión de tiempo?", peso: 1},
-                {pregunta: "¿Se consideran habilidades y preferencias de los trabajadores en su asignación?", peso: 2},
-                {pregunta: "¿Se adaptan estaciones y equipos para personas con discapacidad?", peso: 2}
-            ],
-            condicionales: {
-                manipulaCargas: [
-                    {pregunta: "¿Las rutas internas de transporte están claramente señalizadas, libres de obstáculos y cumplen con protocolos de limpieza?", peso: 2},
-                    {pregunta: "¿Los pasillos tienen ancho suficiente para permitir el tránsito simultáneo de carritos o racks bidireccionales?", peso: 2},
-                    {pregunta: "¿Las superficies de rodamiento son planas, antideslizantes, sin pendientes bruscas ni desniveles?", peso: 3},
-                    {pregunta: "¿Se cuenta con rampas de inclinación máxima del 8% en lugar de escalones o desniveles en zonas de tránsito de materiales?", peso: 3},
-                    {pregunta: "¿La disposición de los materiales minimiza el transporte manual dentro de cada área de trabajo?", peso: 3},
-                    {pregunta: "¿Se utilizan carritos de acero inoxidable u otro material autorizado con ruedas de baja fricción para mover materiales?", peso: 3},
-                    {pregunta: "¿Se emplean dispositivos móviles auxiliares (como carros intermedios) para evitar cargas innecesarias?", peso: 3},
-                    {pregunta: "¿Hay estanterías ajustables en altura y cercanas a las estaciones de trabajo para reducir desplazamientos manuales?", peso: 3},
-                    {pregunta: "¿Se utilizan ayudas mecánicas (grúas, elevadores de columna, poleas) para el movimiento de materiales pesados?", peso: 3, metodo: 'NIOSH', critica: true},
-                    {pregunta: "¿Se han sustituido tareas de manipulación manual con sistemas automáticos como bandas transportadoras o transferencias neumáticas?", peso: 3},
-                    {pregunta: "¿Los materiales se dividen en cargas menores (<25 kg según ISO 11228-1) para facilitar su manipulación segura?", peso: 3, metodo: 'NIOSH', critica: true},
-                    {pregunta: "¿Los contenedores tienen asas ergonómicas, puntos de agarre visibles y permiten un agarre firme sin rotación de muñeca?", peso: 3, metodo: 'NIOSH'},
-                    {pregunta: "¿Se han nivelado zonas de transferencia para evitar diferencias de altura en carga y descarga manual?", peso: 3, metodo: 'NIOSH'},
-                    {pregunta: "¿Las tareas de alimentación y retiro de materiales se hacen horizontalmente mediante empuje o tracción, no mediante levantamiento?", peso: 3, metodo: 'NIOSH', critica: true},
-                    {pregunta: "¿Las tareas de manipulación evitan posiciones forzadas como inclinaciones o torsiones de tronco?", peso: 3, metodo: 'REBA', critica: true},
-                    {pregunta: "¿Los trabajadores mantienen las cargas pegadas al cuerpo y por debajo del nivel de los hombros durante el transporte manual?", peso: 3, metodo: 'NIOSH'},
-                    {pregunta: "¿Las tareas manuales repetitivas se realizan durante más de 2 horas continuas sin variación?", peso: 3, metodo: 'OCRA', critica: true},
-                    {pregunta: "¿El levantamiento y depósito de materiales se realiza con movimientos controlados, en el plano frontal del cuerpo y sin rotación?", peso: 3, metodo: 'NIOSH'},
-                    {pregunta: "¿Para trayectos largos se utilizan mochilas, bolsas simétricas o medios que distribuyan la carga en ambos lados del cuerpo?", peso: 2},
-                    {pregunta: "¿Las tareas de manipulación pesada se alternan con tareas más ligeras para evitar fatiga acumulativa?", peso: 2, metodo: 'OCRA'}
-                ],
-                usaPantallas: [
-                    {pregunta: "¿Los puestos con pantallas permiten ajustes por parte del operador?", peso: 3, metodo: 'RULA'},
-                    {pregunta: "¿Se combinan tareas ante pantalla con tareas físicas para evitar fatiga ocular?", peso: 1},
-                    {pregunta: "¿Se permiten pausas cortas frecuentes en trabajos prolongados frente a pantalla?", peso: 1, metodo: 'OCRA'}
-                ],
-                usaHerramientas: [
-                    {pregunta: "¿En tareas repetitivas se utilizan herramientas diseñadas específicamente para cada tarea (p. ej., pinzas, llaves, destornilladores calibrados)?", peso: 3, metodo: 'RULA', critica: true},
-                    {pregunta: "¿Se emplean herramientas suspendidas en líneas de producción donde se realizan operaciones repetidas?", peso: 2, metodo: 'OCRA'},
-                    {pregunta: "¿Se usan fijadores (como mordazas o tornillos de banco) para estabilizar piezas durante operaciones manuales?", peso: 2},
-                    {pregunta: "¿Las herramientas de precisión ofrecen soporte ergonómico para la muñeca o el dorso de la mano?", peso: 3, metodo: 'RULA', critica: true},
-                    {pregunta: "¿El peso de las herramientas está reducido al mínimo sin comprometer su funcionalidad?", peso: 2},
-                    {pregunta: "¿Las herramientas requieren una fuerza mínima para ser operadas, considerando la variabilidad de los operadores?", peso: 3, metodo: 'RULA'},
-                    {pregunta: "¿Los mangos de las herramientas tienen forma, diámetro y longitud adecuados al tamaño de la mano promedio del operador?", peso: 3, metodo: 'RULA'},
-                    {pregunta: "¿Se cuenta con superficies antideslizantes o retenedores para evitar deslizamiento o pellizcos en el uso de herramientas?", peso: 2},
-                    {pregunta: "¿Se han validado herramientas con bajo nivel de vibración y ruido conforme al perfil de riesgo del puesto?", peso: 3},
-                    {pregunta: "¿Cada herramienta tiene su ubicación asignada en estaciones 5S o shadow boards?", peso: 2},
-                    {pregunta: "¿Las estaciones de trabajo permiten una postura estable y ergonómica para usar herramientas con seguridad?", peso: 3, metodo: 'RULA', critica: true},
-                    {pregunta: "¿Se han tomado medidas para reducir la vibración en equipos y herramientas?", peso: 3},
-                    {pregunta: "¿Las herramientas y máquinas se mantienen en condiciones que reduzcan el esfuerzo auditivo del operador?", peso: 2}
-                ],
-                mantienePosturas: [
-                    {pregunta: "¿Los operadores de menor estatura alcanzan controles y materiales sin forzar su postura?", peso: 2, metodo: 'REBA', critica: true},
-                    {pregunta: "¿Los operadores altos tienen espacio suficiente para movimientos sin restricciones?", peso: 2},
-                    {pregunta: "¿Se permite alternar entre estar de pie y sentado, dependiendo del tipo de tarea?", peso: 2, metodo: 'REBA', critica: true},
-                    {pregunta: "¿Se dispone de sillas o banquetas para pausas cortas en tareas prolongadas de pie?", peso: 2},
-                    {pregunta: "¿Las sillas para trabajos sentados son ajustables y tienen respaldo ergonómico?", peso: 3},
-                    {pregunta: "¿Las superficies de trabajo permiten alternar tareas con objetos grandes y pequeños?", peso: 2},
-                    {pregunta: "¿Se realiza rotación de tareas entre actividades con diferente exigencia física dentro del turno?", peso: 3, metodo: 'OCRA', critica: true},
-                    {pregunta: "¿Existen pausas activas o pausas programadas que ayuden a mitigar la fatiga postural?", peso: 2, metodo: 'OCRA'},
-                    {pregunta: "¿Se combinan tareas para diversificar el trabajo y reducir la fatiga?", peso: 2}
-                ]
-            }
-        };
 
         // Mapeo de métodos y criterios de decisión
         const criteriosMetodos = {
@@ -506,14 +428,15 @@ async function guardarEvaluacion() {
         function calcularScoreAutomatico() {
             const score = calcularScoreFinal();
             document.getElementById('scoreFinal').textContent = score + '%';
-            
-            // Actualizar categoría de riesgo y color
+
             const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
             const elementoCategoria = document.getElementById('textoCategoria');
             const elementoScore = document.getElementById('scoreFinal');
-            
+
             elementoCategoria.textContent = categoria.texto;
             elementoScore.style.color = categoria.color;
+
+            mostrarPictogramasActivos();
         }
 
         // Nueva función para analizar métodos requeridos
@@ -838,171 +761,99 @@ function inicializarEvaluacionBlanco() {
 }
 
 
-function cargarEvaluacionExistente(evaluacion) {
-    // Cargar datos guardados
-    document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
-    document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
-    document.getElementById('responsableArea').value = evaluacion.responsableArea || evaluacion.responsable_area || '';
-    document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion || evaluacion.fecha_evaluacion || '';
-    
-    // Cargar criterios
-    if (evaluacion.criterios) {
-        document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
-        document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
-        document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
-        document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
-    }
-    
-    // Actualizar preguntas y cargar respuestas
-    actualizarPreguntas();
-    
-    setTimeout(() => {
-        if (evaluacion.respuestas) {
-            Object.keys(evaluacion.respuestas).forEach(key => {
-                const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
-                if (radio) radio.checked = true;
-            });
-        }
-        calcularScoreAutomatico();
-        
-        // Solo permitir edición si tiene permisos
-        if (hasPermission('update')) {
-            enterViewMode();
-        } else {
-            // Modo solo lectura permanente
-            isEditMode = false;
-            document.body.classList.add('view-mode');
-            document.getElementById('view-mode-buttons').classList.add('hidden');
-            document.getElementById('edit-mode-buttons').classList.add('hidden');
-            
-            const readOnlyButtons = document.createElement('div');
-            readOnlyButtons.innerHTML = `<button class="btn" onclick="exportarPDFCompleto()">📄 Exportar PDF</button>`;
-            document.querySelector('.btn-container').appendChild(readOnlyButtons);
-            
-            const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
-            inputs.forEach(input => input.disabled = true);
-        }
-    }, 100);
-}
-
-// REEMPLAZAR toda la función cargarDatosExistentes()
 async function cargarDatosExistentes() {
-    // Intentar cargar desde Supabase primero
-    let evaluacion = await cargarEvaluacionSupabase(workCenterId);
-    
-    // Fallback a localStorage
-    if (!evaluacion) {
-        const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-        evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+    if (!workCenterId) {
+        console.log("ℹ️ No hay workCenterId, iniciando evaluación en blanco.");
+        // Aquí podrías llamar a una función que prepare un formulario vacío si es necesario.
+        enterEditMode(); // O la función que corresponda para una nueva evaluación.
+        return;
     }
-    
+
+    console.log(`🔍 Buscando evaluación para Work Center: ${workCenterId}`);
+    let evaluacion = null;
+    let origenDatos = '';
+
+    // 1. Prioridad 1: Intentar cargar desde Supabase
+    if (USE_SUPABASE_EVAL) {
+        evaluacion = await cargarEvaluacionSupabase(workCenterId);
+        if (evaluacion) {
+            origenDatos = 'Supabase';
+        }
+    }
+
+    // 2. Prioridad 2: Fallback a localStorage si Supabase falla o está deshabilitado
+    if (!evaluacion) {
+        const evaluacionesStorage = ERGOStorage.getLocal('evaluaciones', []);
+        // Búsqueda más flexible, compatible con claves antiguas
+        evaluacion = evaluacionesStorage.find(e => e.work_center_id === workCenterId || e.workCenterId === workCenterId);
+        if (evaluacion) {
+            origenDatos = 'LocalStorage';
+        }
+    }
+
+    // 3. Procesar los datos si se encontraron
     if (evaluacion) {
-        // Manejar ambos formatos de nombres de campos
-        document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
-        document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
-        document.getElementById('responsableArea').value = evaluacion.responsableArea || evaluacion.responsable_area || '';
-        document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion || evaluacion.fecha_evaluacion || '';
-        
-        // Cargar criterios
-        if (evaluacion.criterios) {
-        // Cargar criterios con parsing seguro
-        let criterios = {};
-        if (evaluacion.criterios) {
-            try {
-                criterios = typeof evaluacion.criterios === 'string' ? 
-                        JSON.parse(evaluacion.criterios) : evaluacion.criterios;
-            } catch (e) {
-                console.warn('Error parsing criterios:', e);
-                criterios = {};
-            }
-            
-            document.getElementById('manipulaCargas').checked = criterios.manipulaCargas || false;
-            document.getElementById('usaPantallas').checked = criterios.usaPantallas || false;
-            document.getElementById('usaHerramientas').checked = criterios.usaHerramientas || false;
-            document.getElementById('mantienePosturas').checked = criterios.mantienePosturas || false;
-        }
-        }
-        
-        // Actualizar preguntas y cargar respuestas
-        actualizarPreguntas();
-        
-        setTimeout(() => {
-        // Cargar respuestas con parsing seguro
-        let respuestas = {};
-        if (evaluacion.respuestas) {
-            try {
-                respuestas = typeof evaluacion.respuestas === 'string' ? 
-                            JSON.parse(evaluacion.respuestas) : evaluacion.respuestas;
-            } catch (e) {
-                console.warn('Error parsing respuestas:', e);
-                respuestas = {};
-            }
-            
-            Object.keys(respuestas).forEach(key => {
-                const radio = document.querySelector(`input[name="${key}"][value="${respuestas[key]}"]`);
-                if (radio) radio.checked = true;
-            });
-        }
-            calcularScoreAutomatico();
-            enterViewMode();
-        }, 100);
-        
-        console.log('✅ Evaluación existente cargada');
+        console.log(`✅ Datos encontrados. Origen: ${origenDatos}`);
+        poblarFormularioConDatos(evaluacion);
     } else {
-        // NO EXISTE EVALUACIÓN - Cargar datos básicos desde URL si están disponibles
+        console.log("🆕 No se encontró evaluación existente. Cargando datos básicos desde URL para una nueva evaluación.");
+        // Cargar datos básicos de la URL para una nueva evaluación
         if (centerName) document.getElementById('nombreArea').value = decodeURIComponent(centerName);
         if (areaName) document.getElementById('ubicacionArea').value = decodeURIComponent(areaName);
         if (responsibleName) document.getElementById('responsableArea').value = decodeURIComponent(responsibleName);
-        
-        console.log('ℹ️ Nueva evaluación - datos básicos cargados desde URL');
+        enterEditMode();
     }
 }
 
-function cargarEvaluacionExistente(evaluacion) {
-    // Cargar datos guardados
-    document.getElementById('nombreArea').value = evaluacion.nombreArea || evaluacion.nombre_area || '';
-    document.getElementById('ubicacionArea').value = evaluacion.ubicacionArea || evaluacion.ubicacion_area || '';
-    document.getElementById('responsableArea').value = evaluacion.responsableArea || evaluacion.responsable_area || '';
-    document.getElementById('fechaEvaluacion').value = evaluacion.fechaEvaluacion || evaluacion.fecha_evaluacion || '';
-    
-    // Cargar criterios
-    if (evaluacion.criterios) {
-        document.getElementById('manipulaCargas').checked = evaluacion.criterios.manipulaCargas || false;
-        document.getElementById('usaPantallas').checked = evaluacion.criterios.usaPantallas || false;
-        document.getElementById('usaHerramientas').checked = evaluacion.criterios.usaHerramientas || false;
-        document.getElementById('mantienePosturas').checked = evaluacion.criterios.mantienePosturas || false;
+// NUEVA FUNCIÓN AUXILIAR para poblar el formulario y mantener el código limpio
+function poblarFormularioConDatos(evaluacionData) {
+    // Manejar ambos formatos de nombres de campos (snake_case de Supabase, camelCase de JS)
+    document.getElementById('nombreArea').value = evaluacionData.nombre_area || evaluacionData.nombreArea || '';
+    document.getElementById('ubicacionArea').value = evaluacionData.ubicacion_area || evaluacionData.ubicacionArea || '';
+    document.getElementById('responsableArea').value = evaluacionData.responsable_area || evaluacionData.responsableArea || '';
+    document.getElementById('fechaEvaluacion').value = evaluacionData.fecha_evaluacion || evaluacionData.fechaEvaluacion || new Date().toISOString().split('T')[0];
+
+    // Parseo seguro de JSON para Criterios
+    let criterios = {};
+    if (evaluacionData.criterios) {
+        try {
+            criterios = typeof evaluacionData.criterios === 'string' ? JSON.parse(evaluacionData.criterios) : evaluacionData.criterios;
+        } catch (e) {
+            console.warn('Error al parsear criterios:', e);
+        }
     }
-    
-    // Actualizar preguntas y cargar respuestas
+    document.getElementById('manipulaCargas').checked = criterios.manipulaCargas || false;
+    document.getElementById('usaPantallas').checked = criterios.usaPantallas || false;
+    document.getElementById('usaHerramientas').checked = criterios.usaHerramientas || false;
+    document.getElementById('mantienePosturas').checked = criterios.mantienePosturas || false;
+
+    // Actualizar las preguntas que se muestran en la UI
     actualizarPreguntas();
-    
+
+    // Usar setTimeout para asegurar que los elementos del DOM condicionales se hayan creado
     setTimeout(() => {
-        if (evaluacion.respuestas) {
-            Object.keys(evaluacion.respuestas).forEach(key => {
-                const radio = document.querySelector(`input[name="${key}"][value="${evaluacion.respuestas[key]}"]`);
-                if (radio) radio.checked = true;
-            });
+        // Parseo seguro de JSON para Respuestas
+        let respuestas = {};
+        if (evaluacionData.respuestas) {
+            try {
+                respuestas = typeof evaluacionData.respuestas === 'string' ? JSON.parse(evaluacionData.respuestas) : evaluacionData.respuestas;
+            } catch (e) {
+                console.warn('Error al parsear respuestas:', e);
+            }
         }
+        Object.keys(respuestas).forEach(key => {
+            const radio = document.querySelector(`input[name="${key}"][value="${respuestas[key]}"]`);
+            if (radio) radio.checked = true;
+        });
+
+        // Calcular score y mostrar pictogramas guardados
         calcularScoreAutomatico();
-        
-        // Solo permitir edición si tiene permisos
-        if (hasPermission('update')) {
-            enterViewMode();
-        } else {
-            // Modo solo lectura permanente
-            isEditMode = false;
-            document.body.classList.add('view-mode');
-            document.getElementById('view-mode-buttons').classList.add('hidden');
-            document.getElementById('edit-mode-buttons').classList.add('hidden');
-            
-            const readOnlyButtons = document.createElement('div');
-            readOnlyButtons.innerHTML = `<button class="btn" onclick="exportarPDFCompleto()">📄 Exportar PDF</button>`;
-            document.querySelector('.btn-container').appendChild(readOnlyButtons);
-            
-            const inputs = document.querySelectorAll('.input-field, .checkbox-input, .radio-input');
-            inputs.forEach(input => input.disabled = true);
+        if (evaluacionData.riesgos_por_categoria) {
+            actualizarVistaPictogramas(evaluacionData.riesgos_por_categoria);
         }
-    }, 100);
+        
+        enterViewMode();
+    }, 200); // Aumentado ligeramente para mayor seguridad
 }
 
         // Función mejorada para exportar PDF con recomendaciones de métodos
@@ -1075,12 +926,7 @@ function cargarEvaluacionExistente(evaluacion) {
                     doc.text('Métodos: Seguimiento rutinario', 14, 50);
                 }
 
-                // Añadir la sección de métodos recomendados al PDF
-                // BUSCA esta sección en tu código (línea aproximada 650-700):
-// "// Añadir la sección de métodos recomendados al PDF"
 
-// REEMPLAZA desde "const metodosContainer = document.getElementById('metodosRecomendados');" 
-// hasta "posY += 5;" con este código mejorado:
 
                 const metodosContainer = document.getElementById('metodosRecomendados');
                 let posY = 65;
@@ -1310,3 +1156,82 @@ function cargarEvaluacionExistente(evaluacion) {
                 document.getElementById('spinner').classList.add('hidden');
             }
         }
+        
+// En eval_int.js, reemplaza la función completa
+function mostrarPictogramasActivos() {
+    const respuestas = {};
+    document.querySelectorAll('.question input[type="radio"]:checked').forEach(radio => {
+        respuestas[radio.name] = radio.value;
+    });
+
+    // Llama a nuestro motor de análisis para obtener el estado de cada pictograma
+    const analisis = window.ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
+    
+    const container = document.getElementById('pictogramas-activos-list');
+    const mainContainer = document.getElementById('pictogramas-resultado-container');
+    container.innerHTML = ''; // Limpiar resultados anteriores
+
+    let pictogramasActivos = 0;
+    for (const [id, resultado] of Object.entries(analisis)) {
+        if (id === 'resumen') continue; // Ignorar el objeto de resumen
+
+        // Solo mostrar pictogramas que tengan un riesgo (score > 0)
+        if (resultado.activo) {
+            pictogramasActivos++;
+            const pictogramaInfo = window.ERGOAnalytics.pictogramasConfig[id];
+            const item = document.createElement('div');
+            item.className = `pictograma-item ${resultado.color}`;
+            
+            // --- LÍNEA CORREGIDA ---
+            // Esta es la sintaxis correcta para crear el HTML dinámicamente.
+            // Usa `${...}` para insertar variables dentro del texto.
+            item.innerHTML = `<div class="pictograma-icon">${id}</div><div>${pictogramaInfo.nombre}</div>`;
+            
+            container.appendChild(item);
+        }
+    }
+
+    // Oculta o muestra el contenedor principal si hay o no pictogramas activos
+    mainContainer.classList.toggle('hidden', pictogramasActivos === 0);
+}
+
+async function actualizarResumenDePictogramasPorArea(areaId) {
+    if (!areaId) return;
+
+    console.log(`🔄 Recalculando resumen de pictogramas para el área: ${areaId}`);
+    try {
+        // 1. Obtener TODAS las evaluaciones para esta área
+        const todasLasEvaluacionesDelArea = await supabase.getEvaluacionesPorArea(areaId);
+
+        if (!todasLasEvaluacionesDelArea) {
+            console.warn("No se pudieron obtener evaluaciones para el área.");
+            return;
+        }
+
+        // 2. Contar todos los pictogramas
+        const resumen = {};
+        todasLasEvaluacionesDelArea.forEach(ev => {
+            if (ev.riesgos_por_categoria) {
+                for (const key in ev.riesgos_por_categoria) {
+                    if (!resumen[key]) {
+                        resumen[key] = {
+                            count: 0,
+                            nombre: ev.riesgos_por_categoria[key].nombre,
+                            pictograma: ev.riesgos_por_categoria[key].pictograma
+                        };
+                    }
+                    resumen[key].count++;
+                }
+            }
+        });
+        
+        console.log("📊 Resumen de pictogramas calculado:", resumen);
+
+        // 3. Guardar el nuevo resumen en la tabla 'areas'
+        await supabase.updateArea(areaId, { resumen_pictogramas: resumen });
+        console.log(`✅ Resumen para el área ${areaId} actualizado en Supabase.`);
+
+    } catch (error) {
+        console.error("Error al actualizar el resumen de pictogramas:", error);
+    }
+}

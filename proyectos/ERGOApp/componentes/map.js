@@ -40,20 +40,28 @@ class ERGOMap {
     }
 
     // Inicializar el mapa
-    init() {
-        console.log('🗺️ Inicializando ERGOMap...');
-        
-        // Limpiar contenedor existente
-        this.container.selectAll('*').remove();
-        
-        // Crear estructura del mapa
-        this.createMapStructure();
-        this.createTooltip();
-        this.createLegend();
-        this.setupZoomPan();
-        
-        console.log('✅ ERGOMap inicializado');
+init() {
+    console.log('🗺️ Inicializando ERGOMap...');
+    this.container.selectAll('*').remove();
+    this.createMapStructure();
+    this.createTooltip();
+    this.createLegend();
+    this.setupZoomPan();
+
+    const svgPath = this.container.attr('data-map-source');
+    if (svgPath) {
+        this.loadSVG(svgPath).then(() => {
+            if (this.dashboardData) {
+                this.updateRiskData(this.dashboardData.areas || []);
+            }
+        });
+    } else {
+        console.error('❌ No se especificó la ruta del mapa en el atributo data-map-source');
+        this.showPlaceholder();
     }
+    
+    console.log('✅ ERGOMap inicializado');
+}
 
     // Crear estructura HTML/SVG del mapa
     createMapStructure() {

@@ -63,6 +63,29 @@ async query(table, method = 'GET', data = null, filters = '') {
     async getAreas() {
         return await this.query('areas');
     }
+    async getAllEvaluations() {
+        // Usa el método genérico query para mayor consistencia
+        // CORRECCIÓN: Pedimos todos los campos necesarios para el script
+        return await this.query('evaluaciones', 'GET', null, '?select=id,area_id,respuestas,riesgos_por_categoria');
+    }
+
+    /**
+     * Obtiene TODAS las áreas (solo los campos necesarios para el script).
+     * @returns {Promise<Array|null>}
+     */
+    async getAllAreas() {
+        return await this.query('areas', 'GET', null, '?select=id,name');
+    }
+
+    /**
+     * Obtiene TODAS las evaluaciones para un área específica.
+     * @param {string} areaId - El ID del área.
+     * @returns {Promise<Array|null>} Un array con todas las evaluaciones del área.
+     */
+    async getEvaluacionesPorArea(areaId) {
+        return await this.query('evaluaciones', 'GET', null, `?select=riesgos_por_categoria&area_id=eq.${areaId}`);
+    }
+    
     // AGREGAR estas 2 funciones después de getAreas():
 
     async getArea(areaId) {
@@ -98,7 +121,13 @@ async query(table, method = 'GET', data = null, filters = '') {
     }
 
     async createArea(area) {
-        return await this.query('areas', 'POST', area);
+        // Añadimos las fechas de creación y actualización automáticamente
+        const dataToInsert = {
+            ...area,
+            created_at: new Date().toISOString(),
+            ultima_actualizacion: new Date().toISOString()
+        };
+        return await this.query('areas', 'POST', dataToInsert);
     }
 
     async deleteArea(id) {
@@ -537,70 +566,63 @@ async getUsuario(id) {
 
 async getDashboardData() {
     try {
-        // Obtener todos los datos necesarios
+        // Obtenemos todos los datos necesarios en paralelo
         const [scoresData, areasData, workCentersData, evaluacionesData] = await Promise.all([
             this.query('scores_resumen', 'GET', null, '?order=score_actual.desc'),
-            this.query('areas', 'GET', null, ''),
-            this.query('work_centers', 'GET', null, ''), // ← AGREGAR ESTO
-            this.query('evaluaciones', 'GET', null, '') // ← AGREGAR ESTO
+            this.query('areas', 'GET', null, '?select=*,resumen_pictogramas'),
+            this.query('work_centers', 'GET', null, ''),
+            this.query('evaluaciones', 'GET', null, '')
         ]);
-        
-        if (!scoresData) return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
-        
+
+        if (!areasData) return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
+
         // Crear mapas para acceso rápido
         const areasMap = {};
+        areasData.forEach(area => {
+            areasMap[area.id] = area.name;
+        });
+
         const workCentersMap = {};
-        
-        if (areasData) {
-            areasData.forEach(area => {
-                areasMap[area.id] = area.name;
-            });
-        }
-        
         if (workCentersData) {
             workCentersData.forEach(center => {
                 workCentersMap[center.id] = center.name;
             });
         }
-        
-        // Calcular promedios por área
-        const areaScores = {};
-        scoresData.forEach(score => {
-            if (!areaScores[score.area_id]) {
-                areaScores[score.area_id] = {
-                    total: 0,
-                    count: 0,
-                    name: areasMap[score.area_id] || `Área ${score.area_id}`
-                };
-            }
-            areaScores[score.area_id].total += parseFloat(score.score_actual);
-            areaScores[score.area_id].count += 1;
-        });
-        
-        // Convertir a array y calcular promedios
-        const areas = Object.entries(areaScores).map(([areaId, data]) => {
-            const promedioCompleto = data.total / data.count;
+
+        // --- INICIO DE LA LÓGICA DE CÁLCULO MEJORADA ---
+        const areasCombinadas = areasData.map(area => {
+            // Filtrar los scores y centros que pertenecen a esta área
+            const scoresDeArea = scoresData ? scoresData.filter(s => s.area_id === area.id) : [];
+            const centrosDeArea = workCentersData ? workCentersData.filter(wc => wc.area_id === area.id) : [];
+
+            // Calcular el promedio del score para esta área
+            const totalScore = scoresDeArea.reduce((sum, s) => sum + parseFloat(s.score_actual), 0);
+            const promedio = scoresDeArea.length > 0 ? (totalScore / scoresDeArea.length) : 0;
+
+            // Devolver un objeto de área con los totales CORRECTOS calculados ahora mismo
             return {
-                id: areaId,
-                name: data.name,
-                promedio_score: promedioCompleto.toFixed(2), // ← 2 decimales
-                promedio_calculo: promedioCompleto
+                ...area, // Mantiene datos originales como el resumen de pictogramas
+                promedio_score: promedio.toFixed(2),
+                promedio_calculo: promedio,
+                total_centros: centrosDeArea.length,
+                centros_evaluados: scoresDeArea.length
             };
-        }).sort((a, b) => parseFloat(b.promedio_calculo) - parseFloat(a.promedio_calculo));
-        
-        // Top 10 centros con más riesgo
-        const topRisk = scoresData.slice(0, 10).map(score => ({
-            area_name: areasMap[score.area_id] || `Área ${score.area_id}`,
+        }).sort((a, b) => b.promedio_calculo - a.promedio_calculo);
+        // --- FIN DE LA LÓGICA DE CÁLCULO MEJORADA ---
+
+        // Top 10 centros con más riesgo (esto ya estaba bien)
+        const topRisk = scoresData ? scoresData.slice(0, 10).map(score => ({
+            area_name: areasMap[score.area_id] || 'Sin área',
             center_name: workCentersMap[score.work_center_id] || `Centro ${score.work_center_id}`,
             score: parseFloat(score.score_actual).toFixed(2),
             categoria: score.categoria_riesgo
-        }));
-        
-        return { 
-            areas, 
+        })) : [];
+
+        return {
+            areas: areasCombinadas,
             topRisk,
-            totalWorkCenters: workCentersData ? workCentersData.length : 0, // ← NUEVO
-            totalEvaluaciones: evaluacionesData ? evaluacionesData.length : 0 // ← NUEVO
+            totalWorkCenters: workCentersData ? workCentersData.length : 0,
+            totalEvaluaciones: evaluacionesData ? evaluacionesData.length : 0
         };
     } catch (error) {
         console.error('Error getting dashboard data:', error);
@@ -608,7 +630,172 @@ async getDashboardData() {
     }
 }
 
+    async getAllAreasConResumen() {
+        return await this.query('areas', 'GET', null, '?select=name,resumen_pictogramas');
+    }
+
 }
 
 // Instancia global
 const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+//================================================================
+// MÓDULO DE ANALÍTICAS Y DECISIONES DE RIESGO (VERSIÓN FINAL)
+//================================================================
+window.ERGOAnalytics = {
+    // Catálogo de pictogramas con sus preguntas asociadas para un análisis robusto
+    pictogramasConfig: {
+        R01: { 
+            nombre: 'Carga Manual', 
+            preguntas_asociadas: [
+                "¿Se utilizan ayudas mecánicas (grúas, elevadores de columna, poleas) para el movimiento de materiales pesados?",
+                "¿Los materiales se dividen en cargas menores (<25 kg según ISO 11228-1) para facilitar su manipulación segura?",
+                "¿Los contenedores tienen asas ergonómicas, puntos de agarre visibles y permiten un agarre firme sin rotación de muñeca?",
+                "¿Los trabajadores mantienen las cargas pegadas al cuerpo y por debajo del nivel de los hombros durante el transporte manual?",
+                "¿El levantamiento y depósito de materiales se realiza con movimientos controlados, en el plano frontal del cuerpo y sin rotación?"
+            ]
+        },
+        R02: { 
+            nombre: 'Posturas Forzadas', 
+            preguntas_asociadas: [
+                "¿Las tareas de manipulación evitan posiciones forzadas como inclinaciones o torsiones de tronco?",
+                "¿La altura del área de trabajo es ajustable o adecuada a la estatura del operador (nivel de codo o ligeramente por debajo)?",
+                "¿Se permite alternar entre estar de pie y sentado, dependiendo del tipo de tarea?",
+                "¿Las estaciones de trabajo permiten una postura estable y ergonómica para usar herramientas con seguridad?",
+                "¿Las sillas para trabajos sentados son ajustables y tienen respaldo ergonómico?"
+            ] 
+        },
+        R03: { 
+            nombre: 'Movimientos Repetitivos', 
+            preguntas_asociadas: [
+                "¿Las tareas manuales repetitivas se realizan durante más de 2 horas continuas sin variación?",
+                "¿Se realiza rotación de tareas entre actividades con diferente exigencia física dentro del turno?",
+                "¿Se emplean herramientas suspendidas en líneas de producción donde se realizan operaciones repetidas?",
+                "¿Las tareas de manipulación pesada se alternan con tareas más ligeras para evitar fatiga acumulativa?"
+            ]
+        },
+        R04: { 
+            nombre: 'Empuje o Tracción', 
+            preguntas_asociadas: [
+                "¿Las tareas de alimentación y retiro de materiales se hacen horizontalmente mediante empuje o tracción, no mediante levantamiento?",
+                "¿Se utilizan carritos de acero inoxidable u otro material autorizado con ruedas de baja fricción para mover materiales?",
+                "¿Las superficies de rodamiento son planas, antideslizantes, sin pendientes bruscas ni desniveles?"
+            ] 
+        },
+        R05: { 
+            nombre: 'Circulación y Rampas', 
+            preguntas_asociadas: [
+                "¿Se cuenta con rampas de inclinación máxima del 8% en lugar de escalones o desniveles en zonas de tránsito de materiales?",
+                "¿Los pasillos tienen ancho suficiente para permitir el tránsito simultáneo de carritos o racks bidireccionales?",
+                "¿Las rutas internas de transporte están claramente señalizadas, libres de obstáculos y cumplen con protocolos de limpieza?"
+            ] 
+        },
+        R06: { 
+            nombre: 'Alcance y Herramientas', 
+            preguntas_asociadas: [
+                "¿Herramientas, materiales y controles de uso frecuente están ubicados dentro de la zona de alcance cómodo?",
+                "¿Los mangos de las herramientas tienen forma, diámetro y longitud adecuados al tamaño de la mano promedio del operador?",
+                "¿Las herramientas de precisión ofrecen soporte ergonómico para la muñeca o el dorso de la mano?",
+                "¿Hay estanterías ajustables en altura y cercanas a las estaciones de trabajo para reducir desplazamientos manuales?"
+            ] 
+        },
+        R07: {
+            nombre: 'Entorno Visual y Pantallas',
+            preguntas_asociadas: [
+                "¿Los puestos con pantallas permiten ajustes por parte del operador?",
+                "¿Se han eliminado reflejos molestos o superficies brillantes que obliguen al trabajador a modificar su postura visual?",
+                "¿Las fuentes de luz están apantalladas o reubicadas para evitar deslumbramientos?",
+                "¿Cada trabajador dispone de iluminación suficiente para operar de forma segura y eficiente?",
+                "¿Se permiten pausas cortas frecuentes en trabajos prolongados frente a pantalla?"
+            ]
+        }
+    },
+
+    analizarRiesgosPorPictograma: function(respuestas, dataPreguntas) {
+        const resultados = {};
+        const mapaPreguntas = this.mapearPreguntas(dataPreguntas);
+
+        for (const [id, config] of Object.entries(this.pictogramasConfig)) {
+            let pesoTotal = 0;
+            let pesoRiesgo = 0;
+
+            config.preguntas_asociadas.forEach(textoPregunta => {
+                const preguntaInfo = mapaPreguntas[textoPregunta];
+                if (preguntaInfo) {
+                    const respuesta = respuestas[preguntaInfo.nombreRespuesta];
+                    if (respuesta === 'si' || respuesta === 'no') {
+                        pesoTotal += preguntaInfo.peso;
+                        if (respuesta === 'no') {
+                            pesoRiesgo += preguntaInfo.peso;
+                        }
+                    }
+                }
+            });
+            
+            const score = (pesoTotal > 0) ? (pesoRiesgo / pesoTotal) * 100 : 0;
+            
+            resultados[id] = {
+                score: parseFloat(score.toFixed(2)),
+                color: this.getNivelRiesgoPictograma(score),
+                activo: score > 0
+            };
+        }
+
+        resultados.resumen = this.calcularSemaforoGlobal(resultados);
+        return resultados;
+    },
+    
+    getNivelRiesgoPictograma: function(score) {
+        if (score >= 67) return 'rojo';
+        if (score >= 34) return 'naranja';
+        return 'verde';
+    },
+
+    calcularSemaforoGlobal: function(resultadosPictogramas) {
+        let conteo = { rojo: 0, naranja: 0, verde: 0 };
+
+        for (const id in this.pictogramasConfig) {
+            const resultado = resultadosPictogramas[id];
+            if (resultado.color === 'rojo') conteo.rojo++;
+            else if (resultado.color === 'naranja') conteo.naranja++;
+            else conteo.verde++;
+        }
+
+        if (conteo.rojo > 1) {
+            conteo.naranja += conteo.rojo - 1;
+            conteo.rojo = 1;
+        }
+        if (conteo.naranja > 1) {
+            conteo.rojo += conteo.naranja - 1;
+            conteo.naranja = 1;
+        }
+        if (conteo.rojo > 1) {
+             conteo.naranja += conteo.rojo - 1;
+             conteo.rojo = 1;
+        }
+
+        const totalPictogramas = Object.keys(this.pictogramasConfig).length;
+        conteo.verde = totalPictogramas - conteo.rojo - conteo.naranja;
+
+        return conteo;
+    },
+
+    mapearPreguntas: function(dataPreguntas) {
+        if (this._mapaPreguntas) return this._mapaPreguntas;
+
+        const mapa = {};
+        const procesarCategoria = (preguntas, categoria) => {
+            preguntas.forEach((p, index) => {
+                mapa[p.pregunta] = { ...p, nombreRespuesta: `${categoria}-${index}` };
+            });
+        };
+
+        procesarCategoria(dataPreguntas.generales, 'general');
+        for (const categoria in dataPreguntas.condicionales) {
+            procesarCategoria(dataPreguntas.condicionales[categoria], categoria);
+        }
+
+        this._mapaPreguntas = mapa;
+        return mapa;
+    }
+};

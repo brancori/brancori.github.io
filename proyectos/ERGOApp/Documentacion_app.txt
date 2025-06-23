@@ -11,6 +11,59 @@ no reescribas todo el código sólo dame las partes que hay que cambias modifica
 - **Frontend:** HTML, CSS, JavaScript
 - **Backend:** Supabase (PostgreSQL, autenticación, almacenamiento de archivos y eventos en tiempo real)
 
+/* === supabase-config.js === */
+// Este archivo inicializa el cliente de Supabase y centraliza
+// todas las llamadas a la base de datos en un único objeto.
+
+// const { createClient } = require('@supabase/supabase-js'); // Node
+// import { createClient } from '@supabase/supabase-js' // ES6
+const _supabase = createClient(ERGOConfig.SUPABASE_URL, ERGOConfig.SUPABASE_ANON_KEY);
+
+const supabase = {
+    // --- Evaluaciones ---
+    
+    /**
+     * Obtiene la última evaluación para un centro de trabajo específico.
+     * @param {string} workCenterId - El ID del centro de trabajo.
+     * @returns {Promise<object|null>} El objeto de la evaluación o null si no se encuentra.
+     */
+    getEvaluacion: async (workCenterId) => {
+        const { data, error } = await _supabase
+            .from('evaluaciones') // Tabla consultada
+            .select('*')
+            .eq('work_center_id', workCenterId) // Columna de búsqueda
+            .order('fecha_evaluacion', { ascending: false }) // Siempre trae la más reciente
+            .limit(1)
+            .single(); // Devuelve un objeto, no un array
+
+        if (error && error.code !== 'PGRST116') { // Ignorar error si no encuentra filas
+            console.error('Error en getEvaluacion:', error);
+            return null;
+        }
+        return data;
+    },
+
+    /**
+     * Crea un nuevo registro de evaluación.
+     * @param {object} evaluacionData - El objeto completo de la evaluación.
+     * @returns {Promise<object|null>} Los datos creados.
+     */
+    createEvaluacion: async (evaluacionData) => {
+        const { data, error } = await _supabase
+            .from('evaluaciones')
+            .insert([evaluacionData])
+            .select()
+            .single();
+            
+        if (error) {
+            console.error('Error en createEvaluacion:', error);
+        }
+        return data;
+    },
+
+    // ... y así para updateEvaluacion, getAreas, getWorkCenters, etc.
+};
+
 
 **Arquitectura:**
 - Patrón MVC simplificado
@@ -151,18 +204,19 @@ Tabla optimizada para consultas rápidas de scores.
 
 ### Archivos Principales
 
-**📁 Archivos Core:**
-- `globals.js` - Funciones globales centralizadas
-- `supabase-config.js` - Configuración y cliente de Supabase
-- `index.js` - Aplicación principal y dashboard
-- `areas.js` - Gestión de áreas y centros de trabajo
-- `eval_int.js` - Sistema de evaluaciones ergonómicas
+📁Archivos Core:
 
-**📁 Archivos HTML:**
-- `index.html` - Página de login y dashboard
-- `areas.html` - Gestión de áreas y centros
-- `centro-trabajo.html` - Vista detallada de centros
-- `eval_int.html` - Formulario de evaluación inicial
+globals.js - Funciones globales centralizadas
+supabase-config.js - Configuración y cliente de Supabase
+index.js - Aplicación principal y dashboard
+areas.js - Gestión de áreas y centros de trabajo
+eval_int.js - Sistema de evaluaciones ergonómicas  
+
+📁 Archivos HTML:
+index.html - Página de login y dashboard
+areas.html - Gestión de áreas y centros 
+centro-trabajo.html - Vista detallada de centros 
+eval_int.html - Formulario de evaluación inicial
 
 ### globals.js - Sistema Centralizado
 

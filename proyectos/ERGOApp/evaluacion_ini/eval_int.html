@@ -72,6 +72,20 @@
         </div>
 
         <div id="resultadoScore" class="btn-container resultado-evaluacion">
+            <div id="pictogramas-resultado-container" class="pictogramas-resultado-container hidden">
+                <h3>Pictogramas de Riesgo Identificados</h3>
+                <div id="pictogramas-activos-list" class="pictogramas-activos-list"></div>
+            </div>
+            <style>
+                .pictogramas-resultado-container { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+                .pictogramas-resultado-container.hidden { display: none; }
+                .pictogramas-resultado-container h3 { text-align: center; color: #333; margin-top: 0; margin-bottom: 16px; font-size: 16px; }
+                .pictogramas-activos-list { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+                .pictograma-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; color: #555; padding: 8px; border-radius: 6px; width: 100px; text-align: center; border: 1px solid transparent; }
+                .pictograma-item.rojo { background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.5); }
+                .pictograma-item.naranja { background-color: rgba(253, 126, 20, 0.1); border-color: rgba(253, 126, 20, 0.5); }
+                .pictograma-icon { font-size: 24px; font-weight: bold; }
+            </style>
             <h2 class="titulo-resultado">📊 Evaluación Ergonómica Completada</h2>
             <div class="nivel-riesgo">
                 Nivel de Riesgo: <span id="scoreFinal">0%</span>
@@ -113,6 +127,6 @@
     </div>
 
 
-    <script src="./eval_int.js"></script>
+    <script type="module" src="./eval_int.js"></script>
 </body>
 </html>
