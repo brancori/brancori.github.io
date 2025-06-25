@@ -121,22 +121,38 @@ window.ERGOAuth = {
     }
     },
 
-logout(reason = null) {
-    // Limpiar storage
-    sessionStorage.removeItem('currentUser');
-    sessionStorage.removeItem('sessionExpiry');
-    localStorage.removeItem('lastActivity');
-    
-    if (reason) {
-        alert(reason);
-    }
-    
-    // Redirigir directamente si no estamos en index.html
-    const path = window.location.pathname;
-    if (path !== '/index.html' && path !== '/') {
-        window.location.href = 'index.html';
-    }
-},
+// En el archivo globals.js, dentro del objeto ERGOAuth
+
+    logout(reason = null) {
+        console.log(`Cerrando sesión. Razón: ${reason || 'Manual'}`);
+
+        // 1. Cerrar la sesión en el backend de Supabase (si el cliente está disponible)
+        if (window.authClient) {
+            window.authClient.logout();
+        }
+
+        // 2. Limpiar el storage local
+        sessionStorage.removeItem('currentUser');
+        sessionStorage.removeItem('sessionExpiry');
+        sessionStorage.removeItem('sessionToken'); // Asegúrate de limpiar el token también
+        localStorage.removeItem('lastActivity');
+        
+        // 3. (Opcional) Mostrar la razón del logout
+        if (reason) {
+            // Usamos un toast en lugar de un alert para una mejor experiencia
+            if (window.ERGOUtils) {
+                ERGOUtils.showToast(reason, 'info');
+            } else {
+                alert(reason);
+            }
+        }
+        
+        // 4. Forzar la recarga de la página para un estado limpio
+        // Se ejecutará después de mostrar el toast.
+        setTimeout(() => {
+            window.location.reload();
+        }, 500); // Pequeño delay para que el usuario pueda ver el toast
+    },
 
     applyPermissionControls() {
         const currentUser = this.getCurrentUser();
@@ -194,7 +210,7 @@ logout(reason = null) {
             if (lastActivity && sessionExpiry) {
                 const now = new Date().getTime();
                 const timeSinceActivity = now - parseInt(lastActivity);
-                const maxInactivity = 30 * 60 * 1000; // 30 minutos
+                const maxInactivity = 2 * 60 * 60 * 1000; // 2 horas
                 
                 if (timeSinceActivity > maxInactivity) {
                     this.logout('Sesión cerrada por inactividad');
@@ -202,41 +218,43 @@ logout(reason = null) {
             }
         }, 60000); // Cada minuto
     },
-initializeAuthContext() {
-    console.log('%c🕵️‍♂️ DIAGNÓSTICO DE SESIÓN INICIADO...', 'color: blue; font-weight: bold;');
+    initializeAuthContext() {
+        console.log('%c🕵️‍♂️ DIAGNÓSTICO DE SESIÓN INICIADO...', 'color: blue; font-weight: bold;');
 
-    // Leemos los tres datos críticos directamente del sessionStorage
-    const currentUser = sessionStorage.getItem('currentUser');
-    const sessionExpiry = sessionStorage.getItem('sessionExpiry');
-    const sessionToken = sessionStorage.getItem('sessionToken');
+        const currentUser = sessionStorage.getItem('currentUser');
+        const sessionExpiry = sessionStorage.getItem('sessionExpiry');
+        const sessionToken = sessionStorage.getItem('sessionToken');
 
-    // Mostramos el estado de cada uno para ver qué encuentra el navegador
-    console.log(`1. Verificando 'currentUser': ${currentUser ? `✅ ENCONTRADO (longitud: ${currentUser.length})` : '❌ NO ENCONTRADO'}`);
-    console.log(`2. Verificando 'sessionExpiry': ${sessionExpiry ? `✅ ENCONTRADO (expira: ${new Date(parseInt(sessionExpiry)).toLocaleString()})` : '❌ NO ENCONTRADO'}`);
-    console.log(`3. Verificando 'sessionToken': ${sessionToken ? `✅ ENCONTRADO (longitud: ${sessionToken.length})` : '❌ NO ENCONTRADO'}`);
+        console.log(`1. Verificando 'currentUser': ${currentUser ? `✅ ENCONTRADO (longitud: ${currentUser.length})` : '❌ NO ENCONTRADO'}`);
+        console.log(`2. Verificando 'sessionExpiry': ${sessionExpiry ? `✅ ENCONTRADO (expira: ${new Date(parseInt(sessionExpiry)).toLocaleString()})` : '❌ NO ENCONTRADO'}`);
+        console.log(`3. Verificando 'sessionToken': ${sessionToken ? `✅ ENCONTRADO (longitud: ${sessionToken.length})` : '❌ NO ENCONTRADO'}`);
 
-    // Verificación lógica
-    if (!currentUser || !sessionExpiry || !sessionToken) {
-        console.error('❌ FALLO: Faltan datos esenciales de la sesión. La redirección es inevitable.');
-        return false;
+        if (!currentUser || !sessionExpiry || !sessionToken) {
+            console.error('❌ FALLO: Faltan datos esenciales de la sesión. La redirección es inevitable.');
+            return false;
+        }
+
+        if (new Date().getTime() > parseInt(sessionExpiry)) {
+            console.error('❌ FALLO: La sesión ha expirado.');
+            this.logout('Sesión expirada');
+            return false;
+        }
+
+        if (!window.dataClient || !window.authClient) {
+            console.error('❌ FALLO: `dataClient` o `authClient` no existen. Revisa el orden de carga.');
+            return false;
+        }
+        
+        // --- INICIO DE LA MODIFICACIÓN ---
+        // Establecemos el token en ambos clientes para consistencia
+        const token = JSON.parse(sessionToken);
+        window.dataClient.setAuth(token);
+        window.authClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
+        // --- FIN DE LA MODIFICACIÓN ---
+
+        console.log('%c🔑 CONTEXTO DE SESIÓN ESTABLECIDO. La página NO debería redirigir.', 'color: green; font-weight: bold;');
+        return true;
     }
-
-    if (new Date().getTime() > parseInt(sessionExpiry)) {
-        console.error('❌ FALLO: La sesión ha expirado.');
-        this.logout('Sesión expirada');
-        return false;
-    }
-
-    if (!window.dataClient) {
-         console.error('❌ FALLO: `window.dataClient` no existe. Revisa `supabase-config.js` o el orden de carga.');
-         return false;
-    }
-
-    console.log('✅ ÉXITO: Todos los datos y clientes están presentes.');
-    window.dataClient.setAuth(JSON.parse(sessionToken));
-    console.log('%c🔑 CONTEXTO DE SESIÓN ESTABLECIDO. La página NO debería redirigir.', 'color: green; font-weight: bold;');
-    return true;
-}
 
 
 
@@ -371,10 +389,19 @@ window.ERGONavigation = {
         return url;
     },
 
-    navigateToAreas(areaId = null) {
-        // La ruta ahora es solo el nombre del archivo
-        const url = areaId ? `areas.html#area-${areaId}` : 'areas.html';
-        window.location.href = this.basePath + url;
+    navigateToAreas(areaId = null, areaName = '') {
+        if (areaId) {
+            // Si nos dan un ID, construimos una URL con parámetros
+            const params = {
+                area: areaId,
+                areaName: areaName
+            };
+            const url = this.buildUrl('areas.html', params);
+            window.location.href = url;
+        } else {
+            // Si no hay ID, simplemente vamos a la página principal de áreas
+            window.location.href = this.basePath + 'areas.html';
+        }
     },
 
     navigateToWorkCenter(workCenterId, areaId, areaName, centerName, responsible) {

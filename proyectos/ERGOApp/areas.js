@@ -1033,12 +1033,12 @@ function calcularPromedioFromLocalStorage(area_id) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', async function() {
-        if (!ERGOAuth.initializeAuthContext()) {
+    if (!ERGOAuth.initializeAuthContext()) {
         ERGOAuth.redirectToLogin();
         return;
     }
-    // Cargar datos desde Supabase
     
+    // Carga los datos iniciales
     try {
         await loadAreas();
         await loadWorkCenters();
@@ -1046,43 +1046,42 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error('Error loading data:', error);
     }
     
-    // Verificar parámetros de URL ANTES de renderizar
+    // Define la función que configura los listeners de los filtros
+    const setupFilters = () => {
+        // Listeners para los filtros de ÁREAS
+        const areaNameFilter = document.getElementById('filter-area-name');
+        const areaScoreFilter = document.getElementById('filter-area-score');
+        const areaStatusFilter = document.getElementById('filter-area-status');
+        
+        // El listener 'input' se activa cada vez que escribes algo.
+        // ERGOUtils.debounce evita que se ejecute en cada letra, esperando 300ms,
+        // lo que es perfecto para un buscador en tiempo real.
+        if (areaNameFilter) areaNameFilter.addEventListener('input', ERGOUtils.debounce(renderAreas, 300));
+        if (areaScoreFilter) areaScoreFilter.addEventListener('change', renderAreas);
+        if (areaStatusFilter) areaStatusFilter.addEventListener('change', renderAreas);
+        
+        // Listeners para los filtros de CENTROS DE TRABAJO
+        const centerNameFilter = document.getElementById('filter-center-name');
+        const centerScoreFilter = document.getElementById('filter-center-score');
+        const centerResponsibleFilter = document.getElementById('filter-center-responsible');
+        
+        if (centerNameFilter) centerNameFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
+        if (centerScoreFilter) centerScoreFilter.addEventListener('change', renderWorkCenters);
+        if (centerResponsibleFilter) centerResponsibleFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
+    };
+
+    // Llama a la función para activar los filtros inmediatamente
+    setupFilters();
+
+    // El resto de tu lógica para mostrar la página correcta
     const urlParams = new URLSearchParams(window.location.search);
     const areaIdFromUrl = urlParams.get('area');
-    const areaNameFromUrl = urlParams.get('areaName');
 
-    if (areaIdFromUrl && areaNameFromUrl) {
-        // Ir directamente a la vista de área específica SIN mostrar la lista de áreas
+    if (areaIdFromUrl) {
         await showAreaDetail(areaIdFromUrl);
     } else {
-        // Solo renderizar áreas si NO hay parámetros específicos
         await renderAreas();
     }
 
-    // Cargar scores existentes
-    setTimeout(() => {
-        cargarScoresExistentes();
-    }, 100);
-    
-ERGOAuth.applyPermissionControls();
-// Setup filtros en tiempo real
-const setupFilters = () => {
-    const areaNameFilter = document.getElementById('filter-area-name');
-    const areaScoreFilter = document.getElementById('filter-area-score');
-    const areaStatusFilter = document.getElementById('filter-area-status');
-    
-    if (areaNameFilter) areaNameFilter.addEventListener('input', ERGOUtils.debounce(renderAreas, 300));
-    if (areaScoreFilter) areaScoreFilter.addEventListener('change', renderAreas);
-    if (areaStatusFilter) areaStatusFilter.addEventListener('change', renderAreas);
-    
-    const centerNameFilter = document.getElementById('filter-center-name');
-    const centerScoreFilter = document.getElementById('filter-center-score');
-    const centerResponsibleFilter = document.getElementById('filter-center-responsible');
-    
-    if (centerNameFilter) centerNameFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
-    if (centerScoreFilter) centerScoreFilter.addEventListener('change', renderWorkCenters);
-    if (centerResponsibleFilter) centerResponsibleFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
-};
-
-setTimeout(setupFilters, 500);
+    ERGOAuth.applyPermissionControls();
 });

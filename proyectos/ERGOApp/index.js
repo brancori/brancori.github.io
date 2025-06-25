@@ -1,5 +1,6 @@
 import data from './componentes/cuestionario-data.js';
 // index.js - Sistema de Evaluación Ergonómica
+// REEMPLAZA la clase existente en index.js con este bloque completo
 class IndexApp {
     constructor() {
         this.currentUser = null;
@@ -8,35 +9,33 @@ class IndexApp {
 
     init() {
         this.setupEventListeners();
-        this.checkExistingSession();
+        this.checkExistingSession(); // Ahora encontrará la función de abajo
         ERGOAuth.setupSessionMonitoring();
         if (!this.currentUser) {
             this.showLoginModal();
         }
     }
 
-checkExistingSession() {
-    if (ERGOAuth.checkSession()) {
-        // CORRECCIÓN: Re-autenticar el dataClient con el token guardado
-        const token = ERGOStorage.getSession('sessionToken');
-        if (token) {
-            dataClient.setAuth(token);
-        }
+    checkExistingSession() {
+        // Usamos la función centralizada que ya tiene buen diagnóstico.
+        if (ERGOAuth.initializeAuthContext()) {
+            this.currentUser = ERGOAuth.getCurrentUser(); // Obtenemos el usuario que ya sabemos que existe
+            
+            this.hidePreloader();
+            this.hideLoginModal();
+            this.showMainContent();
+            this.updateUserInterface();
+            this.loadDashboardData();
+            
+            // new ERGOMap('risk-map'); // La inicialización del mapa permanece comentada.
         
-        this.currentUser = ERGOAuth.getCurrentUser();
-        console.log('✅ Sesión válida, usuario:', this.currentUser.nombre);
-        this.hidePreloader();
-        this.hideLoginModal();
-        this.showMainContent();
-        this.updateUserInterface();
-        this.loadDashboardData();
-        new ERGOMap('risk-map');
-    
-    } else {
-        console.log('🧹 No hay sesión existente.');
-        this.hideMainContent();
+        } else {
+            // La función initializeAuthContext ya mostró en consola por qué falló.
+            console.log('🧹 No hay sesión válida. Se mostrará el login.');
+            this.hideMainContent();
+            this.hidePreloader(); // Ocultamos el preloader para mostrar el modal de login
+        }
     }
-}
 
 
     setupEventListeners() {
@@ -58,48 +57,48 @@ checkExistingSession() {
         });
     }
 
-async handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('password').value;
-    const loginBtn = document.getElementById('loginBtn');
+    async handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('loginBtn');
 
-    if (!email || !password) {
-        this.showLoginError('Por favor completa todos los campos');
-        return;
-    }
-    loginBtn.disabled = true;
-    loginBtn.innerHTML = '<span class="icon">⏳</span> Verificando...';
-
-    try {
-        const authResult = await authClient.login(email, password);
-
-        if (authResult && authResult.user) {
-            dataClient.setAuth(authResult.session.access_token); // ¡El puente clave!
-            this.currentUser = authResult.user;
-            
-            const expiryTime = new Date().getTime() + ERGOConfig.SESSION_DURATION;
-            ERGOStorage.setSession('currentUser', this.currentUser);
-            ERGOStorage.setSession('sessionToken', authResult.session.access_token);
-            ERGOStorage.setSession('sessionExpiry', expiryTime);
-            
-            
-            this.hidePreloader();
-            this.hideLoginModal();
-            this.showMainContent();
-            this.updateUserInterface();
-            this.loadDashboardData();
-        } else {
-            this.showLoginError('Usuario o contraseña incorrectos');
+        if (!email || !password) {
+            this.showLoginError('Por favor completa todos los campos');
+            return;
         }
-    } catch (error) {
-        console.error('Error en el flujo de login:', error);
-        this.showLoginError('Error de conexión. Intenta nuevamente.');
-    } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '<span class="icon">🔐</span> Iniciar Sesión';
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="icon">⏳</span> Verificando...';
+
+        try {
+            const authResult = await authClient.login(email, password);
+
+            if (authResult && authResult.user) {
+                dataClient.setAuth(authResult.session.access_token);
+                this.currentUser = authResult.user;
+                
+                const expiryTime = new Date().getTime() + ERGOConfig.SESSION_DURATION;
+                ERGOStorage.setSession('currentUser', this.currentUser);
+                ERGOStorage.setSession('sessionToken', authResult.session.access_token);
+                ERGOStorage.setSession('sessionExpiry', expiryTime);
+                
+                
+                this.hidePreloader();
+                this.hideLoginModal();
+                this.showMainContent();
+                this.updateUserInterface();
+                this.loadDashboardData();
+            } else {
+                this.showLoginError('Usuario o contraseña incorrectos');
+            }
+        } catch (error) {
+            console.error('Error en el flujo de login:', error);
+            this.showLoginError('Error de conexión. Intenta nuevamente.');
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<span class="icon">🔐</span> Iniciar Sesión';
+        }
     }
-}
 
     showLoginError(message) {
         const loginError = document.getElementById('loginError');
@@ -151,23 +150,19 @@ async handleLogin(e) {
     }
 
     handleLogout() {
-        authClient.logout(); // Cierra la sesión de Supabase
-        ERGOAuth.logout();   // Cierra tu sesión local
-        setTimeout(() => window.location.reload(), 500);
+        // Simplemente llama a la función global. ¡Eso es todo!
+        ERGOAuth.logout();
     }
     
     async loadDashboardData() {
         try {
-            const dashboardData = await dataClient.getDashboardData(); // Usa dataClient
+            const dashboardData = await dataClient.getDashboardData();
             this.updateDashboardTables(dashboardData);
             this.updateTopKPIs(dashboardData);
         } catch (error) {
             console.error('Error cargando datos del dashboard:', error);
         }
     }
-    
-
-    // REEMPLAZA esta función en index.js por su versión final y definitiva
 
     updateDashboardTables(data) {
         if (!data) return;
@@ -179,15 +174,13 @@ async handleLogin(e) {
         if (areasTbody) areasTbody.innerHTML = '';
         if (topRiskTbody) topRiskTbody.innerHTML = '';
 
-        // Rellenar la tabla de Áreas
         if (areas && areas.length > 0 && areasTbody) {
             areas.forEach(area => {
                 const score = parseFloat(area.promedio_score || 0);
                 const color = ERGOUtils.getScoreColor(score);
                 const row = document.createElement('div');
                 row.className = 'table-row clickable';
-                row.setAttribute('onclick', `ERGONavigation.navigateToAreas('${area.id}')`);
-                if (score > 60) row.classList.add('high-risk-row');
+                row.setAttribute('onclick', `ERGONavigation.navigateToAreas('${area.id}', '${encodeURIComponent(area.name)}')`);                if (score > 60) row.classList.add('high-risk-row');
                 row.innerHTML = `
                     <div class="cell">${area.name || 'Sin nombre'}</div>
                     <div class="cell">
@@ -202,7 +195,6 @@ async handleLogin(e) {
             areasTbody.innerHTML = '<div class="table-row placeholder"><div class="cell" colspan="3">No hay datos de áreas.</div></div>';
         }
 
-        // Rellenar la tabla de Top 10 Riesgos con la nueva lógica de estilos
         if (topRisk && topRisk.length > 0 && topRiskTbody) {
             topRisk.forEach(centro => {
                 const score = parseFloat(centro.score || 0);
@@ -210,19 +202,14 @@ async handleLogin(e) {
                 row.className = 'table-row clickable';
                 row.setAttribute('onclick', `ERGONavigation.navigateToWorkCenter('${centro.work_center_id}', '${centro.area_id}', '${encodeURIComponent(centro.area_name)}', '${encodeURIComponent(centro.center_name)}', '')`);
                 
-                // --- INICIO DE LA NUEVA LÓGICA DE ESTILOS ---
                 let riesgoHtml = '';
-                // Solo si el riesgo es alto (>60%), usamos la píldora de color.
                 if (score >= 60) {
                     const riskClass = score >= 80 ? 'risk-pill critical-risk-glass' : 'risk-pill high-risk-glass';
                     riesgoHtml = `<div class="${riskClass}">${score.toFixed(2)}%</div>`;
                 } else {
-                    // Para scores más bajos, solo mostramos el texto.
                     riesgoHtml = `<span>${score.toFixed(2)}%</span>`;
                 }
-                // --- FIN DE LA NUEVA LÓGICA DE ESTILOS ---
 
-                // Si el score general de la fila es alto, se mantiene el hover rojo
                 if (score > 60) row.classList.add('high-risk-row');
                 
                 row.innerHTML = `
@@ -236,7 +223,6 @@ async handleLogin(e) {
             topRiskTbody.innerHTML = '<div class="table-row placeholder"><div class="cell" colspan="3">No hay datos de riesgo.</div></div>';
         }
 
-        // Actualizar el promedio general
         const promGral = document.getElementById('promedio-general');
         if (promGral) {
              const scoreGlobal = areas && areas.length > 0 
@@ -244,56 +230,6 @@ async handleLogin(e) {
                 : '0.00';
             promGral.textContent = `${scoreGlobal}%`;
         }
-    }
-
-    updateRiskChart(areasData) {
-        const chartContainer = document.getElementById('risk-chart');
-        if (!chartContainer || !areasData) return;
-        
-        const pictogramasInfo = ERGOAnalytics.pictogramasConfig;
-        const maxSeveridades = {};
-
-        // Inicializar todas las severidades en 0
-        for (const id in pictogramasInfo) {
-            maxSeveridades[id] = 0;
-        }
-
-        areasData.forEach(area => {
-            if (area.resumen_pictogramas) {
-                for (const key in area.resumen_pictogramas) {
-                    const severidadEnArea = area.resumen_pictogramas[key].severidad;
-                    if (maxSeveridades[key] < severidadEnArea) {
-                        maxSeveridades[key] = severidadEnArea;
-                    }
-                }
-            }
-        });
-
-        const riesgosDetectados = Object.entries(maxSeveridades)
-            .map(([id, severidad]) => ({ id, severidad, ...pictogramasInfo[id] }))
-            //.filter(p => p.severidad >= 2) // <-- LÍNEA TEMPORALMENTE COMENTADA PARA VER TODOS
-            .sort((a, b) => b.severidad - a.severidad);
-
-        if (riesgosDetectados.every(r => r.severidad === 0)) {
-            chartContainer.innerHTML = '<p class="no-data-chart">✅<br>Sin riesgos detectados en ninguna categoría.</p>';
-            return;
-        }
-        
-        chartContainer.innerHTML = riesgosDetectados.map(data => {
-            const severidadInfo = ERGOAnalytics.getNivelSeveridad(data.severidad);
-            let height = 2; // Altura mínima para riesgos nulos
-            if (data.severidad === 1) height = 30; // Verde
-            if (data.severidad === 2) height = 65; // Naranja
-            if (data.severidad === 3) height = 100; // Rojo
-
-            return `
-                <div class="graf-container" title="${data.nombre}: Riesgo ${severidadInfo.nivel}">
-                    <div class="graf" style="height: ${height}px; background-color: ${severidadInfo.color};">
-                    </div>
-                    <h4 class="graf-label">${data.pictograma}</h4>
-                </div>
-            `;
-        }).join('');
     }
 
     updateTopKPIs(data) {
@@ -310,13 +246,10 @@ async handleLogin(e) {
         this.updateRiskChart(areas);
     }
 
-// REEMPLAZA esta función en index.js
-
     updateRiskChart(areasData) {
         const chartContainer = document.getElementById('risk-chart');
         if (!chartContainer || !areasData) return;
         
-        // Catálogo base de pictogramas
         const pictogramasInfo = {
             R01: { nombre: 'Carga Manual', pictograma: '▲' },
             R02: { nombre: 'Posturas Forzadas', pictograma: '●' },
@@ -329,10 +262,9 @@ async handleLogin(e) {
 
         const maxSeveridades = {};
 
-        // 1. Encontrar la MÁXIMA severidad para cada pictograma en TODA la empresa
         areasData.forEach(area => {
             if (area.resumen_pictogramas) {
-                for (const key in area.resumen_pictogramas) { // key es R01, R02...
+                for (const key in area.resumen_pictogramas) {
                     const severidadEnArea = area.resumen_pictogramas[key].severidad;
                     if (!maxSeveridades[key] || severidadEnArea > maxSeveridades[key]) {
                         maxSeveridades[key] = severidadEnArea;
@@ -341,21 +273,19 @@ async handleLogin(e) {
             }
         });
 
-        // 2. Filtrar para mostrar solo riesgos Naranja (2) o Rojos (3)
         const riesgosPrioritarios = Object.entries(maxSeveridades)
             .map(([id, severidad]) => ({ id, severidad, ...pictogramasInfo[id] }))
-            .filter(p => p.severidad >= 2) // <-- ¡AQUÍ ESTÁ LA MAGIA! Solo Naranja y Rojo.
-            .sort((a, b) => b.severidad - a.severidad); // Ordenar por más severo primero
+            .filter(p => p.severidad >= 2)
+            .sort((a, b) => b.severidad - a.severidad);
 
         if (riesgosPrioritarios.length === 0) {
             chartContainer.innerHTML = '<p class="no-data-chart">✅<br>Sin riesgos de alta prioridad detectados.</p>';
             return;
         }
         
-        // 3. Generar el HTML del gráfico
         chartContainer.innerHTML = riesgosPrioritarios.map(data => {
             const severidadInfo = ERGOAnalytics.getNivelSeveridad(data.severidad);
-            const height = data.severidad === 3 ? 100 : 60; // Barra roja más alta que la naranja
+            const height = data.severidad === 3 ? 100 : 60;
 
             return `
                 <div class="graf-container" title="${data.nombre}: Riesgo ${severidadInfo.nivel}">
@@ -367,10 +297,10 @@ async handleLogin(e) {
         }).join('');
     }
 
-      async verificarResumenes() {
+    async verificarResumenes() {
         console.log("🔎 Verificando datos de resumen en la tabla 'areas'...");
         ERGOUtils.showToast('Verificando datos...', 'info');
-        const areasData = await supabase.getAllAreasConResumen(); // Usaremos una nueva función de supabase
+        const areasData = await supabase.getAllAreasConResumen();
         if (areasData) {
             console.log("Este es el contenido actual de la columna 'resumen_pictogramas':");
             console.table(areasData);
@@ -381,12 +311,12 @@ async handleLogin(e) {
     }
 
     async procesarEvaluacionesAntiguas() {
-        if (!confirm("Este proceso actualizará TODAS las evaluaciones antiguas con el nuevo análisis de pictogramas. Es lento y solo debe hacerse una vez. ¿Continuar?")) return;
+        if (!confirm("Este proceso actualizará TODAS las evaluaciones antiguas. ¿Continuar?")) return;
 
         ERGOUtils.showToast('Iniciando procesamiento de datos antiguos...', 'info');
         try {
             if (typeof data === 'undefined') {
-                alert("ERROR: El objeto 'data' con las preguntas no se encontró. Asegúrate de haberlo copiado desde eval_int.js al inicio de este archivo.");
+                alert("ERROR: El objeto 'data' no se encontró.");
                 return;
             }
 
@@ -396,15 +326,14 @@ async handleLogin(e) {
                 return;
             }
 
-            alert(`Se procesarán ${todasLasEvals.length} evaluaciones. Por favor, ten paciencia y no cierres esta ventana. Revisa la consola (F12) para ver el progreso.`);
+            alert(`Se procesarán ${todasLasEvals.length} evaluaciones. Revisa la consola (F12) para ver el progreso.`);
 
             for (let i = 0; i < todasLasEvals.length; i++) {
                 const evaluacion = todasLasEvals[i];
                 try {
-                    // CORRECCIÓN: Verificamos si las respuestas son un JSON válido antes de procesar
                     if (typeof evaluacion.respuestas !== 'string' || !evaluacion.respuestas.startsWith('{')) {
-                        console.warn(`Saltando evaluación ${evaluacion.id} porque sus 'respuestas' no son un JSON válido.`);
-                        continue; // Ignora esta evaluación y continúa con la siguiente
+                        console.warn(`Saltando evaluación ${evaluacion.id} por 'respuestas' no válidas.`);
+                        continue;
                     }
 
                     const respuestas = JSON.parse(evaluacion.respuestas);
@@ -422,11 +351,10 @@ async handleLogin(e) {
 
         } catch (error) {
             console.error("Error general en el script:", error);
-            alert("Ocurrió un error durante el procesamiento. Revisa la consola para más detalles.");
+            alert("Ocurrió un error durante el procesamiento. Revisa la consola.");
         }
     }
     
-
     async backfillPictogramSummaries() {
         console.log('--- INICIANDO RELLENO DE RESÚMENES DE SEVERIDAD POR ÁREA ---');
         try {
@@ -442,21 +370,18 @@ async handleLogin(e) {
                 const evalsDeEstaArea = todasLasEvaluaciones.filter(ev => ev.area_id === area.id);
                 if (evalsDeEstaArea.length === 0) continue;
 
-                // Objeto para guardar la MÁXIMA severidad encontrada en el área para cada pictograma
                 const resumenSeveridad = {};
 
                 evalsDeEstaArea.forEach(ev => {
                     if (ev.riesgos_por_categoria) {
-                        for (const key in ev.riesgos_por_categoria) { // key es R01, R02...
+                        for (const key in ev.riesgos_por_categoria) {
                             const pictoResultado = ev.riesgos_por_categoria[key];
                             if (!pictoResultado || typeof pictoResultado.severidad === 'undefined') continue;
 
-                            // Inicializar si no existe
                             if (!resumenSeveridad[key]) {
                                 resumenSeveridad[key] = { severidad: 0 };
                             }
 
-                            // Guardar siempre la severidad MÁS ALTA
                             if (pictoResultado.severidad > resumenSeveridad[key].severidad) {
                                 resumenSeveridad[key].severidad = pictoResultado.severidad;
                             }

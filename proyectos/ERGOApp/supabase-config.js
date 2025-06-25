@@ -157,39 +157,31 @@ async query(table, method = 'GET', data = null, filters = '') {
 
 async deleteWorkCenter(id) {
     try {
-        console.log(`🗑️ Eliminando centro: ${id}`);
+        console.log(`🗑️ Eliminando centro de trabajo y sus datos relacionados: ${id}`);
         
-        // SOLO eliminar las tablas donde SÍ tienes permisos confirmados
-        try {
-            await this.query('scores_resumen', 'DELETE', null, `?work_center_id=eq.${id}`);
-            console.log(`✅ Scores eliminados`);
-        } catch (error) {
-            console.log(`ℹ️ Sin scores para eliminar`);
-        }
+        // El orden es importante: primero se eliminan los datos dependientes.
         
-        try {
-            await this.query('evaluaciones', 'DELETE', null, `?work_center_id=eq.${id}`);
-            console.log(`✅ Evaluaciones eliminadas`);
-        } catch (error) {
-            console.log(`ℹ️ Sin evaluaciones para eliminar`);
-        }
+        // Eliminar scores
+        await this.query('scores_resumen', 'DELETE', null, `?work_center_id=eq.${id}`);
+        console.log(`✅ Scores para el centro ${id} eliminados.`);
         
-        try {
-            await this.query('fotos_centros', 'DELETE', null, `?work_center_id=eq.${id}`);
-            console.log(`✅ Fotos eliminadas`);
-        } catch (error) {
-            console.log(`ℹ️ Sin fotos para eliminar`);
-        }
+        // Eliminar evaluaciones
+        await this.query('evaluaciones', 'DELETE', null, `?work_center_id=eq.${id}`);
+        console.log(`✅ Evaluaciones para el centro ${id} eliminadas.`);
         
-        // NO intentar eliminar las tablas problemáticas
+        // Eliminar fotos
+        await this.query('fotos_centros', 'DELETE', null, `?work_center_id=eq.${id}`);
+        console.log(`✅ Fotos para el centro ${id} eliminadas.`);
         
-        // Eliminar el centro de trabajo
+        // Finalmente, eliminar el centro de trabajo principal
         const result = await this.query('work_centers', 'DELETE', null, `?id=eq.${id}`);
-        console.log(`✅ Centro eliminado: ${id}`);
+        console.log(`✅ Centro de trabajo ${id} eliminado exitosamente.`);
         
         return result;
     } catch (error) {
-        console.error(`❌ Error eliminando centro ${id}:`, error);
+        // Este catch ahora atrapará el error real (ej. "permission denied") y lo mostrará.
+        console.error(`❌ Error crítico al intentar eliminar el centro ${id}:`, error);
+        // Volvemos a lanzar el error para que la función que llamó a esta sepa que algo salió mal.
         throw error;
     }
 }
