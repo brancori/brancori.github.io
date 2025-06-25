@@ -1004,3 +1004,6 @@ puedes reemplazar el ::after por esto:
     transform: translateX(2px);
     border-left: 3px solid rgba(220, 53, 69, 0.4);
 }
+.map_map{
+    width: 85vw;
+}
