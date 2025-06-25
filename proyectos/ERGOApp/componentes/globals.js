@@ -1,3 +1,47 @@
+/**
+ * --- Theme Manager ---
+ * Gestiona el cambio de tema (claro/oscuro) y guarda la preferencia
+ * del usuario en el localStorage.
+ */
+const themeManager = {
+    init() {
+        this.toggle = document.getElementById('theme-toggle');
+        if (!this.toggle) return;
+
+        // 1. Aplicar tema guardado al cargar
+        this.applyTheme(this.getTheme());
+
+        // 2. Escuchar cambios en el interruptor
+        this.toggle.addEventListener('change', () => {
+            const newTheme = this.toggle.checked ? 'dark' : 'light';
+            this.setTheme(newTheme);
+        });
+    },
+
+    getTheme() {
+        // Obtiene el tema de localStorage o usa 'light' como predeterminado
+        return localStorage.getItem('theme') || 'light';
+    },
+
+    setTheme(theme) {
+        localStorage.setItem('theme', theme);
+        this.applyTheme(theme);
+    },
+
+    applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        // Sincronizar el interruptor con el tema actual
+        if (this.toggle) {
+            this.toggle.checked = theme === 'dark';
+        }
+    }
+};
+
+// Inicializar el gestor de temas cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    themeManager.init();
+});
+
 // globals.js - Funciones globales reutilizables para ERGOApp
 // Este archivo debe cargarse antes que cualquier otro script de la aplicación
 
@@ -157,7 +201,45 @@ logout(reason = null) {
                 }
             }
         }, 60000); // Cada minuto
+    },
+initializeAuthContext() {
+    console.log('%c🕵️‍♂️ DIAGNÓSTICO DE SESIÓN INICIADO...', 'color: blue; font-weight: bold;');
+
+    // Leemos los tres datos críticos directamente del sessionStorage
+    const currentUser = sessionStorage.getItem('currentUser');
+    const sessionExpiry = sessionStorage.getItem('sessionExpiry');
+    const sessionToken = sessionStorage.getItem('sessionToken');
+
+    // Mostramos el estado de cada uno para ver qué encuentra el navegador
+    console.log(`1. Verificando 'currentUser': ${currentUser ? `✅ ENCONTRADO (longitud: ${currentUser.length})` : '❌ NO ENCONTRADO'}`);
+    console.log(`2. Verificando 'sessionExpiry': ${sessionExpiry ? `✅ ENCONTRADO (expira: ${new Date(parseInt(sessionExpiry)).toLocaleString()})` : '❌ NO ENCONTRADO'}`);
+    console.log(`3. Verificando 'sessionToken': ${sessionToken ? `✅ ENCONTRADO (longitud: ${sessionToken.length})` : '❌ NO ENCONTRADO'}`);
+
+    // Verificación lógica
+    if (!currentUser || !sessionExpiry || !sessionToken) {
+        console.error('❌ FALLO: Faltan datos esenciales de la sesión. La redirección es inevitable.');
+        return false;
     }
+
+    if (new Date().getTime() > parseInt(sessionExpiry)) {
+        console.error('❌ FALLO: La sesión ha expirado.');
+        this.logout('Sesión expirada');
+        return false;
+    }
+
+    if (!window.dataClient) {
+         console.error('❌ FALLO: `window.dataClient` no existe. Revisa `supabase-config.js` o el orden de carga.');
+         return false;
+    }
+
+    console.log('✅ ÉXITO: Todos los datos y clientes están presentes.');
+    window.dataClient.setAuth(JSON.parse(sessionToken));
+    console.log('%c🔑 CONTEXTO DE SESIÓN ESTABLECIDO. La página NO debería redirigir.', 'color: green; font-weight: bold;');
+    return true;
+}
+
+
+
 };
 
 // ===== UTILIDADES GENERALES =====
@@ -516,20 +598,9 @@ window.ERGOGlobal = {
     init() {
         console.log('🌐 ERGOGlobal iniciado');
 
-        const currentPath = window.location.pathname;
-        const isLoginPage = currentPath.endsWith('/index.html') || currentPath === '/';
+        // El bloque "if (!isLoginPage)" ha sido eliminado.
 
-        if (!isLoginPage) {
-            console.log('📍 No estamos en login, verificando sesión...');
-            if (!ERGOAuth.checkSession()) {
-                console.log('❌ Sesión inválida, redirigiendo a login');
-                window.location.href = 'index.html'; // Ajusta la ruta si es necesario
-                return;
-            }
-        } else {
-            console.log('📍 Estamos en página de login, omitiendo verificación de sesión');
-        }
-
+        // El resto de la función se mantiene igual, lo cual es correcto.
         setInterval(() => {
             if (ERGOAuth.getCurrentUser()) {
                 ERGOAuth.updateActivity();
@@ -549,8 +620,4 @@ window.ERGOGlobal = {
 };
 
 // ===== AUTO-INICIALIZACIÓN =====
-ERGOGlobal.init();
-
-// ===== AUTO-INICIALIZACIÓN =====
-// Inicializar automáticamente cuando se carga el script
 ERGOGlobal.init();

@@ -470,3 +470,178 @@ body {
         transform: scale(0.95);
     }
 }
+
+[data-theme='dark'] {
+    /* Grises Invertidos */
+    --gray-50: #0f172a;
+    --gray-100: #1e293b;
+    --gray-200: #334155;
+    --gray-300: #475569;
+    --gray-400: #64748b;
+    --gray-500: #94a3b8;
+    --gray-600: #cbd5e1;
+    --gray-700: #e2e8f0;
+    --gray-800: #f1f5f9;
+    --gray-900: #f8fafc;
+
+    /* Colores Primarios Adaptados */
+    --primary-50: #1e293b;
+    --primary-100: #0d9488;
+    --primary-500: #5eead4;
+    --primary-600: #14b8a6;
+    --primary-700: #0d9488;
+}
+
+/* --- 2. Estilos Globales y de Fondo --- */
+[data-theme='dark'] body {
+    background-color: var(--gray-50);
+    color: var(--gray-700);
+}
+
+/* FIX: Oscurecer el fondo parallax para que el texto sea legible */
+[data-theme='dark'] .main-content::before,
+[data-theme='dark'] .main-content::after {
+    opacity: 0.2; /* Reducir la opacidad general */
+    /* Usar colores oscuros para los degradados */
+    background: 
+        radial-gradient(ellipse at 20% 30%, var(--gray-200) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, var(--gray-300) 0%, transparent 60%);
+}
+
+/* --- 3. Componentes Específicos del Dashboard --- */
+
+/* Header y Títulos Principales */
+[data-theme='dark'] .header,
+[data-theme='dark'] .kapis_conteniner,
+[data-theme='dark'] .nav_module {
+    background: var(--gray-50);
+    border-color: var(--gray-200);
+}
+[data-theme='dark'] .header-main h1,
+[data-theme='dark'] .subtitle,
+[data-theme='dark'] .user-name,
+[data-theme='dark'] .user-role {
+    color: var(--gray-900);
+}
+
+/* FIX: Título "Indicadores Principales" y otros h2 */
+[data-theme='dark'] .dashboard-section h2 {
+    color: var(--gray-900);
+}
+
+/* Tarjetas y Botones */
+[data-theme='dark'] .kpi_item,
+[data-theme='dark'] .nav_module .btn {
+    background-color: var(--gray-100);
+    box-shadow: none;
+    border: 1px solid var(--gray-200);
+}
+[data-theme='dark'] .kpi_item:hover,
+[data-theme='dark'] .nav_module .btn:hover {
+    background-color: var(--gray-200);
+    border-color: var(--gray-400);
+}
+[data-theme='dark'] .kpi_item h3 { color: var(--gray-500); }
+[data-theme='dark'] .kpi_item h2 { color: var(--primary-500); }
+[data-theme='dark'] .nav_module .btn { color: var(--gray-700); }
+[data-theme='dark'] .nav_module .btn:hover { color: var(--primary-500); }
+
+/* --- 4. Tablas (Corrección de Especificidad) --- */
+[data-theme='dark'] .kpi-table-container,
+[data-theme='dark'] .action-card,
+[data-theme='dark'] .map-container {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: var(--gray-200);
+}
+
+/* FIX: Forzar el color del texto en títulos y celdas de tabla */
+[data-theme='dark'] .table-title,
+[data-theme='dark'] .data-table .table-body .cell {
+    color: var(--gray-700) !important; /* !important como último recurso para ganar la especificidad */
+}
+[data-theme='dark'] .header-cell {
+    color: var(--gray-500);
+}
+[data-theme='dark'] .table-row:hover {
+    background-color: rgba(51, 65, 85, 0.7) !important;
+}
+[data-theme='dark'] .table-row.high-risk-row:hover {
+    background: linear-gradient(90deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05)) !important;
+}
+[data-theme='dark'] .footer-cell {
+    color: var(--gray-600);
+}
+[data-theme='dark'] .summary-value {
+    color: var(--primary-500);
+}
+
+
+/* --- 5. Interruptor de Tema (Sin cambios) --- */
+[data-theme='dark'] .slider { background-color: var(--gray-300); }
+[data-theme='dark'] .slider:before { background-color: var(--gray-800); }
+
+/* globals.css */
+/* ===== THEME SWITCH ===== */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+}
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gray-200);
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+.slider .icon {
+    font-size: 16px;
+    line-height: 1;
+    transition: opacity .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+}
+input:checked + .slider {
+    background-color: var(--primary-600);
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+/* Ocultar el ícono no activo */
+input:not(:checked) ~ .slider .moon {
+    opacity: 0;
+}
+input:checked ~ .slider .sun {
+    opacity: 0;
+}
+[data-theme='dark'] .slider {
+    background-color: var(--gray-800);
+}

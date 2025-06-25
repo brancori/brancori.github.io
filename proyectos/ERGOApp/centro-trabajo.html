@@ -6,7 +6,9 @@
     <title>Centro de Trabajo</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./componentes/globals.js"></script>
+    <script src="./componentes/auth-client.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="supabase-config.js"></script>
@@ -637,16 +639,29 @@
     </div>
 
     <!-- Modal para agregar nota -->
-    <div id="modal-nota" class="modal-nota">
-        <div class="modal-nota-content">
-            <h3 style="margin-bottom: 1rem;">Nueva Nota</h3>
-            <textarea id="nota-texto" placeholder="Escribe tu observación aquí..."></textarea>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem; justify-content: flex-end;">
-                <button class="btn btn-ghost" onclick="closeNotaModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarNota()">Guardar Nota</button>
-            </div>
+<div id="modal-crear-evaluacion" class="modal-nota">
+    <div class="modal-nota-content">
+        <h3 id="modal-crear-evaluacion-titulo" style="margin-bottom: 1rem;">Nueva Evaluación</h3>
+        
+        <div class="form-group">
+            <label for="nueva-evaluacion-titulo">Título o Identificador</label>
+            <input 
+                type="text" 
+                id="nueva-evaluacion-titulo" 
+                placeholder="Ej. REBA - Operador de Prensa"
+                style="width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: var(--border-radius-md);"
+            >
+            <small style="color: var(--gray-500); font-size: 0.75rem; margin-top: 4px; display: block;">
+                Dale un nombre único para identificar esta evaluación fácilmente.
+            </small>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: flex-end;">
+            <button class="btn btn-ghost" onclick="cerrarModalCrearEvaluacion()">Cancelar</button>
+            <button class="btn btn-primary" onclick="confirmarCreacionEvaluacion()">Crear Evaluación</button>
         </div>
     </div>
+</div>
 
     <!-- Modal para vista completa de fotos -->
 <div id="foto-modal" class="foto-modal">
@@ -663,7 +678,19 @@
     </div>
 </div>
 
+        <div id="modal-nota" class="modal-nota">
+            <div class="modal-nota-content">
+                <h3 style="margin-bottom: 1rem;">Agregar Nueva Nota</h3>
+                <textarea id="nota-texto" placeholder="Escribe tus observaciones aquí..."></textarea>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-ghost" onclick="closeNotaModal()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="guardarNota()">Guardar Nota</button>
+                </div>
+            </div>
+        </div>
+
     <script>
+        let tipoEvaluacionACrear = null;
         // Variables globales
         let currentCenterData = null;
         let fotosActuales = [];
@@ -684,6 +711,11 @@
         // Inicialización
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Iniciando aplicación...');
+
+            if (!ERGOAuth.initializeAuthContext()) {
+                ERGOAuth.redirectToLogin();
+                return; 
+            }
             
             // === VERIFICACIONES INICIALES ===
             if (!workCenterId || !areaId) {
@@ -753,8 +785,8 @@
             
               if (USE_SUPABASE) {
             try {
-                console.log('🔍 Consultando Supabase...');
-                evaluaciones = await supabase.getEvaluaciones(workCenterId) || [];
+                console.log('🔍 Consultando dataClient...');
+                evaluaciones = await dataClient.getEvaluaciones(workCenterId) || [];
                 console.log('🔍 DEBUG: Evaluaciones desde Supabase:', evaluaciones);
                 console.log('🔍 DEBUG: Primera evaluación:', evaluaciones[0]);
             } catch (error) {
@@ -834,7 +866,7 @@
         async function loadFotos() {
             try {
                 if (USE_SUPABASE) {
-                    fotosActuales = await supabase.getFotos(workCenterId) || [];
+                    fotosActuales = await dataClient.getFotos(workCenterId) || [];
                 } else {
                     fotosActuales = JSON.parse(localStorage.getItem(`fotos_${workCenterId}`)) || [];
                 }
@@ -861,11 +893,11 @@
 
         async function loadEvaluacionesEspecificas() {
             try {
-                // Temporalmente usar localStorage para evaluaciones específicas
-                if (false) { // Cambiar a USE_SUPABASE cuando funcione
-                    evaluacionesEspecificas = await supabase.getAllEvaluacionesEspecificas(workCenterId) || [];
+                if (USE_SUPABASE) {
+                    evaluacionesEspecificas = await dataClient.getAllEvaluacionesEspecificas(workCenterId) || [];
                 } else {
-                    evaluacionesEspecificas = JSON.parse(localStorage.getItem(`evaluaciones_especificas_${workCenterId}`)) || [];
+                    // El fallback a localStorage ya no es el método principal
+                    evaluacionesEspecificas = [];
                 }
                 renderEvaluacionesEspecificas();
             } catch (error) {
@@ -940,39 +972,45 @@
             `).reverse().join(''); // Mostrar más recientes primero
         }
 
-function renderEvaluacionesEspecificas() {
-    const container = document.getElementById('evaluaciones-container');
-    
-    if (evaluacionesEspecificas.length === 0) {
-        container.innerHTML = `
-            <div class="empty-evaluations">
-                <p>No hay evaluaciones específicas realizadas</p>
-                <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = evaluacionesEspecificas.map(eval => {
-        // Determinar el score según el tipo
-        let scoreText = 'N/A';
-        if (eval.tipo === 'REBA' && eval.score_final) scoreText = `${eval.score_final} puntos`;
-        else if (eval.tipo === 'RULA' && eval.score_final) scoreText = `${eval.score_final} puntos`;
-        else if (eval.tipo === 'OCRA' && eval.indice_ocra) scoreText = `${eval.indice_ocra}`;
-        else if (eval.tipo === 'NIOSH' && eval.indice_levantamiento) scoreText = `IL: ${eval.indice_levantamiento}`;
-        
-        return `
-            <div class="evaluacion-item" onclick="verEvaluacionEspecifica('${eval.id}', '${eval.tipo}')">
-                <div class="evaluacion-header">
-                    <span class="evaluacion-metodo">${eval.tipo}</span>
-                    <span class="evaluacion-score">Score: ${scoreText}</span>
-                </div>
-                <div class="evaluacion-fecha">Realizada: ${ERGOUtils.formatDate(eval.created_at)}</div>
-                ${eval.nivel_riesgo ? `<div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">${eval.nivel_riesgo}</div>` : ''}
-            </div>
-        `;
-    }).join('');
-}
+        function renderEvaluacionesEspecificas() {
+            const container = document.getElementById('evaluaciones-container');
+            
+            if (evaluacionesEspecificas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-evaluations">
+                        <p>No hay evaluaciones específicas realizadas</p>
+                        <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = evaluacionesEspecificas.map(eval => {
+                let scoreText = 'Pendiente';
+                if (eval.score_final) {
+                    scoreText = `${eval.score_final} Puntos`;
+                } else if (eval.indice_ocra) {
+                    scoreText = `Índice: ${eval.indice_ocra}`;
+                } else if (eval.indice_levantamiento) {
+                    scoreText = `IL: ${parseFloat(eval.indice_levantamiento).toFixed(2)}`;
+                }
+                
+                // La tarjeta ahora llama a 'editarEvaluacionEspecifica'
+                return `
+                    <div class="evaluacion-item" onclick='editarEvaluacionEspecifica(${JSON.stringify(eval)})'>
+                        <div class="evaluacion-header">
+                            <div>
+                                <span class="evaluacion-metodo">${eval.tipo}</span>
+                                <div style="font-size: 0.8rem; color: #333; font-weight: 500;">${eval.titulo}</div>
+                            </div>
+                            <span class="evaluacion-score">${scoreText}</span>
+                        </div>
+                        <div class="evaluacion-fecha">Creada: ${ERGOUtils.formatDate(eval.created_at)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
 
         // Funciones de utilidad
         function getScoreColor(score) {
@@ -1014,7 +1052,7 @@ function renderEvaluacionesEspecificas() {
                 
                 try {
                     if (USE_SUPABASE) {
-                        await supabase.uploadFoto(file, areaId, workCenterId);
+                        await dataClient.uploadFoto(file, areaId, workCenterId);
                         await loadFotos(); // Recargar fotos
                     } else {
                         // Implementar guardado local
@@ -1044,7 +1082,7 @@ function renderEvaluacionesEspecificas() {
             if (confirm('¿Eliminar esta foto?')) {
                 try {
                     if (USE_SUPABASE) {
-                        await supabase.deleteFoto(fotoId);
+                        await dataClient.deleteFoto(fotoId);
                     }
                     
                     fotosActuales = fotosActuales.filter(f => f.id !== fotoId);
@@ -1095,25 +1133,31 @@ function renderEvaluacionesEspecificas() {
             closeNotaModal();
         }
 
+// --- REEMPLAZA openEvaluacionModal() CON ESTA VERSIÓN ---
 function openEvaluacionModal() {
     if (!ERGOAuth.checkPermissionAndShowError('create')) return;
+    
+    // Primero, cerramos cualquier modal que pudiera estar abierto
+    cerrarEvaluacionModal(); 
+
     const metodos = [
-        { nombre: 'REBA', archivo: './evaluacion_ini/especificas/formulario_reba_completo.html', descripcion: 'Evaluación de cuerpo completo' },
-        { nombre: 'RULA', archivo: './evaluacion_ini/especificas/formulario_rula_completo.html', descripcion: 'Evaluación de miembros superiores' },
-        { nombre: 'OCRA', archivo: './evaluacion_ini/especificas/formulario_ocra_completo.html', descripcion: 'Movimientos repetitivos' },
-        { nombre: 'NIOSH', archivo: './evaluacion_ini/especificas/calculadora_niosh_excel.html', descripcion: 'Levantamiento de cargas' }
+        { nombre: 'REBA', descripcion: 'Evaluación de cuerpo completo' },
+        { nombre: 'RULA', descripcion: 'Evaluación de miembros superiores' },
+        { nombre: 'OCRA', descripcion: 'Movimientos repetitivos' },
+        { nombre: 'NIOSH', descripcion: 'Levantamiento de cargas' }
     ];
     
     let modalHTML = `
-        <div id="evaluacion-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
-            <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
-                <h3 style="margin-bottom: 1.5rem; text-align: center;">Seleccionar Evaluación Específica</h3>
+        <div id="evaluacion-modal" onclick="cerrarEvaluacionModal()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+            <div onclick="event.stopPropagation()" style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+                <h3 style="margin-bottom: 1.5rem; text-align: center;">Seleccionar Tipo de Evaluación</h3>
                 <div style="display: grid; gap: 1rem;">
     `;
     
     metodos.forEach(metodo => {
+        // La llamada ahora es a 'abrirModalCrearEvaluacion'
         modalHTML += `
-            <button onclick="abrirEvaluacionEspecifica('${metodo.archivo}', '${metodo.nombre}')" 
+            <button onclick="abrirModalCrearEvaluacion('${metodo.nombre}')" 
                     style="padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; text-align: left; transition: all 0.2s;"
                     onmouseover="this.style.borderColor='#3b82f6'; this.style.backgroundColor='#f0f9ff'"
                     onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'">
@@ -1136,19 +1180,86 @@ function openEvaluacionModal() {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
-function abrirEvaluacionEspecifica(archivo, tipo) {
-    const url = `${archivo}?workCenter=${workCenterId}&area=${areaId}&areaName=${encodeURIComponent(areaName || '')}&centerName=${encodeURIComponent(centerName || '')}&responsible=${encodeURIComponent(responsibleName || '')}&tipo=${tipo}`;
-    window.location.href = url;
+function abrirModalCrearEvaluacion(tipo) {
+    tipoEvaluacionACrear = tipo; // Guardamos el tipo de evaluación que se va a crear
+    cerrarEvaluacionModal(); // Cerramos el modal de selección
+    
+    // Personalizamos y abrimos el nuevo modal para el título
+    document.getElementById('modal-crear-evaluacion-titulo').textContent = `Nueva Evaluación ${tipo}`;
+    document.getElementById('nueva-evaluacion-titulo').placeholder = `Ej. ${tipo} - Operador de Prensa`;
+    document.getElementById('modal-crear-evaluacion').classList.add('show');
+    document.getElementById('nueva-evaluacion-titulo').focus();
 }
+
+function cerrarModalCrearEvaluacion() {
+    document.getElementById('modal-crear-evaluacion').classList.remove('show');
+    document.getElementById('nueva-evaluacion-titulo').value = ''; // Limpiamos el input
+    tipoEvaluacionACrear = null; // Reseteamos la variable
+}
+
+async function confirmarCreacionEvaluacion() {
+    if (!tipoEvaluacionACrear) return;
+
+    const titulo = document.getElementById('nueva-evaluacion-titulo').value.trim();
+    if (!titulo) {
+        ERGOUtils.showToast('Por favor, ingresa un título para la evaluación.', 'error');
+        return;
+    }
+
+    const metodoDeCreacion = `createEvaluacion${tipoEvaluacionACrear.charAt(0).toUpperCase() + tipoEvaluacionACrear.slice(1).toLowerCase()}`;
+    
+    const datosIniciales = {
+        work_center_id: workCenterId,
+        titulo: titulo
+    };
+
+    try {
+        ERGOUtils.showToast('Creando evaluación...', 'info');
+        await dataClient[metodoDeCreacion](datosIniciales);
+        
+        cerrarModalCrearEvaluacion();
+        ERGOUtils.showToast('Evaluación creada. Ahora puedes completarla.', 'success');
+        
+        // Recargamos la lista para mostrar la nueva evaluación "pendiente"
+        await loadEvaluacionesEspecificas();
+    } catch (error) {
+        console.error(`Error al crear evaluación ${tipoEvaluacionACrear}:`, error);
+        ERGOUtils.showToast(`Error al crear la evaluación: ${error.message}`, 'error');
+    }
+}
+
+        function editarEvaluacionEspecifica(evaluacion) {
+            const archivos = {
+                'REBA': './evaluacion_ini/especificas/formulario_reba_completo.html',
+                'RULA': './evaluacion_ini/especificas/formulario_rula_completo.html', 
+                'OCRA': './evaluacion_ini/especificas/formulario_ocra_completo.html',
+                'NIOSH': './evaluacion_ini/especificas/calculadora_niosh_excel.html'
+            };
+
+            const archivo = archivos[evaluacion.tipo];
+            if (!archivo) {
+                console.error('Tipo de evaluación no reconocido:', evaluacion.tipo);
+                return;
+            }
+
+            // Construimos la URL con todos los parámetros necesarios, incluyendo el ID de la evaluación a editar.
+            const url = new URL(archivo, window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/');
+            url.searchParams.append('workCenter', workCenterId);
+            url.searchParams.append('area', areaId);
+            url.searchParams.append('areaName', encodeURIComponent(areaName || ''));
+            url.searchParams.append('centerName', encodeURIComponent(centerName || ''));
+            url.searchParams.append('responsible', encodeURIComponent(responsibleName || ''));
+            url.searchParams.append('tipo', evaluacion.tipo);
+            url.searchParams.append('evalId', evaluacion.id); // <-- EL PARÁMETRO MÁS IMPORTANTE
+
+            window.location.href = url.href;
+        }
 
 function cerrarEvaluacionModal() {
     const modal = document.getElementById('evaluacion-modal');
     if (modal) modal.remove();
 }
 
-function verEvaluacionEspecifica(evalId, tipo) {
-    alert(`Ver evaluación ${tipo} con ID: ${evalId}\n(Función pendiente de implementar)`);
-}
 
         function verEvaluacionEspecifica(evalId) {
             const evaluacion = evaluacionesEspecificas.find(e => e.id === evalId);
@@ -1410,5 +1521,6 @@ function toggleZoom() {
 // Event listeners para el modal
 
     </script>
+    
 </body>
 </html>

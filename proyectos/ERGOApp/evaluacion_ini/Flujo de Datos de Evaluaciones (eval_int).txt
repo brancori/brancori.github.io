@@ -1,0 +1,52 @@
+Documentación Detallada: Flujo de Datos de Evaluaciones (eval_int)
+Propósito: Explicar el ciclo de vida completo de los datos en la pantalla de "Evaluación Ergonómica Integrada", desde que la página carga hasta que los datos se guardan y sincronizan con Supabase.
+
+Sección 1: Carga Inicial de la Página (eval_int.html)
+Cuando un usuario navega a la página de evaluación, ocurre la siguiente secuencia para cargar los datos existentes:
+
+Carga de Scripts Críticos (<head> en eval_int.html): El navegador carga una serie de archivos JavaScript en un orden específico, garantizado por el atributo defer. Este orden es fundamental:
+
+globals.js: Se carga primero y crea objetos globales como window.ERGOConfig y window.ERGOUtils.
+supabase-config.js: Se carga después. Utiliza window.ERGOConfig para obtener las credenciales y crea la instancia global del cliente de Supabase, asignándola a window.supabase. Si este archivo falla, nada relacionado con la base de datos funcionará.
+eval_int_supa.js: Se carga a continuación. Crea el objeto window.ERGOEvalSupa que contiene la lógica específica para interactuar con la tabla evaluaciones.
+eval_int.js: Finalmente, se carga el script principal de la página, que orquesta toda la lógica de la interfaz.
+Búsqueda de Datos (cargarDatosExistentes en eval_int.js): Una vez que la página ha cargado, esta función se dispara para buscar una evaluación previa. Sigue una estrategia de dos pasos:
+
+Intento 1 (Nube - Supabase): Llama a window.ERGOEvalSupa.cargarEvaluacionDesdeSupabase(). Esta función ejecuta una consulta GET a la tabla evaluaciones de Supabase, filtrando por el work_center_id.
+Intento 2 (Local - Fallback): Si el paso anterior falla (por falta de conexión, error o porque no hay datos), o si Supabase está deshabilitado, el código busca en el localStorage del navegador si existe una evaluación guardada previamente.
+Renderizado en Pantalla (poblarFormularioConDatos en eval_int.js): Si se encontraron datos (ya sea de Supabase o de LocalStorage), esta función se encarga de rellenar todos los campos del formulario: nombre del área, responsable, checkboxes de criterios y todas las respuestas del cuestionario. Si no se encontraron datos, se presenta un formulario listo para una nueva evaluación.
+
+Sección 2: Proceso de Guardado (Clic en "Guardar")
+Cuando el usuario hace clic en el botón "Guardar", se inicia una secuencia de guardado robusta y con respaldo local.
+
+Recolección de Datos (guardarEvaluacion en eval_int.js): Esta función lee el estado actual de cada input, checkbox y radio button del formulario y los ensambla en un único objeto JavaScript llamado evaluacion. La estructura de este objeto está diseñada para coincidir con las columnas de la tabla evaluaciones en la base de datos (ej: id, work_center_id, score_final, riesgos_por_categoria, etc.).
+
+Guardado Local Inmediato (guardarLocalmente en eval_int.js): Como primera acción, el objeto evaluacion completo se guarda inmediatamente en el localStorage del navegador. Esto asegura que el trabajo del usuario nunca se pierda, incluso si falla la conexión a internet.
+
+Sincronización con Supabase (guardarEvaluacionEnSupabase en eval_int_supa.js): Inmediatamente después del guardado local, el código intenta sincronizar los datos con la nube.
+
+Paso A (Verificación): La función primero hace una consulta GET a Supabase para verificar si ya existe una evaluación para ese centro de trabajo.
+Paso B (Decisión y Ejecución):
+Si existe, ejecuta una operación UPDATE (enviando una petición PATCH) para actualizar el registro existente. Aquí es crucial que el id de la evaluación se quite del cuerpo de la petición para evitar errores.
+Si no existe, ejecuta una operación INSERT (enviando una petición POST) para crear un nuevo registro.
+Paso C (Actualización de Resumen): Si el guardado en Supabase es exitoso, se llama a la función sincronizarResumenDePictogramas para recalcular y actualizar las métricas de resumen en la tabla areas.
+Sección 3: Puntos Comunes de Falla y Cómo Solucionarlos
+Usa esta guía para diagnosticar problemas rápidamente.
+
+Error: "Supabase está deshabilitado" o errores de undefined.
+
+Causa Probable: Un script crítico (globals.js o supabase-config.js) no se cargó o falló antes de que eval_int.js intentara usarlo.
+Diagnóstico: Revisa la Consola (F12) al cargar la página en busca de errores 404 (Not Found) o TypeError.
+Solución:
+Verifica que las rutas de los archivos .js en el <head> de eval_int.html sean correctas.
+Asegúrate de que todos los scripts tengan el atributo defer.
+Confirma que la línea final de supabase-config.js sea window.supabase = ... para que el objeto sea global.
+Error: El guardado falla pero los datos aparecen al recargar (mensaje "Revise su conexión").
+
+Causa Probable: Tu código está funcionando, pero el servidor de Supabase está rechazando la petición de guardado (POST o PATCH).
+Diagnóstico: Abre la pestaña "Network" (Red) en las herramientas de desarrollador (F12), ejecuta el guardado y busca la petición a la tabla evaluaciones. La pestaña "Response" (Respuesta) de esa petición tendrá el mensaje de error exacto del servidor.
+Soluciones Comunes basadas en la Respuesta:
+"violates row-level security policy": Faltan permisos. Ve al panel de Supabase -> Authentication -> Policies y asegúrate de que existan políticas para SELECT, INSERT y UPDATE en la tabla evaluaciones.
+"column 'xyz' does not exist": El objeto evaluacion que creas en eval_int.js tiene una propiedad que no coincide con ninguna columna en tu tabla de la base de datos. Debes alinear el objeto JS con el esquema de la tabla.
+"null value in column 'xyz' violates not-null constraint": Estás intentando guardar sin enviar un valor para una columna que es obligatoria. Revisa la construcción del objeto evaluacion en eval_int.js para asegurarte de que todos los campos requeridos estén presentes.
+Error de Clave Foránea (FOREIGN KEY): Estás intentando guardar una evaluación con un area_id o work_center_id que no existe en las tablas areas o work_centers.

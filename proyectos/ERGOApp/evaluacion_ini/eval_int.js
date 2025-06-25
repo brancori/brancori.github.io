@@ -100,45 +100,22 @@ async function guardarEvaluacion() {
             updated_at: new Date().toISOString()
         };
     
-    // --- Lógica de guardado dual (Supabase y LocalStorage) ---
-    // Primero, siempre guardar localmente para consistencia inmediata.
-    guardarLocalmente(evaluacion, evaluacionId);
+        // --- Lógica de guardado dual (LocalStorage y Supabase) ---
+        // 1. Siempre guardar localmente para respuesta inmediata.
+        guardarLocalmente(evaluacion, evaluacionId);
 
-    // Luego, intentar guardar en Supabase.
-    if (window.ERGOConfig.USE_SUPABASE && window.supabase) {
-        try {
-            console.log('💾 Intentando guardar en Supabase...');
-            const existente = await supabase.getEvaluacionPorId(evaluacionId); // Usando el método preciso
-            
-            if (existente) {
-                console.log('🔄 Actualizando evaluación existente en Supabase...');
-                await supabase.updateEvaluacion(evaluacionId, evaluacion);
+        // 2. Intentar guardar en Supabase a través del nuevo módulo.
+        if (window.ERGOConfig.USE_SUPABASE && window.ERGOEvalSupa) {
+            const result = await window.ERGOEvalSupa.guardarEvaluacionEnSupabase(evaluacion);
+            if (result.success) {
+                ERGOUtils.showToast('Evaluación sincronizada con la nube.', 'success');
             } else {
-                console.log('🆕 Creando nueva evaluación en Supabase...');
-                // La fecha de creación solo se añade si es un registro nuevo en la BD
-                evaluacion.created_at = new Date().toISOString();
-                await supabase.createEvaluacion(evaluacion);
+                ERGOUtils.showToast('Datos guardados localmente. Revise su conexión.', 'error');
             }
-            console.log('✅ Evaluación sincronizada con Supabase.');
-            ERGOUtils.showToast('Evaluación guardada en la nube.', 'success');
-        } catch (error) {
-            console.error('❌ Error guardando en Supabase:', error);
-            ERGOUtils.showToast(`Error de red, los datos se guardaron localmente.`, 'error');
         }
-    }
+        console.log("🔵 Objeto a guardar:", JSON.stringify(evaluacion, null, 2));
+        guardarLocalmente(evaluacion, evaluacionId);
 
-    if (USE_SUPABASE_EVAL) {
-    try {
-        // ... (código existente para crear o actualizar la evaluación) ...
-        console.log('✅ Creación/Actualización resultado:', result);
-
-        // AÑADE ESTA LLAMADA JUSTO AQUÍ
-        await actualizarResumenDePictogramasPorArea(evaluacion.area_id);
-
-    } catch (error) {
-        // ...
-    }
-}
 }
 
 // Asegúrate de que esta función auxiliar también esté en eval_int.js
@@ -158,32 +135,6 @@ function guardarLocalmente(evaluacion, evaluacionId) {
     
     ERGOStorage.setLocal('evaluaciones', evaluaciones);
 }
-
-
-// Función para cargar desde Supabase
-        async function cargarEvaluacionSupabase(workCenterId) {
-            if (USE_SUPABASE_EVAL) {
-                try {
-                    // Buscar evaluación específica por work_center_id
-                    const evaluaciones = await supabase.getEvaluaciones(workCenterId);
-                    console.log('🔍 Búsqueda Supabase para workCenter:', workCenterId, 'Resultado:', evaluaciones);
-                    
-                    if (evaluaciones && evaluaciones.length > 0) {
-                        console.log('✅ Evaluación encontrada en Supabase');
-                        return evaluaciones[0];
-                    } else {
-                        console.log('🆕 No hay evaluación previa en Supabase');
-                        return null;
-                    }
-                } catch (error) {
-                    console.error('❌ Error cargando desde Supabase:', error);
-                    return null;
-                }
-            }
-            console.log('🚫 Supabase deshabilitado');
-            return null;
-        }
-
 
         // Mapeo de métodos y criterios de decisión
         const criteriosMetodos = {
@@ -231,6 +182,16 @@ function guardarLocalmente(evaluacion, evaluacionId) {
 
         // Función que se ejecuta cuando carga la página
         document.addEventListener('DOMContentLoaded', function() {
+            if (!window.ERGOAuth || !window.ERGOAuth.initializeAuthContext()) {
+                console.error("Fallo de autenticación o ERGOAuth no está listo. Redirigiendo...");
+                if (window.ERGOAuth && window.ERGOAuth.redirectToLogin) {
+                    window.ERGOAuth.redirectToLogin();
+                } else {
+                    // Fallback manual con la ruta correcta (dos niveles arriba)
+                    window.location.href = '../index.html'; 
+                }
+                return;
+            }
             // Establecer fecha actual en el campo de fecha
             const fechaHoy = new Date().toISOString().split('T')[0];
             document.getElementById('fechaEvaluacion').value = fechaHoy;
@@ -408,35 +369,48 @@ function guardarLocalmente(evaluacion, evaluacionId) {
             optionsDiv.className = 'options';
             optionsDiv.innerHTML = `
                 <label class="radio-label">
-                    <input type="radio" name="${categoria}-${index}" class="radio-input" value="si" onchange="calcularScoreAutomatico()"> Sí
+                    <input type="radio" name="${categoria}-${index}" class="radio-input" value="si"> Sí
                 </label>
                 <label class="radio-label">
-                    <input type="radio" name="${categoria}-${index}" class="radio-input" value="no" onchange="calcularScoreAutomatico()"> No
+                    <input type="radio" name="${categoria}-${index}" class="radio-input" value="no"> No
                 </label>
                 <label class="radio-label">
-                    <input type="radio" name="${categoria}-${index}" class="radio-input" value="na" onchange="calcularScoreAutomatico()"> N/A
+                    <input type="radio" name="${categoria}-${index}" class="radio-input" value="na"> N/A
                 </label>
             `;
             
             questionDiv.appendChild(preguntaDiv);
             questionDiv.appendChild(optionsDiv);
+                const radios = questionDiv.querySelectorAll('.radio-input');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', calcularScoreAutomatico);
+                });
             
             return questionDiv;
         }
 
         // Función para calcular score automáticamente
         function calcularScoreAutomatico() {
-            const score = calcularScoreFinal();
-            document.getElementById('scoreFinal').textContent = score + '%';
+            try {
+                // 1. Llama a la función que ya tienes y que hace todo el cálculo.
+                const resultados = analizarResultados();
 
-            const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
-            const elementoCategoria = document.getElementById('textoCategoria');
-            const elementoScore = document.getElementById('scoreFinal');
+                // 2. Actualiza los elementos de la UI con los nuevos valores calculados.
+                const scoreFinalEl = document.getElementById('scoreFinal');
+                const categoriaRiesgoEl = document.getElementById('categoriaRiesgo');
+                const nivelRiesgoEl = document.getElementById('nivelRiesgo');
+                const colorRiesgoEl = document.getElementById('colorRiesgo');
 
-            elementoCategoria.textContent = categoria.texto;
-            elementoScore.style.color = categoria.color;
+                if (scoreFinalEl) scoreFinalEl.textContent = `${resultados.scoreFinal}%`;
+                if (categoriaRiesgoEl) categoriaRiesgoEl.textContent = resultados.categoriaRiesgo;
+                if (nivelRiesgoEl) nivelRiesgoEl.textContent = resultados.nivelRiesgoErgonomico;
+                if (colorRiesgoEl) colorRiesgoEl.style.backgroundColor = resultados.colorRiesgo;
 
-            mostrarPictogramasActivos();
+                console.log(`🔄 Score recalculado automáticamente: ${resultados.scoreFinal}%`);
+
+            } catch (error) {
+                console.error('Error en el cálculo automático del score:', error);
+            }
         }
 
         // Nueva función para analizar métodos requeridos
@@ -611,6 +585,8 @@ function guardarLocalmente(evaluacion, evaluacionId) {
             // Calcula el score final como porcentaje de RIESGO
             const scoreFinal = (sumaPesos > 0) ? (totalPonderado / sumaPesos) * 100 : 0;
             return scoreFinal.toFixed(2);
+
+            
         }
         
         // Funciones para manejar modos
@@ -775,7 +751,7 @@ async function cargarDatosExistentes() {
 
     // 1. Prioridad 1: Intentar cargar desde Supabase
     if (USE_SUPABASE_EVAL) {
-        evaluacion = await cargarEvaluacionSupabase(workCenterId);
+        evaluacion = await window.ERGOEvalSupa.cargarEvaluacionDesdeSupabase(workCenterId);
         if (evaluacion) {
             origenDatos = 'Supabase';
         }
@@ -848,52 +824,10 @@ function poblarFormularioConDatos(evaluacionData) {
 
         // Calcular score y mostrar pictogramas guardados
         calcularScoreAutomatico();
-        if (evaluacionData.riesgos_por_categoria) {
-            actualizarVistaPictogramas(evaluacionData.riesgos_por_categoria);
-        }
         
         enterViewMode();
     }, 200); // Aumentado ligeramente para mayor seguridad
 }
-
-        // PEGA esta función que falta en eval_int.js
-
-        function actualizarVistaPictogramas(scoresPorCategoria) {
-            const container = document.getElementById('pictogramas-riesgo-container');
-            if(!container) return;
-            container.innerHTML = ''; 
-
-            // 'scoresPorCategoria' ahora viene del nuevo módulo ERGOAnalytics
-            // y tiene el formato { R01: {severidad: 2, nivel: 'Alto'}, ... }
-            const resultados = scoresPorCategoria || {};
-
-            // Filtrar solo los que tienen riesgo (severidad > 0)
-            const riesgosVisibles = Object.entries(resultados)
-                .filter(([id, data]) => id !== 'resumen' && data && data.severidad > 0)
-                .sort(([, a], [, b]) => b.severidad - a.severidad);
-
-            if (riesgosVisibles.length === 0) {
-                container.style.display = 'none';
-                return;
-            }
-
-            container.style.display = 'flex';
-            riesgosVisibles.forEach(([id, data]) => {
-                const pictogramaInfo = ERGOAnalytics.pictogramasConfig[id];
-                if (!pictogramaInfo) return;
-
-                const pictogramaDiv = document.createElement('div');
-                pictogramaDiv.className = 'pictograma-item';
-                pictogramaDiv.style.backgroundColor = data.color + '20';
-                pictogramaDiv.style.borderColor = data.color;
-                
-                pictogramaDiv.innerHTML = `
-                    <span class="pictograma-char" style="color: ${data.color};" title="${pictogramaInfo.nombre}">${pictogramaInfo.pictograma}</span>
-                    <span class="pictograma-score">${data.nivel}</span>
-                `;
-                container.appendChild(pictogramaDiv);
-            });
-        }
 
         // Función mejorada para exportar PDF con recomendaciones de métodos
         function exportarPDFCompleto() {
@@ -1232,45 +1166,4 @@ function mostrarPictogramasActivos() {
 
     // Oculta o muestra el contenedor principal si hay o no pictogramas activos
     mainContainer.classList.toggle('hidden', pictogramasActivos === 0);
-}
-
-async function actualizarResumenDePictogramasPorArea(areaId) {
-    if (!areaId) return;
-
-    console.log(`🔄 Recalculando resumen de pictogramas para el área: ${areaId}`);
-    try {
-        // 1. Obtener TODAS las evaluaciones para esta área
-        const todasLasEvaluacionesDelArea = await supabase.getEvaluacionesPorArea(areaId);
-
-        if (!todasLasEvaluacionesDelArea) {
-            console.warn("No se pudieron obtener evaluaciones para el área.");
-            return;
-        }
-
-        // 2. Contar todos los pictogramas
-        const resumen = {};
-        todasLasEvaluacionesDelArea.forEach(ev => {
-            if (ev.riesgos_por_categoria) {
-                for (const key in ev.riesgos_por_categoria) {
-                    if (!resumen[key]) {
-                        resumen[key] = {
-                            count: 0,
-                            nombre: ev.riesgos_por_categoria[key].nombre,
-                            pictograma: ev.riesgos_por_categoria[key].pictograma
-                        };
-                    }
-                    resumen[key].count++;
-                }
-            }
-        });
-        
-        console.log("📊 Resumen de pictogramas calculado:", resumen);
-
-        // 3. Guardar el nuevo resumen en la tabla 'areas'
-        await supabase.updateArea(areaId, { resumen_pictogramas: resumen });
-        console.log(`✅ Resumen para el área ${areaId} actualizado en Supabase.`);
-
-    } catch (error) {
-        console.error("Error al actualizar el resumen de pictogramas:", error);
-    }
 }

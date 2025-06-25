@@ -1,4 +1,7 @@
 // supabase-config.js
+// Este archivo es el corazón de la comunicación con la base de datos de Supabase.
+// Define una clase reutilizable para hacer consultas y crea una instancia global única.
+
 const CorsHeaders ={
     'Access-Control-Allow-Origin': 'https://brancori.github.io',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -7,52 +10,51 @@ const CorsHeaders ={
 const SUPABASE_URL = window.ERGOConfig.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.ERGOConfig.SUPABASE_ANON_KEY;
 
-// Cliente básico de Supabase
-class SupabaseClient {
+/**
+ * Clase SupabaseClient
+ * Un "envoltorio" (wrapper) personalizado para manejar todas las peticiones a la API de Supabase.
+ * Esto centraliza la lógica y hace que el resto del código sea más limpio.
+ */
+class ErgoSupabaseClient {
     constructor(url, key) {
         this.url = url;
         this.key = key;
-        this.headers = {
+        this.sessionToken = null; // Prepara para recibir el token
+        this.baseHeaders = {
             'Content-Type': 'application/json',
-            'apikey': key,
-            'Authorization': `Bearer ${key}`
+            'apikey': key
         };
     }
-
+    setAuth(token) {
+        this.sessionToken = token;
+        console.log('Token de sesión establecido en el cliente de datos.');
+    }
 async query(table, method = 'GET', data = null, filters = '') {
     const url = `${this.url}/rest/v1/${table}${filters}`;
-    
-    const options = {
-        method: method,
-        headers: this.headers
-    };
-    
+    const headers = { ...this.baseHeaders };
+
+    // Si hay token, lo añade. ¡Esto activa la seguridad RLS!
+    if (this.sessionToken) {
+        headers['Authorization'] = `Bearer ${this.sessionToken}`;
+    }
+
+    const options = { method, headers };
     if (data && (method === 'POST' || method === 'PATCH')) {
         options.body = JSON.stringify(data);
         console.log('🔍 Datos enviados a Supabase:', JSON.stringify(data, null, 2));
     }
-    
     try {
         const response = await fetch(url, options);
-        
         if (!response.ok) {
             const errorBody = await response.text();
             console.error('❌ Error response body:', errorBody);
             throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`);
         }
-        
-        // Para métodos que no devuelven datos
-        if (method === 'POST' || method === 'PATCH' || method === 'DELETE') {
+        if (method !== 'GET') {
             return { success: true };
         }
-        
-        // Solo para GET, intentar parsear JSON
         const text = await response.text();
-        if (!text) {
-            return null;
-        }
-        
-        return JSON.parse(text);
+        return text ? JSON.parse(text) : null;
     } catch (error) {
         console.error('Supabase query error:', error);
         throw error;
@@ -216,46 +218,23 @@ async deleteWorkCenter(id) {
     // Agregar al final de la clase SupabaseClient, antes del cierre de la clase
 
 async uploadFoto(file, areaId, workCenterId) {
-    try {
-        // Crear nombre único para el archivo
-        const timestamp = Date.now();
-        const fileExtension = file.name.split('.').pop();
-        const fileName = `${areaId}/${workCenterId}/${timestamp}.${fileExtension}`;
-        
-        // Subir archivo al storage (necesitas verificar si tienes un bucket creado)
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const uploadUrl = `${this.url}/storage/v1/object/fotos-centros/${fileName}`;
-        
-        const uploadResponse = await fetch(uploadUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${this.key}`
-            },
-            body: formData
-        });
-        
-        if (!uploadResponse.ok) {
-            throw new Error(`Error uploading file: ${uploadResponse.status}`);
-        }
-        
-        // Guardar referencia en la tabla fotos_centros
-        const fotoData = {
-            area_id: areaId,
-            work_center_id: workCenterId,
-            foto_url: fileName,
-            foto_name: file.name,
-            created_at: new Date().toISOString()
-        };
-        
-        await this.query('fotos_centros', 'POST', fotoData);
-        
-        return { success: true, fileName: fileName };
-    } catch (error) {
-        console.error('Error uploading foto:', error);
-        throw error;
-    }
+    const fileName = `${areaId}/${workCenterId}/${Date.now()}.${file.name.split('.').pop()}`;
+    const uploadUrl = `${this.url}/storage/v1/object/fotos-centros/${fileName}`;
+    
+    // CORRECCIÓN: Usar this.sessionToken
+    const uploadResponse = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${this.sessionToken}`, // <-- Aquí está el cambio
+            'x-upsert': 'true'
+        },
+        body: file
+    });
+    
+    if (!uploadResponse.ok) throw new Error(await uploadResponse.text());
+    
+    const fotoData = { area_id: areaId, work_center_id: workCenterId, foto_url: fileName, foto_name: file.name };
+    return await this.query('fotos_centros', 'POST', fotoData);
 }
 
 async getFotos(workCenterId) {
@@ -263,21 +242,16 @@ async getFotos(workCenterId) {
 }
 
 async deleteFoto(fotoId) {
-    // Primero obtener la info de la foto para eliminar el archivo
     const foto = await this.query('fotos_centros', 'GET', null, `?id=eq.${fotoId}`);
-    
     if (foto && foto.length > 0) {
-        // Eliminar archivo del storage
         const deleteUrl = `${this.url}/storage/v1/object/fotos-centros/${foto[0].foto_url}`;
         
+        // CORRECCIÓN: Usar this.sessionToken
         await fetch(deleteUrl, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${this.key}`
-            }
+            headers: { 'Authorization': `Bearer ${this.sessionToken}` } // <-- Aquí está el cambio
         });
         
-        // Eliminar registro de la tabla
         return await this.query('fotos_centros', 'DELETE', null, `?id=eq.${fotoId}`);
     }
 }
@@ -368,27 +342,20 @@ async deleteEvaluacionNiosh(evalId) {
 
 // === FUNCIÓN COMBINADA PARA TODAS LAS EVALUACIONES ESPECÍFICAS ===
 async getAllEvaluacionesEspecificas(workCenterId) {
+    console.log('%c--- MODO DEPURACIÓN: Cargando solo la evaluación REBA ---', 'color: orange; font-weight: bold;');
     try {
-        const [reba, rula, ocra, niosh] = await Promise.all([
-            this.getEvaluacionesReba(workCenterId),
-            this.getEvaluacionesRula(workCenterId),
-            this.getEvaluacionesOcra(workCenterId),
-            this.getEvaluacionesNiosh(workCenterId)
-        ]);
+        // Temporalmente, solo llamamos a una función para aislar el problema
+        const reba = await this.getEvaluacionesReba(workCenterId);
+        console.log('Resultado de getEvaluacionesReba:', reba);
 
-        // Combinar y etiquetar por tipo
-        const evaluaciones = [];
-        
-        if (reba) reba.forEach(e => evaluaciones.push({...e, tipo: 'REBA'}));
-        if (rula) rula.forEach(e => evaluaciones.push({...e, tipo: 'RULA'}));
-        if (ocra) ocra.forEach(e => evaluaciones.push({...e, tipo: 'OCRA'}));
-        if (niosh) niosh.forEach(e => evaluaciones.push({...e, tipo: 'NIOSH'}));
+        // Devolvemos un array con el mismo formato que Promise.all,
+        // pero con arrays vacíos para las otras evaluaciones para que el resto del código no se rompa.
+        return [reba || [], [], [], []];
 
-        // Ordenar por fecha de creación
-        return evaluaciones.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     } catch (error) {
-        console.error('Error getting all evaluaciones específicas:', error);
-        return [];
+        console.error('Error en el modo de depuración de getAllEvaluacionesEspecificas:', error);
+        // Si incluso esta única llamada falla, lo sabremos y la app no se romperá.
+        return [[], [], [], []];
     }
 }
 // === SCORES OPTIMIZADOS ===
@@ -542,17 +509,6 @@ async actualizarScoreResumen(workCenterId, areaId, scoreData) {
         throw error;
     }
 }
-// === AUTENTICACIÓN DE USUARIOS ===
-async loginUser(usuario, password) {
-    try {
-        // Método con encoding para caracteres especiales
-        const result = await this.query('usuarios', 'GET', null, `?usuario=eq.${encodeURIComponent(usuario)}&password=eq.${encodeURIComponent(password)}`);
-        return result && result.length > 0 ? result[0] : null;
-    } catch (error) {
-        console.error('Error en login:', error);
-        return null;
-    }
-}
 
 async getUsuario(id) {
     try {
@@ -627,7 +583,7 @@ async getDashboardData() {
 }
 
 // Instancia global
-const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.dataClient = new ErgoSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 //================================================================
 // MÓDULO DE ANALÍTICAS Y DECISIONES DE RIESGO (VERSIÓN FINAL)

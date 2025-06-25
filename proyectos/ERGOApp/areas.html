@@ -6,8 +6,6 @@
     <title>Gestión de Áreas</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="areas.css">
-    <script src="./componentes/globals.js"></script>
-    <script src="supabase-config.js" defer></script>
 </head>
 <body>
     <!-- Página Principal de Áreas -->
@@ -234,8 +232,12 @@
     <div id="toast" class="toast">
         <span id="toast-message"></span>
     </div>
-    <script src="./componentes/globals.js" defer></script>
-    <script src="./componentes/header-component.js" defer></script>
-    <script src="areas.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="./componentes/globals.js"></script>
+    <script src="./componentes/auth-client.js"></script> <script src="./componentes/header-component.js"></script>
+
+    <script src="supabase-config.js"></script>
+    <script src="areas.js"></script>
 </body>
 </html>

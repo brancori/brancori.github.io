@@ -34,7 +34,7 @@
                         <form id="loginForm">
                             <div class="form-group">
                                 <label for="usuario">Usuario</label>
-                                <input type="text" id="usuario" name="usuario" required="" placeholder="Ingresa tu usuario">
+                                <input type="email" id="login-email" placeholder="Tu correo electrónico" required>
                             </div>
                             <div class="form-group">
                                 <label for="password">Contraseña</label>
@@ -70,6 +70,15 @@
                     <div class="user-details">
                         <span class="user-name" id="userName">Usuario</span>
                         <span class="user-role" id="userRole">Cargo</span>
+                    </div>
+                    <div class="theme-switch-wrapper">
+                        <label class="theme-switch" for="theme-toggle">
+                            <input type="checkbox" id="theme-toggle" />
+                            <div class="slider round">
+                                <span class="icon sun">☀️</span>
+                                <span class="icon moon">🌙</span>
+                            </div>
+                        </label>
                     </div>
                     <button class="btn btn-ghost btn-sm" id="logoutBtn">
                         <span class="icon">🚪</span>
@@ -199,7 +208,9 @@
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./componentes/globals.js"></script>
+    <script src="./componentes/auth-client.js"></script>
     <script src="supabase-config.js"></script>
     <script src="./componentes/map.js"></script>
     <script type="module" src="index.js"></script>

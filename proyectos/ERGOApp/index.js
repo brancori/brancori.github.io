@@ -15,23 +15,29 @@ class IndexApp {
         }
     }
 
-    checkExistingSession() {
-        if (ERGOAuth.checkSession()) {
-            this.currentUser = ERGOAuth.getCurrentUser();
-            console.log('✅ Sesión válida, usuario:', this.currentUser.nombre);
-            this.hidePreloader();
-            this.hideLoginModal();
-            this.showMainContent();
-            this.updateUserInterface();
-            this.loadDashboardData();
-                    new ERGOMap('risk-map');
-        
-        return;
-        } else {
-            console.log('🧹 Limpiando sesión...');
-            this.hideMainContent();
+checkExistingSession() {
+    if (ERGOAuth.checkSession()) {
+        // CORRECCIÓN: Re-autenticar el dataClient con el token guardado
+        const token = ERGOStorage.getSession('sessionToken');
+        if (token) {
+            dataClient.setAuth(token);
         }
+        
+        this.currentUser = ERGOAuth.getCurrentUser();
+        console.log('✅ Sesión válida, usuario:', this.currentUser.nombre);
+        this.hidePreloader();
+        this.hideLoginModal();
+        this.showMainContent();
+        this.updateUserInterface();
+        this.loadDashboardData();
+        new ERGOMap('risk-map');
+    
+    } else {
+        console.log('🧹 No hay sesión existente.');
+        this.hideMainContent();
     }
+}
+
 
     setupEventListeners() {
         const loginForm = document.getElementById('loginForm');
@@ -52,45 +58,48 @@ class IndexApp {
         });
     }
 
-    async handleLogin(e) {
-        e.preventDefault();
-        const usuario = document.getElementById('usuario').value.trim();
-        const password = document.getElementById('password').value;
-        const loginBtn = document.getElementById('loginBtn');
+async handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('password').value;
+    const loginBtn = document.getElementById('loginBtn');
 
-        if (!usuario || !password) {
-            this.showLoginError('Por favor completa todos los campos');
-            return;
-        }
-
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="icon">⏳</span> Verificando...';
-
-        try {
-            const userData = await supabase.loginUser(usuario, password);
-            if (userData) {
-                this.currentUser = userData;
-                const expiryTime = new Date().getTime() + ERGOConfig.SESSION_DURATION;
-                ERGOStorage.setSession('currentUser', userData);
-                ERGOStorage.setSession('sessionExpiry', expiryTime);
-                ERGOAuth.updateActivity();
-                
-                this.hidePreloader();
-                this.hideLoginModal();
-                this.showMainContent();
-                this.updateUserInterface();
-                this.loadDashboardData();
-            } else {
-                this.showLoginError('Usuario o contraseña incorrectos');
-            }
-        } catch (error) {
-            console.error('Error en login:', error);
-            this.showLoginError('Error de conexión. Intenta nuevamente.');
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = '<span class="icon">🔐</span> Iniciar Sesión';
-        }
+    if (!email || !password) {
+        this.showLoginError('Por favor completa todos los campos');
+        return;
     }
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="icon">⏳</span> Verificando...';
+
+    try {
+        const authResult = await authClient.login(email, password);
+
+        if (authResult && authResult.user) {
+            dataClient.setAuth(authResult.session.access_token); // ¡El puente clave!
+            this.currentUser = authResult.user;
+            
+            const expiryTime = new Date().getTime() + ERGOConfig.SESSION_DURATION;
+            ERGOStorage.setSession('currentUser', this.currentUser);
+            ERGOStorage.setSession('sessionToken', authResult.session.access_token);
+            ERGOStorage.setSession('sessionExpiry', expiryTime);
+            
+            
+            this.hidePreloader();
+            this.hideLoginModal();
+            this.showMainContent();
+            this.updateUserInterface();
+            this.loadDashboardData();
+        } else {
+            this.showLoginError('Usuario o contraseña incorrectos');
+        }
+    } catch (error) {
+        console.error('Error en el flujo de login:', error);
+        this.showLoginError('Error de conexión. Intenta nuevamente.');
+    } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<span class="icon">🔐</span> Iniciar Sesión';
+    }
+}
 
     showLoginError(message) {
         const loginError = document.getElementById('loginError');
@@ -142,13 +151,14 @@ class IndexApp {
     }
 
     handleLogout() {
-        ERGOAuth.logout();
+        authClient.logout(); // Cierra la sesión de Supabase
+        ERGOAuth.logout();   // Cierra tu sesión local
         setTimeout(() => window.location.reload(), 500);
     }
     
     async loadDashboardData() {
         try {
-            const dashboardData = await supabase.getDashboardData();
+            const dashboardData = await dataClient.getDashboardData(); // Usa dataClient
             this.updateDashboardTables(dashboardData);
             this.updateTopKPIs(dashboardData);
         } catch (error) {

@@ -132,6 +132,9 @@ Evaluaciones ergonómicas principales con resultados.
 | color_riesgo            | text                     | Color para UI según riesgo |
 | created_at              | timestamp with time zone | Fecha de creación |
 | updated_at              | timestamp with time zone | Última actualización |
+| resultados_pictogramas  | jsonb		     | resultado de pictograma |
+| resumen_semaforo        | jsonb		     | da el resumen del color del semáforo |
+|riesgos_por_categoria	  |jsonb		     | Indica el nivel de riesgo |
 
 ### Tabla: `fotos_centros`
 Gestión de fotos de los centros de trabajo.

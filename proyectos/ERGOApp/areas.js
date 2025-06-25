@@ -1,10 +1,3 @@
-// Verificar que hay usuario logueado antes de continuar
-if (!ERGOAuth.checkSession()) {
-    console.log('❌ Sesión inválida detectada por ERGOAuth, redirigiendo...');
-    ERGOAuth.redirectToLogin();
-} else {
-    console.log('✅ Sesión verificada correctamente en areas.js');
-}
 
 // Configuración para usar Supabase o localStorage
 const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
@@ -13,7 +6,7 @@ const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 async function loadAreas() {
     if (USE_SUPABASE) {
         try {
-            areas = await supabase.getAreas();
+            areas = await dataClient.getAreas();
         } catch (error) {
             console.error('Error loading areas from Supabase:', error);
             areas = JSON.parse(localStorage.getItem('areas')) || [];
@@ -28,7 +21,7 @@ async function saveAreaToStorage(area) {
     if (!ERGOAuth.checkPermissionAndShowError('create')) return;
     if (USE_SUPABASE) {
         try {
-            await supabase.createArea(area);
+            await daaClient.createArea(area);
         } catch (error) {
             console.error('Error saving area to Supabase:', error);
         }
@@ -40,7 +33,7 @@ async function saveAreaToStorage(area) {
 async function loadWorkCenters(area_id = null) {
     if (USE_SUPABASE) {
         try {
-            const data = await supabase.getWorkCenters(area_id);
+            const data = await dataClient.getWorkCenters(area_id);
             workCenters = data || [];
         } catch (error) {
             console.error('Error loading work centers from Supabase:', error);
@@ -298,7 +291,7 @@ async function saveArea() {
             };
 
             if (USE_SUPABASE) {
-                await supabase.updateArea(editingId, updatedArea);
+                await dataClient.updateArea(editingId, updatedArea);
             }
             
             // Actualizar array local
@@ -332,7 +325,7 @@ async function saveArea() {
 
         try {
             if (USE_SUPABASE) {
-                await supabase.createArea(newArea);
+                await dataClient.createArea(newArea);
                 areas.push(newArea);
             } else {
                 areas.push(newArea);
@@ -368,10 +361,10 @@ async function deleteArea(area_id, event) {
             if (USE_SUPABASE) {
                 // Eliminar centros asociados primero
                 for (const center of areaCenters) {
-                    await supabase.deleteWorkCenter(center.id);
+                    await dataClient.deleteWorkCenter(center.id);
                 }
                 // Luego eliminar el área
-                await supabase.deleteArea(area_id);
+                await dataClient.deleteArea(area_id);
             }
             
             // Actualizar arrays locales
@@ -602,7 +595,7 @@ async function saveWorkCenter() {
             };
 
             if (USE_SUPABASE) {
-                await supabase.updateWorkCenter(editingId, updatedCenter);
+                await dataClient.updateWorkCenter(editingId, updatedCenter);
             }
             
             // Actualizar array local
@@ -639,7 +632,7 @@ async function saveWorkCenter() {
 
         try {
             if (USE_SUPABASE) {
-                await supabase.createWorkCenter(newWorkCenter);
+                await dataClient.createWorkCenter(newWorkCenter);
                 workCenters.push(newWorkCenter);
             } else {
                 workCenters.push(newWorkCenter);
@@ -667,7 +660,7 @@ async function deleteWorkCenter(centerId, event) {
     if (confirm(`¿Estás seguro de eliminar el centro "${center.name}"?`)) {
         try {
             if (USE_SUPABASE) {
-                await supabase.deleteWorkCenter(centerId);
+                await dataClient.deleteWorkCenter(centerId);
             }
             
             // Actualizar array local
@@ -788,57 +781,6 @@ async function renderWorkCenters() {
     }
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', async function() {
-    // Cargar datos desde Supabase
-    try {
-        await loadAreas();
-        await loadWorkCenters();
-    } catch (error) {
-        console.error('Error loading data:', error);
-    }
-    
-    // Verificar parámetros de URL ANTES de renderizar
-    const urlParams = new URLSearchParams(window.location.search);
-    const areaIdFromUrl = urlParams.get('area');
-    const areaNameFromUrl = urlParams.get('areaName');
-
-    if (areaIdFromUrl && areaNameFromUrl) {
-        // Ir directamente a la vista de área específica SIN mostrar la lista de áreas
-        await showAreaDetail(areaIdFromUrl);
-    } else {
-        // Solo renderizar áreas si NO hay parámetros específicos
-        await renderAreas();
-    }
-
-    // Cargar scores existentes
-    setTimeout(() => {
-        cargarScoresExistentes();
-    }, 100);
-    
-ERGOAuth.applyPermissionControls();
-// Setup filtros en tiempo real
-const setupFilters = () => {
-    const areaNameFilter = document.getElementById('filter-area-name');
-    const areaScoreFilter = document.getElementById('filter-area-score');
-    const areaStatusFilter = document.getElementById('filter-area-status');
-    
-    if (areaNameFilter) areaNameFilter.addEventListener('input', ERGOUtils.debounce(renderAreas, 300));
-    if (areaScoreFilter) areaScoreFilter.addEventListener('change', renderAreas);
-    if (areaStatusFilter) areaStatusFilter.addEventListener('change', renderAreas);
-    
-    const centerNameFilter = document.getElementById('filter-center-name');
-    const centerScoreFilter = document.getElementById('filter-center-score');
-    const centerResponsibleFilter = document.getElementById('filter-center-responsible');
-    
-    if (centerNameFilter) centerNameFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
-    if (centerScoreFilter) centerScoreFilter.addEventListener('change', renderWorkCenters);
-    if (centerResponsibleFilter) centerResponsibleFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
-};
-
-setTimeout(setupFilters, 500);
-});
-
 // Funciones de exportación e importación (para futuro uso)
 function exportData() {
     const data = {
@@ -955,7 +897,7 @@ window.addEventListener('message', function(event) {
 async function obtenerScoreFromSupabase(workCenterId) {
     if (USE_SUPABASE) {
         try {
-            const score = await supabase.getScoreWorkCenter(workCenterId);
+            const score = await dataClient.getScoreWorkCenter(workCenterId);
             if (score) {
                 return {
                     score_actual: score.score_actual,
@@ -1008,8 +950,8 @@ async function obtenerScoreFromSupabase(workCenterId) {
 async function calcularPromedioAreaFromSupabase(area_id) {
     if (USE_SUPABASE) {
         try {
-            const scores = await supabase.getScoresArea(area_id);
-            const workCentersData = await supabase.getWorkCenters(area_id);
+            const scores = await dataClient.getScoresArea(area_id);
+            const workCentersData = await dataClient.getWorkCenters(area_id);
             
         if (scores && scores.length > 0) {
             const sumaScores = scores.reduce((sum, s) => sum + s.score_actual, 0);
@@ -1088,3 +1030,59 @@ function calcularPromedioFromLocalStorage(area_id) {
         };
     }
 }
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', async function() {
+        if (!ERGOAuth.initializeAuthContext()) {
+        ERGOAuth.redirectToLogin();
+        return;
+    }
+    // Cargar datos desde Supabase
+    
+    try {
+        await loadAreas();
+        await loadWorkCenters();
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+    
+    // Verificar parámetros de URL ANTES de renderizar
+    const urlParams = new URLSearchParams(window.location.search);
+    const areaIdFromUrl = urlParams.get('area');
+    const areaNameFromUrl = urlParams.get('areaName');
+
+    if (areaIdFromUrl && areaNameFromUrl) {
+        // Ir directamente a la vista de área específica SIN mostrar la lista de áreas
+        await showAreaDetail(areaIdFromUrl);
+    } else {
+        // Solo renderizar áreas si NO hay parámetros específicos
+        await renderAreas();
+    }
+
+    // Cargar scores existentes
+    setTimeout(() => {
+        cargarScoresExistentes();
+    }, 100);
+    
+ERGOAuth.applyPermissionControls();
+// Setup filtros en tiempo real
+const setupFilters = () => {
+    const areaNameFilter = document.getElementById('filter-area-name');
+    const areaScoreFilter = document.getElementById('filter-area-score');
+    const areaStatusFilter = document.getElementById('filter-area-status');
+    
+    if (areaNameFilter) areaNameFilter.addEventListener('input', ERGOUtils.debounce(renderAreas, 300));
+    if (areaScoreFilter) areaScoreFilter.addEventListener('change', renderAreas);
+    if (areaStatusFilter) areaStatusFilter.addEventListener('change', renderAreas);
+    
+    const centerNameFilter = document.getElementById('filter-center-name');
+    const centerScoreFilter = document.getElementById('filter-center-score');
+    const centerResponsibleFilter = document.getElementById('filter-center-responsible');
+    
+    if (centerNameFilter) centerNameFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
+    if (centerScoreFilter) centerScoreFilter.addEventListener('change', renderWorkCenters);
+    if (centerResponsibleFilter) centerResponsibleFilter.addEventListener('input', ERGOUtils.debounce(renderWorkCenters, 300));
+};
+
+setTimeout(setupFilters, 500);
+});
