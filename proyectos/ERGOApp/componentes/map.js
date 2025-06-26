@@ -56,8 +56,22 @@ createAreaMapping() {
     this.areaMapping = {
         'LINEA 14 ( CREMER )': {
             workCenterId: '3HZ6Z8'  // Solo necesitamos el ID del área
+        },
+                'LINEA 11 ( IMA )': {
+            workCenterId: 'TMHECY'  // Solo necesitamos el ID del área
+        },
+                'LINEA 10 ( CONTINUACION DE ODEN )': {
+            workCenterId: 'BZMICZ'  // Solo necesitamos el ID del área
+        },
+                'LINEA 9 ( CAMPMM )': {
+            workCenterId: 'YFSL83'  // Solo necesitamos el ID del área
+        },
+                'IMPRESION 1': {
+            workCenterId: 'UZTACY'  // Solo necesitamos el ID del área
+        },
+                'LINEA 5A': {
+            workCenterId: 'UI5VM1'  // Solo necesitamos el ID del área
         }
-        // Agregar más mapeos aquí con solo el areaId
     };
     
     console.log('✅ Mapeo simple creado:', this.areaMapping);
