@@ -82,7 +82,7 @@ createAreaMapping() {
             workCenterId: 'PAIYHX'  // Solo necesitamos el ID del área
         },
                 'SUPERVISIÓN DE PRODUCTO': {
-            workCenterId: 'PAIYHX'  // Solo necesitamos el ID del área
+            workCenterId: 'Y9HXR3'  // Solo necesitamos el ID del área
         }
         
     };
