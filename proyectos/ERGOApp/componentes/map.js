@@ -71,7 +71,20 @@ createAreaMapping() {
         },
                 'LINEA 5A': {
             workCenterId: 'UI5VM1'  // Solo necesitamos el ID del área
+        },
+                'LINEA 1 ( MEDISEAL )': {
+            workCenterId: 'GOZKZA'  // Solo necesitamos el ID del área
+        },
+                'LINEA 2 ( MANUAL )': {
+            workCenterId: '1U52PK'  // Solo necesitamos el ID del área
+        },
+                'AREA DE RESIDUOS ': {
+            workCenterId: 'PAIYHX'  // Solo necesitamos el ID del área
+        },
+                'SUPERVISIÓN DE PRODUCTO': {
+            workCenterId: 'PAIYHX'  // Solo necesitamos el ID del área
         }
+        
     };
     
     console.log('✅ Mapeo simple creado:', this.areaMapping);
