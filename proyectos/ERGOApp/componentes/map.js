@@ -3,11 +3,14 @@ class ERGOMap {
     constructor(containerId, dashboardData = null) {
         this.containerId = containerId;
         this.container = d3.select(`#${containerId}`);
+        this.containerElement = document.getElementById(containerId);
+        this.mapDataSource = this.containerElement.dataset.mapSource;
         this.svg = null;
         this.mapGroup = null;
         this.zoom = null;
-        this.tooltip = null;
+        this.tooltip = d3.select("#map-tooltip");
         this.legend = null;
+        this.data = []; // Para mantener compatibilidad con tu código original
         this.filters = {
             selectedArea: null,
             riskLevel: 'all'
@@ -35,33 +38,54 @@ class ERGOMap {
                 critical: '#dc3545' // Rojo
             }
         };
-        
+
+        // Verificar contenedor y fuente de datos
+        if (!this.containerElement || !this.mapDataSource) {
+            console.error("Contenedor de mapa o fuente de datos no encontrada.");
+            return;
+        }
+
+        // Inicializar mapeo de áreas (ahora asíncrono)
+        this.createAreaMapping();
         this.init();
     }
 
-    // Inicializar el mapa
-init() {
-    console.log('🗺️ Inicializando ERGOMap...');
-    this.container.selectAll('*').remove();
-    this.createMapStructure();
-    this.createTooltip();
-    this.createLegend();
-    this.setupZoomPan();
 
-    const svgPath = this.container.attr('data-map-source');
-    if (svgPath) {
-        this.loadSVG(svgPath).then(() => {
-            if (this.dashboardData) {
-                this.updateRiskData(this.dashboardData.areas || []);
-            }
-        });
-    } else {
-        console.error('❌ No se especificó la ruta del mapa en el atributo data-map-source');
-        this.showPlaceholder();
-    }
+// Mapeo entre elementos del SVG y datos reales dinámicos
+createAreaMapping() {
+    this.areaMapping = {
+        'LINEA 14 ( CREMER )': {
+            workCenterId: '3HZ6Z8'  // Solo necesitamos el ID del área
+        }
+        // Agregar más mapeos aquí con solo el areaId
+    };
     
-    console.log('✅ ERGOMap inicializado');
+    console.log('✅ Mapeo simple creado:', this.areaMapping);
 }
+
+
+    // Inicializar el mapa
+    init() {
+        console.log('🗺️ Inicializando ERGOMap...');
+        this.container.selectAll('*').remove();
+        this.createMapStructure();
+        this.createTooltip();
+        this.createLegend();
+        this.setupZoomPan();
+
+        if (this.mapDataSource) {
+            this.loadSVG(this.mapDataSource).then(() => {
+                if (this.dashboardData) {
+                    this.updateRiskData(this.dashboardData.areas || []);
+                }
+            });
+        } else {
+            console.error('❌ No se especificó la ruta del mapa en el atributo data-map-source');
+            this.showPlaceholder();
+        }
+        
+        console.log('✅ ERGOMap inicializado');
+    }
 
     // Crear estructura HTML/SVG del mapa
     createMapStructure() {
@@ -241,155 +265,421 @@ init() {
         this.svg.call(this.zoom);
     }
 
-    // Cargar SVG del plano
-    async loadSVG(svgPath) {
-        try {
-            console.log('📄 Cargando SVG del plano...');
-            
-            // Cargar el SVG
-            const svgData = await d3.xml(svgPath);
-            const importedSVG = svgData.documentElement;
-            
-            // Limpiar el grupo del mapa
-            this.mapGroup.selectAll('*').remove();
-            
-            // Importar el contenido del SVG
-            this.mapGroup.node().appendChild(importedSVG.cloneNode(true));
-            
-            // Configurar interactividad en las áreas
-            this.setupAreaInteractions();
-            
-            // Ajustar vista inicial
-            this.resetZoom();
-            
-            console.log('✅ SVG cargado exitosamente');
-            
-            // Si tenemos datos, actualizar inmediatamente
-            if (this.dashboardData) {
-                this.updateRiskData(this.dashboardData.areas || []);
-            }
-            
-        } catch (error) {
-            console.error('❌ Error cargando SVG:', error);
-            this.showPlaceholder();
-        }
-    }
-
-    // Mostrar placeholder cuando no se puede cargar el SVG
-    showPlaceholder() {
+// Cargar SVG del plano
+async loadSVG(svgPath) {
+    try {
+        console.log('📄 Cargando SVG del plano...');
+        
+        const svgData = await d3.xml(svgPath);
+        const importedSVG = svgData.documentElement;
+        
         this.mapGroup.selectAll('*').remove();
+        this.mapGroup.node().appendChild(importedSVG.cloneNode(true));
         
-        const placeholderGroup = this.mapGroup.append('g');
+        // REMOVER esta línea que causa error:
+        // this.setupAreaInteractions();
         
-        // Fondo
-        placeholderGroup.append('rect')
-            .attr('width', this.config.width)
-            .attr('height', this.config.height - 100)
-            .attr('fill', '#f8f9fa')
-            .attr('stroke', '#dee2e6')
-            .attr('stroke-width', 2)
-            .attr('stroke-dasharray', '10,5');
-
-        // Texto
-        placeholderGroup.append('text')
-            .attr('x', this.config.width / 2)
-            .attr('y', this.config.height / 2 - 20)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '24px')
-            .attr('fill', '#6c757d')
-            .text('🗺️');
-
-        placeholderGroup.append('text')
-            .attr('x', this.config.width / 2)
-            .attr('y', this.config.height / 2 + 10)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '16px')
-            .attr('fill', '#6c757d')
-            .text('Plano no disponible');
-
-        placeholderGroup.append('text')
-            .attr('x', this.config.width / 2)
-            .attr('y', this.config.height / 2 + 35)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('fill', '#adb5bd')
-            .text('Coloca tu archivo SVG en ./assets/plano.svg');
+        this.resetZoom();
+        
+        console.log('✅ SVG cargado exitosamente');
+        
+        // AHORA que el SVG está cargado, aplicar los datos si los hay
+        if (this.areas && this.areas.length > 0) {
+            console.log('🎨 Aplicando datos guardados al SVG cargado...');
+            this.updateAreaFilter();
+            this.colorizeAreas();
+            this.applyFilters();
+        }
+        
+        // Configurar hover effects DESPUÉS de cargar el SVG
+        this.setupHoverEffects();
+        
+    } catch (error) {
+        console.error('❌ Error cargando SVG:', error);
+        this.showPlaceholder();
     }
+}
 
     // Configurar interactividad en las áreas
-    setupAreaInteractions() {
-        // Buscar todos los elementos que podrían ser áreas (text, rect, path, etc.)
-        const areaElements = this.mapGroup.selectAll('text, rect, path, circle, polygon');
-        
-        areaElements
-            .style('cursor', 'pointer')
-            .on('mouseenter', (event, d) => this.handleAreaHover(event, d))
-            .on('mouseleave', () => this.handleAreaLeave())
-            .on('mousemove', (event) => this.updateTooltipPosition(event))
-            .on('click', (event, d) => this.handleAreaClick(event, d));
-    }
+setupAreaInteractions() {
+    // Buscar todos los elementos que podrían ser áreas (text, rect, path, etc.)
+    const areaElements = this.mapGroup.selectAll('text, rect, path, circle, polygon');
+    
+    areaElements
+        .style('cursor', 'pointer')
+        .on('mouseenter', (event, d) => this.handleAreaHover(event, d))
+        .on('mouseleave', () => this.handleAreaLeave())
+        .on('mousemove', (event) => this.updateTooltipPosition(event))
+        .on('click', (event, d) => this.handleAreaClick(event, d));
+}
 
-    // Manejar hover en área
-    handleAreaHover(event, d) {
-        const element = event.target;
-        const areaName = this.extractAreaName(element);
-        const areaData = this.findAreaData(areaName);
-        
-        // Resaltar elemento
-        d3.select(element)
-            .style('opacity', 0.8)
-            .style('stroke-width', '3px')
-            .style('stroke', '#007bff');
-        
-        // Mostrar tooltip
-        this.showTooltip(event, areaName, areaData);
-    }
+// Manejar hover en área
+handleAreaHover(event, d) {
+    const element = event.target;
+    const areaName = this.extractAreaName(element);
+    const areaData = this.findAreaData(areaName);
+    
+    // Resaltar elemento
+    d3.select(element)
+        .style('opacity', 0.8)
+        .style('stroke-width', '3px')
+        .style('stroke', '#007bff');
+    
+    // Mostrar tooltip
+    this.showTooltip(event, areaName, areaData);
+}
 
-    // Manejar salida del hover
-    handleAreaLeave() {
-        // Remover resaltado
-        this.mapGroup.selectAll('text, rect, path, circle, polygon')
-            .style('opacity', null)
-            .style('stroke-width', null)
-            .style('stroke', null);
-        
-        // Ocultar tooltip
-        this.hideTooltip();
-    }
+// Manejar salida del hover
+handleAreaLeave() {
+    // Remover resaltado
+    this.mapGroup.selectAll('text, rect, path, circle, polygon')
+        .style('opacity', null)
+        .style('stroke-width', null)
+        .style('stroke', null);
+    
+    // Ocultar tooltip
+    this.hideTooltip();
+}
 
-    // Manejar click en área
-    handleAreaClick(event, d) {
-        const element = event.target;
-        const areaName = this.extractAreaName(element);
-        const areaData = this.findAreaData(areaName);
+// Manejar click en área
+handleAreaClick(event, d) {
+    const element = event.target;
+    const areaName = this.extractAreaName(element);
+    const areaData = this.findAreaData(areaName);
+    
+    if (areaData) {
+        // Navegar al área
+        this.navigateToArea(areaData);
+    } else {
+        ERGOUtils.showToast(`Área "${areaName}" no encontrada en los datos`, 'warning');
+    }
+}
+
+// Mostrar tooltip
+showTooltip(event, areaName, areaData) {
+    let content = `<strong>${areaData?.displayName || areaName}</strong><br>`;
+    
+    if (areaData) {
+        if (areaData.mapped) {
+            // Datos personalizados del mapeo
+            content += `
+                <div style="margin-top: 8px;">
+                    <div>Responsable: ${areaData.responsable || 'N/A'}</div>
+                    <div>Score: ${parseFloat(areaData.score).toFixed(2)}%</div>
+                    <div>Estado: ${areaData.categoria_riesgo}</div>
+                </div>
+            `;
+        } else {
+            // Datos normales de la base de datos
+            const score = parseFloat(areaData.promedio_score || 0);
+            const riskLevel = this.getRiskLevel(score);
+            const color = this.getRiskColor(score);
+            
+            content += `
+                <div style="margin-top: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: ${color}; border-radius: 2px;"></div>
+                        <span>Riesgo: ${riskLevel}</span>
+                    </div>
+                    <div style="margin-top: 4px;">Score: ${score.toFixed(2)}%</div>
+                    <div style="margin-top: 4px;">Centros: ${areaData.total_centros || 0}</div>
+                </div>
+            `;
+        }
+        
+        content += `
+            <div style="margin-top: 8px; font-size: 11px; color: #ccc;">
+                Click para ver detalles
+            </div>
+        `;
+    } else {
+        content += '<div style="margin-top: 8px; color: #ccc;">Sin datos disponibles</div>';
+    }
+    
+    this.tooltip.html(content).style('opacity', 1);
+    this.updateTooltipPosition(event);
+}
+
+// Actualizar posición del tooltip
+updateTooltipPosition(event) {
+    const tooltipWidth = 250;
+    const tooltipHeight = 120;
+    
+    let left = event.pageX + 15;
+    let top = event.pageY - 10;
+    
+    // Ajustar si se sale de la pantalla
+    if (left + tooltipWidth > window.innerWidth) {
+        left = event.pageX - tooltipWidth - 15;
+    }
+    
+    if (top + tooltipHeight > window.innerHeight) {
+        top = event.pageY - tooltipHeight - 10;
+    }
+    
+    this.tooltip
+        .style('left', left + 'px')
+        .style('top', top + 'px');
+}
+
+// Ocultar tooltip
+hideTooltip() {
+    this.tooltip.style('opacity', 0);
+}
+
+// Navegar al área seleccionada
+navigateToArea(areaData) {
+    if (window.indexApp && typeof window.indexApp.navigateToAreaWorkCenters === 'function') {
+        window.indexApp.navigateToAreaWorkCenters(areaData.id, areaData.name);
+    } else {
+        // Fallback directo
+        ERGONavigation.navigateToAreas(areaData.id);
+    }
+}
+
+    // Método para actualizar datos (mantener compatibilidad)
+// Método para actualizar datos (mantener compatibilidad)
+updateRiskData(areasData) {
+    this.data = areasData || [];
+    this.areas = areasData || [];
+    console.log('🎨 Actualizando datos del mapa...', this.data.length, 'áreas');
+    
+    // Solo ejecutar si el mapa ya está inicializado
+    if (this.mapGroup) {
+        this.updateAreaFilter();
+        this.colorizeAreas();
+        this.applyFilters();
+    } else {
+        console.log('⚠️ Mapa aún no inicializado, datos guardados para después');
+    }
+    
+    this.setupHoverEffects(); // Vuelve a aplicar los hovers con los nuevos datos
+}
+
+setupHoverEffects() {
+    if (!this.mapGroup) {
+        console.log('⚠️ mapGroup no disponible para hover effects');
+        return;
+    }
+    
+    console.log('🖱️ Configurando efectos hover...');
+    
+    // CORRECCIÓN: Usar this.mapGroup en lugar de d3.select(this.svg)
+    this.mapGroup.selectAll('text, path, rect, circle, polygon')
+        .style('cursor', 'pointer')
+        .on("mouseover", async (event, d) => {
+            const element = event.target;
+            const elementText = element.textContent || element.id;
+            
+            console.log('🖱️ Hover sobre:', elementText);
+            
+            // Buscar en el mapeo
+            const mappedConfig = this.areaMapping[elementText];
+            let tooltipContent = '';
+            
+if (mappedConfig && mappedConfig.workCenterId) {
+    try {
+        // Obtener datos del centro de trabajo específico
+        const [workCenterData, scoreData] = await Promise.all([
+            dataClient.getWorkCenter(mappedConfig.workCenterId),
+            dataClient.getScoreWorkCenter(mappedConfig.workCenterId)
+        ]);
+        
+        // Obtener datos del área si está disponible
+        const areaData = workCenterData?.area_id ? await dataClient.getArea(workCenterData.area_id) : null;
+                    
+                    
+                    // Crear tooltip con datos reales
+                tooltipContent = `
+                    <h4>${workCenterData?.name || 'Sin nombre'}</h4>
+                    <p><strong>ID Centro:</strong> ${mappedConfig.workCenterId}</p>
+                    <p><strong>Responsable:</strong> ${workCenterData?.responsible || 'Sin responsable'}</p>
+                    <p><strong>Riesgo:</strong> ${parseFloat(scoreData?.score_actual || 0).toFixed(2)}% - ${scoreData?.categoria_riesgo || 'Sin evaluar'}</p>
+                    <p><strong>Área:</strong> ${areaData?.name || 'Sin área'}</p>
+                    <p><small>Click para ver detalles</small></p>
+                `;
+                    
+                } catch (error) {
+                    console.error('Error obteniendo datos del área:', error);
+                    tooltipContent = `
+                        <h4>${elementText}</h4>
+                        <p>Error cargando datos</p>
+                        <p><small>Verifica tu conexión</small></p>
+                    `;
+                }
+            } else {
+                // Buscar en datos del dashboard como fallback
+                const areaData = this.data.find(area => 
+                    area.name && area.name.toLowerCase().includes(elementText.toLowerCase())
+                );
+                
+                if (areaData) {
+                    const score = parseFloat(areaData.promedio_score || 0).toFixed(2);
+                    tooltipContent = `
+                        <h4>${areaData.name}</h4>
+                        <p>Responsable: ${areaData.responsable || 'No asignado'}</p>
+                        <p><strong>Riesgo: ${score}%</strong> - ${this.getRiskLevelText(score)}</p>
+                        <p>Centros: ${areaData.total_centros || 0}</p>
+                        <p><small>Click para ver detalles</small></p>
+                    `;
+                } else {
+                    tooltipContent = `
+                        <h4>${elementText || 'Área'}</h4>
+                        <p>Sin datos disponibles</p>
+                    `;
+                }
+            }
+            
+            // Mostrar tooltip
+            this.tooltip.style("display", "block").html(tooltipContent);
+            
+            // Resaltar elemento
+            d3.select(element)
+                .style('opacity', 0.8)
+                .style('stroke-width', '3px')
+                .style('stroke', '#007bff');
+        })
+        .on("mousemove", (event) => {
+            this.tooltip
+                .style("left", (event.pageX + 15) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", (event) => {
+            this.tooltip.style("display", "none");
+            
+            // Remover resaltado
+            d3.select(event.target)
+                .style('opacity', null)
+                .style('stroke-width', null)
+                .style('stroke', null);
+        })
+        .on("click", async (event, d) => {
+    const element = event.target;
+    const elementText = element.textContent || element.id;
+    
+    // Buscar en mapeo
+    const mappedConfig = this.areaMapping[elementText];
+    
+    if (mappedConfig && mappedConfig.workCenterId) {
+        try {
+            // Obtener datos para la navegación
+            const workCenterData = await dataClient.getWorkCenter(mappedConfig.workCenterId);
+            const areaData = workCenterData?.area_id ? await dataClient.getArea(workCenterData.area_id) : null;
+            
+            // Navegar al centro de trabajo específico
+            ERGONavigation.navigateToWorkCenter(
+                mappedConfig.workCenterId,
+                workCenterData?.area_id || '',
+                encodeURIComponent(areaData?.name || 'Área'),
+                encodeURIComponent(workCenterData?.name || 'Centro'),
+                ''
+            );
+        } catch (error) {
+            console.error('Error navegando:', error);
+            ERGOUtils.showToast('Error al navegar al centro de trabajo', 'error');
+        }
+    } else {
+        // Fallback a búsqueda en datos del dashboard
+        const areaData = this.data.find(area => 
+            area.name && area.name.toLowerCase().includes(elementText.toLowerCase())
+        );
         
         if (areaData) {
-            // Navegar al área
-            this.navigateToArea(areaData);
+            ERGONavigation.navigateToAreas(areaData.id, areaData.name);
         } else {
-            ERGOUtils.showToast(`Área "${areaName}" no encontrada en los datos`, 'warning');
+            ERGOUtils.showToast(`Área "${elementText}" no encontrada`, 'warning');
         }
     }
+});
+}
 
-    // Extraer nombre del área del elemento SVG
+    // Actualizar filtro de áreas
+// Actualizar filtro de áreas
+updateAreaFilter() {
+    const select = d3.select('#areaFilter');
+    
+    // Verificar que el select existe
+    if (select.empty()) {
+        console.log('⚠️ Select de área no encontrado');
+        return;
+    }
+    
+    // Limpiar opciones existentes excepto "Todas"
+    select.selectAll('option:not([value="all"])').remove();
+    
+    // Verificar que hay áreas para agregar
+    if (!this.areas || this.areas.length === 0) {
+        console.log('⚠️ No hay áreas para agregar al filtro');
+        return;
+    }
+    
+    // Agregar opciones de áreas
+    this.areas.forEach(area => {
+        select.append('option')
+            .attr('value', area.id)
+            .text(area.name || `Área ${area.id}`);
+    });
+}
+
+    // Colorear áreas según nivel de riesgo
+// Colorear áreas según nivel de riesgo
+colorizeAreas() {
+    // Verificar que mapGroup existe
+    if (!this.mapGroup) {
+        console.log('⚠️ mapGroup no disponible para colorear áreas');
+        return;
+    }
+    
+    if (!this.areas || this.areas.length === 0) {
+        console.log('⚠️ No hay datos de áreas para colorear');
+        return;
+    }
+    
+    const areaElements = this.mapGroup.selectAll('text, rect, path, circle, polygon');
+    
+    // Verificar que hay elementos en el SVG
+    if (areaElements.empty()) {
+        console.log('⚠️ No hay elementos SVG para colorear');
+        return;
+    }
+    
+    areaElements.each((d, i, nodes) => {
+        const element = nodes[i];
+        const areaName = this.extractAreaName(element);
+        const areaData = this.findAreaData(areaName);
+        
+        if (areaData && element.tagName !== 'text') {
+            const score = parseFloat(areaData.promedio_score || 0);
+            const color = this.getRiskColor(score);
+            
+            // Aplicar color con transparencia
+            d3.select(element)
+                .style('fill', color)
+                .style('fill-opacity', 0.7)
+                .style('stroke', color)
+                .style('stroke-width', '1px')
+                .attr('data-area-id', areaData.id)
+                .attr('data-risk-level', this.getRiskLevel(score))
+                .attr('data-score', score);
+        }
+    });
+}
+
+    // Resto de métodos auxiliares...
     extractAreaName(element) {
-        // Intentar obtener el nombre del área de diferentes formas
         const text = element.textContent || element.innerHTML || '';
         const id = element.id || '';
         const className = element.className || '';
         
-        // Si es un elemento de texto, usar su contenido
         if (element.tagName === 'text' && text.trim()) {
             return text.trim();
         }
         
-        // Si tiene un ID, extraer el nombre del área
         if (id) {
             const match = id.match(/area[_-](.+)/i);
             if (match) return match[1].replace(/[_-]/g, ' ');
         }
         
-        // Buscar texto en elementos hermanos o padres
         const parent = element.parentElement;
         if (parent) {
             const textElements = parent.querySelectorAll('text');
@@ -403,7 +693,6 @@ init() {
         return text || id || 'Área desconocida';
     }
 
-    // Buscar datos del área
     findAreaData(areaName) {
         if (!this.areas || this.areas.length === 0) return null;
         
@@ -411,138 +700,14 @@ init() {
             const searchName = areaName.toLowerCase().trim();
             const areaNameLower = (area.name || '').toLowerCase().trim();
             
-            // Búsqueda exacta
             if (areaNameLower === searchName) return true;
-            
-            // Búsqueda parcial
             if (areaNameLower.includes(searchName) || searchName.includes(areaNameLower)) {
                 return true;
             }
-            
             return false;
         });
     }
 
-    // Mostrar tooltip
-    showTooltip(event, areaName, areaData) {
-        let content = `<strong>${areaName}</strong><br>`;
-        
-        if (areaData) {
-            const score = parseFloat(areaData.promedio_score || 0);
-            const riskLevel = this.getRiskLevel(score);
-            const color = this.getRiskColor(score);
-            
-            content += `
-                <div style="margin-top: 8px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 12px; height: 12px; background: ${color}; border-radius: 2px;"></div>
-                        <span>Riesgo: ${riskLevel}</span>
-                    </div>
-                    <div style="margin-top: 4px;">Score: ${score.toFixed(2)}%</div>
-                    <div style="margin-top: 4px;">Centros: ${areaData.total_centros || 0}</div>
-                    <div style="margin-top: 4px;">Responsable: ${areaData.responsible || 'N/A'}</div>
-                </div>
-                <div style="margin-top: 8px; font-size: 11px; color: #ccc;">
-                    Click para ver detalles
-                </div>
-            `;
-        } else {
-            content += '<div style="margin-top: 8px; color: #ccc;">Sin datos disponibles</div>';
-        }
-        
-        this.tooltip
-            .html(content)
-            .style('opacity', 1);
-        
-        this.updateTooltipPosition(event);
-    }
-
-    // Actualizar posición del tooltip
-    updateTooltipPosition(event) {
-        const tooltipWidth = 250;
-        const tooltipHeight = 120;
-        
-        let left = event.pageX + 15;
-        let top = event.pageY - 10;
-        
-        // Ajustar si se sale de la pantalla
-        if (left + tooltipWidth > window.innerWidth) {
-            left = event.pageX - tooltipWidth - 15;
-        }
-        
-        if (top + tooltipHeight > window.innerHeight) {
-            top = event.pageY - tooltipHeight - 10;
-        }
-        
-        this.tooltip
-            .style('left', left + 'px')
-            .style('top', top + 'px');
-    }
-
-    // Ocultar tooltip
-    hideTooltip() {
-        this.tooltip.style('opacity', 0);
-    }
-
-    // Actualizar datos de riesgo en el mapa
-    updateRiskData(areas) {
-        this.areas = areas || [];
-        console.log('🎨 Actualizando colores de riesgo en el mapa...', this.areas.length, 'áreas');
-        
-        // Actualizar filtro de áreas
-        this.updateAreaFilter();
-        
-        // Colorear áreas según riesgo
-        this.colorizeAreas();
-        
-        // Aplicar filtros actuales
-        this.applyFilters();
-    }
-
-    // Actualizar filtro de áreas
-    updateAreaFilter() {
-        const select = d3.select('#areaFilter');
-        
-        // Limpiar opciones existentes excepto "Todas"
-        select.selectAll('option:not([value="all"])').remove();
-        
-        // Agregar opciones de áreas
-        this.areas.forEach(area => {
-            select.append('option')
-                .attr('value', area.id)
-                .text(area.name || `Área ${area.id}`);
-        });
-    }
-
-    // Colorear áreas según nivel de riesgo
-    colorizeAreas() {
-        if (!this.areas || this.areas.length === 0) return;
-        
-        const areaElements = this.mapGroup.selectAll('text, rect, path, circle, polygon');
-        
-        areaElements.each((d, i, nodes) => {
-            const element = nodes[i];
-            const areaName = this.extractAreaName(element);
-            const areaData = this.findAreaData(areaName);
-            
-            if (areaData && element.tagName !== 'text') {
-                const score = parseFloat(areaData.promedio_score || 0);
-                const color = this.getRiskColor(score);
-                
-                // Aplicar color con transparencia
-                d3.select(element)
-                    .style('fill', color)
-                    .style('fill-opacity', 0.7)
-                    .style('stroke', color)
-                    .style('stroke-width', '1px')
-                    .attr('data-area-id', areaData.id)
-                    .attr('data-risk-level', this.getRiskLevel(score))
-                    .attr('data-score', score);
-            }
-        });
-    }
-
-    // Obtener color según score de riesgo
     getRiskColor(score) {
         if (score <= 25) return this.config.riskColors.low;
         if (score <= 50) return this.config.riskColors.medium;
@@ -550,7 +715,6 @@ init() {
         return this.config.riskColors.critical;
     }
 
-    // Obtener nivel de riesgo según score
     getRiskLevel(score) {
         if (score <= 25) return 'Bajo';
         if (score <= 50) return 'Medio';
@@ -558,7 +722,6 @@ init() {
         return 'Crítico';
     }
 
-    // Obtener código de nivel de riesgo
     getRiskLevelCode(score) {
         if (score <= 25) return 'low';
         if (score <= 50) return 'medium';
@@ -566,38 +729,55 @@ init() {
         return 'critical';
     }
 
-    // Aplicar filtros
-    applyFilters() {
-        const areaElements = this.mapGroup.selectAll('[data-area-id]');
-        
-        areaElements.style('opacity', (d, i, nodes) => {
-            const element = nodes[i];
-            const areaId = element.getAttribute('data-area-id');
-            const riskLevel = element.getAttribute('data-risk-level');
-            const riskCode = this.getRiskLevelCode(parseFloat(element.getAttribute('data-score')));
-            
-            // Filtro por área
-            if (this.filters.selectedArea && this.filters.selectedArea !== areaId) {
-                return 0.2;
-            }
-            
-            // Filtro por nivel de riesgo
-            if (this.filters.riskLevel !== 'all' && this.filters.riskLevel !== riskCode) {
-                return 0.2;
-            }
-            
-            return 1;
-        });
-        
-        // Mostrar mensaje si no hay elementos visibles
-        const visibleElements = areaElements.filter((d, i, nodes) => {
-            return d3.select(nodes[i]).style('opacity') > 0.5;
-        });
-        
-        if (visibleElements.size() === 0 && (this.filters.selectedArea || this.filters.riskLevel !== 'all')) {
-            ERGOUtils.showToast('No se encontraron áreas con los filtros seleccionados', 'info');
-        }
+    getRiskLevelText(score) {
+        const numScore = parseFloat(score);
+        if (numScore <= 25) return 'Riesgo Bajo';
+        if (numScore <= 50) return 'Riesgo Medio';
+        if (numScore <= 75) return 'Riesgo Alto';
+        return 'Riesgo Crítico';
     }
+
+    // Aplicar filtros
+applyFilters() {
+    // Verificar que mapGroup existe
+    if (!this.mapGroup) {
+        console.log('⚠️ mapGroup no disponible para aplicar filtros');
+        return;
+    }
+    
+    const areaElements = this.mapGroup.selectAll('[data-area-id]');
+    
+    // Verificar que hay elementos
+    if (areaElements.empty()) {
+        console.log('⚠️ No hay elementos con data-area-id para filtrar');
+        return;
+    }
+    
+    areaElements.style('opacity', (d, i, nodes) => {
+        const element = nodes[i];
+        const areaId = element.getAttribute('data-area-id');
+        const riskLevel = element.getAttribute('data-risk-level');
+        const riskCode = this.getRiskLevelCode(parseFloat(element.getAttribute('data-score')));
+        
+        if (this.filters.selectedArea && this.filters.selectedArea !== areaId) {
+            return 0.2;
+        }
+        
+        if (this.filters.riskLevel !== 'all' && this.filters.riskLevel !== riskCode) {
+            return 0.2;
+        }
+        
+        return 1;
+    });
+    
+    const visibleElements = areaElements.filter((d, i, nodes) => {
+        return d3.select(nodes[i]).style('opacity') > 0.5;
+    });
+    
+    if (visibleElements.size() === 0 && (this.filters.selectedArea || this.filters.riskLevel !== 'all')) {
+        ERGOUtils.showToast('No se encontraron áreas con los filtros seleccionados', 'info');
+    }
+}
 
     // Resetear zoom a vista completa
     resetZoom() {
@@ -629,7 +809,6 @@ init() {
             { label: 'Exportar como PDF', action: () => this.exportAsPDF() }
         ];
         
-        // Crear modal simple para opciones
         const modal = d3.select('body')
             .append('div')
             .style('position', 'fixed')
@@ -674,7 +853,6 @@ init() {
             .text('Cancelar')
             .on('click', () => modal.remove());
         
-        // Cerrar al hacer click fuera
         modal.on('click', (event) => {
             if (event.target === modal.node()) {
                 modal.remove();
@@ -725,42 +903,61 @@ init() {
 
     // Exportar como PDF (requiere jsPDF)
     exportAsPDF() {
-        // Esta funcionalidad requiere la librería jsPDF
         ERGOUtils.showToast('Exportación PDF en desarrollo', 'info');
-        
-        // Implementación futura:
-        // 1. Cargar jsPDF dinámicamente
-        // 2. Convertir SVG a imagen
-        // 3. Agregar al PDF con metadatos
     }
 
-    // Navegar al área seleccionada
-    navigateToArea(areaData) {
-        if (window.indexApp && typeof window.indexApp.navigateToAreaWorkCenters === 'function') {
-            window.indexApp.navigateToAreaWorkCenters(areaData.id, areaData.name);
-        } else {
-            // Fallback directo
-            ERGONavigation.navigateToAreas(areaData.id);
-        }
+    // Mostrar placeholder cuando no se puede cargar el SVG
+    showPlaceholder() {
+        this.mapGroup.selectAll('*').remove();
+        
+        const placeholderGroup = this.mapGroup.append('g');
+        
+        placeholderGroup.append('rect')
+            .attr('width', this.config.width)
+            .attr('height', this.config.height - 100)
+            .attr('fill', '#f8f9fa')
+            .attr('stroke', '#dee2e6')
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '10,5');
+
+        placeholderGroup.append('text')
+            .attr('x', this.config.width / 2)
+            .attr('y', this.config.height / 2 - 20)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '24px')
+            .attr('fill', '#6c757d')
+            .text('🗺️');
+
+        placeholderGroup.append('text')
+            .attr('x', this.config.width / 2)
+            .attr('y', this.config.height / 2 + 10)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '16px')
+            .attr('fill', '#6c757d')
+            .text('Plano no disponible');
+
+        placeholderGroup.append('text')
+            .attr('x', this.config.width / 2)
+            .attr('y', this.config.height / 2 + 35)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('fill', '#adb5bd')
+            .text('Coloca tu archivo SVG en ./assets/plano.svg');
     }
 
     // Limpiar recursos
     destroy() {
         if (this.tooltip) {
-            this.tooltip.remove();
+            this.tooltip.style("display", "none");
         }
-        
-        this.container.selectAll('*').remove();
-        
         console.log('🗑️ ERGOMap destruido');
     }
 }
 
-// Funciones auxiliares globales
+// Exportar clase
 window.ERGOMap = ERGOMap;
 
 // Auto-inicialización si hay un contenedor disponible
 document.addEventListener('DOMContentLoaded', () => {
-    // El mapa se inicializará desde index.js cuando se carguen los datos
     console.log('📍 ERGOMap clase disponible');
 });

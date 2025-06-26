@@ -1008,3 +1008,18 @@ puedes reemplazar el ::after por esto:
 .map_map{
     width: 85vw;
 }
+
+.map-tooltip {
+    position: absolute;
+    display: none; /* Oculto por defecto */
+    padding: 12px;
+    background: #2c3e50; /* Color oscuro */
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none; /* Para que no interfiera con el mouse */
+    z-index: 1000;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    min-width: 220px;
+}

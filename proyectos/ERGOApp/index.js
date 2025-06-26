@@ -16,26 +16,37 @@ class IndexApp {
         }
     }
 
-    checkExistingSession() {
-        // Usamos la función centralizada que ya tiene buen diagnóstico.
-        if (ERGOAuth.initializeAuthContext()) {
-            this.currentUser = ERGOAuth.getCurrentUser(); // Obtenemos el usuario que ya sabemos que existe
-            
-            this.hidePreloader();
-            this.hideLoginModal();
-            this.showMainContent();
-            this.updateUserInterface();
-            this.loadDashboardData();
-            
-            // new ERGOMap('risk-map'); // La inicialización del mapa permanece comentada.
+checkExistingSession() {
+    if (ERGOAuth.initializeAuthContext()) {
+        this.currentUser = ERGOAuth.getCurrentUser();
         
+        this.hidePreloader();
+        this.hideLoginModal();
+        this.showMainContent();
+        this.updateUserInterface();
+        
+        // Verificar que ERGOMap esté disponible antes de crear la instancia
+        if (typeof ERGOMap !== 'undefined') {
+            this.ergoMap = new ERGOMap('risk-map');
         } else {
-            // La función initializeAuthContext ya mostró en consola por qué falló.
-            console.log('🧹 No hay sesión válida. Se mostrará el login.');
-            this.hideMainContent();
-            this.hidePreloader(); // Ocultamos el preloader para mostrar el modal de login
+            console.warn('⚠️ ERGOMap no está disponible aún, se creará después');
+            // Reintentar después de un momento
+            setTimeout(() => {
+                if (typeof ERGOMap !== 'undefined') {
+                    this.ergoMap = new ERGOMap('risk-map');
+                    console.log('✅ ERGOMap creado con retraso');
+                }
+            }, 500);
         }
+        
+        this.loadDashboardData();
+        
+    } else {
+        console.log('🧹 No hay sesión válida. Se mostrará el login.');
+        this.hideMainContent();
+        this.hidePreloader();
     }
+}
 
 
     setupEventListeners() {
@@ -154,15 +165,24 @@ class IndexApp {
         ERGOAuth.logout();
     }
     
-    async loadDashboardData() {
-        try {
-            const dashboardData = await dataClient.getDashboardData();
-            this.updateDashboardTables(dashboardData);
-            this.updateTopKPIs(dashboardData);
-        } catch (error) {
-            console.error('Error cargando datos del dashboard:', error);
+async loadDashboardData() {
+    try {
+        const dashboardData = await dataClient.getDashboardData();
+        this.updateDashboardTables(dashboardData);
+        this.updateTopKPIs(dashboardData);
+
+        // Crear el mapa aquí con los datos ya disponibles
+        if (typeof ERGOMap !== 'undefined' && !this.ergoMap) {
+            this.ergoMap = new ERGOMap('risk-map', dashboardData);
+            console.log('✅ Mapa creado con datos iniciales');
+        } else if (this.ergoMap && dashboardData.areas) {
+            this.ergoMap.updateRiskData(dashboardData.areas);
         }
+
+    } catch (error) {
+        console.error('Error cargando datos del dashboard:', error);
     }
+}
 
     updateDashboardTables(data) {
         if (!data) return;
