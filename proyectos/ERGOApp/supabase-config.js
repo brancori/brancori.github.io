@@ -155,36 +155,22 @@ async query(table, method = 'GET', data = null, filters = '') {
         return await this.query('work_centers', 'POST', workCenter);
     }
 
-async deleteWorkCenter(id) {
-    try {
-        console.log(`🗑️ Eliminando centro de trabajo y sus datos relacionados: ${id}`);
-        
-        // El orden es importante: primero se eliminan los datos dependientes.
-        
-        // Eliminar scores
-        await this.query('scores_resumen', 'DELETE', null, `?work_center_id=eq.${id}`);
-        console.log(`✅ Scores para el centro ${id} eliminados.`);
-        
-        // Eliminar evaluaciones
-        await this.query('evaluaciones', 'DELETE', null, `?work_center_id=eq.${id}`);
-        console.log(`✅ Evaluaciones para el centro ${id} eliminadas.`);
-        
-        // Eliminar fotos
-        await this.query('fotos_centros', 'DELETE', null, `?work_center_id=eq.${id}`);
-        console.log(`✅ Fotos para el centro ${id} eliminadas.`);
-        
-        // Finalmente, eliminar el centro de trabajo principal
-        const result = await this.query('work_centers', 'DELETE', null, `?id=eq.${id}`);
-        console.log(`✅ Centro de trabajo ${id} eliminado exitosamente.`);
-        
-        return result;
-    } catch (error) {
-        // Este catch ahora atrapará el error real (ej. "permission denied") y lo mostrará.
-        console.error(`❌ Error crítico al intentar eliminar el centro ${id}:`, error);
-        // Volvemos a lanzar el error para que la función que llamó a esta sepa que algo salió mal.
-        throw error;
+    async deleteWorkCenter(id) {
+        try {
+            console.log(`🗑️ Eliminando centro de trabajo ${id}. La base de datos limpiará los datos relacionados...`);
+            
+            // Gracias a "ON DELETE CASCADE", solo necesitamos borrar el centro de trabajo principal.
+            // La base de datos se encargará de borrar las evaluaciones, fotos, notas, etc., asociadas.
+            const result = await this.query('work_centers', 'DELETE', null, `?id=eq.${id}`);
+            
+            console.log(`✅ Centro de trabajo ${id} eliminado exitosamente.`);
+            return result;
+
+        } catch (error) {
+            console.error(`❌ Error crítico al intentar eliminar el centro ${id}:`, error);
+            throw error;
+        }
     }
-}
 
     async getEvaluaciones(workCenterId = null) {
         if (workCenterId) {
@@ -334,20 +320,31 @@ async deleteEvaluacionNiosh(evalId) {
 
 // === FUNCIÓN COMBINADA PARA TODAS LAS EVALUACIONES ESPECÍFICAS ===
 async getAllEvaluacionesEspecificas(workCenterId) {
-    console.log('%c--- MODO DEPURACIÓN: Cargando solo la evaluación REBA ---', 'color: orange; font-weight: bold;');
     try {
-        // Temporalmente, solo llamamos a una función para aislar el problema
-        const reba = await this.getEvaluacionesReba(workCenterId);
-        console.log('Resultado de getEvaluacionesReba:', reba);
+        // 1. Hacemos todas las consultas en paralelo para mayor eficiencia
+        const [reba, rula, ocra, niosh] = await Promise.all([
+            this.getEvaluacionesReba(workCenterId),
+            this.getEvaluacionesRula(workCenterId),
+            this.getEvaluacionesOcra(workCenterId),
+            this.getEvaluacionesNiosh(workCenterId)
+        ]);
 
-        // Devolvemos un array con el mismo formato que Promise.all,
-        // pero con arrays vacíos para las otras evaluaciones para que el resto del código no se rompa.
-        return [reba || [], [], [], []];
+        // 2. Añadimos el TIPO a cada evaluación y las combinamos en un solo array
+        const todas = [
+            ...(reba || []).map(e => ({ ...e, tipo: 'REBA' })),
+            ...(rula || []).map(e => ({ ...e, tipo: 'RULA' })),
+            ...(ocra || []).map(e => ({ ...e, tipo: 'OCRA' })),
+            ...(niosh || []).map(e => ({ ...e, tipo: 'NIOSH' }))
+        ];
+
+        // 3. Ordenamos el array final por la fecha de creación más reciente
+        todas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        return todas;
 
     } catch (error) {
-        console.error('Error en el modo de depuración de getAllEvaluacionesEspecificas:', error);
-        // Si incluso esta única llamada falla, lo sabremos y la app no se romperá.
-        return [[], [], [], []];
+        console.error('Error obteniendo todas las evaluaciones específicas:', error);
+        return []; // En caso de error, devolvemos un array vacío para no romper la app
     }
 }
 // === SCORES OPTIMIZADOS ===

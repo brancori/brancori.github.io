@@ -392,19 +392,29 @@ function guardarLocalmente(evaluacion, evaluacionId) {
         // Función para calcular score automáticamente
         function calcularScoreAutomatico() {
             try {
-                // 1. Llama a la función que ya tienes y que hace todo el cálculo.
+                // 1. Llama a la NUEVA función que hace todo el cálculo.
                 const resultados = analizarResultados();
 
                 // 2. Actualiza los elementos de la UI con los nuevos valores calculados.
                 const scoreFinalEl = document.getElementById('scoreFinal');
-                const categoriaRiesgoEl = document.getElementById('categoriaRiesgo');
-                const nivelRiesgoEl = document.getElementById('nivelRiesgo');
-                const colorRiesgoEl = document.getElementById('colorRiesgo');
+                const textoCategoriaEl = document.getElementById('textoCategoria');
 
-                if (scoreFinalEl) scoreFinalEl.textContent = `${resultados.scoreFinal}%`;
-                if (categoriaRiesgoEl) categoriaRiesgoEl.textContent = resultados.categoriaRiesgo;
-                if (nivelRiesgoEl) nivelRiesgoEl.textContent = resultados.nivelRiesgoErgonomico;
-                if (colorRiesgoEl) colorRiesgoEl.style.backgroundColor = resultados.colorRiesgo;
+                if (scoreFinalEl) {
+                    scoreFinalEl.textContent = `${resultados.scoreFinal}%`;
+                    scoreFinalEl.style.color = resultados.colorRiesgo;
+                }
+                if (textoCategoriaEl) {
+                    textoCategoriaEl.textContent = resultados.categoriaRiesgo;
+                }
+
+                const resultadoContainer = document.getElementById('resultadoScore');
+                if (resultadoContainer) {
+                    resultadoContainer.style.backgroundColor = resultados.colorRiesgo + '20'; // Color con transparencia
+                    resultadoContainer.style.borderLeft = `5px solid ${resultados.colorRiesgo}`;
+                }
+
+                // Llamamos a la función para mostrar los pictogramas
+                mostrarPictogramasActivos();
 
                 console.log(`🔄 Score recalculado automáticamente: ${resultados.scoreFinal}%`);
 
@@ -412,6 +422,32 @@ function guardarLocalmente(evaluacion, evaluacionId) {
                 console.error('Error en el cálculo automático del score:', error);
             }
         }
+
+        function analizarResultados() {
+        // 1. Calcular el score numérico final
+        const score = calcularScoreFinal();
+        
+        // 2. Obtener la categoría de riesgo (texto y color) a partir del score
+        const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
+
+        // 3. Recolectar las respuestas actuales del formulario
+        const respuestas = {};
+        document.querySelectorAll('.question input[type="radio"]:checked').forEach(radio => {
+            respuestas[radio.name] = radio.value;
+        });
+
+        // 4. Analizar los pictogramas de riesgo
+        const resultadosPictogramas = ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
+
+        // 5. Devolver un objeto completo con todos los resultados
+        return {
+            scoreFinal: score,
+            categoriaRiesgo: categoria.texto,
+            colorRiesgo: categoria.color,
+            resultadosPictogramas: resultadosPictogramas,
+            nivelRiesgoErgonomico: `${score}%` 
+        };
+}
 
         // Nueva función para analizar métodos requeridos
         function analizarMetodosRequeridos() {

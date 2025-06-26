@@ -7,9 +7,12 @@ window.ERGOEvalSupa = {
      */
     async cargarEvaluacionDesdeSupabase(workCenterId) {
         try {
-            // Usa el dataClient para hacer una consulta segura
+            // Esta consulta devuelve un array, ej: [{...}]
             const evaluaciones = await dataClient.query('evaluaciones', 'GET', null, `?work_center_id=eq.${workCenterId}&order=fecha_evaluacion.desc&limit=1`);
-            return evaluaciones && evaluaciones.length > 0 ? evaluaciones : null;
+            
+            // CORRECCIÓN: Devolvemos el primer objeto del array, no el array completo.
+            return evaluaciones && evaluaciones.length > 0 ? evaluaciones[0] : null;
+
         } catch (error) {
             console.error('Error cargando evaluación desde Supabase:', error);
             return null;

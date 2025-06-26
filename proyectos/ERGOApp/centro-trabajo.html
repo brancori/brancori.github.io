@@ -6,6 +6,7 @@
     <title>Centro de Trabajo</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./componentes/globals.js"></script>
     <script src="./componentes/auth-client.js"></script>
@@ -881,11 +882,15 @@
 
         async function loadNotas() {
             try {
-                // Implementar carga de notas desde storage
-                notasActuales = JSON.parse(localStorage.getItem(`notas_${workCenterId}`)) || [];
+                if (USE_SUPABASE) {
+                    notasActuales = await dataClient.getNotas(workCenterId) || [];
+                } else {
+                    notasActuales = JSON.parse(localStorage.getItem(`notas_${workCenterId}`)) || [];
+                }
                 renderNotas();
             } catch (error) {
                 console.error('Error cargando notas:', error);
+                ERGOUtils.showToast('No se pudieron cargar las notas', 'error');
                 notasActuales = [];
                 renderNotas();
             }
@@ -951,9 +956,9 @@
         function renderNotas() {
             const container = document.getElementById('notas-container');
             const count = document.getElementById('notas-count');
-            
+
             count.textContent = `${notasActuales.length} ${notasActuales.length === 1 ? 'nota' : 'notas'}`;
-            
+
             if (notasActuales.length === 0) {
                 container.innerHTML = `
                     <div class="empty-notas">
@@ -963,13 +968,13 @@
                 `;
                 return;
             }
-            
+
             container.innerHTML = notasActuales.map(nota => `
                 <div class="nota-item">
-                    <div class="nota-fecha">${ERGOUtils.formatDate(nota.fecha)}</div>
+                    <div class="nota-fecha">${ERGOUtils.formatDate(nota.created_at || nota.fecha)}</div>
                     <div class="nota-texto">${nota.texto}</div>
                 </div>
-            `).reverse().join(''); // Mostrar más recientes primero
+            `).join(''); // Ya no se necesita .reverse(), la consulta a Supabase ya las ordena
         }
 
         function renderEvaluacionesEspecificas() {
@@ -1110,27 +1115,62 @@
             document.getElementById('nota-texto').value = '';
         }
 
-        function guardarNota() {
-            if (!ERGOAuth.checkPermissionAndShowError('create')) return;
-            const texto = document.getElementById('nota-texto').value.trim();
-            
-            if (!texto) {
-                alert('Por favor, escribe una nota');
-                return;
+    async function guardarNota() {
+        const notaText = document.getElementById('nota-texto').value;
+        if (!notaText.trim()) {
+            ERGOUtils.showToast('La nota no puede estar vacía.', 'error');
+            return;
+        }
+
+        const notaData = {
+            work_center_id: workCenterId,
+            texto: notaText,
+            user_id: ERGOAuth.getCurrentUser()?.id
+        };
+
+        try {
+            const resultado = await dataClient.createNota(notaData);
+
+            if (resultado.success) {
+                ERGOUtils.showToast('✅ Nota guardada exitosamente.', 'success');
+                
+                // 1. Cerramos el modal inmediatamente después de guardar
+                closeNotaModal();
+                
+                // 2. Volvemos a cargar las notas para mostrar la nueva (usando el nombre correcto)
+                await loadNotas(); 
+            } else {
+                throw new Error('El guardado no fue exitoso según la respuesta del dataClient.');
             }
-            
-            const nuevaNota = {
-                id: Date.now().toString(),
-                texto: texto,
-                fecha: new Date().toISOString(),
-                workCenterId: workCenterId
-            };
-            
-            notasActuales.push(nuevaNota);
-            localStorage.setItem(`notas_${workCenterId}`, JSON.stringify(notasActuales));
-            
-            renderNotas();
-            closeNotaModal();
+        } catch (error) {
+            // Este error ahora solo aparecerá si hay un problema REAL
+            console.error('Error en el proceso de guardado de nota:', error);
+            ERGOUtils.showToast('Ocurrió un error al procesar la nota.', 'error');
+        }
+    }
+
+        function volverACentros() {
+            window.location.href = `areas.html#area-${areaId}`;
+        }
+
+        // Funciones de exportación
+        async function exportarPDFCompleto() {
+            if (!ERGOAuth.checkPermissionAndShowError('export')) return;
+
+            try {
+                ERGOUtils.showToast('Generando PDF...', 'info');
+                const pdfUrl = await dataClient.exportarPDF(workCenterId);
+                
+                if (pdfUrl) {
+                    window.open(pdfUrl, '_blank');
+                    ERGOUtils.showToast('PDF generado exitosamente.', 'success');
+                } else {
+                    throw new Error('No se pudo generar el PDF.');
+                }
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                ERGOUtils.showToast(`Error al generar PDF: ${error.message}`, 'error');
+            }
         }
 
 // --- REEMPLAZA openEvaluacionModal() CON ESTA VERSIÓN ---
