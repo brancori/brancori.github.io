@@ -67,55 +67,46 @@ async function guardarEvaluacion() {
         mantienePosturas: document.getElementById('mantienePosturas').checked
     };
     
-    const resultadosPictogramas = ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
-
-    // 2. Calcular el score global a partir de los scores de los pictogramas
-    const scoresIndividuales = Object.values(resultadosPictogramas)
-                                    .filter(p => p.score) // Filtra los que no son scores (como 'resumen')
-                                    .map(p => p.score);
-
-    const scoreFinal = scoresIndividuales.length > 0
-        ? (scoresIndividuales.reduce((a, b) => a + b, 0) / scoresIndividuales.length).toFixed(2)
-        : 0;
+    // --- INICIO DE LA CORRECCIÓN ---
+    // 1. Usamos la función correcta que ya existe para obtener el score.
+    const scoreFinal = calcularScoreFinal(); 
+    // --- FIN DE LA CORRECCIÓN ---
 
     const categoria = ERGOUtils.getScoreCategory(parseFloat(scoreFinal));
-    const analisisRiesgo = window.ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
+    const resultadosPictogramas = ERGOAnalytics.analizarRiesgosPorPictograma(respuestas, data);
 
-        const evaluacion = {
-            id: evaluacionId,
-            work_center_id: workCenterId,
-            area_id: areaId,
-            fecha_evaluacion: document.getElementById('fechaEvaluacion').value,
-            nombre_area: document.getElementById('nombreArea').value,
-            ubicacion_area: document.getElementById('ubicacionArea').value,
-            responsable_area: document.getElementById('responsableArea').value,
-            criterios: JSON.stringify(criterios),
-            respuestas: JSON.stringify(respuestas),
-            score_final: parseFloat(scoreFinal), // Usa el nuevo scoreFinal calculado
-            categoria_riesgo: categoria.texto, // Usa la nueva categoría calculada
-            nivel_riesgo_ergonomico: `${scoreFinal}%`,
-            color_riesgo: categoria.color,
-            riesgos_por_categoria: resultadosPictogramas, // <-- CAMPO NUEVO Y CRÍTICO
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
+    const evaluacion = {
+        id: evaluacionId,
+        work_center_id: workCenterId,
+        area_id: areaId,
+        fecha_evaluacion: document.getElementById('fechaEvaluacion').value,
+        nombre_area: document.getElementById('nombreArea').value,
+        ubicacion_area: document.getElementById('ubicacionArea').value,
+        responsable_area: document.getElementById('responsableArea').value,
+        criterios: JSON.stringify(criterios),
+        respuestas: JSON.stringify(respuestas),
+        score_final: parseFloat(scoreFinal), // Ahora sí usará el valor correcto.
+        categoria_riesgo: categoria.texto,
+        nivel_riesgo_ergonomico: `${scoreFinal}%`,
+        color_riesgo: categoria.color,
+        riesgos_por_categoria: resultadosPictogramas,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
     
-        // --- Lógica de guardado dual (LocalStorage y Supabase) ---
-        // 1. Siempre guardar localmente para respuesta inmediata.
-        guardarLocalmente(evaluacion, evaluacionId);
+    console.log("🔵 Objeto a guardar:", JSON.stringify(evaluacion, null, 2));
 
-        // 2. Intentar guardar en Supabase a través del nuevo módulo.
-        if (window.ERGOConfig.USE_SUPABASE && window.ERGOEvalSupa) {
-            const result = await window.ERGOEvalSupa.guardarEvaluacionEnSupabase(evaluacion);
-            if (result.success) {
-                ERGOUtils.showToast('Evaluación sincronizada con la nube.', 'success');
-            } else {
-                ERGOUtils.showToast('Datos guardados localmente. Revise su conexión.', 'error');
-            }
+    // Lógica de guardado dual (sin cambios aquí, ya es correcta)
+    guardarLocalmente(evaluacion, evaluacionId);
+
+    if (window.ERGOConfig.USE_SUPABASE && window.ERGOEvalSupa) {
+        const result = await window.ERGOEvalSupa.guardarEvaluacionEnSupabase(evaluacion);
+        if (result.success) {
+            ERGOUtils.showToast('Evaluación sincronizada con la nube.', 'success');
+        } else {
+            ERGOUtils.showToast('Datos guardados localmente. Revise su conexión.', 'error');
         }
-        console.log("🔵 Objeto a guardar:", JSON.stringify(evaluacion, null, 2));
-        guardarLocalmente(evaluacion, evaluacionId);
-
+    }
 }
 
 // Asegúrate de que esta función auxiliar también esté en eval_int.js
