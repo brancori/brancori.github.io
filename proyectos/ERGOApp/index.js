@@ -15,6 +15,61 @@ class IndexApp {
             this.showLoginModal();
         }
     }
+async reprocesarEvaluaciones() {
+        if (!confirm("Este proceso 're-guardará' todas las evaluaciones antiguas para calcular los nuevos campos. Es seguro, pero puede tardar. ¿Continuar?")) {
+            return;
+        }
+
+        try {
+            ERGOUtils.showToast('Iniciando reprocesamiento... Revisa la consola (F12).', 'info');
+            
+            const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
+            const evaluaciones = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
+
+            if (!evaluaciones || evaluaciones.length === 0) {
+                ERGOUtils.showToast('¡Excelente! No se encontraron evaluaciones para reprocesar.', 'success');
+                return;
+            }
+
+            ERGOUtils.showToast(`Se reprocesarán ${evaluaciones.length} evaluaciones.`, 'info');
+            
+            let procesadas = 0;
+            let errores = 0;
+
+            for (const evaluacion of evaluaciones) {
+                try {
+                    let respuestasObj;
+                    if (typeof evaluacion.respuestas === 'string') {
+                        respuestasObj = JSON.parse(evaluacion.respuestas);
+                    } else if (typeof evaluacion.respuestas === 'object' && evaluacion.respuestas !== null) {
+                        respuestasObj = evaluacion.respuestas;
+                    } else {
+                        console.warn(`Saltando evaluación ${evaluacion.id}: 'respuestas' no es válido.`);
+                        continue;
+                    }
+                    
+                    const nuevosResultados = ERGOAnalytics.analizarRiesgosPorPictograma(respuestasObj, data);
+                    
+                    await dataClient.updateEvaluacion(evaluacion.id, { 
+                        riesgos_por_categoria: nuevosResultados 
+                    });
+                    
+                    procesadas++;
+                    console.log(`✅ (${procesadas}/${evaluaciones.length}) Evaluación ${evaluacion.id} reprocesada.`);
+
+                } catch (error) {
+                    errores++;
+                    console.error(`❌ Error con la evaluación ${evaluacion.id}:`, error);
+                }
+            }
+            
+            ERGOUtils.showToast(`Proceso finalizado. ${procesadas} actualizadas, ${errores} errores.`, 'success');
+
+        } catch (error) {
+            console.error("Error general en el script de reprocesamiento:", error);
+            ERGOUtils.showToast("Ocurrió un error. Revisa la consola.", 'error');
+        }
+    }
 
 checkExistingSession() {
     if (ERGOAuth.initializeAuthContext()) {
@@ -481,5 +536,114 @@ window.addEventListener('scroll', () => {
         main.style.setProperty('--scroll-y', scrolled);
         main.classList.add('parallax-scroll');
     }
+});
+
+// --- SCRIPT DE ACTUALIZACIÓN (AGREGAR AL FINAL DE index.js) ---
+
+/**
+ * Función de 'backfilling' para actualizar evaluaciones antiguas que no tienen
+ * el campo 'riesgos_por_categoria' calculado.
+ */
+// --- REEMPLAZA LA FUNCIÓN CON ESTA VERSIÓN MÁS ROBUSTA ---
+
+async function actualizarEvaluacionesAntiguas() {
+    if (!confirm("Este proceso buscará y actualizará TODAS las evaluaciones antiguas. Puede tardar varios minutos y es irreversible. ¿Deseas continuar?")) {
+        return;
+    }
+
+    try {
+        ERGOUtils.showToast('Iniciando actualización... Revisa la consola (F12) para ver el progreso.', 'info');
+        
+        // --- CORRECCIÓN CLAVE EN LA CONSULTA ---
+        // Ahora busca evaluaciones donde la columna es NULA O es un objeto JSON vacío '{}'.
+        const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
+        
+        const evaluacionesAntiguas = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
+
+        if (!evaluacionesAntiguas || evaluacionesAntiguas.length === 0) {
+            ERGOUtils.showToast('¡Excelente! No se encontraron evaluaciones antiguas que necesiten ser actualizadas.', 'success');
+            return;
+        }
+
+        ERGOUtils.showToast(`Se actualizarán ${evaluacionesAntiguas.length} evaluaciones.`, 'info');
+        
+        for (let i = 0; i < evaluacionesAntiguas.length; i++) {
+            const evaluacion = evaluacionesAntiguas[i];
+            
+            try {
+                let respuestasObj;
+                if (typeof evaluacion.respuestas === 'string') {
+                    respuestasObj = JSON.parse(evaluacion.respuestas);
+                } else if (typeof evaluacion.respuestas === 'object' && evaluacion.respuestas !== null) {
+                    respuestasObj = evaluacion.respuestas;
+                } else {
+                    console.warn(`Saltando evaluación ${evaluacion.id}: 'respuestas' tiene un formato no válido.`);
+                    continue;
+                }
+                
+                const nuevosResultados = ERGOAnalytics.analizarRiesgosPorPictograma(respuestasObj, data);
+                
+                await dataClient.updateEvaluacion(evaluacion.id, { 
+                    riesgos_por_categoria: nuevosResultados 
+                });
+                
+                console.log(`✅ (${i + 1}/${evaluacionesAntiguas.length}) Evaluación ${evaluacion.id} actualizada.`);
+
+            } catch (error) {
+                console.error(`❌ Error procesando la evaluación ${evaluacion.id}. Causa:`, error);
+            }
+        }
+        
+        console.log('🎉 ¡Proceso de actualización completado!');
+        ERGOUtils.showToast('Todas las evaluaciones antiguas han sido actualizadas.', 'success');
+
+    } catch (error) {
+        console.error("Error general en el script de actualización:", error);
+        ERGOUtils.showToast("Ocurrió un error durante el proceso. Revisa la consola.", 'error');
+    }
+}
+
+async function diagnosticarDatos() {
+    console.log("--- INICIANDO DIAGNÓSTICO ---");
+    try {
+        console.log("Obteniendo las 5 evaluaciones más recientes para analizar su estructura...");
+
+        // Consulta que trae todo de las 5 filas más nuevas, sin filtros.
+        const evaluacionesRecientes = await dataClient.query(
+            'evaluaciones', 'GET', null, '?select=*&order=created_at.desc&limit=5'
+        );
+
+        if (!evaluacionesRecientes || evaluacionesRecientes.length === 0) {
+            console.error("DIAGNÓSTICO: No se encontró NINGUNA evaluación en la tabla.");
+            return;
+        }
+
+        console.log("✅ Se encontraron las siguientes evaluaciones. Revisa su estructura:");
+        
+        // console.table es la mejor forma de visualizar objetos en la consola.
+        console.table(evaluacionesRecientes);
+
+        console.log("--- ANÁLISIS ---");
+        console.log("Por favor, revisa la tabla de arriba y responde a estas preguntas:");
+        console.log("1. En la columna 'riesgos_por_categoria', ¿qué valor ves? ¿Es 'null', '{}', un espacio vacío, o algo más?");
+        console.log("2. En la columna 'respuestas', ¿contiene un objeto o un texto que empieza con '{' y termina con '}'?");
+        console.log("--- FIN DEL DIAGNÓSTICO ---");
+
+    } catch (error) {
+        console.error("Error durante el diagnóstico:", error);
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... tu código de inicialización existente ...
+    window.indexApp = new IndexApp();
+
+    // --- AGREGA ESTE CÓDIGO PARA CONECTAR EL BOTÓN ---
+    const btnReprocesar = document.getElementById('btnReprocesar');
+    if (btnReprocesar && window.indexApp) {
+        btnReprocesar.addEventListener('click', () => window.indexApp.reprocesarEvaluaciones());
+    }
+    // --- FIN DEL CÓDIGO A AGREGAR ---
 });
 
