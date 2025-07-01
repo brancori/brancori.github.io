@@ -19,11 +19,16 @@ class ErgoSupabaseClient {
     constructor(url, key) {
         this.url = url;
         this.key = key;
-        this.sessionToken = null; // Prepara para recibir el token
+        this.sessionToken = null;
         this.baseHeaders = {
             'Content-Type': 'application/json',
             'apikey': key
         };
+                if (window.supabase && window.supabase.createClient) {
+            this.supabase = window.supabase.createClient(url, key);
+        } else {
+            console.error("Librería de Supabase no cargada. Las llamadas RPC fallarán.");
+        }
     }
     setAuth(token) {
         this.sessionToken = token;
@@ -569,6 +574,46 @@ async getDashboardData() {
         return await this.query('areas', 'GET', null, '?select=name,resumen_pictogramas');
     }
 
+
+async getUsers() {
+        return await this.query('usuarios', 'GET', null, '?select=*&order=nombre.asc');
+    }
+
+    async updateUser(id, data) {
+        return await this.query('usuarios', 'PATCH', data, `?id=eq.${id}`);
+    }
+
+    async createUser(userData) {
+        // Llama a la función de la base de datos (RPC)
+        const { data, error } = await this.supabase.rpc('create_user_with_profile', {
+            email: userData.usuario + '@ergoapp.com', // Email autogenerado
+            password: userData.password,
+            nombre: userData.nombre,
+            puesto: userData.puesto,
+            rango: userData.rango,
+            usuario: userData.usuario
+        });
+
+        if (error) {
+            console.error('Error en RPC create_user_with_profile:', error);
+            return { error: error.message };
+        }
+        return { data };
+    }
+
+    async deleteUser(authId) {
+        // Llama a la función de la base de datos para eliminar de forma segura
+        const { error } = await this.supabase.rpc('delete_ergo_user', {
+            user_id: authId
+        });
+
+        if (error) {
+            console.error('Error en RPC delete_ergo_user:', error);
+            throw new Error(error.message);
+        }
+        return { success: true };
+    }
+
 }
 
 // Instancia global
@@ -768,3 +813,4 @@ window.ERGOAnalytics = {
         return mapa;
     }
 };
+

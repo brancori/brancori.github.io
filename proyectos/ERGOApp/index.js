@@ -476,8 +476,23 @@ async loadDashboardData() {
             ERGOUtils.showToast('Ocurrió un error durante la actualización.', 'error');
         }
     }
+
+    updateUserInterface() {
+        if (!this.currentUser) return;
+        document.getElementById('userName').textContent = this.currentUser.nombre || 'Usuario';
+        document.getElementById('userRole').textContent = this.currentUser.puesto || 'Sin cargo definido';
+
+        // Muestra la tarjeta de configuración solo si es admin (rango 1)
+        if (this.currentUser.rango === 1) {
+            document.getElementById('config-card').style.display = 'block';
+        }
+    }
 }
 
+window.navigateToConfig = function() {
+    // La ruta es relativa a index.html
+    window.location.href = 'componentes/pages/gestion_usuarios.html';
+}
 // Funciones auxiliares globales
 window.indexApp = null;
 
@@ -644,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnReprocesar && window.indexApp) {
         btnReprocesar.addEventListener('click', () => window.indexApp.reprocesarEvaluaciones());
     }
-    // --- FIN DEL CÓDIGO A AGREGAR ---
 });
+
+
 

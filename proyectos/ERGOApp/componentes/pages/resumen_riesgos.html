@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Panorámico de Riesgos</title>
+    
+    <link rel="stylesheet" href="../globals.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../globals.js"></script>
+    <script src="../../supabase-config.js"></script>
+    <script src="../auth-client.js"></script>
+
+    <style>
+        /* --- ESTILOS MEJORADOS --- */
+        body { background-color: var(--gray-100); font-family: 'Inter', sans-serif; }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .header h1 { font-size: 1.75rem; color: var(--gray-800); }
+        
+        /* Contenedor para KPIs */
+        #kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .kpi-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        .kpi-card .label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .kpi-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-600);
+        }
+        .kpi-card .value small { font-size: 1rem; font-weight: 500; color: var(--gray-600); }
+
+        /* Contenedor para las áreas */
+        #areas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        .area-card {
+            background-color: #ffffff;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+        .area-header {
+            padding: 1rem 1.5rem;
+            background-color: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .area-header h2 { margin: 0; font-size: 1.25rem; color: var(--gray-900); }
+        .area-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 1.5rem;
+        }
+        @media (max-width: 900px) { .area-content { grid-template-columns: 1fr; } }
+
+        /* Estilos para las tablas y listas dentro de las tarjetas */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        th { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; }
+        td { font-size: 0.875rem; }
+        .risk-critico { font-weight: bold; color: var(--red-600); font-size: 1rem; }
+        .risk-alto { font-weight: bold; color: var(--orange-500); font-size: 1rem; }
+        .action-list h4 { margin-top: 0; margin-bottom: 1rem; color: var(--gray-800); }
+        .action-list ul { list-style-type: none; padding-left: 0; margin: 0; }
+        .action-list li { background-color: var(--red-50); padding: 0.75rem; border-radius: var(--border-radius-md); margin-bottom: 0.5rem; border-left: 4px solid var(--red-500); }
+        .action-list .pictograma-tag { font-weight: 600; color: var(--red-700); }
+
+        .action-list li {
+    background-color: var(--red-50);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 0.75rem;
+    border-left: 4px solid var(--red-500);
+}
+.action-list h4 { margin-top: 0; margin-bottom: 1rem; color: var(--gray-800); }
+.action-list ul { list-style-type: none; padding-left: 0; margin: 0; }
+.action-list .pictograma-tag { font-weight: 600; color: var(--red-700); }
+
+.center-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.center-score {
+    background-color: var(--red-200);
+    color: var(--red-800);
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.critical-factors {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-top: 0.25rem;
+}
+
+.btn-kpi {
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.btn-kpi:hover {
+    background-color: var(--primary-50);
+    border-color: var(--primary-300);
+}
+.btn-kpi.active {
+    background-color: var(--primary-100);
+    border-color: var(--primary-500);
+    color: var(--primary-700);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Análisis Panorámico de Riesgos</h1>
+            <a href="../../index.html" class="btn btn-ghost">← Volver al Dashboard</a>
+        </header>
+
+        <div id="loading-state">Cargando y procesando datos...</div>
+
+        <div id="summary-content" style="display: none;">
+            <section id="kpi-container"></section>
+            
+            <section id="areas-container"></section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!ERGOAuth.initializeAuthContext()) {
+                ERGOAuth.redirectToLogin();
+                return;
+            }
+            generarReporteCompleto();
+        });
+
+        async function generarReporteCompleto() {
+        const loadingEl = document.getElementById('loading-state');
+        const contentEl = document.getElementById('summary-content');
+        
+        try {
+            const [evaluaciones, workCenters, areas] = await Promise.all([
+                dataClient.query('evaluaciones', 'GET', null, '?select=work_center_id,area_id,riesgos_por_categoria,nivel_riesgo_ergonomico&riesgos_por_categoria=not.is.null'),
+                dataClient.query('work_centers', 'GET', null, '?select=id,name,area_id'),
+                dataClient.query('areas', 'GET', null, '?select=id,name')
+            ]);
+
+            if (!evaluaciones || evaluaciones.length === 0) {
+                loadingEl.textContent = "No hay evaluaciones con datos de riesgo para mostrar.";
+                return;
+            }
+
+            const centerMap = new Map(workCenters.map(c => [c.id, { name: c.name, area_id: c.area_id }]));
+            const resumenPorCentro = {};
+            workCenters.forEach(c => {
+                resumenPorCentro[c.id] = { name: c.name, scores: [], scorePromedio: 'N/A' };
+            });
+
+            const resumenPorArea = {};
+            areas.forEach(area => {
+                resumenPorArea[area.id] = {
+                    nombre: area.name,
+                    scores: [], // NUEVO: Para calcular el promedio del área
+                    resumenPictogramas: {},
+                    listaCentrosCriticos: {}
+                };
+                for (const id in ERGOAnalytics.pictogramasConfig) {
+                    resumenPorArea[area.id].resumenPictogramas[id] = { Critico: 0, Alto: 0, Bajo: 0 };
+                }
+            });
+
+            for (const evaluacion of evaluaciones) {
+                const centroInfo = centerMap.get(evaluacion.work_center_id);
+                if (!centroInfo) continue;
+                
+                if (resumenPorCentro[evaluacion.work_center_id] && evaluacion.nivel_riesgo_ergonomico != null) {
+                    const score = parseFloat(evaluacion.nivel_riesgo_ergonomico);
+                    resumenPorCentro[evaluacion.work_center_id].scores.push(score);
+                    if (resumenPorArea[centroInfo.area_id]) {
+                        resumenPorArea[centroInfo.area_id].scores.push(score);
+                    }
+                }
+
+                const areaResumen = resumenPorArea[centroInfo.area_id];
+                if (!areaResumen) continue;
+
+                for (const riesgoId in evaluacion.riesgos_por_categoria) {
+                    if (areaResumen.resumenPictogramas[riesgoId]) {
+                        const nivel = evaluacion.riesgos_por_categoria[riesgoId].nivel;
+                        const pictogramaResumen = areaResumen.resumenPictogramas[riesgoId];
+
+                        if (nivel === 'Crítico') {
+                            pictogramaResumen.Critico++;
+                            if (!areaResumen.listaCentrosCriticos[evaluacion.work_center_id]) {
+                                areaResumen.listaCentrosCriticos[evaluacion.work_center_id] = { name: centroInfo.name, riesgos: new Set() };
+                            }
+                            areaResumen.listaCentrosCriticos[evaluacion.work_center_id].riesgos.add(riesgoId);
+                        } else if (nivel === 'Alto') pictogramaResumen.Alto++;
+                    }
+                }
+            }
+
+            // Calcular promedios
+            for (const centerId in resumenPorCentro) {
+                const centro = resumenPorCentro[centerId];
+                if (centro.scores.length > 0) {
+                    centro.scorePromedio = (centro.scores.reduce((a, b) => a + b, 0) / centro.scores.length).toFixed(2);
+                }
+            }
+            for (const areaId in resumenPorArea) {
+                const area = resumenPorArea[areaId];
+                if (area.scores.length > 0) {
+                    area.scorePromedio = (area.scores.reduce((a, b) => a + b, 0) / area.scores.length).toFixed(2);
+                } else {
+                    area.scorePromedio = 'N/A';
+                }
+            }
+            
+            // Renderizar todo
+            const kpiData = calcularKPIs(resumenPorArea, workCenters);
+            renderKPIsGlobales(kpiData);
+            renderResumenPorArea(resumenPorArea, resumenPorCentro);
+
+            // AÑADIR LÓGICA DEL BOTÓN DE FILTRO
+            const btnFiltrar = document.getElementById('btn-filtrar-areas');
+            const btnFiltrarLabel = document.getElementById('btn-filtrar-label');
+            let isFiltered = false;
+
+            btnFiltrar.addEventListener('click', () => {
+                isFiltered = !isFiltered; // Invertir estado
+                const areaCards = document.querySelectorAll('.area-card');
+                
+                btnFiltrar.classList.toggle('active', isFiltered);
+                btnFiltrarLabel.textContent = isFiltered ? 'Mostrar Todas las Áreas' : 'Filtrar Áreas Prioritarias';
+
+                areaCards.forEach(card => {
+                    const score = parseFloat(card.dataset.score);
+                    if (isFiltered) {
+                        card.style.display = score > 42.5 ? 'block' : 'none';
+                    } else {
+                        card.style.display = 'block';
+                    }
+                });
+            });
+
+            loadingEl.style.display = 'none';
+            contentEl.style.display = 'block';
+
+        } catch (error) {
+            loadingEl.textContent = "Error al cargar el resumen de riesgos.";
+            console.error("Error generando el resumen:", error);
+        }
+    }
+
+
+        function calcularKPIs(resumenPorArea, workCenters) {
+            let totalCentrosCriticos = 0;
+            let areaMasRiesgo = { nombre: 'N/A', criticos: -1 };
+            const conteoPictogramas = {};
+
+            for (const areaId in resumenPorArea) {
+                const areaData = resumenPorArea[areaId];
+                const centrosCriticosEnArea = Object.keys(areaData.listaCentrosCriticos).length;
+                totalCentrosCriticos += centrosCriticosEnArea;
+
+                if (areaData.totalRiesgosCriticos > areaMasRiesgo.criticos) {
+                    areaMasRiesgo = { nombre: areaData.nombre, criticos: areaData.totalRiesgosCriticos };
+                }
+
+                for (const pictoId in areaData.resumenPictogramas) {
+                    const totalRiesgo = areaData.resumenPictogramas[pictoId].Critico + areaData.resumenPictogramas[pictoId].Alto;
+                    conteoPictogramas[pictoId] = (conteoPictogramas[pictoId] || 0) + totalRiesgo;
+                }
+            }
+            
+            const pictogramaMasComunId = Object.keys(conteoPictogramas).reduce((a, b) => conteoPictogramas[a] > conteoPictogramas[b] ? a : b, null);
+            
+            return {
+                totalAreas: Object.keys(resumenPorArea).length,
+                totalCentrosCriticos: totalCentrosCriticos,
+                areaMasRiesgo: areaMasRiesgo.nombre,
+                pictogramaMasComun: pictogramaMasComunId ? `${pictogramaMasComunId} - ${ERGOAnalytics.pictogramasConfig[pictogramaMasComunId].nombre}` : 'N/A'
+            };
+        }
+
+        function renderKPIsGlobales(kpiData) {
+        const container = document.getElementById('kpi-container');
+        container.innerHTML = `
+            <div class="kpi-card">
+                <span class="label">Áreas Analizadas</span>
+                <div class="value">${kpiData.totalAreas}</div>
+            </div>
+            <div class="kpi-card">
+                <span class="label">Total de Centros con Riesgo Alto</span>
+                <div class="value">${kpiData.totalCentrosCriticos}</div>
+            </div>
+            <div class="kpi-card btn-kpi" id="btn-filtrar-areas">
+                <span class="label" id="btn-filtrar-label">Filtrar Áreas Prioritarias</span>
+                <div class="value"><small>> 42.5%</small></div>
+            </div>
+            <div class="kpi-card">
+                <span class="label">Factor de Riesgo más Común</span>
+                <div class="value"><small>${kpiData.pictogramaMasComun}</small></div>
+            </div>
+        `;
+    }
+        
+function renderResumenPorArea(resumenPorArea, resumenPorCentro) {
+    const container = document.getElementById('areas-container');
+    container.innerHTML = ''; 
+
+    for (const areaId in resumenPorArea) {
+        const data = resumenPorArea[areaId];
+        
+        let tablaHTML = `
+            <table>
+                <thead><tr><th>Pictograma</th><th>Alto</th><th>Medio</th><th>Bajo</th></tr></thead>
+                <tbody>`;
+        for(const pictoId in data.resumenPictogramas) {
+            const pictoData = data.resumenPictogramas[pictoId];
+            tablaHTML += `
+                <tr>
+                    <td><strong>${pictoId}</strong> - ${ERGOAnalytics.pictogramasConfig[pictoId].nombre}</td>
+                    <td class="risk-critico">${pictoData.Critico}</td>
+                    <td class="risk-alto">${pictoData.Alto}</td>
+                    <td>${pictoData.Bajo}</td>
+                </tr>
+            `;
+        }
+        tablaHTML += `</tbody></table>`;
+        
+        // --- INICIO DE LA CORRECCIÓN ---
+        let criticosHTML = `<div class="action-list"><h4>Centros Prioritarios (Score > 42.5%)</h4>`;
+        const centrosCriticos = data.listaCentrosCriticos;
+        
+        let listItemsHTML = '';
+        let visibleItemsCount = 0;
+
+        if (Object.keys(centrosCriticos).length > 0) {
+            for (const centroId in centrosCriticos) {
+                const scoreData = resumenPorCentro[centroId];
+                
+                if (scoreData && scoreData.scorePromedio !== 'N/A') {
+                    const numericScore = parseFloat(scoreData.scorePromedio);
+
+                    // CONDICIÓN: Mostrar solo si el score del centro es mayor a 42.5
+                    if (numericScore > 42.5) {
+                        const centroData = centrosCriticos[centroId];
+                        const scoreDisplay = `${scoreData.scorePromedio}%`;
+                        const riesgos = Array.from(centroData.riesgos).join(', ');
+                        
+                        listItemsHTML += `
+                            <li>
+                                <div class="center-header">
+                                    <span>${centroData.name}</span>
+                                    <span class="center-score">${scoreDisplay}</span>
+                                </div>
+                                <div class="critical-factors">
+                                    Riesgos: <span class="pictograma-tag">${riesgos}</span>
+                                </div>
+                            </li>`;
+                        visibleItemsCount++;
+                    }
+                }
+            }
+        }
+
+        if (visibleItemsCount > 0) {
+            criticosHTML += `<ul>${listItemsHTML}</ul>`;
+        } else {
+            criticosHTML += `<p>✅ No hay centros con riesgo alto superior a 42.5%.</p>`;
+        }
+        criticosHTML += `</div>`;
+        // --- FIN DE LA CORRECCIÓN ---
+
+        const areaCardHTML = `
+            <div class="area-card">
+                <div class="area-header"><h2>${data.nombre}</h2></div>
+                <div class="area-content">
+                    <div>${tablaHTML}</div>
+                    <div>${criticosHTML}</div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += areaCardHTML;
+    }
+}
+
+    </script>
+</body>
+</html>
