@@ -146,10 +146,10 @@
                     <input type="text" id="filter-centro-responsible" placeholder="Buscar responsable..." class="filter-input">
                     <select id="filter-centro-score" class="filter-select">
                         <option value="">Todos los riesgos</option>
-                        <option value="low">Riesgo Bajo (≤25%)</option>
-                        <option value="moderate">Riesgo Moderado (26-60%)</option>
-                        <option value="high">Riesgo Alto (61-75%)</option>
-                        <option value="critical">Riesgo Crítico (>75%)</option>
+                        <option value="low">Bajo (≤25%)</option>
+                        <option value="moderate-low">Medio Bajo (25-42.5%)</option>
+                        <option value="moderate-high">Medio Alto (42.5-60%)</option>                        
+                        <option value="high">Alto (61-75%)</option>
                     </select>
                     <select id="filter-centro-status" class="filter-select">
                         <option value="">Todos los estados</option>
@@ -307,14 +307,14 @@ async function loadAllWorkCenters() {
                         case 'low':
                             if (score > 25) return false;
                             break;
-                        case 'moderate':
-                            if (score <= 25 || score > 60) return false;
+                        case 'moderate-low':
+                            if (score <= 25 || score > 42.5) return false;
                             break;
+                        case 'moderate-high':
+                            if (score <= 42.6 || score > 60) return false;
+                            break;                            
                         case 'high':
-                            if (score <= 60 || score > 75) return false;
-                            break;
-                        case 'critical':
-                            if (score <= 75) return false;
+                            if (score <= 60.01) return false;
                             break;
                     }
                 }
@@ -360,8 +360,7 @@ async function loadAllWorkCenters() {
             };
         }
 
-        function updateCentrosCount() {
-            const count = workCenters.length;
+        function updateCentrosCount(count) {
             const countElement = document.getElementById('centros-count');
             if (countElement) {
                 countElement.textContent = `${count} ${count === 1 ? 'centro' : 'centros'}`;
@@ -433,7 +432,13 @@ async function obtenerScoreFromSupabase(workCenterId) {
     updateCentrosCount();
     
     if (workCenters.length === 0) {
-        container.innerHTML = `<div class="empty-state"><h3>No hay centros de trabajo registrados</h3><p>Los centros aparecerán aquí cuando se creen desde las áreas</p></div>`;
+        updateCentrosCount(0); 
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No hay centros de trabajo registrados</h3>
+                <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
+            </div>
+        `;
         return;
     }
 
@@ -446,10 +451,17 @@ async function obtenerScoreFromSupabase(workCenterId) {
     const sortedCentros = sorted.centros;
     const sortedScoreInfos = sorted.scoreInfos;
 
+    updateCentrosCount(sortedCentros.length);
+
     container.className = currentView === 'list' ? 'content-list' : 'content-grid';
 
     if (sortedCentros.length === 0) {
-        container.innerHTML = `<div class="no-results"><h3>No se encontraron centros</h3><p>Intenta ajustar los filtros de búsqueda</p></div>`;
+        container.innerHTML = `
+            <div class="no-results">
+                <h3>No se encontraron centros</h3>
+                <p>Intenta ajustar los filtros de búsqueda</p>
+            </div>
+        `;
         return;
     }
     
