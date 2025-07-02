@@ -457,141 +457,78 @@ updateRiskData(areasData) {
 }
 
 setupHoverEffects() {
-    if (!this.mapGroup) {
-        console.log('⚠️ mapGroup no disponible para hover effects');
-        return;
-    }
-    
-    console.log('🖱️ Configurando efectos hover...');
-    
-    // CORRECCIÓN: Usar this.mapGroup en lugar de d3.select(this.svg)
-    this.mapGroup.selectAll('text, path, rect, circle, polygon')
-        .style('cursor', 'pointer')
-        .on("mouseover", async (event, d) => {
-            const element = event.target;
-            const elementText = element.textContent || element.id;
-            
-            console.log('🖱️ Hover sobre:', elementText);
-            
-            // Buscar en el mapeo
-            const mappedConfig = this.areaMapping[elementText];
-            let tooltipContent = '';
-            
-if (mappedConfig && mappedConfig.workCenterId) {
-    try {
-        // Obtener datos del centro de trabajo específico
-        const [workCenterData, scoreData] = await Promise.all([
-            dataClient.getWorkCenter(mappedConfig.workCenterId),
-            dataClient.getScoreWorkCenter(mappedConfig.workCenterId)
-        ]);
+        if (!this.mapGroup) {
+            console.warn('⚠️ mapGroup no disponible para hover effects');
+            return;
+        }
         
-        // Obtener datos del área si está disponible
-        const areaData = workCenterData?.area_id ? await dataClient.getArea(workCenterData.area_id) : null;
-                    
-                    
-                    // Crear tooltip con datos reales
-                tooltipContent = `
-                    <h4>${workCenterData?.name || 'Sin nombre'}</h4>
-                    <p><strong>ID Centro:</strong> ${mappedConfig.workCenterId}</p>
-                    <p><strong>Responsable:</strong> ${workCenterData?.responsible || 'Sin responsable'}</p>
-                    <p><strong>Riesgo:</strong> ${parseFloat(scoreData?.score_actual || 0).toFixed(2)}% - ${scoreData?.categoria_riesgo || 'Sin evaluar'}</p>
-                    <p><strong>Área:</strong> ${areaData?.name || 'Sin área'}</p>
-                    <p><small>Click para ver detalles</small></p>
-                `;
-                    
-                } catch (error) {
-                    console.error('Error obteniendo datos del área:', error);
-                    tooltipContent = `
-                        <h4>${elementText}</h4>
-                        <p>Error cargando datos</p>
-                        <p><small>Verifica tu conexión</small></p>
-                    `;
-                }
-            } else {
-                // Buscar en datos del dashboard como fallback
-                const areaData = this.data.find(area => 
-                    area.name && area.name.toLowerCase().includes(elementText.toLowerCase())
-                );
-                
-                if (areaData) {
-                    const score = parseFloat(areaData.promedio_score || 0).toFixed(2);
-                    tooltipContent = `
-                        <h4>${areaData.name}</h4>
-                        <p>Responsable: ${areaData.responsable || 'No asignado'}</p>
-                        <p><strong>Riesgo: ${score}%</strong> - ${this.getRiskLevelText(score)}</p>
-                        <p>Centros: ${areaData.total_centros || 0}</p>
-                        <p><small>Click para ver detalles</small></p>
-                    `;
+        console.log('🖱️ Configurando efectos hover...');
+        
+        this.mapGroup.selectAll('text, path, rect, circle, polygon')
+            .style('cursor', 'pointer')
+            .on("mouseover", async (event) => {
+                const element = d3.select(event.currentTarget);
+                element.style('opacity', 0.9).style('stroke', '#0d6efd').style('stroke-width', '2px');
+
+                const elementName = this.extractAreaName(event.target);
+                this.updateTooltipPosition(event);
+                this.tooltip.style("display", "block").style("opacity", 1).html(`<h4>${elementName}</h4><p>Cargando...</p>`);
+
+                const mappedConfig = this.areaMapping[elementName];
+                let tooltipContent = '';
+
+                if (mappedConfig && mappedConfig.workCenterId) {
+                    try {
+                        const scoreData = await dataClient.getScoreWorkCenter(mappedConfig.workCenterId);
+                        // Para el centro mapeado, buscamos el resumen de su área para los pictogramas
+                        const areaData = scoreData ? this.areas.find(a => a.id === scoreData.area_id) : null;
+                        const pictos = this.getHighRiskPictos(areaData?.resumen_pictogramas);
+
+                        tooltipContent = `<h4>${elementName} (Centro)</h4>
+                                          <p><strong>Riesgo:</strong> ${parseFloat(scoreData?.score_actual || 0).toFixed(2)}%</p>
+                                          <p><strong>Factores Altos:</strong> ${pictos}</p>`;
+                    } catch (error) {
+                        tooltipContent = `<h4>${elementName}</h4><p>Error al cargar datos del centro.</p>`;
+                    }
                 } else {
-                    tooltipContent = `
-                        <h4>${elementText || 'Área'}</h4>
-                        <p>Sin datos disponibles</p>
-                    `;
+                    const areaData = this.findAreaData(elementName);
+                    if (areaData) {
+                        const score = parseFloat(areaData.promedio_score || 0).toFixed(2);
+                        // Obtenemos los pictogramas del área
+                        const pictos = this.getHighRiskPictos(areaData.resumen_pictogramas);
+
+                        tooltipContent = `<h4>${areaData.name} (Área)</h4>
+                                          <p><strong>Riesgo Promedio: ${score}%</strong></p>
+                                          <p><strong>Factores Altos:</strong> ${pictos}</p>
+                                          <p>Centros: ${areaData.centros_evaluados || 0}/${areaData.total_centros || 0}</p>`;
+                    } else {
+                        tooltipContent = `<h4>${elementName}</h4><p>Sin datos de riesgo para esta área.</p>`;
+                    }
                 }
-            }
-            
-            // Mostrar tooltip
-            this.tooltip.style("display", "block").html(tooltipContent);
-            
-            // Resaltar elemento
-            d3.select(element)
-                .style('opacity', 0.8)
-                .style('stroke-width', '3px')
-                .style('stroke', '#007bff');
-        })
-        .on("mousemove", (event) => {
-            this.tooltip
-                .style("left", (event.pageX + 15) + "px")
-                .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", (event) => {
-            this.tooltip.style("display", "none");
-            
-            // Remover resaltado
-            d3.select(event.target)
-                .style('opacity', null)
-                .style('stroke-width', null)
-                .style('stroke', null);
-        })
-        .on("click", async (event, d) => {
-    const element = event.target;
-    const elementText = element.textContent || element.id;
-    
-    // Buscar en mapeo
-    const mappedConfig = this.areaMapping[elementText];
-    
-    if (mappedConfig && mappedConfig.workCenterId) {
-        try {
-            // Obtener datos para la navegación
-            const workCenterData = await dataClient.getWorkCenter(mappedConfig.workCenterId);
-            const areaData = workCenterData?.area_id ? await dataClient.getArea(workCenterData.area_id) : null;
-            
-            // Navegar al centro de trabajo específico
-            ERGONavigation.navigateToWorkCenter(
-                mappedConfig.workCenterId,
-                workCenterData?.area_id || '',
-                encodeURIComponent(areaData?.name || 'Área'),
-                encodeURIComponent(workCenterData?.name || 'Centro'),
-                ''
-            );
-        } catch (error) {
-            console.error('Error navegando:', error);
-            ERGOUtils.showToast('Error al navegar al centro de trabajo', 'error');
-        }
-    } else {
-        // Fallback a búsqueda en datos del dashboard
-        const areaData = this.data.find(area => 
-            area.name && area.name.toLowerCase().includes(elementText.toLowerCase())
-        );
-        
-        if (areaData) {
-            ERGONavigation.navigateToAreas(areaData.id, areaData.name);
-        } else {
-            ERGOUtils.showToast(`Área "${elementText}" no encontrada`, 'warning');
-        }
+                
+                this.tooltip.html(tooltipContent);
+            })
+            .on("mousemove", (event) => {
+                this.updateTooltipPosition(event);
+            })
+            .on("mouseout", (event) => {
+                this.tooltip.style("opacity", 0).style("display", "none");
+                d3.select(event.target).style('opacity', null).style('stroke-width', null).style('stroke', null);
+            })
+            .on("click", async (event) => {
+                const elementName = this.extractAreaName(event.target);
+                const mappedConfig = this.areaMapping[elementName];
+                
+                if (mappedConfig && mappedConfig.workCenterId) {
+                    const workCenterData = await dataClient.getWorkCenter(mappedConfig.workCenterId);
+                    const areaData = workCenterData?.area_id ? await dataClient.getArea(workCenterData.area_id) : null;
+                    ERGONavigation.navigateToWorkCenter(mappedConfig.workCenterId, workCenterData?.area_id || '', areaData?.name || '', workCenterData?.name || '', '');
+                } else {
+                    const areaData = this.findAreaData(elementName);
+                    if (areaData) ERGONavigation.navigateToAreas(areaData.id, areaData.name);
+                }
+            });
     }
-});
-}
 
     // Actualizar filtro de áreas
 // Actualizar filtro de áreas
@@ -780,10 +717,18 @@ applyFilters() {
 }
 
     // Resetear zoom a vista completa
-    resetZoom() {
+resetZoom() {
+        if (!this.mapGroup || !this.mapGroup.node().getBBox) return;
+
         const bounds = this.mapGroup.node().getBBox();
+        // Se añade una validación para evitar el error si el mapa no tiene dimensiones
+        if (!bounds || bounds.width === 0 || bounds.height === 0) {
+            console.warn("No se pudo calcular el BBox del mapa para el zoom. El SVG podría estar vacío o no ser visible.");
+            return; 
+        }
+
         const fullWidth = this.config.width;
-        const fullHeight = this.config.height - 100;
+        const fullHeight = this.config.height;
         
         const midX = bounds.x + bounds.width / 2;
         const midY = bounds.y + bounds.height / 2;
@@ -952,6 +897,29 @@ applyFilters() {
         }
         console.log('🗑️ ERGOMap destruido');
     }
+
+        getHighRiskPictos(resumen) {
+        if (!resumen) return 'No disponible';
+
+        // Buscamos los pictogramas cuya severidad sea 3 (Crítico/Alto)
+        const highRisk = Object.entries(resumen)
+            .filter(([id, data]) => data.severidad === 3)
+            .map(([id, data]) => id);
+        
+        return highRisk.length > 0 ? highRisk.join(', ') : 'Ninguno';
+    }
+
+        getHighRiskPictos(resumen) {
+        if (!resumen) return 'No disponible';
+
+        // Buscamos los pictogramas cuya severidad sea 3 (Crítico/Alto)
+        const highRisk = Object.entries(resumen)
+            .filter(([id, data]) => data.severidad === 3)
+            .map(([id, data]) => id);
+        
+        return highRisk.length > 0 ? highRisk.join(', ') : 'Ninguno';
+    }
+
 }
 
 // Exportar clase
