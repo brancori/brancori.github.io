@@ -472,40 +472,49 @@ body {
 }
 
 [data-theme='dark'] {
-    /* Grises Invertidos */
-    --gray-50: #0f172a;
-    --gray-100: #1e293b;
-    --gray-200: #334155;
-    --gray-300: #475569;
-    --gray-400: #64748b;
-    --gray-500: #94a3b8;
-    --gray-600: #cbd5e1;
-    --gray-700: #e2e8f0;
-    --gray-800: #f1f5f9;
-    --gray-900: #f8fafc;
+    /* 1. Paleta de colores redefinida a escala de grises */
+    --primary-50: #374151;
+    --primary-100: #4b5563;
+    --primary-300: #9ca3af;
+    --primary-500: #e5e7eb;    /* Color de acento principal -> gris claro */
+    --primary-600: #f9fafb;    /* Color primario más fuerte -> blanco */
+    --primary-700: #d1d5db;
 
-    /* Colores Primarios Adaptados */
-    --primary-50: #1e293b;
-    --primary-100: #0d9488;
-    --primary-500: #5eead4;
-    --primary-600: #14b8a6;
-    --primary-700: #0d9488;
+    /* Escala de grises para fondos oscuros */
+    --gray-50: #111827;        /* Fondo más oscuro */
+    --gray-100: #1f2937;      /* Fondo de componentes */
+    --gray-200: #374151;      /* Superficies y bordes */
+    --gray-300: #4b5563;      /* Bordes más notorios */
+    --gray-400: #6b7280;      /* Texto terciario (muy tenue) */
+    --gray-500: #9ca3af;      /* Texto secundario */
+    --gray-600: #d1d5db;      /* Texto principal */
+    --gray-700: #e5e7eb;
+    --gray-800: #f3f4f6;
+    --gray-900: #f9fafb;      /* Texto más brillante, títulos */
+
+    /* Colores de estado convertidos a escala de grises */
+    --red-50: #374151;
+    --red-500: #f9fafb;        /* Riesgo Alto/Crítico -> blanco para máximo contraste */
+    --red-600: #e5e7eb;
+    
+    --green-500: #6b7280;      /* Riesgo Bajo (OK) -> gris medio */
+    --green-600: #9ca3af;
+    
+    --orange-500: #d1d5db;     /* Riesgo Medio -> gris claro */ 
+    --orange-600: #e5e7eb;
 }
 
 /* --- 2. Estilos Globales y de Fondo --- */
 [data-theme='dark'] body {
     background-color: var(--gray-50);
-    color: var(--gray-700);
+    color: var(--gray-600);
 }
-
 /* FIX: Oscurecer el fondo parallax para que el texto sea legible */
-[data-theme='dark'] .main-content::before,
-[data-theme='dark'] .main-content::after {
-    opacity: 0.2; /* Reducir la opacidad general */
-    /* Usar colores oscuros para los degradados */
-    background: 
-        radial-gradient(ellipse at 20% 30%, var(--gray-200) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, var(--gray-300) 0%, transparent 60%);
+[data-theme='dark'] h1, 
+[data-theme='dark'] h2, 
+[data-theme='dark'] h3, 
+[data-theme='dark'] h4 {
+    color: var(--gray-900);
 }
 
 /* --- 3. Componentes Específicos del Dashboard --- */
@@ -698,3 +707,122 @@ input:checked ~ .slider .sun {
     color: var(--gray-500);
     align-self: center;
 }
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .modal-content,
+[data-theme='dark'] .kpi-card,
+[data-theme='dark'] .area-card,
+[data-theme='dark'] #risk-chart {
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    box-shadow: none;
+}
+
+[data-theme='dark'] .card:hover,
+[data-theme='dark'] .kpi-card:hover {
+    background-color: var(--gray-200);
+    border-color: var(--gray-400);
+}
+
+[data-theme='dark'] .area-header {
+    background-color: var(--gray-200);
+    border-bottom: 1px solid var(--gray-300);
+}
+
+/* Botones */
+[data-theme='dark'] .btn-primary {
+    background: var(--primary-600);
+    color: var(--gray-50);
+}
+[data-theme='dark'] .btn-primary:hover {
+    background: var(--primary-700);
+}
+[data-theme='dark'] .btn-ghost {
+    color: var(--gray-600);
+    border-color: var(--gray-400);
+}
+[data-theme='dark'] .btn-ghost:hover {
+    background-color: var(--gray-200);
+    color: var(--gray-800);
+}
+
+/* Tablas y Listas de Riesgo */
+[data-theme='dark'] .risk-critico,
+[data-theme='dark'] .risk-alto {
+    color: var(--red-500); /* Blanco */
+}
+
+[data-theme='dark'] .action-list li {
+    background-color: var(--gray-200);
+    border-left-color: var(--red-500); /* Blanco */
+}
+
+[data-theme='dark'] .list-item-ok {
+    border-left-color: var(--green-500) !important; /* Gris medio */
+    background-color: var(--gray-100) !important;
+}
+
+[data-theme='dark'] .action-list li:hover {
+    background-color: var(--gray-300) !important;
+}
+
+[data-theme='dark'] .center-score {
+    background-color: var(--gray-300);
+    color: var(--gray-800);
+}
+
+[data-theme='dark'] .list-item-ok .center-score {
+    background-color: var(--gray-400);
+    color: var(--gray-900);
+}
+
+/* Gráfica de Barras */
+[data-theme='dark'] .bar {
+    background-color: var(--red-500); /* Blanco */
+}
+[data-theme='dark'] .bar-wrapper {
+    background-color: var(--gray-300);
+}
+[data-theme='dark'] .bar-value, 
+[data-theme='dark'] .bar-label {
+    color: var(--gray-600);
+}
+[data-theme='dark'] .main-content.ergonomic-pattern {
+    background-color: var(--gray-50);
+    background-image: none; /* Opcional: elimina el patrón si interfiere con la legibilidad */
+}
+
+.map-area {
+    fill-opacity: 0.7;
+    transition: fill-opacity 0.2s ease-in-out;
+}
+.map-area:hover {
+    fill-opacity: 1;
+}
+
+/* --- Colores para TEMA CLARO (por defecto) --- */
+.map-area.risk-low { fill: #28a745; }       /* Verde */
+.map-area.risk-medium { fill: #ffc107; }  /* Amarillo */
+.map-area.risk-high { fill: #fd7e14; }     /* Naranja */
+.map-area.risk-critical { fill: #dc3545; } /* Rojo */
+
+
+/* --- Colores para TEMA OSCURO MONOCROMÁTICO --- */
+
+/* Fondo del mapa y color de texto de las áreas */
+[data-theme='dark'] #risk-map svg {
+    background-color: var(--gray-50); /* Este es el cambio */
+}
+[data-theme='dark'] #risk-map svg text {
+    fill: var(--gray-700);
+}
+
+/* Áreas del mapa en modo oscuro */
+[data-theme='dark'] .map-area {
+    stroke: var(--gray-50); /* Borde sutil para separar áreas */
+    stroke-width: 0.5px;
+}
+[data-theme='dark'] .map-area.risk-low { fill: #4b5563; }       /* Gris oscuro */
+[data-theme='dark'] .map-area.risk-medium { fill: #6b7280; }  /* Gris medio */
+[data-theme='dark'] .map-area.risk-high { fill: #9ca3af; }     /* Gris claro */
+[data-theme='dark'] .map-area.risk-critical { fill: #e5e7eb; } /* Casi blanco */

@@ -155,7 +155,6 @@ createAreaMapping() {
             .attr('viewBox', `0 0 ${this.config.width} ${this.config.height}`)
             .style('border', '1px solid var(--gray-300)')
             .style('border-radius', 'var(--border-radius-md)')
-            .style('background', '#ffffff');
 
         // Grupo principal para zoom/pan
         this.mapGroup = this.svg.append('g')
@@ -559,48 +558,34 @@ updateAreaFilter() {
 }
 
     // Colorear áreas según nivel de riesgo
-// Colorear áreas según nivel de riesgo
-colorizeAreas() {
-    // Verificar que mapGroup existe
-    if (!this.mapGroup) {
-        console.log('⚠️ mapGroup no disponible para colorear áreas');
-        return;
-    }
-    
-    if (!this.areas || this.areas.length === 0) {
-        console.log('⚠️ No hay datos de áreas para colorear');
-        return;
-    }
-    
-    const areaElements = this.mapGroup.selectAll('text, rect, path, circle, polygon');
-    
-    // Verificar que hay elementos en el SVG
-    if (areaElements.empty()) {
-        console.log('⚠️ No hay elementos SVG para colorear');
-        return;
-    }
-    
-    areaElements.each((d, i, nodes) => {
-        const element = nodes[i];
-        const areaName = this.extractAreaName(element);
-        const areaData = this.findAreaData(areaName);
-        
-        if (areaData && element.tagName !== 'text') {
-            const score = parseFloat(areaData.promedio_score || 0);
-            const color = this.getRiskColor(score);
-            
-            // Aplicar color con transparencia
-            d3.select(element)
-                .style('fill', color)
-                .style('fill-opacity', 0.7)
-                .style('stroke', color)
-                .style('stroke-width', '1px')
-                .attr('data-area-id', areaData.id)
-                .attr('data-risk-level', this.getRiskLevel(score))
-                .attr('data-score', score);
+// REEMPLAZA esta función en map.js
+    colorizeAreas() {
+        if (!this.mapGroup || !this.areas || this.areas.length === 0) {
+            console.log('⚠️ No hay datos de áreas para colorear');
+            return;
         }
-    });
-}
+        
+        const areaElements = this.mapGroup.selectAll('text, rect, path, circle, polygon');
+        
+        areaElements.each((d, i, nodes) => {
+            const element = nodes[i];
+            const areaName = this.extractAreaName(element);
+            const areaData = this.findAreaData(areaName);
+            
+            if (areaData && element.tagName !== 'text') {
+                const score = parseFloat(areaData.promedio_score || 0);
+                const riskLevelCode = this.getRiskLevelCode(score); // 'low', 'medium', 'high', 'critical'
+
+                // --- ESTE ES EL CAMBIO CLAVE ---
+                // En lugar de style('fill', color), asignamos una clase.
+                d3.select(element)
+                    .attr('class', `map-area risk-${riskLevelCode}`)
+                    .attr('data-area-id', areaData.id)
+                    .attr('data-risk-level', riskLevelCode)
+                    .attr('data-score', score);
+            }
+        });
+    }
 
     // Resto de métodos auxiliares...
     extractAreaName(element) {
