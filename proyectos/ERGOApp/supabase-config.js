@@ -570,6 +570,35 @@ async getDashboardData() {
     }
 }
 
+async getGlobalPictogramSummary() {
+        try {
+            const evaluaciones = await this.query('evaluaciones', 'GET', null, '?select=riesgos_por_categoria&riesgos_por_categoria=not.is.null');
+            if (!evaluaciones) return null;
+
+            const summary = {};
+            // Inicializar el objeto de resumen
+            for (const id in window.ERGOAnalytics.pictogramasConfig) {
+                summary[id] = { Critico: 0, Alto: 0, Bajo: 0 };
+            }
+
+            // Sumar los riesgos de todas las evaluaciones
+            for (const evaluacion of evaluaciones) {
+                for (const pictoId in evaluacion.riesgos_por_categoria) {
+                    if (summary[pictoId]) {
+                        const nivel = evaluacion.riesgos_por_categoria[pictoId].nivel;
+                        if (nivel === 'Crítico') summary[pictoId].Critico++;
+                        else if (nivel === 'Alto') summary[pictoId].Alto++;
+                        else if (nivel === 'Medio') summary[pictoId].Bajo++;
+                    }
+                }
+            }
+            return summary;
+        } catch (error) {
+            console.error('Error getting global pictogram summary:', error);
+            return null;
+        }
+    }
+
     async getAllAreasConResumen() {
         return await this.query('areas', 'GET', null, '?select=name,resumen_pictogramas');
     }

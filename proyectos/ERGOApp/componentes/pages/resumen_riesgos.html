@@ -138,6 +138,33 @@
     border-color: var(--primary-500);
     color: var(--primary-700);
 }
+.action-list li {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--red-50);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 0.75rem;
+    border-left: 4px solid var(--red-500);
+    cursor: pointer; /* <--- Añade esta línea */
+    transition: background-color 0.2s; /* <--- (Opcional) Efecto suave al pasar el mouse */
+}
+.list-item-ok {
+    border-left-color: var(--green-500) !important;
+    background-color: var(--green-50) !important;
+}
+.action-list li:hover {
+    background-color: var(--gray-100) !important;
+}
+
+.list-item-ok .center-score {
+    background-color: var(--green-200);
+    color: var(--green-800);
+}
+
+.list-item-ok .critical-factors {
+    display: none; /* Oculta los factores de riesgo si no hay */
+}
     </style>
 </head>
 <body>
@@ -165,258 +192,258 @@
             generarReporteCompleto();
         });
 
-        async function generarReporteCompleto() {
-        const loadingEl = document.getElementById('loading-state');
-        const contentEl = document.getElementById('summary-content');
-        
-        try {
-            const [evaluaciones, workCenters, areas] = await Promise.all([
-                dataClient.query('evaluaciones', 'GET', null, '?select=work_center_id,area_id,riesgos_por_categoria,nivel_riesgo_ergonomico&riesgos_por_categoria=not.is.null'),
-                dataClient.query('work_centers', 'GET', null, '?select=id,name,area_id'),
-                dataClient.query('areas', 'GET', null, '?select=id,name')
-            ]);
-
-            if (!evaluaciones || evaluaciones.length === 0) {
-                loadingEl.textContent = "No hay evaluaciones con datos de riesgo para mostrar.";
-                return;
-            }
-
-            const centerMap = new Map(workCenters.map(c => [c.id, { name: c.name, area_id: c.area_id }]));
-            const resumenPorCentro = {};
-            workCenters.forEach(c => {
-                resumenPorCentro[c.id] = { name: c.name, scores: [], scorePromedio: 'N/A' };
+        function navegarACentro(workCenterId, areaId, areaName, centerName) {
+            const params = new URLSearchParams({
+                workCenter: workCenterId,
+                area: areaId,
+                areaName: areaName,
+                centerName: centerName
             });
-
-            const resumenPorArea = {};
-            areas.forEach(area => {
-                resumenPorArea[area.id] = {
-                    nombre: area.name,
-                    scores: [], // NUEVO: Para calcular el promedio del área
-                    resumenPictogramas: {},
-                    listaCentrosCriticos: {}
-                };
-                for (const id in ERGOAnalytics.pictogramasConfig) {
-                    resumenPorArea[area.id].resumenPictogramas[id] = { Critico: 0, Alto: 0, Bajo: 0 };
-                }
-            });
-
-            for (const evaluacion of evaluaciones) {
-                const centroInfo = centerMap.get(evaluacion.work_center_id);
-                if (!centroInfo) continue;
-                
-                if (resumenPorCentro[evaluacion.work_center_id] && evaluacion.nivel_riesgo_ergonomico != null) {
-                    const score = parseFloat(evaluacion.nivel_riesgo_ergonomico);
-                    resumenPorCentro[evaluacion.work_center_id].scores.push(score);
-                    if (resumenPorArea[centroInfo.area_id]) {
-                        resumenPorArea[centroInfo.area_id].scores.push(score);
-                    }
-                }
-
-                const areaResumen = resumenPorArea[centroInfo.area_id];
-                if (!areaResumen) continue;
-
-                for (const riesgoId in evaluacion.riesgos_por_categoria) {
-                    if (areaResumen.resumenPictogramas[riesgoId]) {
-                        const nivel = evaluacion.riesgos_por_categoria[riesgoId].nivel;
-                        const pictogramaResumen = areaResumen.resumenPictogramas[riesgoId];
-
-                        if (nivel === 'Crítico') {
-                            pictogramaResumen.Critico++;
-                            if (!areaResumen.listaCentrosCriticos[evaluacion.work_center_id]) {
-                                areaResumen.listaCentrosCriticos[evaluacion.work_center_id] = { name: centroInfo.name, riesgos: new Set() };
-                            }
-                            areaResumen.listaCentrosCriticos[evaluacion.work_center_id].riesgos.add(riesgoId);
-                        } else if (nivel === 'Alto') pictogramaResumen.Alto++;
-                    }
-                }
-            }
-
-            // Calcular promedios
-            for (const centerId in resumenPorCentro) {
-                const centro = resumenPorCentro[centerId];
-                if (centro.scores.length > 0) {
-                    centro.scorePromedio = (centro.scores.reduce((a, b) => a + b, 0) / centro.scores.length).toFixed(2);
-                }
-            }
-            for (const areaId in resumenPorArea) {
-                const area = resumenPorArea[areaId];
-                if (area.scores.length > 0) {
-                    area.scorePromedio = (area.scores.reduce((a, b) => a + b, 0) / area.scores.length).toFixed(2);
-                } else {
-                    area.scorePromedio = 'N/A';
-                }
-            }
-            
-            // Renderizar todo
-            const kpiData = calcularKPIs(resumenPorArea, workCenters);
-            renderKPIsGlobales(kpiData);
-            renderResumenPorArea(resumenPorArea, resumenPorCentro);
-
-            // AÑADIR LÓGICA DEL BOTÓN DE FILTRO
-            const btnFiltrar = document.getElementById('btn-filtrar-areas');
-            const btnFiltrarLabel = document.getElementById('btn-filtrar-label');
-            let isFiltered = false;
-
-            btnFiltrar.addEventListener('click', () => {
-                isFiltered = !isFiltered; // Invertir estado
-                const areaCards = document.querySelectorAll('.area-card');
-                
-                btnFiltrar.classList.toggle('active', isFiltered);
-                btnFiltrarLabel.textContent = isFiltered ? 'Mostrar Todas las Áreas' : 'Filtrar Áreas Prioritarias';
-
-                areaCards.forEach(card => {
-                    const score = parseFloat(card.dataset.score);
-                    if (isFiltered) {
-                        card.style.display = score > 42.5 ? 'block' : 'none';
-                    } else {
-                        card.style.display = 'block';
-                    }
-                });
-            });
-
-            loadingEl.style.display = 'none';
-            contentEl.style.display = 'block';
-
-        } catch (error) {
-            loadingEl.textContent = "Error al cargar el resumen de riesgos.";
-            console.error("Error generando el resumen:", error);
+            window.location.href = `../../centro-trabajo.html?${params.toString()}`;
         }
-    }
 
+        function calcularKPIs(resumenPorArea, resumenPorCentro) {
+            const totalCentrosConEvaluacion = Object.values(resumenPorCentro).filter(
+                centro => centro.scorePromedio !== 'N/A'
+            ).length;
 
-        function calcularKPIs(resumenPorArea, workCenters) {
-            let totalCentrosCriticos = 0;
-            let areaMasRiesgo = { nombre: 'N/A', criticos: -1 };
             const conteoPictogramas = {};
-
             for (const areaId in resumenPorArea) {
                 const areaData = resumenPorArea[areaId];
-                const centrosCriticosEnArea = Object.keys(areaData.listaCentrosCriticos).length;
-                totalCentrosCriticos += centrosCriticosEnArea;
-
-                if (areaData.totalRiesgosCriticos > areaMasRiesgo.criticos) {
-                    areaMasRiesgo = { nombre: areaData.nombre, criticos: areaData.totalRiesgosCriticos };
-                }
-
                 for (const pictoId in areaData.resumenPictogramas) {
                     const totalRiesgo = areaData.resumenPictogramas[pictoId].Critico + areaData.resumenPictogramas[pictoId].Alto;
                     conteoPictogramas[pictoId] = (conteoPictogramas[pictoId] || 0) + totalRiesgo;
                 }
             }
             
-            const pictogramaMasComunId = Object.keys(conteoPictogramas).reduce((a, b) => conteoPictogramas[a] > conteoPictogramas[b] ? a : b, null);
+            const pictogramaMasComunId = Object.keys(conteoPictogramas).length > 0
+                ? Object.keys(conteoPictogramas).reduce((a, b) => conteoPictogramas[a] > conteoPictogramas[b] ? a : b)
+                : null;
             
             return {
                 totalAreas: Object.keys(resumenPorArea).length,
-                totalCentrosCriticos: totalCentrosCriticos,
-                areaMasRiesgo: areaMasRiesgo.nombre,
+                totalCentrosConEvaluacion: totalCentrosConEvaluacion,
                 pictogramaMasComun: pictogramaMasComunId ? `${pictogramaMasComunId} - ${ERGOAnalytics.pictogramasConfig[pictogramaMasComunId].nombre}` : 'N/A'
             };
         }
 
         function renderKPIsGlobales(kpiData) {
-        const container = document.getElementById('kpi-container');
-        container.innerHTML = `
-            <div class="kpi-card">
-                <span class="label">Áreas Analizadas</span>
-                <div class="value">${kpiData.totalAreas}</div>
-            </div>
-            <div class="kpi-card">
-                <span class="label">Total de Centros con Riesgo Alto</span>
-                <div class="value">${kpiData.totalCentrosCriticos}</div>
-            </div>
-            <div class="kpi-card btn-kpi" id="btn-filtrar-areas">
-                <span class="label" id="btn-filtrar-label">Filtrar Áreas Prioritarias</span>
-                <div class="value"><small>> 42.5%</small></div>
-            </div>
-            <div class="kpi-card">
-                <span class="label">Factor de Riesgo más Común</span>
-                <div class="value"><small>${kpiData.pictogramaMasComun}</small></div>
-            </div>
-        `;
-    }
-        
-function renderResumenPorArea(resumenPorArea, resumenPorCentro) {
-    const container = document.getElementById('areas-container');
-    container.innerHTML = ''; 
-
-    for (const areaId in resumenPorArea) {
-        const data = resumenPorArea[areaId];
-        
-        let tablaHTML = `
-            <table>
-                <thead><tr><th>Pictograma</th><th>Alto</th><th>Medio</th><th>Bajo</th></tr></thead>
-                <tbody>`;
-        for(const pictoId in data.resumenPictogramas) {
-            const pictoData = data.resumenPictogramas[pictoId];
-            tablaHTML += `
-                <tr>
-                    <td><strong>${pictoId}</strong> - ${ERGOAnalytics.pictogramasConfig[pictoId].nombre}</td>
-                    <td class="risk-critico">${pictoData.Critico}</td>
-                    <td class="risk-alto">${pictoData.Alto}</td>
-                    <td>${pictoData.Bajo}</td>
-                </tr>
+            const container = document.getElementById('kpi-container');
+            container.innerHTML = `
+                <div class="kpi-card"><span class="label">Áreas Analizadas</span><div class="value">${kpiData.totalAreas}</div></div>
+                <div class="kpi-card"><span class="label">Total de Centros Evaluados</span><div class="value" id="kpi-centros-valor">${kpiData.totalCentrosConEvaluacion}</div></div>
+                <div class="kpi-card btn-kpi" id="btn-filtrar-areas"><span class="label" id="btn-filtrar-label">Filtrar Prioritarios</span><div class="value"><small>Riesgo Alto & Score > 42.5%</small></div></div>
+                <div class="kpi-card"><span class="label">Factor de Riesgo más Común</span><div class="value"><small>${kpiData.pictogramaMasComun}</small></div></div>
             `;
         }
-        tablaHTML += `</tbody></table>`;
-        
-        // --- INICIO DE LA CORRECCIÓN ---
-        let criticosHTML = `<div class="action-list"><h4>Centros Prioritarios (Score > 42.5%)</h4>`;
-        const centrosCriticos = data.listaCentrosCriticos;
-        
-        let listItemsHTML = '';
-        let visibleItemsCount = 0;
+  
+        function renderResumenPorArea(resumenPorArea, resumenPorCentro, centrosPorArea) {
+            const container = document.getElementById('areas-container');
+            container.innerHTML = '';
 
-        if (Object.keys(centrosCriticos).length > 0) {
-            for (const centroId in centrosCriticos) {
-                const scoreData = resumenPorCentro[centroId];
+            for (const areaId in resumenPorArea) {
+                const data = resumenPorArea[areaId];
+                let totalRiesgoAlto = 0, totalRiesgoMedio = 0, totalRiesgoBajo = 0;
+                let tablaHTML = `<table><thead><tr><th>Pictograma</th><th>Alto</th><th>Medio</th><th>Bajo</th></tr></thead><tbody>`;
                 
-                if (scoreData && scoreData.scorePromedio !== 'N/A') {
-                    const numericScore = parseFloat(scoreData.scorePromedio);
-
-                    // CONDICIÓN: Mostrar solo si el score del centro es mayor a 42.5
-                    if (numericScore > 42.5) {
-                        const centroData = centrosCriticos[centroId];
-                        const scoreDisplay = `${scoreData.scorePromedio}%`;
-                        const riesgos = Array.from(centroData.riesgos).join(', ');
-                        
-                        listItemsHTML += `
-                            <li>
-                                <div class="center-header">
-                                    <span>${centroData.name}</span>
-                                    <span class="center-score">${scoreDisplay}</span>
-                                </div>
-                                <div class="critical-factors">
-                                    Riesgos: <span class="pictograma-tag">${riesgos}</span>
-                                </div>
-                            </li>`;
-                        visibleItemsCount++;
-                    }
+                for (const pictoId in data.resumenPictogramas) {
+                    const pictoData = data.resumenPictogramas[pictoId];
+                    const conteoAlto = pictoData.Critico;
+                    const conteoMedio = pictoData.Alto;
+                    const conteoBajo = pictoData.Bajo;
+                    totalRiesgoAlto += conteoAlto; totalRiesgoMedio += conteoMedio; totalRiesgoBajo += conteoBajo;
+                    tablaHTML += `
+                        <tr>
+                            <td><strong>${pictoId}</strong> - ${ERGOAnalytics.pictogramasConfig[pictoId].nombre}</td>
+                            <td id="conteo-${areaId}-${pictoId}-Alto" class="risk-critico">${conteoAlto}</td>
+                            <td id="conteo-${areaId}-${pictoId}-Medio" class="risk-alto">${conteoMedio}</td>
+                            <td id="conteo-${areaId}-${pictoId}-Bajo">${conteoBajo}</td>
+                        </tr>`;
                 }
+                tablaHTML += `</tbody><tfoot><tr>
+                                <td><strong>TOTALES</strong></td>
+                                <td id="total-${areaId}-Alto" class="risk-critico">${totalRiesgoAlto}</td>
+                                <td id="total-${areaId}-Medio" class="risk-alto">${totalRiesgoMedio}</td>
+                                <td id="total-${areaId}-Bajo"><strong>${totalRiesgoBajo}</strong></td>
+                            </tr></tfoot></table>`;
+
+                const todosLosCentrosDelArea = centrosPorArea[areaId] || [];
+                const centrosConEvaluacion = todosLosCentrosDelArea.filter(c => resumenPorCentro[c.id] && resumenPorCentro[c.id].scorePromedio !== 'N/A');
+                const totalConEvaluacion = centrosConEvaluacion.length;
+                let listItemsHTML = '';
+
+                for (const centro of centrosConEvaluacion) {
+                    const esDeRiesgoAlto = data.listaCentrosCriticos.hasOwnProperty(centro.id);
+                    const liClass = esDeRiesgoAlto ? '' : 'list-item-ok';
+                    const scoreData = resumenPorCentro[centro.id];
+                    const scorePromedio = scoreData ? scoreData.scorePromedio : 'N/A';
+                    const factoresRiesgo = esDeRiesgoAlto ? Array.from(data.listaCentrosCriticos[centro.id].riesgos).join(', ') : '';
+                    listItemsHTML += `
+                        <li data-score="${scorePromedio}" data-centro-id="${centro.id}" class="${liClass}" onclick="navegarACentro('${centro.id}', '${areaId}', '${data.nombre}', '${centro.name}')">
+                            <div class="center-header">
+                                <span>${centro.name}</span>
+                                <span class="center-score">${scorePromedio}%</span>
+                            </div>
+                            <div class="critical-factors">Factores de Riesgo Alto: <span class="pictograma-tag">${factoresRiesgo}</span></div>
+                        </li>`;
+                }
+                
+                const totalRealDeCentros = todosLosCentrosDelArea.length;
+                const porcentajeInicial = totalRealDeCentros > 0 ? ((totalConEvaluacion / totalRealDeCentros) * 100).toFixed(2) : '0.00';
+                let criticosHTML = `<div class="action-list"><h4 id="contador-area-${areaId}">Centros de Trabajo (${totalConEvaluacion}/${totalRealDeCentros} - ${porcentajeInicial}%)</h4>`;
+                
+                if (totalConEvaluacion > 0) criticosHTML += `<ul>${listItemsHTML}</ul>`;
+                else criticosHTML += `<p>No hay centros de trabajo con evaluaciones en esta área.</p>`;
+                criticosHTML += `</div>`;
+                
+                const scoreParaFiltroArea = data.scorePromedio === 'N/A' ? 0 : data.scorePromedio;
+                const areaCardHTML = `<div class="area-card" id="area-card-${areaId}" data-score="${scoreParaFiltroArea}"><div class="area-header"><h2>${data.nombre}</h2></div><div class="area-content"><div>${tablaHTML}</div><div>${criticosHTML}</div></div></div>`;
+                container.innerHTML += areaCardHTML;
             }
         }
+    
+        async function generarReporteCompleto() {
+            const loadingEl = document.getElementById('loading-state');
+            const contentEl = document.getElementById('summary-content');
+            try {
+                const [evaluaciones, workCenters, areas] = await Promise.all([
+                    dataClient.query('evaluaciones', 'GET', null, '?select=id,work_center_id,area_id,riesgos_por_categoria,nivel_riesgo_ergonomico'),
+                    dataClient.query('work_centers', 'GET', null, '?select=id,name,area_id'),
+                    dataClient.query('areas', 'GET', null, '?select=id,name')
+                ]);
 
-        if (visibleItemsCount > 0) {
-            criticosHTML += `<ul>${listItemsHTML}</ul>`;
-        } else {
-            criticosHTML += `<p>✅ No hay centros con riesgo alto superior a 42.5%.</p>`;
+                if (!evaluaciones || !evaluaciones.length === 0) { loadingEl.textContent = "No se encontraron evaluaciones."; return; }
+
+                const centrosPorArea = {};
+                areas.forEach(a => { centrosPorArea[a.id] = []; });
+                workCenters.forEach(wc => { if (centrosPorArea[wc.area_id]) centrosPorArea[wc.area_id].push(wc); });
+
+                const riesgosPorCentro = {};
+                const centerMap = new Map(workCenters.map(c => [c.id, { name: c.name, area_id: c.area_id }]));
+                const resumenPorCentro = {};
+                workCenters.forEach(c => {
+                    resumenPorCentro[c.id] = { name: c.name, scores: [], scorePromedio: 'N/A' };
+                    riesgosPorCentro[c.id] = {};
+                    for (const id in ERGOAnalytics.pictogramasConfig) riesgosPorCentro[c.id][id] = { Critico: 0, Alto: 0, Bajo: 0 };
+                });
+
+                const resumenPorArea = {};
+                areas.forEach(area => {
+                    resumenPorArea[area.id] = { nombre: area.name, scores: [], resumenPictogramas: {}, listaCentrosCriticos: {} };
+                    for (const id in ERGOAnalytics.pictogramasConfig) resumenPorArea[area.id].resumenPictogramas[id] = { Critico: 0, Alto: 0, Bajo: 0 };
+                });
+
+                for (const evaluacion of evaluaciones) {
+                    const centroInfo = centerMap.get(evaluacion.work_center_id);
+                    if (!centroInfo || !resumenPorArea[centroInfo.area_id]) continue;
+                    if (evaluacion.nivel_riesgo_ergonomico != null) {
+                        const score = parseFloat(evaluacion.nivel_riesgo_ergonomico);
+                        if(resumenPorCentro[evaluacion.work_center_id]) resumenPorCentro[evaluacion.work_center_id].scores.push(score);
+                        if(resumenPorArea[centroInfo.area_id]) resumenPorArea[centroInfo.area_id].scores.push(score);
+                    }
+                    if (evaluacion.riesgos_por_categoria) {
+                        const areaResumen = resumenPorArea[centroInfo.area_id];
+                        const centroResumenRiesgos = riesgosPorCentro[evaluacion.work_center_id];
+                        for (const riesgoId in evaluacion.riesgos_por_categoria) {
+                            const nivel = evaluacion.riesgos_por_categoria[riesgoId].nivel;
+                            if (nivel === 'Crítico') {
+                                areaResumen.resumenPictogramas[riesgoId].Critico++;
+                                centroResumenRiesgos[riesgoId].Critico++;
+                                if (!areaResumen.listaCentrosCriticos[evaluacion.work_center_id]) areaResumen.listaCentrosCriticos[evaluacion.work_center_id] = { name: centroInfo.name, riesgos: new Set() };
+                                areaResumen.listaCentrosCriticos[evaluacion.work_center_id].riesgos.add(riesgoId);
+                            } else if (nivel === 'Alto') {
+                                areaResumen.resumenPictogramas[riesgoId].Alto++;
+                                centroResumenRiesgos[riesgoId].Alto++;
+                            } else if (nivel === 'Medio') {
+                                areaResumen.resumenPictogramas[riesgoId].Bajo++;
+                                centroResumenRiesgos[riesgoId].Bajo++;
+                            }
+                        }
+                    }
+                }
+                
+                for (const id in resumenPorCentro) if(resumenPorCentro[id].scores.length > 0) resumenPorCentro[id].scorePromedio = (resumenPorCentro[id].scores.reduce((a, b) => a + b, 0) / resumenPorCentro[id].scores.length).toFixed(2);
+                for (const id in resumenPorArea) if(resumenPorArea[id].scores.length > 0) resumenPorArea[id].scorePromedio = (resumenPorArea[id].scores.reduce((a, b) => a + b, 0) / resumenPorArea[id].scores.length).toFixed(2);
+                
+                renderKPIsGlobales(calcularKPIs(resumenPorArea, resumenPorCentro));
+                renderResumenPorArea(resumenPorArea, resumenPorCentro, centrosPorArea);
+                
+                const btnFiltrar = document.getElementById('btn-filtrar-areas');
+                if (btnFiltrar) {
+                    const btnFiltrarLabel = document.getElementById('btn-filtrar-label');
+                    const kpiCentrosValor = document.getElementById('kpi-centros-valor');
+                    let isFiltered = false;
+                    
+                    btnFiltrar.addEventListener('click', () => {
+                        isFiltered = !isFiltered;
+                        btnFiltrar.classList.toggle('active', isFiltered);
+                        btnFiltrarLabel.textContent = isFiltered ? 'Mostrando Prioritarios' : 'Mostrando Todos';
+
+                        const visibleCentroIDs = new Set();
+                        document.querySelectorAll('.action-list li').forEach(li => {
+                            const esDeBajoRiesgo = li.classList.contains('list-item-ok');
+                            const score = parseFloat(li.dataset.score);
+                            const debeOcultarse = isFiltered && (esDeBajoRiesgo || score <= 42.5);
+                            li.style.display = debeOcultarse ? 'none' : 'flex';
+                            if (!debeOcultarse) {
+                                visibleCentroIDs.add(li.dataset.centroId);
+                            }
+                        });
+
+                        let totalCentrosVisiblesGlobal = 0;
+                        document.querySelectorAll('.area-card').forEach(areaCard => {
+                            const areaId = areaCard.id.replace('area-card-', '');
+                            const nuevosTotales = { totalAlto: 0, totalMedio: 0, totalBajo: 0 };
+                            const nuevosConteos = {};
+                            for(const pictoId in ERGOAnalytics.pictogramasConfig) nuevosConteos[pictoId] = {Alto: 0, Medio: 0, Bajo: 0};
+
+                            (centrosPorArea[areaId] || []).forEach(centro => {
+                                if (visibleCentroIDs.has(centro.id)) {
+                                    const riesgosDelCentro = riesgosPorCentro[centro.id];
+                                    for(const pictoId in riesgosDelCentro) {
+                                        nuevosConteos[pictoId].Alto += riesgosDelCentro[pictoId].Critico;
+                                        nuevosConteos[pictoId].Medio += riesgosDelCentro[pictoId].Alto;
+                                        nuevosConteos[pictoId].Bajo += riesgosDelCentro[pictoId].Bajo;
+                                    }
+                                }
+                            });
+
+                            for(const pictoId in nuevosConteos) {
+                                document.getElementById(`conteo-${areaId}-${pictoId}-Alto`).textContent = nuevosConteos[pictoId].Alto;
+                                document.getElementById(`conteo-${areaId}-${pictoId}-Medio`).textContent = nuevosConteos[pictoId].Medio;
+                                document.getElementById(`conteo-${areaId}-${pictoId}-Bajo`).textContent = nuevosConteos[pictoId].Bajo;
+                                nuevosTotales.totalAlto += nuevosConteos[pictoId].Alto;
+                                nuevosTotales.totalMedio += nuevosConteos[pictoId].Medio;
+                                nuevosTotales.totalBajo += nuevosConteos[pictoId].Bajo;
+                            }
+                            document.getElementById(`total-${areaId}-Alto`).textContent = nuevosTotales.totalAlto;
+                            document.getElementById(`total-${areaId}-Medio`).textContent = nuevosTotales.totalMedio;
+                            document.getElementById(`total-${areaId}-Bajo`).textContent = nuevosTotales.totalBajo;
+
+                            const contadorHeader = areaCard.querySelector(`#contador-area-${areaId}`);
+                            const totalRealDeCentros = (centrosPorArea[areaId] || []).length;
+                            const visiblesEnArea = Array.from(areaCard.querySelectorAll('.action-list li')).filter(li => li.style.display !== 'none').length;
+                            if (contadorHeader) {
+                                const porcentaje = totalRealDeCentros > 0 ? (visiblesEnArea / totalRealDeCentros * 100).toFixed(2) : '0.00';
+                                contadorHeader.textContent = `Centros de Trabajo (${visiblesEnArea}/${totalRealDeCentros} - ${porcentaje}%)`;
+                            }
+                            totalCentrosVisiblesGlobal += visiblesEnArea;
+                        });
+                        
+                        kpiCentrosValor.textContent = totalCentrosVisiblesGlobal;
+                    });
+                }
+                
+                loadingEl.style.display = 'none';
+                contentEl.style.display = 'block';
+
+            } catch (error) {
+                loadingEl.textContent = "Error al cargar el resumen de riesgos.";
+                console.error("Error generando el resumen:", error);
+            }
         }
-        criticosHTML += `</div>`;
-        // --- FIN DE LA CORRECCIÓN ---
-
-        const areaCardHTML = `
-            <div class="area-card">
-                <div class="area-header"><h2>${data.nombre}</h2></div>
-                <div class="area-content">
-                    <div>${tablaHTML}</div>
-                    <div>${criticosHTML}</div>
-                </div>
-            </div>
-        `;
-        container.innerHTML += areaCardHTML;
-    }
-}
-
+    
+    
     </script>
 </body>
 </html>

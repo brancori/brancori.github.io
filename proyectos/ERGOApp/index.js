@@ -123,7 +123,7 @@ checkExistingSession() {
         });
     }
 
-    async handleLogin(e) {
+async handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('password').value;
@@ -143,10 +143,15 @@ checkExistingSession() {
                 dataClient.setAuth(authResult.session.access_token);
                 this.currentUser = authResult.user;
                 
-                const expiryTime = new Date().getTime() + ERGOConfig.SESSION_DURATION;
+                // --- INICIO DE LA CORRECCIÓN ---
+                // Se reemplaza el tiempo de expiración fijo de 8 horas por el real que entrega Supabase.
+                // Se multiplica por 1000 porque Supabase devuelve el tiempo en segundos y JavaScript usa milisegundos.
+                const expiryTime = authResult.session.expires_at * 1000; 
+                // --- FIN DE LA CORRECCIÓN ---
+
                 ERGOStorage.setSession('currentUser', this.currentUser);
                 ERGOStorage.setSession('sessionToken', authResult.session.access_token);
-                ERGOStorage.setSession('sessionExpiry', expiryTime);
+                ERGOStorage.setSession('sessionExpiry', expiryTime); // Ahora se guarda el tiempo de expiración correcto
                 
                 
                 this.hidePreloader();
@@ -221,23 +226,28 @@ checkExistingSession() {
     }
     
 async loadDashboardData() {
-    try {
-        const dashboardData = await dataClient.getDashboardData();
-        this.updateDashboardTables(dashboardData);
-        this.updateTopKPIs(dashboardData);
+        try {
+            // Hacemos las consultas en paralelo para mayor eficiencia
+            const [dashboardData, pictogramSummary] = await Promise.all([
+                dataClient.getDashboardData(),
+                dataClient.getGlobalPictogramSummary() // Llamamos a la nueva función
+            ]);
 
-        // Crear el mapa aquí con los datos ya disponibles
-        if (typeof ERGOMap !== 'undefined' && !this.ergoMap) {
-            this.ergoMap = new ERGOMap('risk-map', dashboardData);
-            console.log('✅ Mapa creado con datos iniciales');
-        } else if (this.ergoMap && dashboardData.areas) {
-            this.ergoMap.updateRiskData(dashboardData.areas);
+            this.updateDashboardTables(dashboardData);
+            this.updateTopKPIs(dashboardData);
+            this.renderGlobalRiskChart(pictogramSummary); // Llamamos a la nueva función de la gráfica
+
+            // Crear el mapa con los datos (sin cambios)
+            if (typeof ERGOMap !== 'undefined' && !this.ergoMap) {
+                this.ergoMap = new ERGOMap('risk-map', dashboardData);
+            } else if (this.ergoMap && dashboardData.areas) {
+                this.ergoMap.updateRiskData(dashboardData.areas);
+            }
+
+        } catch (error) {
+            console.error('Error cargando datos del dashboard:', error);
         }
-
-    } catch (error) {
-        console.error('Error cargando datos del dashboard:', error);
     }
-}
 
     updateDashboardTables(data) {
         if (!data) return;
@@ -307,7 +317,7 @@ async loadDashboardData() {
         }
     }
 
-    updateTopKPIs(data) {
+updateTopKPIs(data) {
         const { areas, totalWorkCenters, totalEvaluaciones } = data;
         const scoreGlobal = areas && areas.length > 0 
             ? (areas.reduce((sum, area) => sum + parseFloat(area.promedio_calculo || 0), 0) / areas.length).toFixed(2)
@@ -318,55 +328,42 @@ async loadDashboardData() {
         document.getElementById('kpi-evaluaciones-total').textContent = totalEvaluaciones || 0;
         document.getElementById('kpi-score-global').textContent = `${scoreGlobal}%`;
         
-        this.updateRiskChart(areas);
+        // La llamada a this.updateRiskChart(areas) que causaba el error ha sido eliminada.
     }
 
-    updateRiskChart(areasData) {
+renderGlobalRiskChart(summary) {
         const chartContainer = document.getElementById('risk-chart');
-        if (!chartContainer || !areasData) return;
-        
-        const pictogramasInfo = {
-            R01: { nombre: 'Carga Manual', pictograma: '▲' },
-            R02: { nombre: 'Posturas Forzadas', pictograma: '●' },
-            R03: { nombre: 'Mov. Repetitivos', pictograma: '↻' },
-            R04: { nombre: 'Empuje/Tracción', pictograma: '→' },
-            R05: { nombre: 'Circulación y Rampas', pictograma: '⇘' },
-            R06: { nombre: 'Alcance y Herramientas', pictograma: '🛠️' },
-            R07: { nombre: 'Entorno Visual', pictograma: '💻' }
-        };
+        if (!chartContainer || !summary) {
+            if(chartContainer) chartContainer.innerHTML = '<p class="no-data-chart">No hay datos para la gráfica.</p>';
+            return;
+        }
 
-        const maxSeveridades = {};
+        // Extraemos solo los conteos "Críticos" (que en la tabla se muestran como "Alto")
+        const riskData = Object.entries(summary).map(([id, data]) => ({
+            id: id,
+            nombre: ERGOAnalytics.pictogramasConfig[id].nombre,
+            count: data.Critico
+        })).filter(item => item.count > 0); // Mostramos solo los que tienen al menos un riesgo
 
-        areasData.forEach(area => {
-            if (area.resumen_pictogramas) {
-                for (const key in area.resumen_pictogramas) {
-                    const severidadEnArea = area.resumen_pictogramas[key].severidad;
-                    if (!maxSeveridades[key] || severidadEnArea > maxSeveridades[key]) {
-                        maxSeveridades[key] = severidadEnArea;
-                    }
-                }
-            }
-        });
-
-        const riesgosPrioritarios = Object.entries(maxSeveridades)
-            .map(([id, severidad]) => ({ id, severidad, ...pictogramasInfo[id] }))
-            .filter(p => p.severidad >= 2)
-            .sort((a, b) => b.severidad - a.severidad);
-
-        if (riesgosPrioritarios.length === 0) {
+        if (riskData.length === 0) {
             chartContainer.innerHTML = '<p class="no-data-chart">✅<br>Sin riesgos de alta prioridad detectados.</p>';
             return;
         }
-        
-        chartContainer.innerHTML = riesgosPrioritarios.map(data => {
-            const severidadInfo = ERGOAnalytics.getNivelSeveridad(data.severidad);
-            const height = data.severidad === 3 ? 100 : 60;
 
+        // Ordenamos de mayor a menor para ver "de cuál hay más"
+        riskData.sort((a, b) => b.count - a.count);
+
+        const maxValue = Math.max(...riskData.map(item => item.count));
+
+        chartContainer.innerHTML = riskData.map(data => {
+            const barHeight = maxValue > 0 ? (data.count / maxValue) * 100 : 0;
             return `
-                <div class="graf-container" title="${data.nombre}: Riesgo ${severidadInfo.nivel}">
-                    <div class="graf" style="height: ${height}px; background-color: ${severidadInfo.color};">
+                <div class="bar-chart-item" title="${data.nombre}: ${data.count} hallazgos de riesgo alto">
+                    <div class="bar-value">${data.count}</div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: ${barHeight}%;"></div>
                     </div>
-                    <h4 class="graf-label">${data.pictograma}</h4>
+                    <div class="bar-label">${data.id}</div>
                 </div>
             `;
         }).join('');
