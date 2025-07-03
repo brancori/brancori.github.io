@@ -213,36 +213,73 @@
             
             async function fetchAndProcessData() {
                 try {
-                    const [centrosRes, evalsRes, fotosRes, scoresRes, areasRes] = await Promise.all([
-                        dataClient.from('centros_trabajo').select('id, name, area_id, score_general'),
-                        dataClient.from('evaluaciones').select('work_center_id'),
-                        dataClient.from('fotos_centros').select('work_center_id'),
-                        dataClient.from('scores_resumen').select('*'),
-                        dataClient.from('areas').select('id, name')
+                    // 1. Obtenemos los datos principales que sí funcionan
+                    const [centrosData, evalsData, scoresData, areasData] = await Promise.all([
+                        dataClient.getWorkCenters(),
+                        dataClient.getEvaluaciones(),
+                        dataClient.query('scores_resumen'),
+                        dataClient.getAreas()
                     ]);
+
+                    // 2. NUEVA LÓGICA: Pedimos las fotos centro por centro
+                    const fotoPromises = centrosData.map(center => dataClient.getFotos(center.id));
+                    const fotosResults = await Promise.all(fotoPromises);
+                    const fotosData = fotosResults.flat().filter(Boolean); // Juntamos todos los resultados en un solo array
+
+                    // 3. Preparamos los datos para el resto del script
+                    const centrosRes = { data: centrosData, error: null };
+                    const evalsRes = { data: evalsData, error: null };
+                    const fotosRes = { data: fotosData, error: null }; // Usamos las fotos recién obtenidas
+                    const scoresRes = { data: scoresData, error: null };
+                    const areasRes = { data: areasData, error: null };
 
                     if (centrosRes.error) throw centrosRes.error;
                     if (areasRes.error) throw areasRes.error;
 
-                    const evalsSet = new Set(evalsRes.data.map(e => e.work_center_id));
-                    const fotosSet = new Set(fotosRes.data.map(f => f.work_center_id));
-                    const scoresMap = new Map(scoresRes.data.map(s => [s.work_center_id, s]));
+                    // 4. El resto de la lógica para procesar y mostrar los datos se mantiene igual
+                    const scoresMap = new Map(scoresRes.data ? scoresRes.data.map(s => [s.work_center_id, s]) : []);
+                    const centersWithPhotos = new Set(fotosRes.data ? fotosRes.data.map(f => f.work_center_id) : []);
+                    const centersWithEvals = new Set(evalsRes.data ? evalsRes.data.map(e => e.work_center_id) : []);
+                    
+                    const latestEvalsMap = new Map();
+                    if (evalsRes.data) {
+                        for (const evaluation of evalsRes.data) {
+                            const existing = latestEvalsMap.get(evaluation.work_center_id);
+                            if (!existing || new Date(evaluation.created_at) > new Date(existing.created_at)) {
+                                latestEvalsMap.set(evaluation.work_center_id, evaluation);
+                            }
+                        }
+                    }
 
                     allCentersData = centrosRes.data.map(center => {
                         const scores = scoresMap.get(center.id) || {};
-                        return { ...center, hasInitialEval: evalsSet.has(center.id), hasPhotos: fotosSet.has(center.id), hasReba: (scores.evaluaciones_reba || 0) > 0, hasRula: (scores.evaluaciones_rula || 0) > 0, hasOcra: (scores.evaluaciones_ocra || 0) > 0, hasNiosh: (scores.evaluaciones_niosh || 0) > 0 };
+                        const latestEval = latestEvalsMap.get(center.id);
+                        const hasPhotoAndEval = centersWithPhotos.has(center.id) && centersWithEvals.has(center.id);
+
+                        return {
+                            ...center,
+                            score_general: latestEval ? latestEval.score_final : 0,
+                            hasInitialEval: !!latestEval,
+                            hasPhotos: hasPhotoAndEval,
+                            hasReba: (scores.evaluaciones_reba || 0) > 0,
+                            hasRula: (scores.evaluaciones_rula || 0) > 0,
+                            hasOcra: (scores.evaluaciones_ocra || 0) > 0,
+                            hasNiosh: (scores.evaluaciones_niosh || 0) > 0
+                        };
                     });
                     
                     updateKPIs(allCentersData);
                     populateAreaFilter(areasRes.data);
                     applyFiltersAndSort();
+
                 } catch (error) {
                     console.error("Error al cargar los datos del reporte:", error);
                     tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
                 }
             }
             
-            function populateAreaFilter(areas) {
+        
+        function populateAreaFilter(areas) {
                 const areaFilter = document.getElementById('filter-area');
                 areas.forEach(area => {
                     const option = document.createElement('option');
