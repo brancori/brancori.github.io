@@ -136,17 +136,7 @@ window.ERGOAuth = {
         sessionStorage.removeItem('sessionExpiry');
         sessionStorage.removeItem('sessionToken'); // Asegúrate de limpiar el token también
         localStorage.removeItem('lastActivity');
-        
-        // 3. (Opcional) Mostrar la razón del logout
-        if (reason) {
-            // Usamos un toast en lugar de un alert para una mejor experiencia
-            if (window.ERGOUtils) {
-                ERGOUtils.showToast(reason, 'info');
-            } else {
-                alert(reason);
-            }
-        }
-        
+                
         // 4. Forzar la recarga de la página para un estado limpio
         // Se ejecutará después de mostrar el toast.
         setTimeout(() => {

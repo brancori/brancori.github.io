@@ -426,103 +426,95 @@ async function obtenerScoreFromSupabase(workCenterId) {
     }
 }
 
-        // Función principal para renderizar centros
         async function renderCentros() {
-    const container = document.getElementById('centros-container');
-    updateCentrosCount();
-    
-    if (workCenters.length === 0) {
-        updateCentrosCount(0); 
-        container.innerHTML = `
-            <div class="empty-state">
-                <h3>No hay centros de trabajo registrados</h3>
-                <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
-            </div>
-        `;
-        return;
-    }
-
-    const scoreInfoPromises = workCenters.map(center => obtenerScoreFromSupabase(center.id));
-    const scoreInfos = await Promise.all(scoreInfoPromises);
-
-    const filteredCentros = filterCentros(workCenters, scoreInfos);
-    const filteredScoreInfos = scoreInfos.filter((_, index) => filteredCentros.includes(workCenters[index]));
-    const sorted = sortCentros(filteredCentros, filteredScoreInfos);
-    const sortedCentros = sorted.centros;
-    const sortedScoreInfos = sorted.scoreInfos;
-
-    updateCentrosCount(sortedCentros.length);
-
-    container.className = currentView === 'list' ? 'content-list' : 'content-grid';
-
-    if (sortedCentros.length === 0) {
-        container.innerHTML = `
-            <div class="no-results">
-                <h3>No se encontraron centros</h3>
-                <p>Intenta ajustar los filtros de búsqueda</p>
-            </div>
-        `;
-        return;
-    }
-    
-    if (currentView === 'list') {
-        container.innerHTML = sortedCentros.map((center, index) => {
-            const scoreInfo = sortedScoreInfos[index];
-            const area = areas.find(a => a.id === center.area_id);
-            const areaName = area ? area.name : 'Área no encontrada';
+            const container = document.getElementById('centros-container');
+            updateCentrosCount();
             
-            return `
-                <div class="card-list" onclick="navigateToAreaDetail('${center.area_id}', '${encodeURIComponent(areaName)}')">
-                    <div class="list-id-name">
-                        <span class="id">${center.id}</span>
-                        <span class="name">${center.name}</span>
+            if (workCenters.length === 0) {
+                updateCentrosCount(0); 
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No hay centros de trabajo registrados</h3>
+                        <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
                     </div>
-                    <div class="list-details">
-                        <div class="list-area">📍 ${areaName}</div>
-                        <div class="list-responsible">👤 ${center.responsible}</div>
-                        <div class="list-score">
-                            <span class="score-indicator" style="background-color: ${scoreInfo.color_riesgo};"></span>
-                            ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+                `;
+                return;
+            }
+
+            const scoreInfoPromises = workCenters.map(center => obtenerScoreFromSupabase(center.id));
+            const scoreInfos = await Promise.all(scoreInfoPromises);
+
+            const filteredCentros = filterCentros(workCenters, scoreInfos);
+            const filteredScoreInfos = scoreInfos.filter((_, index) => filteredCentros.includes(workCenters[index]));
+            const sorted = sortCentros(filteredCentros, filteredScoreInfos);
+            const sortedCentros = sorted.centros;
+            const sortedScoreInfos = sorted.scoreInfos;
+
+            updateCentrosCount(sortedCentros.length);
+
+            container.className = currentView === 'list' ? 'content-list' : 'content-grid';
+
+            if (sortedCentros.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <h3>No se encontraron centros</h3>
+                        <p>Intenta ajustar los filtros de búsqueda</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (currentView === 'list') {
+                container.innerHTML = sortedCentros.map((center, index) => {
+                    const scoreInfo = sortedScoreInfos[index];
+                    const area = areas.find(a => a.id === center.area_id);
+                    const areaName = area ? area.name : 'Área no encontrada';
+                    
+                    // MODIFICADO: El onclick ahora navega al detalle del centro y se quitó el botón.
+                    return `
+                        <div class="card-list" style="cursor: pointer;" onclick="navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                            <div class="list-id-name">
+                                <span class="id">${center.id}</span>
+                                <span class="name">${center.name}</span>
+                            </div>
+                            <div class="list-details">
+                                <div class="list-area">📍 ${areaName}</div>
+                                <div class="list-responsible">👤 ${center.responsible}</div>
+                                <div class="list-score">
+                                    <span class="score-indicator" style="background-color: ${scoreInfo.color_riesgo};"></span>
+                                    ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+                                </div>
+                            </div>
+                            <div class="list-stats">${ERGOUtils.formatDate(center.created_at)}</div>
                         </div>
-                    </div>
-                    <div class="list-stats">${ERGOUtils.formatDate(center.created_at)}</div>
-                    <div class="list-actions">
-                        <button class="btn btn-primary" onclick="event.stopPropagation(); navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-                            Ver Detalle
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    } else {
-        container.innerHTML = sortedCentros.map((center, index) => {
-            const scoreInfo = sortedScoreInfos[index];
-            const area = areas.find(a => a.id === center.area_id);
-            const areaName = area ? area.name : 'Área no encontrada';
-            
-            return `
-                <div class="card" onclick="navigateToAreaCenter('${center.area_id}', '${center.id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-                    <div class="card-header"><div class="card-id">${center.id}</div></div>
-                    <h3>${center.name}</h3>
-                    <div class="card-responsible">
-                        <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
-                        <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
-                    </div>
-                    <div class="score-ergonomico" style="border-left: 3px solid ${scoreInfo.color_riesgo};">
-                        📊 Riesgo: ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
-                    </div>
-                    <div class="card-footer">
-                        <div class="card-stats">Creado ${ERGOUtils.formatDate(center.created_at)}</div>
-                        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-                            Ver Detalle
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-}
-
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = sortedCentros.map((center, index) => {
+                    const scoreInfo = sortedScoreInfos[index];
+                    const area = areas.find(a => a.id === center.area_id);
+                    const areaName = area ? area.name : 'Área no encontrada';
+                    
+                    // MODIFICADO: El onclick ahora navega al detalle del centro y se quitó el botón.
+                    return `
+                        <div class="card" onclick="navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                            <div class="card-header"><div class="card-id">${center.id}</div></div>
+                            <h3>${center.name}</h3>
+                            <div class="card-responsible">
+                                <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
+                                <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
+                            </div>
+                            <div class="score-ergonomico" style="border-left: 3px solid ${scoreInfo.color_riesgo};">
+                                📊 Riesgo: ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-stats">Creado ${ERGOUtils.formatDate(center.created_at)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
         // Función para navegar al área específica con el centro seleccionado
         function navigateToAreaCenter(areaId, centerId, areaName, centerName, responsible) {
             const url = `areas.html?area=${areaId}&areaName=${areaName}&fromConcentrado=true`;

@@ -24,6 +24,7 @@
     <!-- 3. Cargar auth-client.js al final -->
     <!-- ../ sube un nivel a /componentes/ -->
     <script src="../auth-client.js"></script>
+    <script type="module" src="../cuestionario-data.js"></script>
 
     <style>
         body { background-color: var(--gray-50); font-family: 'Inter', sans-serif; }
@@ -122,6 +123,12 @@
             </form>
         </div>
     </div>
+
+        <button 
+    id="btnReprocesar" 
+    style="background-color: #e74c3c; color: white; padding: 1rem; margin: 2rem; border-radius: 8px; cursor: pointer; border: none; font-size: 1rem;">
+    ⚙️ Reprocesar Evaluaciones Antiguas
+</button>
 
     <script>
         let allUsers = [];
@@ -256,6 +263,73 @@
                 default: return 'Desconocido';
             }
         }
+
+         // 1. Pega aquí la función de index.js
+        async function reprocesarEvaluaciones() {
+            // La importación de 'data' se manejará automáticamente por el script que agregaste en el head
+            const { default: cuestionarioData } = await import('../cuestionario-data.js');
+
+            if (!confirm("Este proceso 're-guardará' todas las evaluaciones antiguas para calcular los nuevos campos. Es seguro, pero puede tardar. ¿Continuar?")) {
+                return;
+            }
+
+            try {
+                ERGOUtils.showToast('Iniciando reprocesamiento... Revisa la consola (F12).', 'info');
+                
+                const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
+                const evaluaciones = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
+
+                if (!evaluaciones || evaluaciones.length === 0) {
+                    ERGOUtils.showToast('¡Excelente! No se encontraron evaluaciones para reprocesar.', 'success');
+                    return;
+                }
+
+                ERGOUtils.showToast(`Se reprocesarán ${evaluaciones.length} evaluaciones.`, 'info');
+                
+                let procesadas = 0;
+                let errores = 0;
+
+                for (const evaluacion of evaluaciones) {
+                    try {
+                        let respuestasObj = (typeof evaluacion.respuestas === 'string') 
+                            ? JSON.parse(evaluacion.respuestas) 
+                            : evaluacion.respuestas;
+                        
+                        if (typeof respuestasObj !== 'object' || respuestasObj === null) {
+                            console.warn(`Saltando evaluación ${evaluacion.id}: 'respuestas' no es válido.`);
+                            continue;
+                        }
+                        
+                        const nuevosResultados = ERGOAnalytics.analizarRiesgosPorPictograma(respuestasObj, cuestionarioData);
+                        
+                        await dataClient.updateEvaluacion(evaluacion.id, { 
+                            riesgos_por_categoria: nuevosResultados 
+                        });
+                        
+                        procesadas++;
+                        console.log(`✅ (${procesadas}/${evaluaciones.length}) Evaluación ${evaluacion.id} reprocesada.`);
+
+                    } catch (error) {
+                        errores++;
+                        console.error(`❌ Error con la evaluación ${evaluacion.id}:`, error);
+                    }
+                }
+                
+                ERGOUtils.showToast(`Proceso finalizado. ${procesadas} actualizadas, ${errores} errores.`, 'success');
+
+            } catch (error) {
+                console.error("Error general en el script de reprocesamiento:", error);
+                ERGOUtils.showToast("Ocurrió un error. Revisa la consola.", 'error');
+            }
+        }
+
+        // 2. Conecta la función al botón cuando la página cargue
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnReprocesar = document.getElementById('btnReprocesar');
+            if (btnReprocesar) {
+                btnReprocesar.addEventListener('click', reprocesarEvaluaciones);
+            }
+        });
     </script>
 </body>
 </html>

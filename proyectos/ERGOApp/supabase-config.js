@@ -2,6 +2,8 @@
 // Este archivo es el corazón de la comunicación con la base de datos de Supabase.
 // Define una clase reutilizable para hacer consultas y crea una instancia global única.
 
+
+
 const CorsHeaders ={
     'Access-Control-Allow-Origin': 'https://brancori.github.io',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',

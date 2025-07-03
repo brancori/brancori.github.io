@@ -483,25 +483,9 @@ setupScrollBehavior() {
     });
 }
 
-    // Navegación: Ir atrás
-    goBack() {
-        if (this.pageHistory.length > 1) {
-            this.pageHistory.pop(); // Remover página actual
-            this.navigationStack.pop();
-            
-            const previousPage = this.pageHistory[this.pageHistory.length - 1];
-            
-            // ← AGREGAR ESTA LÓGICA:
-            let targetUrl = previousPage.url;
-            
-            // Si la URL no tiene protocolo ni es relativa, ajustar con basePath
-            if (!targetUrl.includes('://') && !targetUrl.startsWith('../') && !targetUrl.startsWith('./')) {
-                targetUrl = `${this.basePath}${targetUrl}`;
-            }
-            
-            window.location.href = targetUrl;
-        }
-    }
+goBack() {
+    window.history.back();
+}
 
 // Navegación: Ir al inicio
 goHome() {
@@ -515,7 +499,7 @@ goHome() {
     
     // ← CAMBIAR ESTA LÍNEA:
     // window.location.href = 'index.html';  // ❌ ELIMINAR
-    window.location.href = `${this.basePath}index.html`; // ✅ AGREGAR
+    window.location.href = '/index.html';
 }
 
     // Logout
@@ -581,7 +565,7 @@ logout() {
                 this.pageHistory.push({
                     title: title,
                     subtitle: subtitle,
-                    url: window.location.href
+                    url: window.location.pathname + window.location.search
                 });
             }
         }

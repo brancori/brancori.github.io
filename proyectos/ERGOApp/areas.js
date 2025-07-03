@@ -21,7 +21,7 @@ async function saveAreaToStorage(area) {
     if (!ERGOAuth.checkPermissionAndShowError('create')) return;
     if (USE_SUPABASE) {
         try {
-            await daaClient.createArea(area);
+            await dataClient.createArea(area);
         } catch (error) {
             console.error('Error saving area to Supabase:', error);
         }
@@ -387,9 +387,7 @@ async function deleteArea(area_id, event) {
 async function renderAreas() {
     const container = document.getElementById('areas-container');
     updateAreasCount();
-    
-    await loadWorkCenters();
-    
+        
     if (areas.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
@@ -401,9 +399,14 @@ async function renderAreas() {
     }
 
     // Crear array de promesas para obtener los summaries
-    const summariesPromises = areas.map(area => calcularPromedioAreaFromSupabase(area.id));
-    const summaries = await Promise.all(summariesPromises);
-
+    const summariesData = await dataClient.getAllAreasSummary();
+    const summariesMap = new Map(summariesData.map(s => [s.area_id, s]));
+    const summaries = areas.map(area => summariesMap.get(area.id) || {
+        promedio_score: 0,
+        color_promedio: '#d1d5db',
+        centros_evaluados: 0,
+        total_centros: 0
+    });
     // Aplicar filtros
     const filteredAreas = filterAreas(areas, summaries);
     const filteredSummaries = summaries.filter((_, index) => filteredAreas.includes(areas[index]));

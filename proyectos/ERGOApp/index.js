@@ -15,61 +15,6 @@ class IndexApp {
             this.showLoginModal();
         }
     }
-async reprocesarEvaluaciones() {
-        if (!confirm("Este proceso 're-guardará' todas las evaluaciones antiguas para calcular los nuevos campos. Es seguro, pero puede tardar. ¿Continuar?")) {
-            return;
-        }
-
-        try {
-            ERGOUtils.showToast('Iniciando reprocesamiento... Revisa la consola (F12).', 'info');
-            
-            const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
-            const evaluaciones = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
-
-            if (!evaluaciones || evaluaciones.length === 0) {
-                ERGOUtils.showToast('¡Excelente! No se encontraron evaluaciones para reprocesar.', 'success');
-                return;
-            }
-
-            ERGOUtils.showToast(`Se reprocesarán ${evaluaciones.length} evaluaciones.`, 'info');
-            
-            let procesadas = 0;
-            let errores = 0;
-
-            for (const evaluacion of evaluaciones) {
-                try {
-                    let respuestasObj;
-                    if (typeof evaluacion.respuestas === 'string') {
-                        respuestasObj = JSON.parse(evaluacion.respuestas);
-                    } else if (typeof evaluacion.respuestas === 'object' && evaluacion.respuestas !== null) {
-                        respuestasObj = evaluacion.respuestas;
-                    } else {
-                        console.warn(`Saltando evaluación ${evaluacion.id}: 'respuestas' no es válido.`);
-                        continue;
-                    }
-                    
-                    const nuevosResultados = ERGOAnalytics.analizarRiesgosPorPictograma(respuestasObj, data);
-                    
-                    await dataClient.updateEvaluacion(evaluacion.id, { 
-                        riesgos_por_categoria: nuevosResultados 
-                    });
-                    
-                    procesadas++;
-                    console.log(`✅ (${procesadas}/${evaluaciones.length}) Evaluación ${evaluacion.id} reprocesada.`);
-
-                } catch (error) {
-                    errores++;
-                    console.error(`❌ Error con la evaluación ${evaluacion.id}:`, error);
-                }
-            }
-            
-            ERGOUtils.showToast(`Proceso finalizado. ${procesadas} actualizadas, ${errores} errores.`, 'success');
-
-        } catch (error) {
-            console.error("Error general en el script de reprocesamiento:", error);
-            ERGOUtils.showToast("Ocurrió un error. Revisa la consola.", 'error');
-        }
-    }
 
 checkExistingSession() {
     if (ERGOAuth.initializeAuthContext()) {
@@ -651,11 +596,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ... tu código de inicialización existente ...
     window.indexApp = new IndexApp();
 
-    // --- AGREGA ESTE CÓDIGO PARA CONECTAR EL BOTÓN ---
-    const btnReprocesar = document.getElementById('btnReprocesar');
-    if (btnReprocesar && window.indexApp) {
-        btnReprocesar.addEventListener('click', () => window.indexApp.reprocesarEvaluaciones());
-    }
 });
 
 

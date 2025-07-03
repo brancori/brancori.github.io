@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte General de Cumplimiento</title>
+    
+    <link rel="stylesheet" href="../globals.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="../globals.js"></script>
+    <script src="../../supabase-config.js"></script>
+    <script src="../auth-client.js"></script> 
+    <script src="../header-component.js"></script>
+
+    <style>
+        body { 
+            background-color: var(--gray-50); 
+            font-family: 'Inter', sans-serif; /* Fuente más moderna */
+        }
+        .main-container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+
+        /* --- Estilos para Scrollbar (Especial para Chrome/Safari) --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* --- Estilos para Tarjetas de KPI --- */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--gray-200);
+            -webkit-box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-sm);
+            -webkit-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+        }
+        .kpi-card:hover {
+            -webkit-transform: translateY(-4px);
+            transform: translateY(-4px);
+            -webkit-box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-md);
+        }
+        .kpi-title { font-size: 0.875rem; color: var(--gray-500); margin-bottom: 0.5rem; }
+        .kpi-value { font-size: 2.25rem; font-weight: 700; color: var(--primary-600); line-height: 1; }
+        .kpi-value .unit { font-size: 1.5rem; color: var(--gray-400); margin-left: 0.25rem; }
+        
+        /* --- Estilos para Checkbox de Columnas --- */
+        .column-selector { background: white; padding: 1.5rem; border-radius: var(--border-radius-lg); margin-bottom: 2rem; border: 1px solid var(--gray-200); }
+        .column-selector h3 { margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--gray-700); }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+        .custom-checkbox { position: relative; display: flex; align-items: center; cursor: pointer; font-size: 0.875rem; -webkit-user-select: none; user-select: none; color: var(--gray-800); }
+        .custom-checkbox input { position: absolute; opacity: 0; cursor: pointer; }
+        .checkmark { position: relative; height: 22px; width: 22px; background-color: var(--gray-200); border-radius: var(--border-radius-sm); -webkit-transition: background-color 0.2s ease; transition: background-color 0.2s ease; margin-right: 0.75rem; border: 1px solid var(--gray-300); }
+        .custom-checkbox:hover .checkmark { background-color: var(--gray-300); }
+        .custom-checkbox input:checked ~ .checkmark { background-color: var(--primary-600); border-color: var(--primary-600); }
+        .checkmark:after { content: ""; position: absolute; display: none; left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; -webkit-transform: rotate(45deg); transform: rotate(45deg); }
+        .custom-checkbox input:checked ~ .checkmark:after { display: block; }
+
+        /* --- Estilos para Filtros Avanzados --- */
+        .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; background-color: white; padding: 1.5rem; border-radius: var(--border-radius-lg); margin-bottom: 2rem; border: 1px solid var(--gray-200); }
+        .filter-bar .input-field, .filter-bar .filter-select { -webkit-appearance: none; appearance: none; width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--gray-300); border-radius: var(--border-radius-md); font-size: 0.875rem; background-color: var(--gray-50); }
+        .filter-bar .input-field:focus, .filter-bar .filter-select:focus { outline: none; border-color: var(--primary-500); background-color: white; }
+        
+        /* --- Estilos para Tabla de Reporte y Skeleton --- */
+        .report-table-container { background-color: white; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); overflow-x: auto; border: 1px solid var(--gray-200); }
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--gray-200); white-space: nowrap; }
+        .report-table tbody tr { cursor: pointer; -webkit-transition: background-color 0.2s ease; transition: background-color 0.2s ease; }
+        .report-table tbody tr:hover { background-color: var(--primary-50); }
+        .report-table th.sortable-header { cursor: pointer; position: relative; -webkit-user-select: none; user-select: none; }
+        .report-table th.sortable-header:hover { background-color: var(--gray-100); }
+        .report-table th.sortable-header::after { content: '▲'; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%) scale(0.6); -webkit-transform: translateY(-50%) scale(0.6); color: var(--gray-300); opacity: 1; -webkit-transition: color 0.2s ease; transition: color 0.2s ease; }
+        .report-table th.sorted-asc::after, .report-table th.sorted-desc::after { color: var(--primary-600); }
+        .report-table th.sorted-desc::after { content: '▼'; }
+        .center-name { font-weight: 600; color: var(--gray-800); }
+        .status-icon { font-size: 1.25rem; text-align: center; }
+        .status-icon.success { color: var(--green-500); }
+        .status-icon.danger { color: var(--red-500); }
+        .skeleton-bar { height: 1.25rem; width: 80%; background-color: var(--gray-200); border-radius: var(--border-radius-sm); }
+        .skeleton-circle { height: 20px; width: 20px; background-color: var(--gray-200); border-radius: 50%; margin: 0 auto; }
+        .report-table .loading-skeleton .skeleton-bar, .report-table .loading-skeleton .skeleton-circle { -webkit-animation: loading 1.5s infinite; animation: loading 1.5s infinite; }
+        
+        /* Lógica para ocultar columnas */
+        .hide-col-score th.col-score, .hide-col-score td.col-score,
+        .hide-col-eval-inicial th.col-eval-inicial, .hide-col-eval-inicial td.col-eval-inicial,
+        .hide-col-fotos th.col-fotos, .hide-col-fotos td.col-fotos,
+        .hide-col-reba th.col-reba, .hide-col-reba td.col-reba,
+        .hide-col-rula th.col-rula, .hide-col-rula td.col-rula,
+        .hide-col-ocra th.col-ocra, .hide-col-ocra td.col-ocra,
+        .hide-col-niosh th.col-niosh, .hide-col-niosh td.col-niosh { 
+            display: none; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <div class="kpi-container">
+            <div class="kpi-card"><div class="kpi-title">Centros de Trabajo</div><div class="kpi-value" id="kpi-total-centers">...</div></div>
+            <div class="kpi-card"><div class="kpi-title">Cumplimiento (Eval. Inicial)</div><div class="kpi-value" id="kpi-compliance-rate">...</div></div>
+            <div class="kpi-card"><div class="kpi-title">Riesgo Promedio</div><div class="kpi-value" id="kpi-avg-risk">...</div></div>
+        </div>
+
+        <div class="column-selector">
+            <h3>Elegir Atributos a Visualizar</h3>
+            <div class="checkbox-grid">
+                <label class="custom-checkbox"><input type="checkbox" data-column="score" checked><span class="checkmark"></span> Score</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="eval-inicial" checked><span class="checkmark"></span> Eval. Inicial</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="fotos" checked><span class="checkmark"></span> Fotos</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="reba" checked><span class="checkmark"></span> REBA</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="rula" checked><span class="checkmark"></span> RULA</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="ocra" checked><span class="checkmark"></span> OCRA</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="niosh" checked><span class="checkmark"></span> NIOSH</label>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <input type="text" id="filter-name" class="input-field" placeholder="Buscar por nombre...">
+            <select id="filter-area" class="filter-select" aria-label="Filtrar por área"><option value="">Todas las áreas</option></select>
+            <select id="filter-risk" class="filter-select" aria-label="Filtrar por nivel de riesgo"><option value="">Todos los riesgos</option><option value="low">Bajo (≤40%)</option><option value="medium">Medio (41-70%)</option><option value="high">Alto (>70%)</option></select>
+        </div>
+
+        <div class="report-table-container" id="report-table-wrapper">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th class="col-name sortable-header" data-sort-key="name">Centro de Trabajo</th>
+                        <th class="col-score sortable-header" data-sort-key="score_general">Score</th>
+                        <th class="col-eval-inicial">Eval. Inicial</th>
+                        <th class="col-fotos">Fotos</th>
+                        <th class="col-reba">REBA</th>
+                        <th class="col-rula">RULA</th>
+                        <th class="col-ocra">OCRA</th>
+                        <th class="col-niosh">NIOSH</th>
+                    </tr>
+                </thead>
+                <tbody id="report-tbody">
+                    <tr class="loading-skeleton"><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td></tr>
+                    <tr class="loading-skeleton"><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td></tr>
+                    <tr class="loading-skeleton"><td><div class="skeleton-bar"></div></td><td><div class="skeleton-bar"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td><td><div class="skeleton-circle"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.HeaderComponent) {
+                HeaderComponent.init({ title: "Reporte de Cumplimiento", breadcrumb: "Reportes" });
+            }
+
+            const tbody = document.getElementById('report-tbody');
+            let allCentersData = [];
+            let currentSortKey = 'name';
+            let isSortAscending = true;
+
+            const getStatusIcon = (condition) => condition ? `<div class="status-icon success"><i class="fa-solid fa-check-circle"></i></div>` : `<div class="status-icon danger"><i class="fa-solid fa-times-circle"></i></div>`;
+            
+            const updateKPIs = (data) => {
+                const totalCenters = data.length;
+                const centersWithEval = data.filter(c => c.hasInitialEval).length;
+                const complianceRate = totalCenters > 0 ? (centersWithEval / totalCenters) * 100 : 0;
+                const avgRisk = totalCenters > 0 ? data.reduce((sum, c) => sum + (c.score_general || 0), 0) / totalCenters : 0;
+                document.getElementById('kpi-total-centers').textContent = totalCenters;
+                document.getElementById('kpi-compliance-rate').innerHTML = `${complianceRate.toFixed(0)}<span class="unit">%</span>`;
+                document.getElementById('kpi-avg-risk').innerHTML = `${avgRisk.toFixed(1)}<span class="unit">%</span>`;
+            };
+
+            const renderTable = (data) => {
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
+                    return;
+                }
+                data.forEach(center => {
+                    const row = document.createElement('tr');
+                    row.onclick = () => ERGONavigation.navigateToWorkCenter(center.id, center.area_id, '', center.name, '');
+                    row.innerHTML = `
+                        <td class="col-name"><div class="center-name">${center.name}</div></td>
+                        <td class="col-score">${(center.score_general || 0).toFixed(2)}%</td>
+                        <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
+                        <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
+                        <td class="col-reba">${getStatusIcon(center.hasReba)}</td>
+                        <td class="col-rula">${getStatusIcon(center.hasRula)}</td>
+                        <td class="col-ocra">${getStatusIcon(center.hasOcra)}</td>
+                        <td class="col-niosh">${getStatusIcon(center.hasNiosh)}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            };
+            
+            async function fetchAndProcessData() {
+                try {
+                    const [centrosRes, evalsRes, fotosRes, scoresRes, areasRes] = await Promise.all([
+                        dataClient.from('centros_trabajo').select('id, name, area_id, score_general'),
+                        dataClient.from('evaluaciones').select('work_center_id'),
+                        dataClient.from('fotos_centros').select('work_center_id'),
+                        dataClient.from('scores_resumen').select('*'),
+                        dataClient.from('areas').select('id, name')
+                    ]);
+
+                    if (centrosRes.error) throw centrosRes.error;
+                    if (areasRes.error) throw areasRes.error;
+
+                    const evalsSet = new Set(evalsRes.data.map(e => e.work_center_id));
+                    const fotosSet = new Set(fotosRes.data.map(f => f.work_center_id));
+                    const scoresMap = new Map(scoresRes.data.map(s => [s.work_center_id, s]));
+
+                    allCentersData = centrosRes.data.map(center => {
+                        const scores = scoresMap.get(center.id) || {};
+                        return { ...center, hasInitialEval: evalsSet.has(center.id), hasPhotos: fotosSet.has(center.id), hasReba: (scores.evaluaciones_reba || 0) > 0, hasRula: (scores.evaluaciones_rula || 0) > 0, hasOcra: (scores.evaluaciones_ocra || 0) > 0, hasNiosh: (scores.evaluaciones_niosh || 0) > 0 };
+                    });
+                    
+                    updateKPIs(allCentersData);
+                    populateAreaFilter(areasRes.data);
+                    applyFiltersAndSort();
+                } catch (error) {
+                    console.error("Error al cargar los datos del reporte:", error);
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
+                }
+            }
+            
+            function populateAreaFilter(areas) {
+                const areaFilter = document.getElementById('filter-area');
+                areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id;
+                    option.textContent = area.name;
+                    areaFilter.appendChild(option);
+                });
+            }
+
+            function sortData(data) {
+                return [...data].sort((a, b) => {
+                    const valA = a[currentSortKey] ?? (typeof a[currentSortKey] === 'number' ? 0 : '');
+                    const valB = b[currentSortKey] ?? (typeof b[currentSortKey] === 'number' ? 0 : '');
+                    let comparison = 0;
+                    if (typeof valA === 'number') {
+                        comparison = valA - valB;
+                    } else {
+                        comparison = String(valA).localeCompare(String(valB));
+                    }
+                    return isSortAscending ? comparison : -comparison;
+                });
+            }
+
+            function applyFiltersAndSort() {
+                const nameValue = document.getElementById('filter-name').value.toLowerCase();
+                const areaValue = document.getElementById('filter-area').value;
+                const riskValue = document.getElementById('filter-risk').value;
+                let filteredData = allCentersData.filter(center => {
+                    const nameMatch = center.name.toLowerCase().includes(nameValue);
+                    const areaMatch = !areaValue || center.area_id === areaValue;
+                    let riskMatch = true;
+                    if (riskValue === 'low') riskMatch = (center.score_general || 0) <= 40;
+                    else if (riskValue === 'medium') riskMatch = (center.score_general || 0) > 40 && (center.score_general || 0) <= 70;
+                    else if (riskValue === 'high') riskMatch = (center.score_general || 0) > 70;
+                    return nameMatch && areaMatch && riskMatch;
+                });
+                const sortedData = sortData(filteredData);
+                renderTable(sortedData);
+                updateSortHeadersUI();
+            }
+
+            function updateSortHeadersUI() {
+                document.querySelectorAll('.sortable-header').forEach(header => {
+                    header.classList.remove('sorted-asc', 'sorted-desc');
+                    if (header.dataset.sortKey === currentSortKey) {
+                        header.classList.add(isSortAscending ? 'sorted-asc' : 'sorted-desc');
+                    }
+                });
+            }
+
+            document.getElementById('filter-name').addEventListener('input', applyFiltersAndSort);
+            document.getElementById('filter-area').addEventListener('change', applyFiltersAndSort);
+            document.getElementById('filter-risk').addEventListener('change', applyFiltersAndSort);
+
+            document.querySelectorAll('.sortable-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const key = header.dataset.sortKey;
+                    if (currentSortKey === key) {
+                        isSortAscending = !isSortAscending;
+                    } else {
+                        currentSortKey = key;
+                        isSortAscending = true;
+                    }
+                    applyFiltersAndSort();
+                });
+            });
+
+            document.querySelectorAll('.column-selector input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const column = e.target.dataset.column;
+                    const tableWrapper = document.getElementById('report-table-wrapper');
+                    tableWrapper.classList.toggle(`hide-col-${column}`, !e.target.checked);
+                });
+            });
+
+            fetchAndProcessData();
+        });
+    </script>
+</body>
+</html>

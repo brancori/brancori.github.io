@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Reportes</title>
+    
+    <link rel="stylesheet" href="../globals.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../globals.js"></script>
+    <script src="../auth-client.js"></script> 
+    <script src="../header-component.js"></script>
+
+    <style>
+        /* Estilos específicos para la página de reportes */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px); /* Ajusta el 80px a la altura de tu header */
+            background-color: var(--gray-50);
+            padding: 2rem;
+        }
+
+        .reports-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 2rem;
+        }
+
+        .report-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .report-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-300);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .report-card:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: var(--shadow-md);
+            transition-duration: 0.1s;
+        }
+
+        .report-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-600);
+            line-height: 1;
+        }
+
+        .report-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+
+        .report-description {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="text-center">
+        <h1 style="font-size: 2.5rem; color: var(--gray-800);">Report Panel</h1>
+    </div>
+
+    <div class="reports-container">
+        <a href="./resumen_riesgos.html" class="report-card">
+            <div class="report-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <h3 class="report-title">Risk Report</h3>
+            <p class="report-description">Análisis detallado de los riesgos ergonómicos.</p>
+        </a>
+
+        <a href="#" class="report-card">
+            <div class="report-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+            <h3 class="report-title">Johnson Standard Compliance</h3>
+            <p class="report-description">Cumplimiento de los estándares corporativos.</p>
+        </a>
+
+        <a href="./general_report.html" class="report-card">
+            <div class="report-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            <h3 class="report-title">General Report</h3>
+            <p class="report-description">Vista consolidada de todas las evaluaciones.</p>
+        </a>
+        
+        <a href="#" class="report-card">
+            <div class="report-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3 class="report-title">General Compliance</h3>
+            <p class="report-description">Informe global sobre el cumplimiento normativo.</p>
+        </a>
+    </div>
+
+    <script>
+        // Inicializa el header con la configuración para esta página
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.HeaderComponent) {
+                window.HeaderComponent.init({
+                    title: "Panel de Reportes",
+                    breadcrumb: "Reportes"
+                });
+            }
+        });
+    </script>
+</body>
+</html>
