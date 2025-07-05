@@ -586,7 +586,7 @@
                     <small>Formatos: JPG, PNG, WEBP (máx. 5MB cada una)</small>
                 </div>
                 
-                <input type="file" id="foto-input" accept="image/*" style="display: none;">
+                <input type="file" id="foto-input" accept="image/*" style="display: none;" multiple>
             </section>
 
             <!-- Sección de Evaluaciones Específicas -->
@@ -1042,45 +1042,62 @@
         }
 
         async function handleFotoUpload(event) {
-            const files = Array.from(event.target.files);
-            
-            for (const file of files) {
-                if (fotosActuales.length >= 5) {
-                    alert('Máximo 5 fotos por centro');
-                    break;
-                }
-                
-                if (file.size > 5 * 1024 * 1024) {
-                    alert(`${file.name} es muy grande (máx. 5MB)`);
-                    continue;
-                }
-                
-                try {
-                    if (USE_SUPABASE) {
-                        await dataClient.uploadFoto(file, areaId, workCenterId);
-                        await loadFotos(); // Recargar fotos
-                    } else {
-                        // Implementar guardado local
-                        const fotoData = {
-                            id: Date.now().toString(),
-                            foto_name: file.name,
-                            url: URL.createObjectURL(file)
-                        };
-                        fotosActuales.push(fotoData);
-                        localStorage.setItem(`fotos_${workCenterId}`, JSON.stringify(fotosActuales));
-                        renderFotosGrid();
-                    }
-                    
-                    console.log('Foto cargada exitosamente');
-                } catch (error) {
-                    console.error('Error uploading foto:', error);
-                    alert('Error al cargar foto');
-                }
-            }
-            
-            // Limpiar input
-            event.target.value = '';
+    const files = Array.from(event.target.files);
+    const maxFotos = 5;
+    const errors = [];
+    let uploadedCount = 0;
+    let newLocalFotos = []; // For localStorage path
+
+    ERGOUtils.showToast('Procesando fotos...', 'info');
+
+    for (const file of files) {
+        if ((fotosActuales.length + uploadedCount) >= maxFotos) {
+            errors.push(`Límite de ${maxFotos} fotos alcanzado. No se subió: ${file.name}`);
+            continue; 
         }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+            errors.push(`${file.name} es muy grande (máx. 5MB)`);
+            continue;
+        }
+        
+        try {
+            if (USE_SUPABASE) {
+                await dataClient.uploadFoto(file, areaId, workCenterId);
+            } else {
+                const fotoData = {
+                    id: Date.now().toString() + uploadedCount,
+                    foto_name: file.name,
+                    url: URL.createObjectURL(file)
+                };
+                newLocalFotos.push(fotoData);
+            }
+            uploadedCount++;
+        } catch (error) {
+            console.error('Error uploading foto:', error);
+            errors.push(`Error al cargar ${file.name}`);
+        }
+    }
+    
+    event.target.value = '';
+
+    if (errors.length > 0) {
+        alert("Ocurrieron algunos problemas:\n- " + errors.join("\n- "));
+    }
+
+    if (uploadedCount > 0) {
+        ERGOUtils.showToast(`${uploadedCount} foto(s) cargada(s) con éxito.`, 'success');
+        if (USE_SUPABASE) {
+            await loadFotos(); 
+        } else {
+            fotosActuales = [...fotosActuales, ...newLocalFotos];
+            localStorage.setItem(`fotos_${workCenterId}`, JSON.stringify(fotosActuales));
+            renderFotosGrid();
+        }
+    } else if (errors.length === 0) {
+        ERGOUtils.showToast('No se seleccionaron fotos válidas.', 'info');
+    }
+}
 
         async function deleteFoto(fotoId) {
             if (!ERGOAuth.checkPermissionAndShowError('delete')) return;

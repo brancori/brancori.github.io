@@ -234,6 +234,7 @@
     text-align: center;
     min-width: 70px;
 }
+
 /* Tabla 1: Porcentaje por Área */
 #areas-table-container .header-cell:nth-child(1) { text-align: left; flex: 3; }      /* Áreas */
 #areas-table-container .header-cell:nth-child(2) { text-align: center; flex: 1.5; }   /* Promedio */
@@ -257,7 +258,6 @@
 #top-risk-table-container .cell:nth-child(1) { justify-content: flex-start; flex: 2; }
 #top-risk-table-container .cell:nth-child(2) { justify-content: flex-start; flex: 3; }
 #top-risk-table-container .cell:nth-child(3) { justify-content: flex-end; flex: 1.5; }
-
 
 .cell:last-child {
     border-right: none;
@@ -602,7 +602,7 @@
 }
 
 .kpi_item, .nav_module {
-    height: auto;
+    height: 100%;
     border: none;
     border-radius: var(--border-radius-md);
     display: flex;
