@@ -356,22 +356,25 @@ window.ERGOUtils = {
 
 window.ERGONavigation = {
     /**
-     * Detecta la ruta base de la aplicación de forma automática.
-     * Ejemplo: si estás en "/proyectos/ERGOApp/index.html", esto devolverá "/proyectos/ERGOApp/"
+     * Detecta la ruta base del proyecto de forma más inteligente.
+     * Funciona incluso si la app está en un subdirectorio.
      */
     basePath: (() => {
         const path = window.location.pathname;
-        return path.substring(0, path.lastIndexOf('/') + 1);
+        const projectRootIndex = path.indexOf('/componentes/');
+        if (projectRootIndex > -1) {
+            return path.substring(0, projectRootIndex + 1);
+        }
+        const lastSlash = path.lastIndexOf('/');
+        return path.substring(0, lastSlash + 1);
     })(),
 
     /**
-     * Construye una URL completa y segura a partir de la ruta base detectada.
+     * Construye una URL completa y segura desde la ruta base del proyecto.
      */
     buildUrl(filePath, params = {}) {
-        // Une la ruta base con el nombre del archivo
-        let url = this.basePath + filePath;
-        
-        // Añade los parámetros
+        const cleanFilePath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
+        let url = this.basePath + cleanFilePath;
         const queryString = new URLSearchParams(params).toString();
         if (queryString) {
             url += '?' + queryString;
@@ -380,18 +383,9 @@ window.ERGONavigation = {
     },
 
     navigateToAreas(areaId = null, areaName = '') {
-        if (areaId) {
-            // Si nos dan un ID, construimos una URL con parámetros
-            const params = {
-                area: areaId,
-                areaName: areaName
-            };
-            const url = this.buildUrl('areas.html', params);
-            window.location.href = url;
-        } else {
-            // Si no hay ID, simplemente vamos a la página principal de áreas
-            window.location.href = this.basePath + 'areas.html';
-        }
+        const params = areaId ? { area: areaId, areaName: areaName } : {};
+        const url = this.buildUrl('areas.html', params);
+        window.location.href = url;
     },
 
     navigateToWorkCenter(workCenterId, areaId, areaName, centerName, responsible) {
@@ -402,7 +396,6 @@ window.ERGONavigation = {
             centerName: centerName || '',
             responsible: responsible || ''
         };
-        // La ruta ahora es solo el nombre del archivo, sin './'
         const url = this.buildUrl('centro-trabajo.html', params);
         window.location.href = url;
     },
@@ -415,19 +408,17 @@ window.ERGONavigation = {
             centerName: centerName || '',
             responsible: responsible || ''
         };
-        // La ruta incluye su carpeta
-        const url = this.buildUrl('evaluacion_ini/eval_int.html', params);
+        const url = this.buildUrl('componentes/evaluacion_ini/eval_int.html', params);
         window.location.href = url;
     },
 
     navigateToSpecificEvaluation(type, workCenterId, areaId, areaName, centerName, responsible) {
         const evaluationFiles = {
-            'REBA': 'evaluacion_ini/especificas/formulario_reba_completo.html',
-            'RULA': 'evaluacion_ini/especificas/formulario_rula_completo.html', 
-            'OCRA': 'evaluacion_ini/especificas/formulario_ocra_completo.html',
-            'NIOSH': 'evaluacion_ini/especificas/calculadora_niosh_excel.html'
+            'REBA': 'componentes/evaluacion_ini/especificas/formulario_reba_completo.html',
+            'RULA': 'componentes/evaluacion_ini/especificas/formulario_rula_completo.html',
+            'OCRA': 'componentes/evaluacion_ini/especificas/formulario_ocra_completo.html',
+            'NIOSH': 'componentes/evaluacion_ini/especificas/calculadora_niosh_excel.html'
         };
-        
         const params = {
             workCenter: workCenterId,
             area: areaId,
@@ -436,7 +427,6 @@ window.ERGONavigation = {
             responsible: responsible || '',
             tipo: type
         };
-        
         const filePath = evaluationFiles[type] || evaluationFiles['REBA'];
         const url = this.buildUrl(filePath, params);
         window.location.href = url;

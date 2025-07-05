@@ -166,7 +166,24 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
+            // --- INICIO DE LA CORRECCIÓN ---
+            // Verificamos y establecemos el contexto de sesión ANTES de hacer cualquier otra cosa.
+            // Si esto falla, no hay sesión válida y no debemos continuar.
+            if (!ERGOAuth.initializeAuthContext()) {
+                console.error("Fallo en la autenticación. Redirigiendo al login...");
+                ERGOUtils.showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.', 'error');
+                
+                // Esperamos un momento para que se vea el toast y luego redirigimos.
+                setTimeout(() => {
+                    ERGOAuth.redirectToLogin();
+                }, 1500);
+
+                return; // Detenemos la ejecución del resto del script.
+            }
+            // --- FIN DE LA CORRECCIÓN ---
+
+            // El resto del código existente va aquí
             if (window.HeaderComponent) {
                 HeaderComponent.init({ title: "Reporte de Cumplimiento", breadcrumb: "Reportes" });
             }
@@ -189,91 +206,100 @@
             };
 
             const renderTable = (data) => {
-                tbody.innerHTML = '';
-                if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
-                    return;
-                }
-                data.forEach(center => {
-                    const row = document.createElement('tr');
-                    row.onclick = () => ERGONavigation.navigateToWorkCenter(center.id, center.area_id, '', center.name, '');
-                    row.innerHTML = `
-                        <td class="col-name"><div class="center-name">${center.name}</div></td>
-                        <td class="col-score">${(center.score_general || 0).toFixed(2)}%</td>
-                        <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
-                        <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
-                        <td class="col-reba">${getStatusIcon(center.hasReba)}</td>
-                        <td class="col-rula">${getStatusIcon(center.hasRula)}</td>
-                        <td class="col-ocra">${getStatusIcon(center.hasOcra)}</td>
-                        <td class="col-niosh">${getStatusIcon(center.hasNiosh)}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            };
-            
-async function fetchAndProcessData() {
-        try {
-            // 1. OPTIMIZACIÓN: Hacemos todas las consultas en paralelo, pidiendo TODAS las fotos en una sola llamada.
-            const [centrosData, evalsData, scoresData, areasData, todasLasFotos] = await Promise.all([
-                dataClient.getWorkCenters(),
-                dataClient.getEvaluaciones(),
-                dataClient.query('scores_resumen'),
-                dataClient.getAreas(),
-                dataClient.query('fotos_centros', 'GET', null, '?select=work_center_id') // Obtenemos solo el ID que necesitamos
-            ]);
-
-            if (!centrosData || !areasData) {
-                throw new Error("No se pudieron cargar los datos de centros o áreas.");
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
+                return;
             }
-
-            // 2. CONTEO CORRECTO: Creamos un mapa para contar cuántas fotos tiene cada centro de trabajo.
-            const photosCountMap = new Map();
-            if (todasLasFotos) {
-                todasLasFotos.forEach(foto => {
-                    const count = photosCountMap.get(foto.work_center_id) || 0;
-                    photosCountMap.set(foto.work_center_id, count + 1);
-                });
-            }
-
-            const latestEvalsMap = new Map();
-            if (evalsData) {
-                for (const evaluation of evalsData) {
-                    const existing = latestEvalsMap.get(evaluation.work_center_id);
-                    if (!existing || new Date(evaluation.created_at) > new Date(existing.created_at)) {
-                        latestEvalsMap.set(evaluation.work_center_id, evaluation);
-                    }
-                }
-            }
-            
-            // 3. LÓGICA CORREGIDA: Procesamos los datos con la nueva lógica de conteo.
-            allCentersData = centrosData.map(center => {
-                const scores = scoresData ? scoresData.find(s => s.work_center_id === center.id) || {} : {};
-                const latestEval = latestEvalsMap.get(center.id);
+            data.forEach(center => {
+                const row = document.createElement('tr');
                 
-                // La condición ahora es simple y correcta: el check aparece si el conteo es mayor a 3.
-                const hasEnoughPhotos = (photosCountMap.get(center.id) || 0) > 3;
+                // --- INICIO DE LA CORRECCIÓN ---
+                // 1. Añadimos un console.log para diagnosticar el objeto 'center'.
+                // 2. Usamos addEventListener que es más robusto que .onclick.
+                row.addEventListener('click', () => {
+                    console.log("Datos del centro al hacer clic:", center); // Diagnóstico
+                    if (center.id && center.area_id) {
+                        ERGONavigation.navigateToWorkCenter(center.id, center.area_id, '', center.name, '');
+                    } else {
+                        console.error("No se puede navegar: falta 'id' o 'area_id' en el objeto.", center);
+                        ERGOUtils.showToast('Error: No se pudo obtener el ID de este centro.', 'error');
+                    }
+                });
+                // --- FIN DE LA CORRECCIÓN ---
 
-                return {
-                    ...center,
-                    score_general: latestEval ? latestEval.score_final : 0,
-                    hasInitialEval: !!latestEval,
-                    hasPhotos: hasEnoughPhotos, // <--- Lógica Corregida
-                    hasReba: (scores.evaluaciones_reba || 0) > 0,
-                    hasRula: (scores.evaluaciones_rula || 0) > 0,
-                    hasOcra: (scores.evaluaciones_ocra || 0) > 0,
-                    hasNiosh: (scores.evaluaciones_niosh || 0) > 0
-                };
+                row.innerHTML = `
+                    <td class="col-name"><div class="center-name">${center.name}</div></td>
+                    <td class="col-score">${(center.score_general || 0).toFixed(2)}%</td>
+                    <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
+                    <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
+                    <td class="col-reba">${getStatusIcon(center.hasReba)}</td>
+                    <td class="col-rula">${getStatusIcon(center.hasRula)}</td>
+                    <td class="col-ocra">${getStatusIcon(center.hasOcra)}</td>
+                    <td class="col-niosh">${getStatusIcon(center.hasNiosh)}</td>
+                `;
+                tbody.appendChild(row);
             });
+        };
             
-            updateKPIs(allCentersData);
-            populateAreaFilter(areasData);
-            applyFiltersAndSort();
+            async function fetchAndProcessData() {
+                try {
+                    const [centrosData, evalsData, scoresData, areasData, todasLasFotos] = await Promise.all([
+                        dataClient.getWorkCenters(),
+                        dataClient.getEvaluaciones(),
+                        dataClient.query('scores_resumen'),
+                        dataClient.getAreas(),
+                        dataClient.query('fotos_centros', 'GET', null, '?select=work_center_id')
+                    ]);
 
-        } catch (error) {
-            console.error("Error al cargar los datos del reporte:", error);
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
-        }
-    }
+                    if (!centrosData || !areasData) {
+                        throw new Error("No se pudieron cargar los datos de centros o áreas.");
+                    }
+
+                    const photosCountMap = new Map();
+                    if (todasLasFotos) {
+                        todasLasFotos.forEach(foto => {
+                            const count = photosCountMap.get(foto.work_center_id) || 0;
+                            photosCountMap.set(foto.work_center_id, count + 1);
+                        });
+                    }
+
+                    const latestEvalsMap = new Map();
+                    if (evalsData) {
+                        for (const evaluation of evalsData) {
+                            const existing = latestEvalsMap.get(evaluation.work_center_id);
+                            if (!existing || new Date(evaluation.created_at) > new Date(existing.created_at)) {
+                                latestEvalsMap.set(evaluation.work_center_id, evaluation);
+                            }
+                        }
+                    }
+                    
+                    allCentersData = centrosData.map(center => {
+                        const scores = scoresData ? scoresData.find(s => s.work_center_id === center.id) || {} : {};
+                        const latestEval = latestEvalsMap.get(center.id);
+                        const hasEnoughPhotos = (photosCountMap.get(center.id) || 0) > 3;
+
+                        return {
+                            ...center,
+                            score_general: latestEval ? latestEval.score_final : 0,
+                            hasInitialEval: !!latestEval,
+                            hasPhotos: hasEnoughPhotos,
+                            hasReba: (scores.evaluaciones_reba || 0) > 0,
+                            hasRula: (scores.evaluaciones_rula || 0) > 0,
+                            hasOcra: (scores.evaluaciones_ocra || 0) > 0,
+                            hasNiosh: (scores.evaluaciones_niosh || 0) > 0
+                        };
+                    });
+                    
+                    updateKPIs(allCentersData);
+                    populateAreaFilter(areasData);
+                    applyFiltersAndSort();
+
+                } catch (error) {
+                    console.error("Error al cargar los datos del reporte:", error);
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
+                }
+            }
             
         
         function populateAreaFilter(areas) {
