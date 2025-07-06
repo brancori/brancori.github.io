@@ -151,7 +151,7 @@
         }
     </style>
     <script src="../../componentes/globals.js"></script>
-    <script src="../../supabase-config.js"></script>
+    <script src="../../componentes/supabase-config.js"></script>
     <script src="./ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
@@ -597,7 +597,20 @@ function calculateREBA() {
     document.getElementById('scoreFinal').textContent = finalScore;
     document.getElementById('riskLevel').innerHTML = `<span class="${riskClass}">${riskLevel}</span>`;
     document.getElementById('recommendations').innerHTML = recommendations;
+
+        const saveContainer = document.getElementById('save-evaluation-container');
+        if (saveContainer) {
+            saveContainer.innerHTML = `
+                <button class="calculate-btn" onclick="saveEvaluation()" style="background: linear-gradient(135deg, #27ae60, #229954); margin-top: 0;">
+                    💾 Guardar Evaluación REBA
+                </button>
+            `;
+        }
+
     document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+
+
 }
 // Set default date
 document.getElementById('fecha').value = new Date().toISOString().split('T')[0];

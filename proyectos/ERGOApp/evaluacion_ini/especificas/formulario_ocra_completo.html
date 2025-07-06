@@ -190,7 +190,7 @@
         }
     </style>
     <script src="../componentes/globals.js"></script>
-    <script src="../supabase-config.js"></script>
+    <script src="../../componentes/supabase-config.js"></script>
     <script src="../ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
@@ -701,6 +701,16 @@
             document.getElementById('ocra_final').innerHTML = `<span class="${riskClass}">${ocraIndex.toFixed(2)}</span>`;
             document.getElementById('recommendations').innerHTML = `<h4>🎯 Nivel de Riesgo: <span class="${riskClass}">${riskLevel}</span></h4>${recommendations}`;
             document.getElementById('detailed_analysis').innerHTML = detailedAnalysis;
+
+
+                    const saveContainer = document.getElementById('save-evaluation-container');
+        if (saveContainer) {
+            saveContainer.innerHTML = `
+                <button class="calculate-btn" onclick="saveEvaluation()" style="background: linear-gradient(135deg, #27ae60, #229954); margin-top: 0;">
+                    💾 Guardar Evaluación REBA
+                </button>
+            `;
+        }
 
             // Scroll to results
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });

@@ -1,4 +1,5 @@
 /**
+ * AI: Ubicación: componentes/pages/globals.js
  * --- Theme Manager ---
  * Gestiona el cambio de tema (claro/oscuro) y guarda la preferencia
  * del usuario en el localStorage.
@@ -395,6 +396,7 @@ window.ERGONavigation = {
             areaName: areaName || '',
             centerName: centerName || '',
             responsible: responsible || ''
+            
         };
         const url = this.buildUrl('centro-trabajo.html', params);
         window.location.href = url;
@@ -406,7 +408,8 @@ window.ERGONavigation = {
             area: areaId,
             areaName: areaName || '',
             centerName: centerName || '',
-            responsible: responsible || ''
+            responsible: responsible || '',
+            evaluacionId: evaluacionId
         };
         const url = this.buildUrl('componentes/evaluacion_ini/eval_int.html', params);
         window.location.href = url;
@@ -414,10 +417,10 @@ window.ERGONavigation = {
 
     navigateToSpecificEvaluation(type, workCenterId, areaId, areaName, centerName, responsible) {
         const evaluationFiles = {
-            'REBA': 'componentes/evaluacion_ini/especificas/formulario_reba_completo.html',
-            'RULA': 'componentes/evaluacion_ini/especificas/formulario_rula_completo.html',
-            'OCRA': 'componentes/evaluacion_ini/especificas/formulario_ocra_completo.html',
-            'NIOSH': 'componentes/evaluacion_ini/especificas/calculadora_niosh_excel.html'
+            'REBA': 'evaluacion_ini/especificas/formulario_reba_completo.html',
+            'RULA': 'evaluacion_ini/especificas/formulario_rula_completo.html',
+            'OCRA': 'evaluacion_ini/especificas/formulario_ocra_completo.html',
+            'NIOSH': 'evaluacion_ini/especificas/calculadora_niosh_excel.html'
         };
         const params = {
             workCenter: workCenterId,
@@ -425,7 +428,8 @@ window.ERGONavigation = {
             areaName: areaName || '',
             centerName: centerName || '',
             responsible: responsible || '',
-            tipo: type
+            tipo: type,
+            evalId: ERGOUtils.generateShortId()
         };
         const filePath = evaluationFiles[type] || evaluationFiles['REBA'];
         const url = this.buildUrl(filePath, params);

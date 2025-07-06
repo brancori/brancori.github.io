@@ -12,7 +12,7 @@
     <script src="./componentes/auth-client.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="supabase-config.js"></script>
+    <script src="./componentes/supabase-config.js"></script>
     <script src="./componentes/header-component.js"></script>
     <style>
         .centro-header {
@@ -1286,31 +1286,16 @@ async function confirmarCreacionEvaluacion() {
 }
 
         function editarEvaluacionEspecifica(evaluacion) {
-            const archivos = {
-                'REBA': './evaluacion_ini/especificas/formulario_reba_completo.html',
-                'RULA': './evaluacion_ini/especificas/formulario_rula_completo.html', 
-                'OCRA': './evaluacion_ini/especificas/formulario_ocra_completo.html',
-                'NIOSH': './evaluacion_ini/especificas/calculadora_niosh_excel.html'
-            };
-
-            const archivo = archivos[evaluacion.tipo];
-            if (!archivo) {
-                console.error('Tipo de evaluación no reconocido:', evaluacion.tipo);
-                return;
-            }
-
-            // Construimos la URL con todos los parámetros necesarios, incluyendo el ID de la evaluación a editar.
-            const url = new URL(archivo, window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/');
-            url.searchParams.append('workCenter', workCenterId);
-            url.searchParams.append('area', areaId);
-            url.searchParams.append('areaName', encodeURIComponent(areaName || ''));
-            url.searchParams.append('centerName', encodeURIComponent(centerName || ''));
-            url.searchParams.append('responsible', encodeURIComponent(responsibleName || ''));
-            url.searchParams.append('tipo', evaluacion.tipo);
-            url.searchParams.append('evalId', evaluacion.id); // <-- EL PARÁMETRO MÁS IMPORTANTE
-
-            window.location.href = url.href;
-        }
+    // La nueva función global se encarga de todo
+    ERGONavigation.navigateToSpecificEvaluation(
+        evaluacion.tipo,
+        workCenterId,
+        areaId,
+        areaName,
+        centerName,
+        responsibleName
+    );
+}
 
 function cerrarEvaluacionModal() {
     const modal = document.getElementById('evaluacion-modal');

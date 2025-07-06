@@ -1,3 +1,5 @@
+<!-- AI: Ubicación: evaluacion_ini/especificas/formulario_rula_completo.html -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -156,9 +158,9 @@
             margin-bottom: 20px;
         }
     </style>
-    <script src="../componentes/globals.js"></script>
-    <script src="../supabase-config.js"></script>
-    <script src="../ergo-evaluaciones-especificas.js"></script>
+    <script src="../../componentes/globals.js"></script>
+    <script src="../../componentes/supabase-config.js"></script>
+    <script src="./ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
     <div class="container">
@@ -684,6 +686,16 @@
             document.getElementById('scoreFinal').textContent = finalScore;
             document.getElementById('actionLevel').innerHTML = `<span class="${riskClass}">${actionLevel}</span>`;
             document.getElementById('recommendations').innerHTML = recommendations;
+
+
+                    const saveContainer = document.getElementById('save-evaluation-container');
+        if (saveContainer) {
+            saveContainer.innerHTML = `
+        <button class="calculate-btn" onclick="saveEvaluation()" style="background: linear-gradient(135deg, #27ae60, #229954); margin-top: 0;">
+            💾 Guardar Evaluación RULA
+        </button>
+            `;
+        }
 
             // Scroll to results
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });

@@ -109,7 +109,7 @@
         }
     </style>
     <script src="../componentes/globals.js"></script>
-    <script src="../supabase-config.js"></script>
+    <script src="../../componentes/supabase-config.js"></script>
     <script src="../ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
@@ -380,6 +380,11 @@
         }
                 document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('calcular-niosh-btn').addEventListener('click', calculateNIOSH);
+
+                    const saveButton = document.getElementById('btn-save-niosh');
+        if (saveButton) {
+            saveButton.addEventListener('click', saveEvaluation);
+        }
         });
     </script>
 </body>
