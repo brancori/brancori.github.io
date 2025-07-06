@@ -1,6 +1,24 @@
 /** AI: RUTA: evaluacion_ini/ergo-evaluaciones-especificas.js */
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Esperar a que todos los componentes estén listos
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // PASO 1: Verificar que todo esté cargado
+    if (typeof ERGOAuth === 'undefined' || typeof dataClient === 'undefined') {
+        console.error("Los componentes no están cargados. Esperando...");
+        setTimeout(() => window.location.reload(), 1000);
+        return;
+    }
+    
+    // PASO 2: Inicializar el contexto de autenticación
+    if (!ERGOAuth.initializeAuthContext()) {
+        console.error("Fallo de autenticación en la página de evaluación. Redirigiendo a login.");
+        ERGOAuth.redirectToLogin();
+        return;
+    }
+
+    // PASO 2: Ahora que la sesión está verificada, procedemos con la lógica de la página.
     const urlParams = new URLSearchParams(window.location.search);
     const evalId = urlParams.get('evalId');
     let tipoEval = urlParams.get('tipo');
@@ -9,17 +27,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Faltan 'evalId' o 'tipo' en la URL. No se puede cargar la evaluación.");
         return;
     }
+
     tipoEval = tipoEval.charAt(0).toUpperCase() + tipoEval.slice(1).toLowerCase();
     await loadAndPopulateForm(evalId, tipoEval);
 });
 
 async function loadAndPopulateForm(evalId, tipo) {
-    const metodoGet = `getEvaluaciones${tipo}`;
     const workCenterId = new URLSearchParams(window.location.search).get('workCenter');
 
     try {
-        const evaluaciones = await dataClient[metodoGet](workCenterId);
-        const evaluacion = evaluaciones.find(e => e.id === evalId);
+        // Usar directamente Supabase
+        const { data: evaluaciones, error } = await dataClient.supabase
+            .from('evaluaciones_especificas')
+            .select('*')
+            .eq('work_center_id', workCenterId)
+            .eq('tipo_evaluacion', tipo);
+
+        if (error) throw error;
+
+        const evaluacion = evaluaciones?.find(e => e.id === evalId);
 
         if (!evaluacion || !evaluacion.datos_formulario) {
             ERGOUtils.showToast('Iniciando nueva evaluación.', 'info');
@@ -85,20 +111,56 @@ async function saveEvaluation() {
     } else if (tipo === 'REBA' || tipo === 'RULA') {
         resultados = { score_final: parseInt(document.getElementById('scoreFinal')?.textContent || 0) };
     } else if (tipo === 'NIOSH') {
-        resultados = { indice_levantamiento: parseFloat(document.querySelector('#final-results strong.risk-low, #final-results strong.risk-medium, #final-results strong.risk-high')?.textContent || 0) };
+        resultados = { indice_levantamiento: parseFloat(document.querySelector('#final-results strong')?.textContent || 0) };
     }
 
-    const dataToSave = { ...resultados, datos_formulario: collectFormData(), updated_at: new Date().toISOString() };
+    const dataToSave = { 
+        ...resultados, 
+        datos_formulario: collectFormData(), 
+        updated_at: new Date().toISOString(),
+        work_center_id: workCenterId,
+        area_id: areaId,
+        tipo_evaluacion: tipo
+    };
     
     ERGOUtils.showToast('Guardando...', 'info');
 
     try {
-        const metodoUpdate = `updateEvaluacion${tipo}`;
-        await dataClient[metodoUpdate](evalId, dataToSave);
+        // Intentar actualizar primero
+        const { data: existingData, error: selectError } = await dataClient.supabase
+            .from('evaluaciones_especificas')
+            .select('id')
+            .eq('id', evalId)
+            .single();
+
+        if (existingData) {
+            // Actualizar registro existente
+            const { error: updateError } = await dataClient.supabase
+                .from('evaluaciones_especificas')
+                .update(dataToSave)
+                .eq('id', evalId);
+            
+            if (updateError) throw updateError;
+        } else {
+            // Crear nuevo registro
+            const { error: insertError } = await dataClient.supabase
+                .from('evaluaciones_especificas')
+                .insert({ id: evalId, ...dataToSave });
+            
+            if (insertError) throw insertError;
+        }
+
         ERGOUtils.showToast('✅ Evaluación guardada exitosamente.', 'success');
         
         setTimeout(() => {
-            const url = `../centro-trabajo.html?workCenter=${workCenterId}&area=${areaId}&areaName=${urlParams.get('areaName')}&centerName=${urlParams.get('centerName')}&responsible=${urlParams.get('responsible')}`;
+            const params = {
+                workCenter: workCenterId,
+                area: areaId,
+                areaName: urlParams.get('areaName') || '',
+                centerName: urlParams.get('centerName') || '',
+                responsible: urlParams.get('responsible') || ''
+            };
+            const url = ERGONavigation.buildUrl('centro-trabajo.html', params);
             window.location.href = url;
         }, 1000);
 

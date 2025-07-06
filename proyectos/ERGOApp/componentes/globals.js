@@ -115,12 +115,12 @@ window.ERGOAuth = {
         localStorage.setItem('lastActivity', new Date().getTime().toString());
     },
     
-    redirectToLogin() {
+redirectToLogin() {
     const path = window.location.pathname;
     if (path !== '/index.html' && path !== '/') {
-        window.location.href = 'index.html';
+        window.location.href = ERGONavigation.buildUrl('index.html');
     }
-    },
+},
 
 // En el archivo globals.js, dentro del objeto ERGOAuth
 

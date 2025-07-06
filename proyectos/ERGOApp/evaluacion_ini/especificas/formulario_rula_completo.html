@@ -158,8 +158,10 @@
             margin-bottom: 20px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../componentes/globals.js"></script>
     <script src="../../componentes/supabase-config.js"></script>
+    <script src="../../componentes/auth-client.js"></script>
     <script src="./ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
@@ -418,7 +420,11 @@
         </div>
 
         <button class="calculate-btn" onclick="calculateRULA()">🔍 CALCULAR PUNTUACIÓN RULA</button>
-        <div id="save-evaluation-container" style="text-align: center; margin: 20px 0;"></div>
+<div id="save-evaluation-container" style="text-align: center; margin: 20px 0;">
+    <button class="calculate-btn" onclick="saveEvaluation()" style="background: linear-gradient(135deg, #27ae60, #229954); margin-top: 10px;">
+        💾 Guardar Evaluación RULA
+    </button>
+</div>
         <h2>📊 Tablas de Consulta RULA</h2>
         
         <h3>Tabla A - Brazo, Antebrazo, Muñeca</h3>
