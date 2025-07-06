@@ -108,9 +108,11 @@
             margin-top: 20px;
         }
     </style>
-    <script src="../componentes/globals.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../componentes/globals.js"></script>
     <script src="../../componentes/supabase-config.js"></script>
-    <script src="../ergo-evaluaciones-especificas.js"></script>
+    <script src="../../componentes/auth-client.js"></script>
+    <script src="./ergo-evaluaciones-especificas.js"></script>
 </head>
 <body>
     <div class="container">
@@ -378,13 +380,30 @@
                 </div>
             `;
         }
-                document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('calcular-niosh-btn').addEventListener('click', calculateNIOSH);
-
-                    const saveButton = document.getElementById('btn-save-niosh');
-        if (saveButton) {
-            saveButton.addEventListener('click', saveEvaluation);
-        }
+            
+            // Event listener para guardar
+            const saveButton = document.getElementById('btn-save-niosh');
+            if (saveButton) {
+                saveButton.addEventListener('click', saveEvaluation);
+            }
+            
+            // Event listener para ver centro de trabajo
+            const viewButton = document.getElementById('btn-view-center');
+            if (viewButton) {
+                viewButton.addEventListener('click', () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const params = {
+                        workCenter: urlParams.get('workCenter'),
+                        area: urlParams.get('area'),
+                        areaName: urlParams.get('areaName') || '',
+                        centerName: urlParams.get('centerName') || '',
+                        responsible: urlParams.get('responsible') || ''
+                    };
+                    window.location.href = `../../centro-trabajo.html?${new URLSearchParams(params).toString()}`;
+                });
+            }
         });
     </script>
 </body>
