@@ -385,7 +385,7 @@ class HeaderComponent {
                     <div class="header-actions">
                         <button class="action-btn notifications-btn" title="Notificaciones">
                             <span class="icon">🔔</span>
-                            <span class="badge">3</span>
+                            <span class="badge"></span>
                         </button>
                         <button class="action-btn settings-btn" title="Configuración">
                             <span class="icon">⚙️</span>

@@ -110,10 +110,43 @@
         .hide-col-niosh th.col-niosh, .hide-col-niosh td.col-niosh { 
             display: none; 
         }
-
+        .report-card-title .area-name {
+            display: block;
+            font-size: 0.75em;
+            color: #888;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .area-name-report {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+            .col-expand { width: 5px; text-align: center; }
+            .expand-arrow { cursor: pointer; display: inline-block; transition: transform 0.2s ease-in-out; font-size: 0.8em; color: var(--gray-400); }
+            .expand-arrow:hover { color: var(--primary-600); }
+            .expand-arrow.expanded { transform: rotate(90deg); }
+            .details-row { display: none; }
+            .details-row td { background-color: var(--gray-50); padding: 0 !important; }
+            .details-content { padding: 1rem 1.5rem 1.5rem 4rem; }
+            .details-content h4 { margin-top: 0; margin-bottom: 1rem; color: var(--gray-700); font-size: 0.9rem; }
+            .evaluation-list { list-style: none; padding: 0; margin: 0; }
+            .evaluation-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid var(--gray-200); }
+            .evaluation-item:last-child { border-bottom: none; }
+            .eval-type-badge { font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; color: white; }
+            .eval-score { font-weight: 500; color: var(--gray-800); }
+            .eval-date { font-size: 0.8rem; color: var(--gray-500); margin-left: auto; }
     </style>
+
+    <thead>
+    <tr>
+        <th class="col-expand"></th> <th class="col-name sortable-header" data-sort-key="name">Centro de Trabajo</th>
+        </tr>
+    </thead>
 </head>
 <body>
+    
 
     <div class="main-container">
         
@@ -146,6 +179,7 @@
             <table class="report-table">
                 <thead>
                     <tr>
+                        <th class="col-expand"></th>
                         <th class="col-name sortable-header" data-sort-key="name">Centro de Trabajo</th>
                         <th class="col-score sortable-header" data-sort-key="score_general">Score</th>
                         <th class="col-eval-inicial">Eval. Inicial</th>
@@ -167,23 +201,17 @@
 
     <script>
 document.addEventListener('DOMContentLoaded', async () => {
-            // --- INICIO DE LA CORRECCIÓN ---
-            // Verificamos y establecemos el contexto de sesión ANTES de hacer cualquier otra cosa.
-            // Si esto falla, no hay sesión válida y no debemos continuar.
             if (!ERGOAuth.initializeAuthContext()) {
                 console.error("Fallo en la autenticación. Redirigiendo al login...");
                 ERGOUtils.showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.', 'error');
                 
-                // Esperamos un momento para que se vea el toast y luego redirigimos.
                 setTimeout(() => {
                     ERGOAuth.redirectToLogin();
                 }, 1500);
 
-                return; // Detenemos la ejecución del resto del script.
+                return; 
             }
-            // --- FIN DE LA CORRECCIÓN ---
 
-            // El resto del código existente va aquí
             if (window.HeaderComponent) {
                 HeaderComponent.init({ title: "Reporte de Cumplimiento", breadcrumb: "Reportes" });
             }
@@ -206,57 +234,86 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             const renderTable = (data) => {
-            tbody.innerHTML = '';
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
-                return;
-            }
-            data.forEach(center => {
-                const row = document.createElement('tr');
-                
-                // --- INICIO DE LA CORRECCIÓN ---
-                // 1. Añadimos un console.log para diagnosticar el objeto 'center'.
-                // 2. Usamos addEventListener que es más robusto que .onclick.
-                row.addEventListener('click', () => {
-                    console.log("Datos del centro al hacer clic:", center); // Diagnóstico
-                    if (center.id && center.area_id) {
-                        ERGONavigation.navigateToWorkCenter(center.id, center.area_id, '', center.name, '');
-                    } else {
-                        console.error("No se puede navegar: falta 'id' o 'area_id' en el objeto.", center);
-                        ERGOUtils.showToast('Error: No se pudo obtener el ID de este centro.', 'error');
-                    }
-                });
-                // --- FIN DE LA CORRECCIÓN ---
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
+                    return;
+                }
 
-                row.innerHTML = `
-                    <td class="col-name"><div class="center-name">${center.name}</div></td>
-                    <td class="col-score">${(center.score_general || 0).toFixed(2)}%</td>
-                    <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
-                    <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
-                    <td class="col-reba">${getStatusIcon(center.hasReba)}</td>
-                    <td class="col-rula">${getStatusIcon(center.hasRula)}</td>
-                    <td class="col-ocra">${getStatusIcon(center.hasOcra)}</td>
-                    <td class="col-niosh">${getStatusIcon(center.hasNiosh)}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        };
+                const fragment = document.createDocumentFragment();
+                data.forEach(center => {
+                    const dataRow = document.createElement('tr');
+                    
+                    dataRow.innerHTML = `
+                        <td class="col-expand"><span class="expand-arrow" data-center-id="${center.id}">▶</span></td>
+                        <td class="col-name">
+                            <div class="center-name">${center.name}</div>
+                            <div class="area-name-report">${center.area_name}</div>
+                        </td>
+                        <td class="col-score">${(center.score_general || 0).toFixed(2)}%</td>
+                        <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
+                        <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
+                        <td class="col-reba">${getStatusIcon(center.hasReba)}</td>
+                        <td class="col-rula">${getStatusIcon(center.hasRula)}</td>
+                        <td class="col-ocra">${getStatusIcon(center.hasOcra)}</td>
+                        <td class="col-niosh">${getStatusIcon(center.hasNiosh)}</td>
+                    `;
+                    fragment.appendChild(dataRow);
+
+                    const detailsRow = document.createElement('tr');
+                    detailsRow.className = 'details-row';
+                    detailsRow.setAttribute('data-details-for', center.id);
+                    
+                    let detailsContent = '<h4>No hay evaluaciones específicas registradas.</h4>';
+                    if (center.specificEvaluations && center.specificEvaluations.length > 0) {
+                        detailsContent = `
+                            <h4>Actividades</h4>
+                            <ul class="evaluation-list">
+                                ${center.specificEvaluations.map(ev => `
+                                    <li class="evaluation-item">
+                                        <div style="flex-grow: 1;">
+                                            <span style="font-weight: 600; color: var(--gray-800); display: block;">${ev.titulo || 'Actividad sin nombre'}</span>
+                                            <span style="font-size: 0.85em; color: var(--gray-500);">Método: ${ev.tipo} &bull; Score: ${(ev.score_final || 0).toFixed(1)}%</span>
+                                        </div>
+                                        <span class="eval-date">${ERGOUtils.formatDate(ev.created_at)}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>`;
+                    }
+                    
+                    detailsRow.innerHTML = `<td colspan="9"><div class="details-content">${detailsContent}</div></td>`;
+                    fragment.appendChild(detailsRow);
+                });
+                tbody.appendChild(fragment);
+            };
             
             async function fetchAndProcessData() {
                 try {
-                    const [centrosData, evalsData, scoresData, areasData, todasLasFotos] = await Promise.all([
+                    const [centrosData, evalsData, scoresData, areasData, todasLasFotos, allSpecificEvals] = await Promise.all([
                         dataClient.getWorkCenters(),
                         dataClient.getEvaluaciones(),
                         dataClient.query('scores_resumen'),
                         dataClient.getAreas(),
-                        dataClient.query('fotos_centros', 'GET', null, '?select=work_center_id')
+                        dataClient.query('fotos_centros', 'GET', null, '?select=work_center_id'),
+                        dataClient.getAllSpecificEvaluationsFlat()
                     ]);
+                    const areaMap = new Map(areasData.map(area => [area.id, area.name]));
 
                     if (!centrosData || !areasData) {
                         throw new Error("No se pudieron cargar los datos de centros o áreas.");
                     }
 
                     const photosCountMap = new Map();
+                    const specificEvalsMap = new Map();
+                    if (allSpecificEvals) {
+                        allSpecificEvals.forEach(ev => {
+                            if (!specificEvalsMap.has(ev.work_center_id)) {
+                                specificEvalsMap.set(ev.work_center_id, []);
+                            }
+                            specificEvalsMap.get(ev.work_center_id).push(ev);
+                        });
+                    }
+
                     if (todasLasFotos) {
                         todasLasFotos.forEach(foto => {
                             const count = photosCountMap.get(foto.work_center_id) || 0;
@@ -281,13 +338,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         return {
                             ...center,
+                            area_name: areaMap.get(center.area_id) || 'Sin Área',
                             score_general: latestEval ? latestEval.score_final : 0,
                             hasInitialEval: !!latestEval,
                             hasPhotos: hasEnoughPhotos,
                             hasReba: (scores.evaluaciones_reba || 0) > 0,
                             hasRula: (scores.evaluaciones_rula || 0) > 0,
                             hasOcra: (scores.evaluaciones_ocra || 0) > 0,
-                            hasNiosh: (scores.evaluaciones_niosh || 0) > 0
+                            hasNiosh: (scores.evaluaciones_niosh || 0) > 0,
+                            specificEvaluations: specificEvalsMap.get(center.id) || []
                         };
                     });
                     
@@ -297,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 } catch (error) {
                     console.error("Error al cargar los datos del reporte:", error);
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
                 }
             }
             
@@ -376,6 +435,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const tableWrapper = document.getElementById('report-table-wrapper');
                     tableWrapper.classList.toggle(`hide-col-${column}`, !e.target.checked);
                 });
+            });
+
+                        tbody.addEventListener('click', function(event) {
+                const arrow = event.target.closest('.expand-arrow');
+                if (arrow) {
+                    // Evita que el clic en la flecha navegue a otra página
+                    event.stopPropagation(); 
+                    
+                    const centerId = arrow.dataset.centerId;
+                    const detailsRow = tbody.querySelector(`tr[data-details-for="${centerId}"]`);
+                    if (detailsRow) {
+                        const isVisible = detailsRow.style.display === 'table-row';
+                        detailsRow.style.display = isVisible ? 'none' : 'table-row';
+                        arrow.classList.toggle('expanded', !isVisible);
+                    }
+                } else {
+                    // Si se hizo clic en cualquier otra parte de la fila, navega
+                    const row = event.target.closest('tr');
+                    if (row && !row.classList.contains('details-row')) {
+                    }
+                }
             });
 
             fetchAndProcessData();

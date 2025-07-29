@@ -110,7 +110,9 @@ async query(table, method = 'GET', data = null, filters = '') {
             return null;
         }
     }
-
+    async updateNota(notaId, data) {
+    return await this.query('notas_centros', 'PATCH', data, `?id=eq.${notaId}`);
+    }
     async getWorkCenter(workCenterId) {
         try {
             if (!workCenterId) {
@@ -641,6 +643,31 @@ async getUsers() {
             throw new Error(error.message);
         }
         return { success: true };
+    }
+
+    async getAllSpecificEvaluationsFlat() {
+        try {
+            const [reba, rula, ocra, niosh] = await Promise.all([
+                this.query('evaluaciones_reba', 'GET', null, '?select=*,work_center_id'),
+                this.query('evaluaciones_rula', 'GET', null, '?select=*,work_center_id'),
+                this.query('evaluaciones_ocra', 'GET', null, '?select=*,work_center_id'),
+                this.query('evaluaciones_niosh', 'GET', null, '?select=*,work_center_id')
+            ]);
+    
+            const todas = [
+                ...(reba || []).map(e => ({ ...e, tipo: 'REBA' })),
+                ...(rula || []).map(e => ({ ...e, tipo: 'RULA' })),
+                ...(ocra || []).map(e => ({ ...e, tipo: 'OCRA' })),
+                ...(niosh || []).map(e => ({ ...e, tipo: 'NIOSH' }))
+            ];
+    
+            todas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            return todas;
+
+        } catch (error) {
+            console.error('Error obteniendo todas las evaluaciones específicas flat:', error);
+            return [];
+        }
     }
 
 }
