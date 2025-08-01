@@ -194,8 +194,34 @@ async query(table, method = 'GET', data = null, filters = '') {
     }
 
     async createEvaluacion(evaluacion) {
-        return await this.query('evaluaciones', 'POST', evaluacion);
-    }
+        // Paso 1: Crear la evaluación como siempre
+        const result = await this.query('evaluaciones', 'POST', evaluacion);
+
+        // Paso 2: Si se creó correctamente, AHORA SÍ actualizamos el resumen
+        if (result.success && evaluacion.work_center_id) {
+            try {
+                console.log(`🔄 Actualizando score_resumen para el centro: ${evaluacion.work_center_id}`);
+                
+                // Preparamos los datos del score a partir de la evaluación que acabamos de guardar
+                const scoreData = {
+                    score: evaluacion.score_final,
+                    categoria: evaluacion.categoria_riesgo,
+                    color: evaluacion.color_riesgo
+                };
+
+                // Llamamos a la función que ya existe para actualizar la tabla de resúmenes
+                await this.updateScoreWorkCenter(evaluacion.work_center_id, evaluacion.area_id, scoreData);
+                
+                console.log(`✅ Score resumen para ${evaluacion.work_center_id} actualizado exitosamente.`);
+
+            } catch (updateError) {
+                console.error('❌ Error al intentar actualizar scores_resumen después de crear la evaluación:', updateError);
+                // La evaluación se creó, pero el resumen falló. Se podría añadir lógica para reintentar.
+            }
+        }
+        
+        return result;
+}
 
     async updateEvaluacion(id, evaluacion) {
         return await this.query('evaluaciones', 'PATCH', evaluacion, `?id=eq.${id}`);
@@ -669,6 +695,74 @@ async getUsers() {
             return [];
         }
     }
+
+async backfillScoresResumenCounts() {
+    console.log('🔄 Iniciando backfill para contadores de scores_resumen...');
+    try {
+        // 1. Obtener todos los centros de trabajo y todas las evaluaciones específicas
+        const [workCenters, todasLasEvals] = await Promise.all([
+            this.getWorkCenters(),
+            this.getAllSpecificEvaluationsFlat() //
+        ]);
+
+        if (!workCenters || workCenters.length === 0) {
+            console.warn('No se encontraron centros de trabajo para procesar.');
+            return { success: false, message: 'No hay centros de trabajo.' };
+        }
+
+        // 2. Preparar un mapa para contar las evaluaciones por centro
+        const countsMap = new Map();
+        workCenters.forEach(wc => {
+            countsMap.set(wc.id, {
+                evaluaciones_reba: 0,
+                evaluaciones_rula: 0,
+                evaluaciones_ocra: 0,
+                evaluaciones_niosh: 0
+            });
+        });
+
+        // 3. Contar todas las evaluaciones existentes
+        todasLasEvals.forEach(ev => {
+            const centerId = ev.work_center_id;
+            if (countsMap.has(centerId)) {
+                const counts = countsMap.get(centerId);
+                if (ev.tipo === 'REBA') counts.evaluaciones_reba++;
+                if (ev.tipo === 'RULA') counts.evaluaciones_rula++;
+                if (ev.tipo === 'OCRA') counts.evaluaciones_ocra++;
+                if (ev.tipo === 'NIOSH') counts.evaluaciones_niosh++;
+            }
+        });
+
+        // 4. Preparar los datos para la actualización masiva (upsert)
+        const dataToUpsert = workCenters.map(wc => {
+            const counts = countsMap.get(wc.id);
+            return {
+                work_center_id: wc.id,
+                area_id: wc.area_id, // Asegurarnos que el area_id también se incluya
+                ...counts
+            };
+        });
+
+        console.log('📊 Datos preparados para upsert:', dataToUpsert);
+
+        // 5. Ejecutar el upsert en Supabase
+        // Esto insertará nuevas filas si no existen, o actualizará las existentes.
+        const { error } = await this.supabase
+            .from('scores_resumen')
+            .upsert(dataToUpsert, { onConflict: 'work_center_id' });
+
+        if (error) {
+            throw error;
+        }
+
+        console.log('✅ Backfill completado exitosamente!');
+        return { success: true, message: 'Contadores actualizados.' };
+
+    } catch (error) {
+        console.error('❌ Error crítico durante el backfill:', error);
+        return { success: false, message: error.message };
+    }
+}
 
 }
 
