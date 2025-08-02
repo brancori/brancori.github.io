@@ -1,0 +1,50 @@
+Documentación del Sistema de Autenticación
+Este documento describe cómo los usuarios inician sesión, cómo se mantiene la sesión y cómo interactúa con las páginas y la base de datos de Supabase.
+
+1. Componentes Principales
+El sistema se distribuye en los siguientes archivos clave:
+
+globals.js: Contiene la configuración de Supabase (ERGOConfig) y el objeto principal ERGOAuth, que gestiona el estado de la sesión en el navegador (quién es el usuario, si la sesión ha expirado, cierre por inactividad).
+auth-client.js: Es el cliente que habla directamente con el servicio de autenticación de Supabase. Su única responsabilidad es manejar el login y logout contra el servidor.
+supabase-config.js: Es el cliente que realiza consultas a las tablas de la base de datos (ej. areas, work_centers). Utiliza el token de sesión para que Supabase sepa qué datos puede leer o modificar el usuario.
+index.js: Orquesta el proceso de login en la página principal (index.html), mostrando el formulario y guardando la sesión si el login es exitoso.
+2. Flujo de Autenticación (Página index.html)
+Este es el proceso paso a paso cuando un usuario llega a la página sin una sesión activa:
+
+Carga Inicial: El navegador carga index.html. El script index.js se ejecuta de inmediato.
+Verificación de Sesión: index.js llama a la función checkExistingSession, la cual a su vez invoca a ERGOAuth.initializeAuthContext() de globals.js para revisar si ya existen datos de sesión en el navegador.
+Resultado Negativo: Como no hay sesión, initializeAuthContext reporta en la consola que no encontró los datos (currentUser, sessionToken) y devuelve false.
+Mostrar Login: Al recibir false, index.js oculta el contenido principal de la aplicación y muestra el formulario de inicio de sesión (loginModal).
+Envío de Credenciales: El usuario introduce su correo y contraseña y presiona "Iniciar Sesión". Esto dispara la función handleLogin en index.js.
+Autenticación con Supabase: handleLogin usa authClient.login() para enviar las credenciales a Supabase de forma segura.
+Respuesta Exitosa: Si las credenciales son correctas, Supabase devuelve un access_token (JWT), que es la prueba de que el usuario es quien dice ser.
+Almacenamiento de Sesión: handleLogin recibe el token y los datos del usuario. Procede a guardar esta información en el sessionStorage del navegador, incluyendo una fecha de expiración de 8 horas.
+Acceso Concedido: Se oculta el modal de login, se muestra el dashboard principal y la interfaz se actualiza con los datos del usuario.
+3. Flujo en Páginas Protegidas (Ej. areas.html)
+Cuando el usuario navega a otra página como areas.html, el proceso es similar pero con un resultado diferente:
+
+Carga de Página: Al cargar areas.html, su script (areas.js) también debe realizar una verificación de sesión al inicio, llamando a ERGOAuth.initializeAuthContext().
+Verificación de Sesión: Esta vez, initializeAuthContext sí encuentra los datos (currentUser, sessionToken) en sessionStorage.
+Validación: La función revisa que el token no haya expirado.
+Activación de Clientes: Si la sesión es válida, el access_token se carga en los clientes authClient y dataClient. A partir de este momento, todas las peticiones a Supabase desde areas.html irán firmadas con este token.
+Acceso Concedido: La página areas.html carga su contenido y realiza las consultas a la base de datos que necesite.
+Acceso Denegado: Si por alguna razón la sesión no es válida (ej. se borró el sessionStorage), la función logout es llamada y el usuario es redirigido automáticamente a index.html.
+4. Puntos Clave para Diagnóstico de Errores
+Si te encuentras con un problema, revisa estos puntos:
+
+Error 401 (Unauthorized): Significa que el access_token no es válido o no se está enviando.
+
+Causa probable: El token no se guardó correctamente durante el login o no se restauró al cargar una nueva página.
+Qué revisar: La función handleLogin en index.js y la función initializeAuthContext en globals.js.
+Error 403 (Forbidden): Significa que el usuario está correctamente autenticado (el token es válido), pero no tiene permiso para realizar una acción específica (leer, crear, borrar).
+
+Causa probable: Una Política de Seguridad a Nivel de Fila (RLS) en Supabase está bloqueando la acción.
+Qué revisar: Las políticas de la tabla específica (ej. scores_resumen) en el panel de control de tu proyecto en Supabase. Esto casi nunca es un error del código del frontend.
+El usuario es redirigido a la página de login inesperadamente:
+
+Causa probable: La función initializeAuthContext está fallando su validación.
+Qué revisar: La consola del navegador. Los logs de diagnóstico te dirán exactamente qué faltó (currentUser, sessionToken, o si la sesión expiró).
+El usuario puede CREAR pero no BORRAR o EDITAR:
+
+Causa probable: Es un síntoma clásico de un error de permisos (Error 403). La política de INSERT en Supabase está bien, pero las de UPDATE o DELETE no existen o son incorrectas.
+Qué revisar: Las políticas (RLS) de la tabla en el panel de Supabase.
