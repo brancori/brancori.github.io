@@ -1,0 +1,146 @@
+* {
+  margin: 0;
+}
+
+p, label {
+  font-size: 12px;
+}
+
+.info-content {
+  display: flex;
+  gap: 3px;
+  height: 15px;
+  align-items: center;
+}
+.info-content label {
+  color: var(--text-color);
+  margin: 0;
+  width: 100px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: auto;
+  width: 350px;
+}
+
+.indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: auto;
+  width: 100%;
+}
+
+.score-indicators {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+  margin: 0;
+}
+.score-indicators div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+}
+.score-indicators div input {
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+.container-evaluation {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  width: 350px;
+}
+
+img {
+  height: 35px;
+  width: 35px;
+  margin: 0;
+}
+
+.aditional-info {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  font-size: 12px;
+  align-items: center;
+}
+.aditional-info input {
+  width: 15px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.score-text {
+  font-size: 12px;
+}/*# sourceMappingURL=info-content.css.map */
+
+.score-indicators input[type="checkbox"] {
+    display: none;
+}
+
+.score-indicators .custom-x {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 24px;
+    border-radius: 4px;
+    margin-left: 6px;
+    background: #eee;
+    color: transparent;
+    border: 2px solid transparent;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Colores personalizados */
+.score-indicators input.rojo + .custom-x { border-color: #e53935; }
+.score-indicators input.amarillo + .custom-x { border-color: #fbc02d; }
+.score-indicators input.azul + .custom-x { border-color: #1e40af; }
+.score-indicators input.gris + .custom-x { border-color: #757575; }
+
+/* Cuando está seleccionado, muestra la X y el color de fondo */
+.score-indicators input.rojo:checked + .custom-x {
+    background: #e53935;
+    color: #fff;
+    content: "X";
+}
+.score-indicators input.amarillo:checked + .custom-x {
+    background: #fbc02d;
+    color: #fff;
+    content: "X";
+}
+.score-indicators input.azul:checked + .custom-x {
+    background: #1e40af;
+    color: #fff;
+    content: "X";
+}
+.score-indicators input.gris:checked + .custom-x {
+    background: #757575;
+    color: #fff;
+    content: "X";
+}
+
+/* Muestra la X solo cuando está checked */
+.score-indicators input[type="checkbox"]:checked + .custom-x::after {
+    content: "X";
+}

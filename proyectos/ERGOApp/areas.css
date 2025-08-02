@@ -277,14 +277,11 @@
 }
 
 .card-list {
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--border-radius-md);
-    transition: var(--transition);
-    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0 1.5rem;
+    padding: 1rem 1.5rem; 
 }
 
 .card-list:hover {

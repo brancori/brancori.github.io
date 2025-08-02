@@ -551,7 +551,7 @@ async getDashboardData() {
             this.query('evaluaciones', 'GET', null, '')
         ]);
 
-        if (!areasData) return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
+        if (!areasData) return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0, score_global: 0 };
 
         const areasMap = {};
         areasData.forEach(area => { areasMap[area.id] = area.name; });
@@ -564,39 +564,52 @@ async getDashboardData() {
         const areasCombinadas = areasData.map(area => {
             const scoresDeArea = scoresData ? scoresData.filter(s => s.area_id === area.id) : [];
             const centrosDeArea = workCentersData ? workCentersData.filter(wc => wc.area_id === area.id) : [];
-            const totalScore = scoresDeArea.reduce((sum, s) => sum + parseFloat(s.score_actual), 0);
-            const promedio = scoresDeArea.length > 0 ? (totalScore / scoresDeArea.length) : 0;
+            
+            // --- INICIO DEL CAMBIO ---
+            // Solo para el cálculo, filtramos los que no tienen evaluación.
+            const scoresEvaluados = scoresDeArea.filter(s => s.categoria_riesgo !== 'Sin evaluación');
+            
+            const totalScore = scoresEvaluados.reduce((sum, s) => sum + parseFloat(s.score_actual), 0);
+            const promedio = scoresEvaluados.length > 0 ? (totalScore / scoresEvaluados.length) : 0;
+            // --- FIN DEL CAMBIO ---
 
             return {
                 ...area,
                 promedio_score: promedio.toFixed(2),
                 promedio_calculo: promedio,
                 total_centros: centrosDeArea.length,
-                centros_evaluados: scoresDeArea.length
+                centros_evaluados: scoresEvaluados.length
             };
         }).sort((a, b) => b.promedio_calculo - a.promedio_calculo);
 
-        // CORRECCIÓN CLAVE: Nos aseguramos de incluir el area_id en los datos de topRisk
+        // La lógica de Top 10 Riesgos NO se toca, se queda como estaba.
         const topRisk = scoresData ? scoresData.slice(0, 10).map(score => ({
             work_center_id: score.work_center_id,
-            area_id: score.area_id, // <-- ESTA LÍNEA ES LA QUE FALTABA
+            area_id: score.area_id, 
             area_name: areasMap[score.area_id] || 'Sin área',
             center_name: workCentersMap[score.work_center_id] || `Centro ${score.work_center_id}`,
             score: parseFloat(score.score_actual).toFixed(2),
             categoria: score.categoria_riesgo
         })) : [];
 
+        // Se corrige también el cálculo del score global general.
+        const todosLosScoresEvaluados = scoresData ? scoresData.filter(s => s.categoria_riesgo !== 'Sin evaluación') : [];
+        const sumaTotalScores = todosLosScoresEvaluados.reduce((sum, s) => sum + parseFloat(s.score_actual), 0);
+        const scoreGlobalPromedio = todosLosScoresEvaluados.length > 0 ? (sumaTotalScores / todosLosScoresEvaluados.length) : 0;
+
         return {
             areas: areasCombinadas,
             topRisk,
             totalWorkCenters: workCentersData ? workCentersData.length : 0,
-            totalEvaluaciones: evaluacionesData ? evaluacionesData.length : 0
+            totalEvaluaciones: evaluacionesData ? evaluacionesData.length : 0,
+            score_global: scoreGlobalPromedio
         };
     } catch (error) {
         console.error('Error getting dashboard data:', error);
-        return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0 };
+        return { areas: [], topRisk: [], totalWorkCenters: 0, totalEvaluaciones: 0, score_global: 0 };
     }
 }
+
 
 async getGlobalPictogramSummary() {
         try {

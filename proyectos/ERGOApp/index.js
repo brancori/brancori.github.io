@@ -263,18 +263,14 @@ async loadDashboardData() {
     }
 
 updateTopKPIs(data) {
-        const { areas, totalWorkCenters, totalEvaluaciones } = data;
-        const scoreGlobal = areas && areas.length > 0 
-            ? (areas.reduce((sum, area) => sum + parseFloat(area.promedio_calculo || 0), 0) / areas.length).toFixed(2)
-            : '0.00';
-        
-        document.getElementById('kpi-areas-total').textContent = areas ? areas.length : 0;
-        document.getElementById('kpi-centros-total').textContent = totalWorkCenters || 0;
-        document.getElementById('kpi-evaluaciones-total').textContent = totalEvaluaciones || 0;
-        document.getElementById('kpi-score-global').textContent = `${scoreGlobal}%`;
-        
-        // La llamada a this.updateRiskChart(areas) que causaba el error ha sido eliminada.
-    }
+    const { areas, totalWorkCenters, totalEvaluaciones, score_global } = data;
+    
+    document.getElementById('kpi-areas-total').textContent = areas ? areas.length : 0;
+    document.getElementById('kpi-centros-total').textContent = totalWorkCenters || 0;
+    document.getElementById('kpi-evaluaciones-total').textContent = totalEvaluaciones || 0;
+    // Usamos el score_global que ya viene calculado correctamente.
+    document.getElementById('kpi-score-global').textContent = `${(score_global || 0).toFixed(2)}%`;
+}
 
 renderGlobalRiskChart(summary) {
         const chartContainer = document.getElementById('risk-chart');

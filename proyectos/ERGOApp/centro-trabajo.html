@@ -6,7 +6,6 @@
     <title>Centro de Trabajo</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./componentes/globals.js"></script>
     <script src="./componentes/auth-client.js"></script>
@@ -64,21 +63,6 @@
             font-size: 0.875rem;
             font-weight: 500;
             margin-bottom: 1rem;
-        }
-
-        .btn-add-note {
-            background: var(--primary-600);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius-md);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-add-note:hover {
-            background: var(--primary-700);
         }
 
         .content-sections {
@@ -411,33 +395,6 @@
             display: flex;
             align-items: center;
         }
-        
-        .action-btn {
-            border: none;
-            border-radius: var(--border-radius-sm);
-            padding: 0.5rem 0.75rem;
-            margin-left: 0.5rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .delete-btn {
-            background-color: var(--red-50);
-            color: var(--red-600);
-        }
-        .delete-btn:hover {
-            background-color: var(--red-100);
-        }
-
-        .edit-btn {
-            background-color: var(--primary-50);
-            color: var(--primary-600);
-        }
-        .edit-btn:hover {
-            background-color: var(--primary-100);
-        }
 
 .foto-modal-close {
     position: absolute;
@@ -581,7 +538,7 @@
                 <div class="score-container">
                     <div id="score-value" class="score-value">--</div>
                     <div id="score-category" class="score-category">Sin evaluar</div>
-                    <button class="btn-add-note" onclick="openNotaModal()">
+                    <button class="btn btn-primary" onclick="openNotaModal()">
                         + AGREGAR NOTA
                     </button>
                 </div>
@@ -1010,8 +967,9 @@
             }
 
             container.innerHTML = notasActuales.map(nota => {
-                    const editButton = ERGOAuth.hasPermission('create') ? `<button class="action-btn edit-btn" onclick='editarNota(${JSON.stringify(nota)})'>Editar</button>` : '';
-                    const deleteButton = ERGOAuth.hasPermission('delete') ? `<button class="action-btn delete-btn" onclick="eliminarNota('${nota.id}')">Eliminar</button>` : '';                return `
+            const editButton = ERGOAuth.hasPermission('create') ? `<button class="btn btn-ghost btn-sm" onclick='editarNota(${JSON.stringify(nota)})'>Editar</button>` : '';
+            const deleteButton = ERGOAuth.hasPermission('delete') ? `<button class="btn btn-danger btn-sm" onclick="eliminarNota('${nota.id}')">Eliminar</button>` : '';             
+                    return `
                     <div class="nota-item">
                         <div class="nota-header">
                             <div class="nota-fecha">${ERGOUtils.formatDate(nota.created_at || nota.fecha)}</div>

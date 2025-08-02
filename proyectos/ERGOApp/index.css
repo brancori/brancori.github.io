@@ -1024,27 +1024,3 @@ puedes reemplazar el ::after por esto:
     min-width: 220px;
 }
 
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.25rem;
-    }
-
-    .user-info {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-main {
-        text-align: center;
-        width: 100%;
-    }
-    .user-info {
-       justify-content: center;
-    }
-}
