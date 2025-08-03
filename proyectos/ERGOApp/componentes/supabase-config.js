@@ -777,6 +777,26 @@ async backfillScoresResumenCounts() {
     }
 }
 
+async getActividades(workCenterId) {
+    const filter = `?work_center_id=eq.${workCenterId}&estado=eq.activo&order=created_at.desc`;
+    return await this.query('actividades', 'GET', null, filter);
+}
+
+async createActividad(data) {
+    return await this.query('actividades', 'POST', data);
+}
+
+async updateActividad(id, data) {
+    data.updated_at = new Date().toISOString();
+    return await this.query('actividades', 'PATCH', data, `?id=eq.${id}`);
+}
+
+async deleteActividad(id) {
+    // En lugar de borrar, la archivamos para mantener el historial
+    const data = { estado: 'archivado', updated_at: new Date().toISOString() };
+    return await this.query('actividades', 'PATCH', data, `?id=eq.${id}`);
+}
+
 }
 
 // Instancia global

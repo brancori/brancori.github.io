@@ -515,6 +515,60 @@
         font-size: 0.875rem;
     }
 }
+
+.modal.show .modal-content {
+    animation: modal-fade-in 0.3s ease-out forwards;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Grilla para organizar el formulario */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Estilos mejorados para los radio buttons */
+.radio-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 44px; /* Misma altura que los inputs */
+    border: 1px solid var(--gray-300);
+    padding: 0 1rem;
+    border-radius: var(--border-radius-md);
+    background-color: var(--gray-50);
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 0.5rem;
+    accent-color: var(--primary-600); /* Color de acento del radio button */
+}
+
+/* Responsividad para la grilla del formulario */
+@media (max-width: 768px) {
+    .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
     </style>
 </head>
 <body>
@@ -589,9 +643,7 @@
             <section class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Actividades</h2>
-                    <button class="btn btn-primary" onclick="openEvaluacionModal()">
-                        + AGREGAR EVALUACIÓN
-                    </button>
+                <button class="btn btn-primary" onclick="abrirModalActividad()">+ AGREGAR ACTIVIDAD</button>
                 </div>
                 
                 <div id="evaluaciones-container" class="evaluaciones-list">
@@ -657,6 +709,65 @@
             <button class="btn btn-ghost" onclick="cerrarModalCrearEvaluacion()">Cancelar</button>
             <button class="btn btn-primary" onclick="confirmarCreacionEvaluacion()">Crear Evaluación</button>
         </div>
+    </div>
+</div>
+
+
+<!-- Modal para agregar Actividades -->
+<div id="modal-actividad" class="modal">
+    <div class="modal-overlay" onclick="cerrarModalActividad()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-actividad-titulo">Nueva Actividad</h3>
+            <button class="modal-close" onclick="cerrarModalActividad()"><span>&times;</span></button>
+        </div>
+        
+        <form id="form-actividad" onsubmit="event.preventDefault(); guardarActividad();">
+            <div class="modal-body">
+                <input type="hidden" id="actividad-id">
+                <input type="hidden" id="actividad-metodo-original">
+
+                <div class="form-group">
+                    <label for="actividad-nombre">Nombre de la actividad</label>
+                    <input type="text" id="actividad-nombre" class="input-field" placeholder="Ej: Preparación de medios de cultivo" required>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="actividad-metodo">Método de Evaluación</label>
+                        <select id="actividad-metodo" class="input-field">
+                            <option value="REBA">REBA (Cuerpo completo)</option>
+                            <option value="RULA">RULA (Miembros superiores)</option>
+                            <option value="OCRA">OCRA (Movimientos repetitivos)</option>
+                            <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Análisis</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="tipo_analisis" value="EJA" checked>
+                                <span class="radio-text">EJA</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="tipo_analisis" value="WS">
+                                <span class="radio-text">WS</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="actividad-comentarios">Comentarios</label>
+                    <textarea id="actividad-comentarios" class="input-field" rows="4" placeholder="Añade observaciones, notas o detalles relevantes..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="cerrarModalActividad()">Cancelar</button>
+                <button type="submit" id="modal-actividad-btn-guardar" class="btn btn-primary">Guardar Actividad</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -749,7 +860,7 @@
                     loadEvaluacionInicial(),
                     loadFotos(),
                     loadNotas(),
-                    loadEvaluacionesEspecificas()
+                    loadActividades() 
                 ]);
             } catch (error) {
                 console.error('Error cargando datos:', error);
@@ -893,22 +1004,6 @@
             }
         }
 
-        async function loadEvaluacionesEspecificas() {
-            try {
-                if (USE_SUPABASE) {
-                    evaluacionesEspecificas = await dataClient.getAllEvaluacionesEspecificas(workCenterId) || [];
-                } else {
-                    // El fallback a localStorage ya no es el método principal
-                    evaluacionesEspecificas = [];
-                }
-                renderEvaluacionesEspecificas();
-            } catch (error) {
-                console.error('Error cargando evaluaciones específicas:', error);
-                evaluacionesEspecificas = [];
-                renderEvaluacionesEspecificas();
-            }
-        }
-
 
         // Funciones de renderizado
         function renderFotosGrid() {
@@ -980,50 +1075,50 @@
                 `;
             }).join('');
         }
-
-        function renderEvaluacionesEspecificas() {
-            const container = document.getElementById('evaluaciones-container');
-            
-            if (evaluacionesEspecificas.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-evaluations">
-                        <p>No hay evaluaciones específicas realizadas</p>
-                        <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
-                    </div>
-                `;
-                return;
+        async function loadActividades() {
+            try {
+                // Llama a la nueva función en dataClient
+                evaluacionesEspecificas = await dataClient.getActividades(workCenterId) || [];
+                renderActividades();
+            } catch (error) {
+                console.error('Error cargando actividades:', error);
+                evaluacionesEspecificas = [];
+                renderActividades();
             }
-            
-            container.innerHTML = evaluacionesEspecificas.map(eval => {
-                let scoreText = 'Pendiente';
-                if (eval.score_final) {
-                    scoreText = `${eval.score_final} Puntos`;
-                } else if (eval.indice_ocra) {
-                    scoreText = `Índice: ${eval.indice_ocra}`;
-                } else if (eval.indice_levantamiento) {
-                    scoreText = `IL: ${parseFloat(eval.indice_levantamiento).toFixed(2)}`;
-                }
-
-                const deleteButtonHTML = ERGOAuth.hasPermission('delete') 
-                    ? `<button class="action-btn delete-btn" onclick="eliminarEvaluacionEspecifica(event, '${eval.id}', '${eval.tipo}')">Eliminar</button>` 
-                    : '';
-                
-                return `
-                    <div class="evaluacion-item" onclick='editarEvaluacionEspecifica(${JSON.stringify(eval)})'>
-                        <div class="evaluacion-header">
-                            <div style="flex-grow: 1;">
-                                <span class="evaluacion-metodo">${eval.titulo || 'Actividad sin nombre'}</span>
-                                <div style="font-size: 0.8rem; color: var(--gray-500); font-weight: 500;">Método: ${eval.tipo}</div>
-                            </div>
-                            <span class="evaluacion-score">${scoreText}</span>
-                            ${deleteButtonHTML}
-                        </div>
-                        <div class="evaluacion-fecha">Creada: ${ERGOUtils.formatDate(eval.created_at)}</div>
-                    </div>
-                `;
-            }).join('');
         }
 
+
+        function renderActividades() {
+    const container = document.getElementById('evaluaciones-container');
+    
+    if (evaluacionesEspecificas.length === 0) {
+        container.innerHTML = `
+            <div class="empty-evaluations">
+                <p>No hay actividades creadas.</p>
+                <small>Usa el botón "+ AGREGAR ACTIVIDAD" para empezar.</small>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = evaluacionesEspecificas.map(actividad => {
+        const scoreText = actividad.score_final ? `${actividad.score_final} Puntos` : 'Pendiente';
+
+        // Pasamos el objeto 'actividad' completo al abrir el modal
+        return `
+            <div class="evaluacion-item" onclick='abrirModalActividad(${JSON.stringify(actividad)})'>
+                <div class="evaluacion-header">
+                    <div style="flex-grow: 1;">
+                        <span class="evaluacion-metodo">${actividad.nombre}</span>
+                        <div style="font-size: 0.8rem; color: var(--gray-500); font-weight: 500;">Método: ${actividad.metodo}</div>
+                    </div>
+                    <span class="evaluacion-score">${scoreText}</span>
+                </div>
+                <div class="evaluacion-fecha">Creada: ${ERGOUtils.formatDate(actividad.created_at)}</div>
+            </div>
+        `;
+    }).join('');
+}
             async function eliminarEvaluacionEspecifica(event, evalId, tipo) {
             event.stopPropagation(); // ¡Muy importante! Evita que se active el clic para editar.
             
@@ -1037,7 +1132,7 @@
                     if (dataClient[metodoDelete]) {
                         await dataClient[metodoDelete](evalId);
                         ERGOUtils.showToast('Evaluación eliminada correctamente.', 'success');
-                        await loadEvaluacionesEspecificas(); // Recarga la lista
+                        await loadActividades(); // Recarga la lista
                     } else {
                         throw new Error(`Método de eliminación no encontrado: ${metodoDelete}`);
                     }
@@ -1335,7 +1430,7 @@ async function confirmarCreacionEvaluacion() {
         ERGOUtils.showToast('Evaluación creada. Ahora puedes completarla.', 'success');
         
         // Recargamos la lista para mostrar la nueva evaluación "pendiente"
-        await loadEvaluacionesEspecificas();
+        await loadActividades();
     } catch (error) {
         console.error(`Error al crear evaluación ${tipoEvaluacionACrear}:`, error);
         ERGOUtils.showToast(`Error al crear la evaluación: ${error.message}`, 'error');
@@ -1614,6 +1709,92 @@ function toggleZoom() {
         modalImage.classList.add('zoomed');
     } else {
         modalImage.classList.remove('zoomed');
+    }
+}
+
+let actividadEnEdicion = null;
+
+/**
+ * Abre el modal de actividad.
+ * Si no se pasa una actividad, abre en modo "Creación".
+ * Si se pasa una actividad, abre en modo "Edición".
+ * @param {object|null} actividad - El objeto de la actividad a editar.
+ */
+function abrirModalActividad(actividad = null) {
+    const esModoEdicion = actividad !== null;
+    
+    // Guardamos el estado actual
+    actividadEnEdicion = esModoEdicion ? actividad : null;
+
+    // Actualizamos la UI del modal
+    document.getElementById('modal-actividad-titulo').textContent = esModoEdicion ? 'Editar Actividad' : 'Nueva Actividad';
+    document.getElementById('modal-actividad-btn-guardar').textContent = esModoEdicion ? 'Guardar Cambios' : 'Crear Actividad';
+
+    // Llenamos el formulario
+    document.getElementById('actividad-id').value = esModoEdicion ? actividad.id : '';
+    document.getElementById('actividad-nombre').value = esModoEdicion ? actividad.nombre : '';
+    document.getElementById('actividad-metodo').value = esModoEdicion ? actividad.metodo : 'REBA';
+    document.getElementById('actividad-comentarios').value = esModoEdicion ? actividad.comentarios || '' : '';
+    
+    // Seleccionamos el radio button correcto
+    const tipoAnalisis = esModoEdicion ? actividad.tipo_analisis : 'EJA';
+    document.querySelector(`input[name="tipo_analisis"][value="${tipoAnalisis}"]`).checked = true;
+
+    // Usamos el sistema de modales de globals.js
+    ERGOModal.open('modal-actividad');
+}
+
+/**
+ * Cierra y resetea el modal de actividad.
+ */
+function cerrarModalActividad() {
+    ERGOModal.close('modal-actividad');
+    document.getElementById('form-actividad').reset();
+    actividadEnEdicion = null;
+}
+
+/**
+ * Guarda o actualiza una actividad.
+ */
+async function guardarActividad() {
+    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
+
+    const id = document.getElementById('actividad-id').value;
+    const esModoEdicion = id !== '';
+
+    // Recolectamos los datos del formulario
+    const data = {
+        work_center_id: workCenterId, // Asume que 'workCenterId' es una variable global en la página
+        area_id: areaId,           // Asume que 'areaId' es una variable global en la página
+        nombre: document.getElementById('actividad-nombre').value.trim(),
+        metodo: document.getElementById('actividad-metodo').value,
+        comentarios: document.getElementById('actividad-comentarios').value.trim(),
+        tipo_analisis: document.querySelector('input[name="tipo_analisis"]:checked').value,
+        user_id: ERGOAuth.getCurrentUser()?.id
+    };
+
+    if (!data.nombre) {
+        ERGOUtils.showToast('El nombre de la actividad es obligatorio.', 'error');
+        return;
+    }
+
+    try {
+        if (esModoEdicion) {
+            // Lógica de ACTUALIZACIÓN (requiere dataClient.updateActividad)
+            await dataClient.updateActividad(id, data);
+            ERGOUtils.showToast('Actividad actualizada con éxito.', 'success');
+        } else {
+            // Lógica de CREACIÓN (requiere dataClient.createActividad)
+            await dataClient.createActividad(data);
+            ERGOUtils.showToast('Actividad creada con éxito.', 'success');
+        }
+
+        cerrarModalActividad();
+        await loadActividades(); // Recargamos la lista de actividades
+
+    } catch (error) {
+        console.error('Error al guardar la actividad:', error);
+        ERGOUtils.showToast('No se pudo guardar la actividad.', 'error');
     }
 }
 

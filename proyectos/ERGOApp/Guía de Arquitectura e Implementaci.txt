@@ -1,0 +1,598 @@
+﻿Guía de Arquitectura e Implementación: Plataforma ERGO-Risk
+Parte 1: Arquitectura del Sistema y Modelo de Datos
+Esta sección deconstruye el esquema de la base de datos para proporcionar una comprensión fundamental de la estructura del sistema, sus entidades y las reglas que gobiernan sus interacciones. Sirve como el plano arquitectónico para la plataforma de evaluación de riesgos ERGO.
+1.1. Vista Conceptual
+La plataforma está diseñada como un sistema especializado para crear, gestionar y analizar evaluaciones de riesgos ergonómicos en diversos entornos laborales. Su modelo de datos está estructurado para capturar la naturaleza jerárquica de una organización, las evaluaciones específicas realizadas y los perfiles de riesgo agregados que resultan de estas actividades.
+Los conceptos principales, o Entidades Centrales, que modela la base de datos son:
+* Organizaciones: Son los contenedores de nivel superior para todos los datos, representando una empresa o una unidad operativa distinta. En el esquema, esto se representa con la tabla work_centers.
+* Ubicaciones: Representan departamentos específicos, líneas de producción o secciones físicas dentro de una organización donde se realizan las evaluaciones. Esto se modela con la tabla areas.
+* Usuarios: Son los actores dentro del sistema que realizan evaluaciones y gestionan datos. El esquema utiliza una representación dual: la tabla auth.users integrada de Supabase para la autenticación y una tabla personalizada public.usuarios para información de perfil específica de la aplicación, como los roles.
+* Evaluaciones: Son los registros de datos centrales del sistema. Cada evaluación corresponde a una metodología de evaluación ergonómica específica y estandarizada por la industria. El esquema dedica tablas separadas para cada tipo: evaluaciones_niosh, evaluaciones_reba, evaluaciones_rula y una flexible evaluaciones_aisladas para evaluaciones personalizadas o diversas.
+* Riesgo Agregado: Representa el resumen calculado y de un vistazo del riesgo ergonómico para una organización o ubicación determinada. Estos datos críticos se almacenan en la tabla scores_resumen, que actúa como un centro neurálgico para la generación de informes y paneles de control.
+1.2. Diagrama de Entidad-Relación (Análisis)
+Una representación visual del esquema de la base de datos revelaría un patrón arquitectónico distintivo. La tabla work_centers sirve como el eje central, con casi todas las demás tablas de datos principales vinculadas a ella. Esto forma un esquema clásico en forma de estrella donde work_centers es el registro maestro.
+Las restricciones de clave foránea (foreign key) muestran que evaluaciones_niosh, evaluaciones_reba, evaluaciones_rula, evaluaciones_aisladas, notas_centros y scores_resumen contienen todas una columna work_center_id que hace referencia directa a la tabla work_centers. Esto establece una clara dependencia relacional; estos registros no pueden existir sin estar asociados a un centro de trabajo padre.
+Al mismo tiempo, surge un segundo patrón relacionado con el flujo de datos. La presencia de triggers (disparadores) en las tablas evaluaciones_niosh, reba y rula, todos ejecutando una función llamada update_scores_resumen_counts, indica un flujo de información unidireccional y automatizado. Los datos de las evaluaciones individuales se procesan y se utilizan para poblar o actualizar la tabla scores_resumen.
+Por lo tanto, la arquitectura se caracteriza por dos dinámicas principales:
+1. Una dependencia relacional donde los centros de trabajo son las entidades padre para la mayoría de los datos.
+2. Un flujo de datos de agregación donde los eventos de evaluación individuales alimentan una tabla de resumen centralizada.
+1.3. Entidades Principales y Análisis Detallado de Tablas
+Un análisis meticuloso de la estructura de cada tabla es esencial para comprender las capacidades y limitaciones del sistema.
+1.3.1. work_centers y areas (Esquema Asumido)
+Aunque no se proporcionaron las sentencias CREATE TABLE para work_centers y areas, su función es clara a partir de las claves foráneas en otras tablas. Son las entidades fundamentales para organizar todos los datos. Una estructura probable es:
+* work_centers: Contiene un id (clave primaria, probablemente de tipo text o uuid) y un name (text), representando el nivel más alto de organización.
+* areas: Contiene un id (clave primaria), un work_center_id (clave foránea a work_centers) y un name (text), representando una sub-ubicación dentro de un centro de trabajo.
+1.3.2. Módulos de Evaluación: Las Fuentes de Datos
+Estas tablas almacenan los datos brutos de cada evaluación ergonómica.
+* evaluaciones_niosh, evaluaciones_reba, evaluaciones_rula: Son tablas altamente estructuradas donde cada columna corresponde a un parámetro de entrada específico de la metodología ergonómica respectiva (p. ej., peso_objeto en NIOSH, tronco_twist en REBA, brazo_elevado en RULA). Capturan las entradas detalladas que conducen a una puntuación de riesgo calculada (indice_levantamiento, score_final).
+* evaluaciones_aisladas: Esta tabla ofrece más flexibilidad. La columna respuestas, de tipo jsonb, permite almacenar datos no estructurados o semi-estructurados de formularios de evaluación personalizados. Esto es ideal para evaluaciones no estándar donde las preguntas y respuestas pueden variar.
+1.3.3. Gestión de Usuarios y Actividades
+* usuarios: Esta es la tabla de perfiles de usuario personalizados de la aplicación. Está críticamente vinculada al sistema de autenticación de Supabase a través de la columna auth_user_id, que debe almacenar el id de la tabla auth.users. La columna rango (smallint con una restricción CHECK para los valores 1, 2 o 3) es fundamental para implementar un sistema de Control de Acceso Basado en Roles (RBAC), donde diferentes números corresponden a diferentes niveles de permiso (p. ej., 1=Admin, 2=Evaluador, 3=Observador).
+* actividades: Parece ser una tabla de propósito general para rastrear tareas o actividades que no son evaluaciones ergonómicas formales. La columna estado, con un valor predeterminado de 'activo', sugiere un patrón potencial para implementar "eliminaciones lógicas" (soft deletes), donde los registros se marcan como inactivos en lugar de ser eliminados permanentemente de la base de datos.
+1.3.4. El Centro de Agregación: scores_resumen
+Esta tabla es la pieza clave para cualquier panel de control o interfaz de informes de alto nivel. Está diseñada para proporcionar una vista consolidada del estado de riesgo de un centro de trabajo.
+* La columna work_center_id tiene una restricción UNIQUE, que es una elección de diseño poderosa. Asegura que solo puede haber un registro de resumen por centro de trabajo, evitando datos de resumen duplicados o conflictivos.
+* Columnas como score_actual, categoria_riesgo, total_evaluaciones, evaluaciones_reba, etc., no están destinadas a ser escritas directamente por el usuario. Son campos calculados que son mantenidos automáticamente por el sistema de triggers, reflejando el estado agregado de todas las evaluaciones para ese centro de trabajo.
+1.3.5. Tablas de Datos de Soporte
+* fotos_centros: Esta tabla vincula evidencia fotográfica a centros de trabajo y áreas específicas. La columna foto_url no almacena la imagen en sí, sino una ruta o identificador que apunta a un objeto dentro de Supabase Storage.
+* notas_centros: Proporciona una forma simple pero efectiva de adjuntar notas de texto con marca de tiempo y atribuidas por el usuario a un centro de trabajo, útil para comentarios, acciones de seguimiento u observaciones generales.
+1.4. Integridad de Datos y Flujos Automatizados
+El esquema emplea potentes características de PostgreSQL para forzar la consistencia de los datos y automatizar su procesamiento. Comprender estos mecanismos es fundamental para predecir el comportamiento del sistema y prevenir errores.
+1.4.1. Análisis Profundo de las Relaciones de Clave Foránea
+Las claves foráneas crean integridad relacional, pero sus reglas ON DELETE dictan cómo se comporta la base de datos cuando se elimina un registro padre. La siguiente tabla analiza las relaciones críticas en este esquema.
+Tabla: Análisis de Relaciones de Clave Foránea y Cascada
+Tabla Hija
+	Columna Hija
+	Tabla Padre
+	Columna Padre
+	Regla ON DELETE
+	Implicación
+	evaluaciones_aisladas
+	area_id
+	areas
+	id
+	CASCADE
+	Eliminar un Área borra permanentemente todas sus evaluaciones aisladas asociadas.
+	evaluaciones_aisladas
+	work_center_id
+	work_centers
+	id
+	CASCADE
+	Eliminar un Centro de Trabajo borra permanentemente todas sus evaluaciones aisladas asociadas.
+	evaluaciones_niosh
+	user_id
+	auth.users
+	id
+	NO ACTION
+	El sistema impedirá la eliminación de un usuario de auth.users si tiene alguna evaluación NIOSH vinculada.
+	evaluaciones_niosh
+	work_center_id
+	work_centers
+	id
+	CASCADE
+	Eliminar un Centro de Trabajo borra permanentemente todas sus evaluaciones NIOSH asociadas.
+	evaluaciones_reba
+	user_id
+	auth.users
+	id
+	NO ACTION
+	El sistema impedirá la eliminación de un usuario de auth.users si tiene alguna evaluación REBA vinculada.
+	evaluaciones_reba
+	work_center_id
+	work_centers
+	id
+	CASCADE
+	Eliminar un Centro de Trabajo borra permanentemente todas sus evaluaciones REBA asociadas.
+	evaluaciones_rula
+	user_id
+	auth.users
+	id
+	NO ACTION
+	El sistema impedirá la eliminación de un usuario de auth.users si tiene alguna evaluación RULA vinculada.
+	evaluaciones_rula
+	work_center_id
+	work_centers
+	id
+	CASCADE
+	Eliminar un Centro de Trabajo borra permanentemente todas sus evaluaciones RULA asociadas.
+	notas_centros
+	user_id
+	auth.users
+	id
+	NO ACTION
+	El sistema impedirá la eliminación de un usuario de auth.users si tiene alguna nota vinculada.
+	notas_centros
+	work_center_id
+	work_centers
+	id
+	CASCADE
+	Eliminar un Centro de Trabajo borra permanentemente todas sus notas asociadas.
+	scores_resumen
+	work_center_id
+	work_centers
+	id
+	CASCADE
+	Eliminar un Centro de Trabajo borra permanentemente su registro de puntuación de resumen correspondiente.
+	El uso consistente de ON DELETE CASCADE en la clave foránea work_center_id a través de múltiples tablas establece una política de gestión de datos potente pero potencialmente peligrosa. Esta configuración asegura que cuando se elimina un work_center, todos sus datos dependientes (evaluaciones, notas, resúmenes) se purgan automática y silenciosamente. Si bien esto garantiza la consistencia de los datos al evitar registros huérfanos, también introduce un riesgo operativo significativo. Una sola operación DELETE accidental en la tabla work_centers podría desencadenar una reacción en cadena irreversible, eliminando una gran cantidad de datos históricos críticos en al menos otras seis tablas. Este comportamiento debe manejarse con extremo cuidado en la capa de la aplicación, principalmente a través de políticas de control de acceso estrictas.
+1.4.2. Automatización Basada en Triggers: El Corazón del Flujo de Datos
+Esta es la respuesta directa a tu pregunta sobre "cuál tabla alimenta a cuál". El esquema utiliza triggers (disparadores) de la base de datos para crear un flujo de datos automático y unidireccional.
+* Tablas de Origen (Las que "Alimentan"): evaluaciones_niosh, evaluaciones_reba y evaluaciones_rula.
+* Motor de Procesamiento (El "Cómo"): La función de PostgreSQL update_scores_resumen_counts().
+* Tabla de Destino (La "Alimentada"): scores_resumen.
+El flujo de datos funciona así:
+1. Un usuario crea, modifica o elimina un registro en evaluaciones_niosh, evaluaciones_reba o evaluaciones_rula.
+2. Esta acción dispara automáticamente el trigger correspondiente (on_niosh_change, on_reba_change, etc.).
+3. El trigger ejecuta la función update_scores_resumen_counts().
+4. Esta función recalcula las estadísticas de resumen (conteos totales, puntaje promedio, etc.) para el work_center_id afectado.
+5. Finalmente, la función actualiza la fila correspondiente en la tabla scores_resumen con los nuevos datos calculados.
+Esta arquitectura es muy eficiente para paneles de control (aplicaciones "pesadas en lectura"), porque los datos de resumen siempre están precalculados y listos para ser consultados rápidamente. La desventaja es que añade una pequeña sobrecarga a cada operación de escritura (INSERT, UPDATE, DELETE) en las tablas de evaluación.
+Parte 2: Guía para Desarrolladores con la API de Supabase (JavaScript)
+Esta guía proporciona instrucciones prácticas y específicas del esquema para que los desarrolladores interactúen con la base de datos utilizando la librería cliente supabase-js. Todos los ejemplos están adaptados al modelo de datos de la plataforma ERGO-Risk.
+2.1. Inicialización del Cliente y Autenticación
+Inicializar correctamente el cliente de Supabase y gestionar la autenticación es el primer paso para construir una aplicación frontend segura y funcional.
+Configuración
+Primero, instala la librería de JavaScript de Supabase en tu proyecto usando un gestor de paquetes como npm.[1]
+npm install @supabase/supabase-js
+
+A continuación, crea una instancia de cliente dedicada. Esto se hace típicamente en un archivo de configuración (p. ej., supabase-config.js) proporcionando la URL de tu proyecto y la clave anon. Estas claves son seguras para exponer en un entorno de navegador porque el acceso a los datos está controlado por políticas de Seguridad a Nivel de Fila (RLS).[2]
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = 'https://tu-proyecto.supabase.co'; // Reemplaza con la URL de tu proyecto Supabase
+const SUPABASE_ANON_KEY = 'tu-clave-publica-anon'; // Reemplaza con tu clave anónima de Supabase
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+Integración del Flujo de Autenticación
+El flujo de autenticación de la aplicación, como se describe en la documentación proporcionada, se integra directamente con Supabase Auth.[3]
+1. Un usuario envía sus credenciales (email/contraseña).
+2. El frontend llama a una función de inicio de sesión, que utiliza supabase.auth.signInWithPassword().
+3. Si tiene éxito, Supabase devuelve un objeto de sesión que contiene un access_token (un JSON Web Token o JWT) y datos del usuario.
+4. Esta información de sesión se almacena, típicamente en sessionStorage o localStorage.
+Autorización de Solicitudes
+Una vez que el cliente está inicializado y el usuario ha iniciado sesión, la librería supabase-js maneja automáticamente la autorización. El access_token almacenado se incluye como un encabezado Authorization: Bearer <token> en cada solicitud posterior a la API de la base de datos.
+Supabase inspecciona este JWT en cada solicitud entrante para identificar al usuario a través de auth.uid() y su rol a través de auth.role(). Esta identidad se utiliza luego para hacer cumplir las políticas de RLS definidas en tus tablas. Este es el mecanismo que asegura que un usuario solo pueda ver o modificar los datos a los que tiene permiso de acceso. El vínculo entre el usuario que ha iniciado sesión y la política de RLS es directo y automático.
+Para entornos del lado del servidor (como las rutas de API de Next.js o las Deno Edge Functions), donde localStorage no está disponible, el cliente debe inicializarse con opciones específicas para deshabilitar la persistencia de la sesión, ya que el servidor gestiona las sesiones de manera diferente.[4]
+// Ejemplo de inicialización de cliente en el lado del servidor
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseAdmin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY, {
+ auth: {
+   autoRefreshToken: false,
+   persistSession: false
+ }
+});
+
+2.2. Operaciones CRUD Fundamentales (con ejemplos específicos del esquema)
+Las siguientes secciones proporcionan una biblioteca de ejemplos de código prácticos para realizar operaciones de Crear, Leer, Actualizar y Eliminar (CRUD) en las tablas de la plataforma.
+2.2.1. Creación de Registros (insert)
+El método .insert() se utiliza para añadir nuevas filas a una tabla. Puede aceptar un solo objeto para una fila o un array de objetos para inserciones masivas.[5]
+Ejemplo: Añadir una nueva evaluación REBA
+Este ejemplo muestra cómo crear un único registro de evaluacion_reba. Al encadenar .select(), solicitamos que Supabase devuelva el registro recién creado, lo cual es útil para obtener valores generados por el servidor como id y created_at.[6, 7]
+async function agregarEvaluacionReba(datosEvaluacion) {
+ const { data, error } = await supabase
+ .from('evaluaciones_reba')
+ .insert({
+     work_center_id: datosEvaluacion.workCenterId,
+     titulo: datosEvaluacion.titulo,
+     user_id: datosEvaluacion.userId, // Debería provenir del usuario autenticado
+     //... otros campos específicos de REBA
+     score_final: datosEvaluacion.score,
+     nivel_riesgo: datosEvaluacion.nivelRiesgo
+   })
+ .select()
+ .single(); // Usa.single() si esperas solo un registro de vuelta
+
+ if (error) {
+   console.error('Error al añadir la evaluación REBA:', error);
+   return null;
+ }
+
+ console.log('Evaluación REBA añadida con éxito:', data);
+ return data;
+}
+
+Ejemplo: Añadir múltiples notas en bloque
+Esto demuestra una inserción masiva en la tabla notas_centros.
+async function agregarMultiplesNotas(workCenterId, arrayDeNotas, userId) {
+ const notasAInsertar = arrayDeNotas.map(textoNota => ({
+   work_center_id: workCenterId,
+   texto: textoNota,
+   user_id: userId
+ }));
+
+ const { error } = await supabase
+ .from('notas_centros')
+ .insert(notasAInsertar);
+
+ if (error) {
+   console.error('Error al añadir las notas:', error);
+   return false;
+ }
+
+ console.log('Todas las notas se añadieron con éxito.');
+ return true;
+}
+
+2.2.2. Lectura y Consulta de Datos (select)
+El método .select() se utiliza para recuperar datos. Se puede combinar con una variedad de filtros y modificadores para construir consultas precisas.[8]
+Ejemplo: Obtener todos los centros de trabajo, seleccionando columnas específicas
+Esta consulta recupera solo el id y nombre de todos los registros en work_centers.
+async function obtenerCentrosDeTrabajo() {
+ const { data, error } = await supabase
+ .from('work_centers')
+ .select('id, name'); // Asumiendo que 'name' es una columna
+
+ if (error) throw error;
+ return data;
+}
+
+Ejemplo: Filtrado y ordenación avanzados
+Este ejemplo encuentra las 5 evaluaciones NIOSH más recientes para un centro de trabajo específico que tienen una puntuación de riesgo alta (indice_levantamiento > 1.0), ordenadas por fecha.[9, 10]
+async function obtenerEvaluacionesNioshDeAltoRiesgo(workCenterId) {
+ const { data, error } = await supabase
+ .from('evaluaciones_niosh')
+ .select('id, titulo, fecha_evaluacion, indice_levantamiento, nivel_riesgo')
+ .eq('work_center_id', workCenterId) // Filtrar por centro de trabajo
+ .gt('indice_levantamiento', 1.0)   // Filtrar por índice mayor que 1.0
+ .order('fecha_evaluacion', { ascending: false }) // Ordenar por más reciente
+ .limit(5); // Obtener solo las 5 primeras
+
+ if (error) throw error;
+ return data;
+}
+
+2.2.3. Actualización de Registros (update)
+El método .update() modifica los registros existentes. Es crucial encadenarlo con un filtro (como .eq()) para especificar qué filas actualizar, de lo contrario, corres el riesgo de actualizar todas las filas de la tabla.[11]
+Ejemplo: Actualizar el estado y los comentarios de una actividad
+Esta función encuentra una actividad por su id y actualiza dos de sus campos.
+async function actualizarActividad(activityId, nuevoEstado, nuevosComentarios) {
+ const { data, error } = await supabase
+ .from('actividades')
+ .update({ 
+     estado: nuevoEstado, // p. ej., 'archivado'
+     comentarios: nuevosComentarios 
+   })
+ .eq('id', activityId)
+ .select(); // Devuelve el registro actualizado
+
+ if (error) {
+   console.error('Error al actualizar la actividad:', error);
+   return null;
+ }
+ return data;
+}
+
+2.2.4. Eliminación de Registros (delete)
+El método .delete() elimina permanentemente los registros de la base de datos. Al igual que update, debe usarse con filtros.[12]
+Ejemplo: Eliminar una nota específica
+Esta función elimina una única nota_centro basada en su clave primaria.
+async function eliminarNota(noteId) {
+ const { error } = await supabase
+ .from('notas_centros')
+ .delete()
+ .eq('id', noteId);
+
+ if (error) {
+   console.error('Error al eliminar la nota:', error);
+   // Esto puede fallar debido a las políticas de RLS
+   return false;
+ }
+ return true;
+}
+
+Eliminaciones Físicas vs. Lógicas (Hard vs. Soft Deletes)
+El comando delete() realiza una "eliminación física", que es irreversible. Dada la configuración ON DELETE CASCADE, esto es particularmente peligroso. Un patrón más seguro, y a menudo preferido, es la "eliminación lógica" (soft delete).[13] En lugar de eliminar un registro, lo marcas como inactivo. La tabla actividades ya insinúa esto con su columna estado.
+Una implementación más robusta implicaría añadir una columna deleted_at (timestamptz, nulable) a tablas críticas como evaluaciones_*.
+* Para eliminar lógicamente: update({ deleted_at: new Date().toISOString() })
+* Para consultar registros activos: Añade .is('deleted_at', null) a tus consultas select.
+* Para restaurar: update({ deleted_at: null })
+Este enfoque preserva los datos históricos y protege contra la pérdida permanente accidental, mitigando el riesgo de las reglas CASCADE.
+2.3. Consultas Entre Relaciones (Joins)
+Supabase te permite obtener datos de tablas relacionadas en una sola solicitud utilizando una sintaxis anidada e intuitiva. Esto es extremadamente eficiente ya que evita múltiples viajes de ida y vuelta a la base de datos.[14]
+2.3.1. Joins Uno-a-Muchos
+Se utiliza para obtener un registro padre y todos sus registros hijos relacionados.
+Ejemplo: Obtener un centro de trabajo con todas sus evaluaciones REBA y notas
+Esta única llamada a la API recupera un work_center e incrusta dos conjuntos de datos relacionados: sus evaluaciones_reba y sus notas_centros.
+async function obtenerDashboardWorkCenter(workCenterId) {
+ const { data, error } = await supabase
+ .from('work_centers')
+ .select(`
+     id,
+     name,
+     evaluaciones_reba ( id, titulo, score_final, nivel_riesgo ),
+     notas_centros ( id, texto, created_at, user_id )
+   `)
+ .eq('id', workCenterId)
+ .single(); // Esperamos solo un centro de trabajo
+
+ if (error) throw error;
+ // data será un objeto como:
+ // { id: '...', name: '...', evaluaciones_reba: [...], notas_centros: [...] }
+ return data;
+}
+
+2.3.2. Joins Muchos-a-Uno
+Se utiliza para obtener un registro hijo e incrustar datos de su registro padre.
+Ejemplo: Recuperar evaluaciones NIOSH e incluir detalles del usuario
+Esta consulta obtiene una lista de evaluaciones_niosh y para cada una, incluye el nombre y puesto de la tabla usuarios relacionada. Observa el uso de un alias (autor:usuarios) para proporcionar una clave más descriptiva en el JSON resultante.[14]
+async function obtenerEvaluacionesNioshConAutores() {
+ const { data, error } = await supabase
+ .from('evaluaciones_niosh')
+ .select(`
+     id,
+     titulo,
+     indice_levantamiento,
+     nivel_riesgo,
+     autor: usuarios ( nombre, puesto )
+   `);
+   // Esto asume una relación de clave foránea de 'evaluaciones_niosh.user_id' a 'usuarios.auth_user_id'
+   // o que Supabase puede inferir la relación correctamente. Si la FK es de 'user_id' a 'auth.users.id'
+   // y quieres el perfil de 'usuarios', podría ser necesaria una vista o función de base de datos.
+
+ if (error) throw error;
+ return data;
+}
+
+2.3.3. Filtrado en Tablas Relacionadas
+Puedes filtrar la consulta principal basándote en valores de una tabla relacionada marcando el join como !inner. Esto asegura que solo se devuelvan los registros padre que tienen registros hijos coincidentes.[9]
+Ejemplo: Encontrar todos los centros de trabajo que tienen una evaluación RULA de alto riesgo
+Esta consulta encuentra work_centers que contienen al menos una evaluacion_rula donde el nivel_accion es '4'.
+async function encontrarWorkCentersConRulaDeAltoRiesgo() {
+ const { data, error } = await supabase
+ .from('work_centers')
+ .select('id, name, evaluaciones_rula!inner(nivel_accion)')
+ .eq('evaluaciones_rula.nivel_accion', '4');
+
+ if (error) throw error;
+ // Devuelve solo los centros de trabajo que coinciden con la condición.
+ return data;
+}
+
+Parte 3: Implementación Avanzada y Seguridad
+Esta parte final cubre temas más complejos que son esenciales para construir una aplicación robusta, segura y rica en características sobre este esquema.
+3.1. Ejecución de Lógica de Base de Datos con RPC
+Las Llamadas a Procedimientos Remotos (RPC) son un mecanismo para ejecutar lógica personalizada definida en funciones de PostgreSQL directamente desde tu aplicación cliente. Esta es la forma preferida de manejar lógica de negocio compleja, validación de datos u operaciones que requieren privilegios elevados, ya que encapsula la lógica de forma segura en el servidor.[15, 16]
+La sintaxis es sencilla: supabase.rpc('nombre_funcion', { args }).[16]
+Ejemplo Práctico: Función de Estadísticas Personalizada
+La función update_scores_resumen_counts es ejecutada por triggers, pero podrías necesitar otros cálculos personalizados bajo demanda. Por ejemplo, una función para obtener estadísticas rápidas para un widget de panel de control.
+Primero, define la función en tu base de datos usando el Editor SQL de Supabase:
+-- Esta función toma un ID de centro de trabajo y devuelve un objeto JSON
+-- con el número total de evaluaciones REBA y el recuento de las de alto riesgo.
+CREATE OR REPLACE FUNCTION get_work_center_stats(center_id TEXT)
+RETURNS json STABLE -- STABLE indica que la función no puede modificar la base de datos
+LANGUAGE plpgsql AS $$
+DECLARE
+ total_evals INT;
+ high_risk_count INT;
+BEGIN
+ SELECT COUNT(*)
+ INTO total_evals
+ FROM public.evaluaciones_reba
+ WHERE work_center_id = center_id;
+
+ SELECT COUNT(*)
+ INTO high_risk_count
+ FROM public.evaluaciones_reba
+ WHERE work_center_id = center_id AND nivel_riesgo = 'Muy Alto';
+
+ RETURN json_build_object(
+   'total_reba_evaluations', total_evals,
+   'high_risk_reba_count', high_risk_count
+ );
+END;
+$$;
+
+Luego, llama a esta función desde tu aplicación JavaScript [17]:
+async function obtenerEstadisticasDashboard(workCenterId) {
+ const { data, error } = await supabase.rpc('get_work_center_stats', {
+   center_id: workCenterId
+ });
+
+ if (error) {
+   console.error('Error al obtener las estadísticas del dashboard:', error);
+   return null;
+ }
+
+ // data será el objeto JSON: { total_reba_evaluations: 10, high_risk_reba_count: 2 }
+ return data;
+}
+
+3.2. Dominando las Columnas jsonb
+El esquema utiliza eficazmente columnas jsonb (datos_metodo, respuestas) para un almacenamiento de datos flexible. El tipo jsonb es superior a json porque almacena los datos en un formato binario que está indexado y es significativamente más rápido de consultar.[18]
+Inserción y Actualización de Datos jsonb
+Al insertar o actualizar, simplemente proporcionas un objeto JavaScript válido. Supabase se encarga de la serialización.
+async function guardarEvaluacionAislada(datosEvaluacion) {
+ const { data, error } = await supabase
+ .from('evaluaciones_aisladas')
+ .insert({
+     work_center_id: datosEvaluacion.workCenterId,
+     area_id: datosEvaluacion.areaId,
+     // El campo 'respuestas' es un objeto JavaScript
+     respuestas: {
+       pregunta1: 'si',
+       pregunta2: { a: 'valor_a', b: 5 },
+       factoresRiesgo: ['repeticion', 'fuerza']
+     }
+   })
+ .select();
+   
+ if (error) throw error;
+ return data;
+}
+
+Consulta de Datos jsonb
+Puedes consultar la estructura anidada de las columnas jsonb utilizando operadores especiales. El operador ->> accede a una clave y devuelve su valor como texto.[18]
+Ejemplo: Encontrar evaluaciones basadas en una respuesta específica
+Esta consulta encuentra todas las evaluaciones_aisladas donde la respuesta a pregunta1 fue 'si'.
+async function buscarPorRespuesta(workCenterId) {
+ const { data, error } = await supabase
+ .from('evaluaciones_aisladas')
+ .select('id, nombre_area, respuestas')
+ .eq('work_center_id', workCenterId)
+ .eq('respuestas->>question1', 'si'); // Consulta una clave de nivel superior
+
+ if (error) throw error;
+ return data;
+}
+
+Para consultar la presencia de un par clave-valor en cualquier parte del objeto JSON, puedes usar el operador contains (@>).[19]
+async function buscarPorDatoAnidado(workCenterId) {
+ const { data, error } = await supabase
+ .from('actividades')
+ .select()
+ .eq('work_center_id', workCenterId)
+   // Encuentra actividades donde 'datos_metodo' contiene el objeto especificado
+ .contains('datos_metodo', { herramienta_especifica: 'llave_inglesa' }); 
+
+ if (error) throw error;
+ return data;
+}
+
+3.3. Interacción con Supabase Storage
+La tabla fotos_centros funciona en conjunto con Supabase Storage. La columna foto_url almacena una ruta al archivo, no el archivo en sí. La lógica de la aplicación debe gestionar tanto el registro de la base de datos como el objeto de almacenamiento.
+Subida y Vinculación de un Archivo
+El proceso implica dos pasos: primero subir el archivo a Storage, y luego guardar su ruta en la base de datos.
+async function subirFoto(file, workCenterId, areaId) {
+ // 1. Subir el archivo a Supabase Storage
+ const filePath = `${workCenterId}/${Date.now()}_${file.name}`;
+ const { error: uploadError } = await supabase.storage
+ .from('fotos-centro') // El nombre de tu bucket de almacenamiento
+ .upload(filePath, file);
+
+ if (uploadError) throw uploadError;
+
+ // 2. Insertar la ruta en la tabla 'fotos_centros'
+ const { data, error: insertError } = await supabase
+ .from('fotos_centros')
+ .insert({
+     work_center_id: workCenterId,
+     area_id: areaId,
+     foto_url: filePath,
+     foto_name: file.name
+   })
+ .select();
+
+ if (insertError) throw insertError;
+ return data;
+}
+
+Eliminación de un Archivo
+La eliminación también debe ser un proceso de dos pasos para evitar la creación de "archivos huérfanos" (archivos en el almacenamiento sin un registro de base de datos correspondiente). No eliminar el objeto de almacenamiento conducirá a un desperdicio de espacio y a inconsistencia de datos.
+async function eliminarFoto(registroFoto) {
+ // 1. Eliminar el archivo de Supabase Storage
+ const { error: storageError } = await supabase.storage
+ .from('fotos-centro')
+ .remove([registroFoto.foto_url]); //.remove() espera un array de rutas
+
+ if (storageError) {
+   console.error('Fallo al eliminar el archivo del almacenamiento:', storageError);
+   // Decide cómo manejar el error: quizás no eliminar el registro de la BD si el almacenamiento falla
+   return false;
+ }
+
+ // 2. Eliminar el registro de la base de datos
+ const { error: dbError } = await supabase
+ .from('fotos_centros')
+ .delete()
+ .eq('id', registroFoto.id);
+
+ if (dbError) throw dbError;
+ return true;
+}
+
+3.4. Seguridad a Nivel de Fila (RLS): La Piedra Angular de la Seguridad de la Aplicación
+Esta es la sección más importante para conectar Supabase con JavaScript de forma segura.
+La Seguridad a Nivel de Fila (RLS) no es una característica opcional; es el modelo de seguridad fundamental e indispensable que hace seguro el uso de Supabase desde un cliente público como un navegador web. Sin RLS habilitado, tu anon_key otorgaría a cualquier usuario acceso a toda tu base de datos.
+Tu documento de autenticación identifica correctamente la diferencia entre errores de autenticación y autorización [3]:
+* Error 401 (Unauthorized): El access_token del usuario falta, ha expirado o es inválido. No están autenticados.
+* Error 403 (Forbidden): El usuario está autenticado (token válido), pero una política de RLS le está impidiendo realizar la acción solicitada (p. ej., SELECT, INSERT).
+Estrategia de Políticas Recomendada
+La mejor práctica es crear políticas claras y específicas para cada operación (SELECT, INSERT, UPDATE, DELETE) en cada tabla.
+Paso 1: Habilitar RLS en tus Tablas
+Ve al panel de Supabase, a la sección "Authentication" -> "Policies". Para cada tabla, haz clic en "Enable RLS".
+Paso 2: Crear Políticas de Permisos (Ejemplos para Copiar y Pegar)
+Aquí tienes un conjunto de políticas recomendadas basadas en tu esquema. Puedes ejecutarlas directamente en el Editor SQL de Supabase.
+Política para la tabla usuarios
+* Objetivo: Permitir que cada usuario vea y actualice su propio perfil, pero no el de los demás.
+-- Habilitar RLS en la tabla de usuarios
+ALTER TABLE public.usuarios ENABLE ROW LEVEL SECURITY;
+
+-- POLÍTICA DE SELECT: Los usuarios pueden leer su propio perfil.
+CREATE POLICY "Los usuarios pueden ver su propio perfil"
+ON public.usuarios FOR SELECT
+USING ( auth_user_id = auth.uid() );
+
+-- POLÍTICA DE UPDATE: Los usuarios pueden actualizar su propio perfil.
+CREATE POLICY "Los usuarios pueden actualizar su propio perfil"
+ON public.usuarios FOR UPDATE
+USING ( auth_user_id = auth.uid() );
+
+Políticas para la tabla evaluaciones_reba (y similares para NIOSH, RULA)
+* Objetivo: Permitir a los usuarios ver todas las evaluaciones de su centro de trabajo, pero solo crear/actualizar si tienen el rol adecuado (rango 1 o 2). Solo el creador o un admin puede borrar.
+-- Habilitar RLS en la tabla de evaluaciones
+ALTER TABLE public.evaluaciones_reba ENABLE ROW LEVEL SECURITY;
+
+-- POLÍTICA DE SELECT: Los usuarios pueden ver todas las evaluaciones de su centro de trabajo.
+-- (Esto requiere una tabla o función que vincule usuarios a centros de trabajo)
+-- Asumiremos que una función `is_member_of(work_center_id)` existe.
+CREATE POLICY "Permitir a miembros ver evaluaciones de su centro"
+ON public.evaluaciones_reba FOR SELECT
+USING ( public.is_member_of(work_center_id) ); -- Necesitarás crear esta función auxiliar
+
+-- POLÍTICA DE INSERT: Solo Admins (rango 1) o Evaluadores (rango 2) pueden crear.
+CREATE POLICY "Permitir a Admins/Evaluadores crear evaluaciones"
+ON public.evaluaciones_reba FOR INSERT
+WITH CHECK ( (public.get_my_rango() <= 2) AND (public.is_member_of(work_center_id)) );
+
+-- POLÍTICA DE UPDATE: Solo el creador original o un Admin puede actualizar.
+CREATE POLICY "Permitir al creador o Admin actualizar evaluaciones"
+ON public.evaluaciones_reba FOR UPDATE
+USING ( (user_id = auth.uid()) OR (public.get_my_rango() = 1) );
+
+-- POLÍTICA DE DELETE: Solo el creador original o un Admin puede eliminar.
+CREATE POLICY "Permitir al creador o Admin eliminar evaluaciones"
+ON public.evaluaciones_reba FOR DELETE
+USING ( (user_id = auth.uid()) OR (public.get_my_rango() = 1) );
+
+Política CRÍTICA para work_centers
+* Objetivo: Proteger contra la eliminación en cascada. Solo los administradores de más alto nivel pueden eliminar un centro de trabajo.
+-- Habilitar RLS en la tabla de centros de trabajo
+ALTER TABLE public.work_centers ENABLE ROW LEVEL SECURITY;
+
+-- POLÍTICA DE DELETE: ¡¡MUY IMPORTANTE!! Solo Admins (rango=1) pueden eliminar.
+CREATE POLICY "Solo Admins pueden eliminar centros de trabajo"
+ON public.work_centers FOR DELETE
+USING ( public.get_my_rango() = 1 );
+
+-- (Añade políticas de SELECT, INSERT, UPDATE para work_centers según sea necesario)
+
+Paso 3: Crear las Funciones de Ayuda
+Las políticas anteriores utilizan funciones auxiliares para mantenerse limpias y legibles. Debes crearlas también en el Editor SQL.
+-- Obtiene el 'rango' del usuario actualmente autenticado desde la tabla 'usuarios'.
+-- SECURITY DEFINER permite que esta función se ejecute con los permisos del creador de la función,
+-- permitiéndole leer la tabla 'usuarios' de forma segura.
+CREATE OR REPLACE FUNCTION public.get_my_rango()
+RETURNS smallint
+LANGUAGE sql
+SECURITY DEFINER
+STABLE -- Indica que la función no modifica la base de datos.
+AS $$
+ SELECT rango FROM public.usuarios WHERE auth_user_id = auth.uid();
+$$;
+
+-- Comprueba si el usuario actual pertenece a un centro de trabajo específico.
+-- NOTA: Esto requiere que tengas una tabla que vincule a los usuarios con los centros de trabajo.
+-- Por ejemplo: CREATE TABLE user_memberships (user_id uuid, work_center_id text);
+CREATE OR REPLACE FUNCTION public.is_member_of(center_id text)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+AS $$
+ SELECT EXISTS (
+   SELECT 1 FROM public.user_memberships
+   WHERE user_id = auth.uid() AND work_center_id = center_id
+ );
+$$;
+
+Con estas políticas y funciones en su lugar, tu aplicación JavaScript puede interactuar de forma segura con Supabase. El servidor se encargará de hacer cumplir los permisos automáticamente para cada solicitud.
