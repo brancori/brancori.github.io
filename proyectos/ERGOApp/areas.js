@@ -474,21 +474,11 @@ async function renderAreas() {
                     <h3>${area.name}</h3>
                     <div class="card-responsible">Responsable: ${area.responsible}</div>
                     
-                    <div style="
-                        font-size: 11px;
-                        color: #666;
-                        margin: 8px 0;
-                        padding: 6px 10px;
-                        background-color: #f8f9fa;
-                        border-radius: 4px;
-                        border-left: 3px solid ${colorPromedio};
-                        font-weight: 500;
-                    ">
+                    <div class="summary-badge" style="border-left-color: ${colorPromedio};">
                         📊 Promedio: ${promedioScore}%
-                        <br>
-                        <small style="font-size: 10px; color: #888;">
+                        <div style="font-size: 0.65rem; opacity: 0.8; margin-top: 2px;">
                             ${centrosEvaluados}/${centerCount} evaluados
-                        </small>
+                        </div>
                     </div>
                     
                     <div class="card-footer">
@@ -757,16 +747,7 @@ async function renderWorkCenters() {
                     <h3>${center.name}</h3>
                     <div class="card-responsible">Responsable: ${center.responsible}</div>
                     
-                    <div class="score-ergonomico" style="
-                        font-size: 12px;
-                        color: #666;
-                        margin-top: 4px;
-                        padding: 4px 8px;
-                        background-color: #f8f9fa;
-                        border-radius: 4px;
-                        border-left: 3px solid ${scoreInfo.color_riesgo};
-                        font-weight: 500;
-                    ">
+                    <div class="summary-badge" style="border-left-color: ${scoreInfo.color_riesgo};">
                         📊 Riesgo: ${scoreInfo.score_actual}% - ${scoreInfo.categoria_riesgo}
                     </div>
                     

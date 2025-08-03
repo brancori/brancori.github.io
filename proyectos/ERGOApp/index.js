@@ -144,6 +144,7 @@ async handleLogin(e) {
     showMainContent() {
         const container = document.querySelector('.container');
         if (container) {
+            container.classList.remove('hidden'); // <-- ESTA LÍNEA ES LA SOLUCIÓN
             container.style.display = 'block';
             container.style.opacity = '1';
             container.style.transform = 'translateY(0)';

@@ -227,6 +227,17 @@ body {
     }
 }
 
+/* ================================================================== */
+/* ==                 COMPONENTE BASE: PANEL                     == */
+/* ================================================================== */
+.panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -353,7 +364,7 @@ body {
 
 /* ===== UTILITY CLASSES ===== */
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .text-center {
@@ -609,5 +620,52 @@ input:checked ~ .slider .sun {
 .map-area.risk-high { fill: #fd7e14; }     /* Naranja */
 .map-area.risk-critical { fill: #dc3545; } /* Rojo */
 
-
 /* --- Colores para TEMA OSCURO MONOCROMÁTICO --- */
+
+.panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem; /* Un padding por defecto */
+}
+
+/* ================================================================== */
+/* ==                  CLASES DE UTILIDAD GLOBALES                 == */
+/* ================================================================== */
+
+/* --- Utilidades de Flexbox --- */
+.u-flex-center-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.u-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Utilidades de Texto --- */
+.u-text-center {
+  text-align: center;
+}
+
+/* --- Utilidades para Ocultar --- */
+.u-hidden {
+  display: none !important;
+}
+
+.summary-badge {
+    font-size: 0.75rem; /* 12px */
+    color: var(--gray-600);
+    background-color: var(--gray-50);
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+    border-left-width: 4px;
+    border-left-style: solid;
+    font-weight: 500;
+}

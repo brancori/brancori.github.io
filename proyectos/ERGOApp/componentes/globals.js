@@ -253,6 +253,48 @@ redirectToLogin() {
 
 // ===== UTILIDADES GENERALES =====
 window.ERGOUtils = {
+    // ... (tus otras funciones como showToast, formatDate, etc.)
+
+    /**
+     * Convierte una fecha a un formato de tiempo relativo (ej. "hace 5 minutos").
+     * @param {string | Date} date - La fecha a convertir.
+     * @returns {string} El texto del tiempo relativo.
+     */
+    timeAgo: function(date) {
+        if (!date) return 'fecha desconocida';
+
+        const now = new Date();
+        const past = new Date(date);
+        const seconds = Math.floor((now - past) / 1000);
+
+        let interval = seconds / 31536000;
+        if (interval > 1) {
+            const years = Math.floor(interval);
+            return `hace ${years} año${years > 1 ? 's' : ''}`;
+        }
+        interval = seconds / 2592000;
+        if (interval > 1) {
+            const months = Math.floor(interval);
+            return `hace ${months} mes${months > 1 ? 'es' : ''}`;
+        }
+        interval = seconds / 86400;
+        if (interval > 1) {
+            const days = Math.floor(interval);
+            return `hace ${days} día${days > 1 ? 's' : ''}`;
+        }
+        interval = seconds / 3600;
+        if (interval > 1) {
+            const hours = Math.floor(interval);
+            return `hace ${hours} hora${hours > 1 ? 's' : ''}`;
+        }
+        interval = seconds / 60;
+        if (interval > 1) {
+            const minutes = Math.floor(interval);
+            return `hace ${minutes} minuto${minutes > 1 ? 's' : ''}`;
+        }
+        return `hace ${Math.floor(seconds)} segundo${seconds !== 1 ? 's' : ''}`;
+    },
+
     generateShortId() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let result = '';

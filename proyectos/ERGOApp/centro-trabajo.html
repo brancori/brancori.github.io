@@ -5,571 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Trabajo</title>
     <link rel="stylesheet" href="./componentes/globals.css">
+    <link rel="stylesheet" href="./centro-trabajo.css">
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./componentes/globals.js"></script>
     <script src="./componentes/auth-client.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
     <script src="./componentes/supabase-config.js"></script>
     <script src="./componentes/header-component.js"></script>
-    <style>
-        .centro-header {
-            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-            padding: 2rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
 
-        .centro-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .centro-info {
-            flex: 1;
-        }
-
-        .centro-info h1 {
-            font-size: 1.875rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-        }
-
-        .centro-responsable {
-            color: var(--gray-600);
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .score-container {
-            background: white;
-            border-radius: var(--border-radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-            min-width: 200px;
-            text-align: center;
-        }
-
-        .score-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .score-category {
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-
-        .content-sections {
-            padding: 2rem;
-            display: grid;
-            gap: 2rem;
-        }
-
-        .section-card {
-            background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-
-        /* Estilos para la sección de fotos */
-        .fotos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .foto-slot {
-            aspect-ratio: 1;
-            border: 2px dashed var(--gray-300);
-            border-radius: var(--border-radius-md);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            background: var(--gray-50);
-        }
-
-        .foto-slot:hover {
-            border-color: var(--primary-500);
-            background: var(--primary-50);
-        }
-
-        .foto-slot.occupied {
-            border: 2px solid var(--gray-200);
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .foto-slot.disabled {
-            background: var(--gray-100);
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .foto-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .foto-delete {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: var(--red-500);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            z-index: 10;
-        }
-
-        .foto-delete:hover {
-            background: var(--red-600);
-        }
-
-        .fotos-info {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-            text-align: center;
-        }
-
-        /* Estilos para evaluaciones */
-        .evaluaciones-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .evaluacion-item {
-            border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-md);
-            padding: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .evaluacion-item:hover {
-            border-color: var(--primary-300);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .evaluacion-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .evaluacion-metodo {
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-
-        .evaluacion-score {
-            background: var(--gray-100);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--border-radius-sm);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .evaluacion-fecha {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-        }
-
-        .empty-evaluations {
-            text-align: center;
-            padding: 2rem;
-            color: var(--gray-500);
-        }
-
-        /* Estilos para notas */
-        .notas-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .nota-item {
-            border-left: 4px solid var(--primary-500);
-            background: var(--gray-50);
-            padding: 1rem;
-            border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
-        }
-
-        .nota-fecha {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            margin-bottom: 0.5rem;
-        }
-
-        .nota-texto {
-            color: var(--gray-700);
-            line-height: 1.5;
-        }
-
-        .empty-notas {
-            text-align: center;
-            padding: 2rem;
-            color: var(--gray-500);
-        }
-
-        /* Modal para nueva nota */
-        .modal-nota {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-nota.show {
-            display: flex;
-        }
-
-        .modal-nota-content {
-            background: white;
-            border-radius: var(--border-radius-lg);
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow-xl);
-        }
-
-        .modal-nota textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 1rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--border-radius-md);
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .modal-nota textarea:focus {
-            outline: none;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .centro-title {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .fotos-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .content-sections {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .fotos-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        /* Modal para vista completa de fotos */
-.foto-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.foto-modal.show {
-    display: flex;
-    opacity: 1;
-}
-
-.foto-modal-content {
-    position: relative;
-    max-width: 95vw;
-    max-height: 95vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: modalZoomIn 0.3s ease-out;
-}
-
-@keyframes modalZoomIn {
-    from {
-        transform: scale(0.7);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.foto-modal-image {
-    max-width: 100%;
-    max-height: 80vh;
-    object-fit: contain;
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease;
-}
-@media (max-width: 768px) {
-    .foto-modal-image {
-        max-height: 70vh; /* Era 80vh */
-    }
-    
-    .foto-modal-controls {
-        bottom: 20px; /* Mover abajo para mejor acceso */
-        top: auto;
-    }
-}
-.foto-modal-info {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 1rem 1.5rem;
-    border-radius: var(--border-radius-lg);
-    margin-top: 1rem;
-    text-align: center;
-    color: var(--gray-800);
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
-}
-
-.nota-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .nota-actions {
-            display: flex;
-            align-items: center;
-        }
-
-.foto-modal-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--gray-700);
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    z-index: 10;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-lg);
-}
-
-.foto-modal-close:hover {
-    background: rgba(239, 68, 68, 0.9);
-    color: white;
-    transform: scale(1.1);
-}
-
-.foto-modal-controls {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    z-index: 10;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-lg);
-    color: var(--gray-700);
-}
-
-.foto-modal-controls:hover {
-    background: rgba(59, 130, 246, 0.9);
-    color: white;
-    transform: translateY(-50%) scale(1.1);
-}
-
-.foto-modal-prev {
-    left: 20px;
-}
-
-.foto-modal-next {
-    right: 20px;
-}
-
-.foto-modal-counter {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-md);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--gray-700);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Zoom functionality */
-.foto-modal-image.zoomed {
-    cursor: zoom-out;
-    transform: scale(1.5);
-}
-
-.foto-modal-image:not(.zoomed) {
-    cursor: zoom-in;
-}
-
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .foto-modal-close,
-    .foto-modal-controls {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-    }
-    
-    .foto-modal-close {
-        top: 10px;
-        right: 10px;
-    }
-    
-    .foto-modal-prev {
-        left: 10px;
-    }
-    
-    .foto-modal-next {
-        right: 10px;
-    }
-    
-    .foto-modal-counter {
-        top: 10px;
-        font-size: 0.75rem;
-        padding: 0.375rem 0.75rem;
-    }
-    
-    .foto-modal-info {
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-    }
-}
-
-.modal.show .modal-content {
-    animation: modal-fade-in 0.3s ease-out forwards;
-}
-
-@keyframes modal-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Grilla para organizar el formulario */
-.form-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-/* Estilos mejorados para los radio buttons */
-.radio-group {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    height: 44px; /* Misma altura que los inputs */
-    border: 1px solid var(--gray-300);
-    padding: 0 1rem;
-    border-radius: var(--border-radius-md);
-    background-color: var(--gray-50);
-}
-
-.radio-label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 0.875rem;
-}
-
-.radio-label input[type="radio"] {
-    margin-right: 0.5rem;
-    accent-color: var(--primary-600); /* Color de acento del radio button */
-}
-
-/* Responsividad para la grilla del formulario */
-@media (max-width: 768px) {
-    .form-grid-2 {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-}
-    </style>
 </head>
 <body>
     <div class="container">
@@ -584,17 +30,37 @@
             </nav>
             
             <div class="centro-title">
+
                 <div class="centro-info">
-                    <h1 id="centro-name">Centro de Trabajo</h1>
-                    <div id="centro-responsable" class="centro-responsable">Responsable: </div>
+                <h1 id="centro-name">Centro de Trabajo</h1>
+                <div id="centro-responsable" class="centro-responsable">Responsable: </div>
+            </div>
+
+            <div id="environmental-card" class="environmental-card" onclick="abrirModalCondiciones()">
+                <div class="environmental-item" id="display-condicion-iluminacion">
+                    <span class="label">Iluminación:</span>
+                    <span class="value" id="condicion-iluminacion-valor">--</span>
                 </div>
+                <div class="environmental-item" id="display-condicion-temperatura">
+                    <span class="label">Temperatura:</span>
+                    <span class="value" id="condicion-temperatura-valor">--</span>
+                </div>
+                <div class="environmental-item" id="display-condicion-ruido">
+                    <span class="label">Ruido:</span>
+                    <span class="value" id="condicion-ruido-valor">--</span>
+                </div>
+                <div class="environmental-item" id="display-condicion-personal">
+                    <span class="label">Personal Exp.:</span>
+                    <span class="value" id="condicion-personal-valor">--</span>
+                </div>
+            </div>
                 
                 <div class="score-container">
                     <div id="score-value" class="score-value">--</div>
                     <div id="score-category" class="score-category">Sin evaluar</div>
-                    <button class="btn btn-primary" onclick="openNotaModal()">
-                        + AGREGAR NOTA
-                    </button>
+                <button id="btn-toggle-status" class="btn btn-danger" onclick="toggleCenterStatus()">
+                    Cerrar Evaluación
+                </button>
                 </div>
             </div>
         </header>
@@ -658,6 +124,9 @@
             <section class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">📝 Notas y Observaciones</h2>
+                                        <button class="btn btn-primary" onclick="openNotaModal()">
+                        + AGREGAR NOTA
+                    </button>
                     <span class="count-badge" id="notas-count">0 notas</span>
                 </div>
                 
@@ -725,47 +194,64 @@
         <form id="form-actividad" onsubmit="event.preventDefault(); guardarActividad();">
             <div class="modal-body">
                 <input type="hidden" id="actividad-id">
-                <input type="hidden" id="actividad-metodo-original">
 
-                <div class="form-group">
-                    <label for="actividad-nombre">Nombre de la actividad</label>
-                    <input type="text" id="actividad-nombre" class="input-field" placeholder="Ej: Preparación de medios de cultivo" required>
-                </div>
+<div class="form-grid">
+    <div>
+        <div class="form-group">
+            <label for="actividad-nombre">Nombre de la actividad</label>
+            <input type="text" id="actividad-nombre" class="input-field" required>
+        </div>
 
-                <div class="form-grid-2">
-                    <div class="form-group">
-                        <label for="actividad-metodo">Método de Evaluación</label>
-                        <select id="actividad-metodo" class="input-field">
-                            <option value="REBA">REBA (Cuerpo completo)</option>
-                            <option value="RULA">RULA (Miembros superiores)</option>
-                            <option value="OCRA">OCRA (Movimientos repetitivos)</option>
-                            <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Análisis</label>
-                        <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="tipo_analisis" value="EJA" checked>
-                                <span class="radio-text">EJA</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="tipo_analisis" value="WS">
-                                <span class="radio-text">WS</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="actividad-comentarios">Comentarios</label>
-                    <textarea id="actividad-comentarios" class="input-field" rows="4" placeholder="Añade observaciones, notas o detalles relevantes..."></textarea>
-                </div>
+        <div class="form-group">
+            <label for="actividad-metodo">Método de Evaluación</label>
+            <div class="input-with-button">
+                <select id="actividad-metodo" class="input-field">
+                    <option value="" disabled selected>Selecciona un método...</option>
+                    <option value="REBA">REBA (Cuerpo completo)</option>
+                    <option value="RULA">RULA (Miembros superiores)</option>
+                    <option value="OCRA">OCRA (Movimientos repetitivos)</option>
+                    <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
+                </select>
+                <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
             </div>
+        </div>
+    </div>
 
-            <div class="modal-footer">
+    <div>
+         <div class="form-group">
+            <label id="tipo-analisis-label">Tipo de Análisis</label>
+            <div class="input-with-button">
+                <div class="btn-group" id="tipo-analisis-group" role="group" aria-labelledby="tipo-analisis-label">
+                    <button type="button" class="btn-toggle" data-value="EJA">EJA</button>
+                    <button type="button" class="btn-toggle" data-value="WS">WS</button>
+                </div>
+                <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
+            </div>
+        </div>
+    </div>
+</div> 
+                <div id="seccion-fotos-actividad" class="form-group full-width" style="display: none;">
+                    <label>Fotos de la Actividad</label>
+                    <div class="fotos-grid" id="fotos-grid-actividad">
+                        </div>
+                    <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="document.getElementById('foto-input-actividad').click();">
+                        + Cargar Fotos
+                    </button>
+                </div>
+                <input type="file" id="foto-input-actividad" accept="image/*" style="display: none;" multiple>
+
+                <div class="form-group full-width">
+                    <label for="actividad-comentarios">Comentarios</label>
+                    <textarea id="actividad-comentarios" class="input-field" rows="4"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="actividad-recomendaciones">Recomendaciones</label>
+                    <textarea id="actividad-recomendaciones" class="input-field" rows="4"></textarea>
+                </div>
+            </div> <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="cerrarModalActividad()">Cancelar</button>
-                <button type="submit" id="modal-actividad-btn-guardar" class="btn btn-primary">Guardar Actividad</button>
+                <button type="submit" id="modal-actividad-btn-guardar" class="btn btn-primary">Guardar</button>
             </div>
         </form>
     </div>
@@ -786,6 +272,31 @@
     </div>
 </div>
 
+<div id="closed-state-banner" class="notification is-warning" style="display: none;">
+        🔒 **Modo de solo lectura:** Este centro de trabajo está cerrado. Para realizar cambios, un administrador debe abrirlo.
+    </div>
+
+    <div id="modal-password-confirm" class="modal">
+        <div class="modal-overlay" onclick="closePasswordConfirmModal()"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="modal-password-title">Confirmar Acción</h3>
+                <button class="modal-close" onclick="closePasswordConfirmModal()"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-password-message" style="margin-bottom: 1rem; color: var(--gray-600);"></p>
+                <div class="form-group">
+                    <label for="password-confirm-input">Ingresa tu contraseña</label>
+                    <input type="password" id="password-confirm-input" class="input-field" placeholder="••••••••">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closePasswordConfirmModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="confirmPasswordAction()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
         <div id="modal-nota" class="modal-nota">
             <div class="modal-nota-content">
                 <h3 style="margin-bottom: 1rem;">Agregar Nueva Nota</h3>
@@ -797,9 +308,57 @@
             </div>
         </div>
 
+<div id="modal-condiciones" class="modal">
+    <div class="modal-overlay" onclick="cerrarModalCondiciones()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Condiciones Ambientales</h3>
+            <button class="modal-close" onclick="cerrarModalCondiciones()"><span>&times;</span></button>
+        </div>
+        <form id="form-condiciones" onsubmit="event.preventDefault(); guardarCondicionesAmbientales();">
+            <div class="modal-body">
+                <div class="form-group-inline">
+                    <label for="condiciones-iluminacion-input">Iluminación (lux)</label>
+                    <input type="number" step="any" id="condiciones-iluminacion-input" class="input-field">
+                    <label class="na-label">
+                        <input type="checkbox" id="condiciones-iluminacion-na"> N/A
+                    </label>
+                </div>
+                <div class="form-group-inline">
+                    <label for="condiciones-temperatura-input">Temperatura (°C)</label>
+                    <input type="number" step="any" id="condiciones-temperatura-input" class="input-field">
+                    <label class="na-label">
+                        <input type="checkbox" id="condiciones-temperatura-na"> N/A
+                    </label>
+                </div>
+                <div class="form-group-inline">
+                    <label for="condiciones-ruido-input">Ruido (dB)</label>
+                    <input type="number" step="any" id="condiciones-ruido-input" class="input-field">
+                    <label class="na-label">
+                        <input type="checkbox" id="condiciones-ruido-na"> N/A
+                    </label>
+                </div>
+                <div class="form-group-inline">
+                    <label for="condiciones-personal-input">Personal Expuesto</label>
+                    <input type="number" step="any" id="condiciones-personal-input" class="input-field">
+                    <label class="na-label">
+                        <input type="checkbox" id="condiciones-personal-na"> N/A
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="cerrarModalCondiciones()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
     <script>
         let tipoEvaluacionACrear = null;
         let notaEnEdicion = null; 
+         let isCenterClosed = false;
         // Variables globales
         let currentCenterData = null;
         let fotosActuales = [];
@@ -818,7 +377,7 @@
         const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
         // Inicialización
-        document.addEventListener('DOMContentLoaded', async function() {
+       document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Iniciando aplicación...');
 
             if (!ERGOAuth.initializeAuthContext()) {
@@ -826,20 +385,16 @@
                 return; 
             }
             
-            // === VERIFICACIONES INICIALES ===
             if (!workCenterId || !areaId) {
                 alert('Error: Parámetros de URL faltantes');
                 window.location.href = 'areas.html';
                 return;
             }
 
-            // Verificar que Supabase esté disponible (si lo necesitas)
             if (typeof supabase === 'undefined') {
-                console.warn('⚠️ Supabase no disponible, usando localStorage');
+                console.warn('⚠️ Supabase no disponible.');
             }
 
-            // === CONFIGURACIÓN INICIAL ===
-            // Configurar datos del centro
             currentCenterData = {
                 id: workCenterId,
                 name: decodeURIComponent(centerName || 'Centro de Trabajo'),
@@ -847,44 +402,214 @@
                 areaId: areaId
             };
 
-            // Actualizar UI básica
             document.getElementById('centro-name').textContent = currentCenterData.name;
             document.getElementById('centro-responsable').textContent = `Responsable: ${currentCenterData.responsible}`;
             document.getElementById('breadcrumb-area').textContent = decodeURIComponent(areaName || 'Área');
             document.getElementById('breadcrumb-centro').textContent = currentCenterData.name;
             document.getElementById('breadcrumb-area').href = `areas.html#area-${areaId}`;
 
-            // === CARGA DE DATOS ===
             try {
-                await Promise.all([
+                // Se añade la carga del estado del centro (getScoreWorkCenter)
+                const [_, fotos, notas, actividades, scoreSummary] = await Promise.all([
                     loadEvaluacionInicial(),
-                    loadFotos(),
-                    loadNotas(),
-                    loadActividades() 
+                    dataClient.getFotos(workCenterId),
+                    dataClient.getNotas(workCenterId),
+                    dataClient.getActividades(workCenterId),
+                    dataClient.getScoreWorkCenter(workCenterId)
                 ]);
+                
+                fotosActuales = fotos || [];
+                notasActuales = notas || [];
+                evaluacionesEspecificas = actividades || [];
+
+                currentCenterData.scoreSummary = scoreSummary;
+                // Guardamos y aplicamos el estado de cierre
+                isCenterClosed = scoreSummary ? scoreSummary.is_closed : false;
+
+                if (scoreSummary) {
+                    renderCondicionesAmbientales(scoreSummary.condiciones_ambientales);
+                } else {
+                    renderCondicionesAmbientales(null);
+                }
+                applyLockState(isCenterClosed);
+
+                renderFotosGrid();
+                renderNotas();
+                renderActividades();
+
             } catch (error) {
-                console.error('Error cargando datos:', error);
+                console.error('Error cargando datos iniciales:', error);
+                ERGOUtils.showToast('Error crítico al cargar datos del centro.', 'error');
             }
 
-            // === CONFIGURACIÓN DE EVENTOS ===
             setupEventListeners();
-
-            // === CONTROL DE PERMISOS ===
             ERGOAuth.applyPermissionControls();
 
             console.log('✅ Aplicación inicializada correctamente');
         });
-        function setupEventListeners() {
-            // Input de fotos
-            document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
 
-            // Click en modal overlay para cerrar
-            document.getElementById('modal-nota').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeNotaModal();
-                }
-            });
+
+function setupEventListeners() {
+    // Input de fotos (este es el original, no lo borres)
+    document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
+
+        const factoresIds = ['iluminacion', 'temperatura', 'ruido', 'personal'];
+    
+    factoresIds.forEach(id => {
+        const checkbox = document.getElementById(`condiciones-${id}-na`);
+        const input = document.getElementById(`condiciones-${id}-input`);
+        
+        checkbox.addEventListener('change', () => {
+            input.disabled = checkbox.checked;
+            if (checkbox.checked) {
+                input.value = '';
+            }
+        });
+    });
+    
+    // AÑADIR ESTA LÍNEA para el nuevo input de fotos de actividad
+    document.getElementById('foto-input-actividad').addEventListener('change', handleFotoUploadActividad);
+
+    // Click en modal overlay para cerrar
+    document.getElementById('modal-nota').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeNotaModal();
         }
+    });
+    
+    const metodoSelect = document.getElementById('actividad-metodo');
+    // Apuntamos al nuevo botón
+    const btnEvaluarMetodo = document.getElementById('btn-evaluar-metodo'); 
+
+    metodoSelect.addEventListener('change', () => {
+        // Habilitamos o deshabilitamos el botón correcto
+        btnEvaluarMetodo.disabled = !metodoSelect.value;
+    });
+
+    btnEvaluarMetodo.addEventListener('click', () => {
+        const metodo = metodoSelect.value;
+        if (!metodo || !actividadEnEdicion) {
+            ERGOUtils.showToast('Primero guarda la actividad y selecciona un método.', 'info');
+            return;
+        };
+        
+        // La lógica de navegación que ya tenías
+        ERGONavigation.navigateToSpecificEvaluation(
+            metodo,
+            actividadEnEdicion.id,
+            actividadEnEdicion.nombre
+        );
+    });
+}
+
+function renderCondicionesAmbientales(condiciones) {
+    const data = condiciones || {};
+    
+    const factores = [
+        { key: 'iluminacion', displayId: 'display-condicion-iluminacion', valueId: 'condicion-iluminacion-valor' },
+        { key: 'temperatura', displayId: 'display-condicion-temperatura', valueId: 'condicion-temperatura-valor' },
+        { key: 'ruido', displayId: 'display-condicion-ruido', valueId: 'condicion-ruido-valor' },
+        { key: 'personal_exp', displayId: 'display-condicion-personal', valueId: 'condicion-personal-valor' }
+    ];
+
+    factores.forEach(factor => {
+        const item = data[factor.key] || { valor: '--', na: false };
+        const displayElement = document.getElementById(factor.displayId);
+        const valueElement = document.getElementById(factor.valueId);
+
+        if (item.na) {
+            displayElement.classList.add('hidden');
+        } else {
+            displayElement.classList.remove('hidden');
+            valueElement.textContent = item.valor || '--';
+        }
+    });
+}
+
+/**
+ * Abre el modal para editar las condiciones, restringido a administradores.
+ */
+function abrirModalCondiciones() {
+    if (ERGOAuth.getCurrentUser()?.rango !== 1) {
+        ERGOUtils.showToast('Solo los administradores pueden editar esta sección.', 'info');
+        return;
+    }
+    if (isCenterClosed) {
+        ERGOUtils.showToast('El centro está cerrado y no se puede editar.', 'warning');
+        return;
+    }
+    
+    const condiciones = currentCenterData.scoreSummary?.condiciones_ambientales || {};
+
+    const factores = [
+        { key: 'iluminacion', inputId: 'condiciones-iluminacion-input', checkId: 'condiciones-iluminacion-na' },
+        { key: 'temperatura', inputId: 'condiciones-temperatura-input', checkId: 'condiciones-temperatura-na' },
+        { key: 'ruido', inputId: 'condiciones-ruido-input', checkId: 'condiciones-ruido-na' },
+        { key: 'personal_exp', inputId: 'condiciones-personal-input', checkId: 'condiciones-personal-na' }
+    ];
+
+    factores.forEach(factor => {
+        const item = condiciones[factor.key] || {};
+        const input = document.getElementById(factor.inputId);
+        const checkbox = document.getElementById(factor.checkId);
+        
+        checkbox.checked = item.na || false;
+        input.value = item.na ? '' : (item.valor || '');
+        input.disabled = checkbox.checked;
+    });
+
+    ERGOModal.open('modal-condiciones');
+}
+
+/**
+ * Cierra el modal de condiciones.
+ */
+function cerrarModalCondiciones() {
+    ERGOModal.close('modal-condiciones');
+}
+
+/**
+ * Guarda los cambios de las condiciones ambientales en la base de datos.
+ */
+async function guardarCondicionesAmbientales() {
+    const getValue = (id) => {
+        const val = document.getElementById(id).value;
+        return val === '' ? null : parseFloat(val);
+    };
+
+    const nuevasCondiciones = {
+        iluminacion: {
+            valor: getValue('condiciones-iluminacion-input'),
+            na: document.getElementById('condiciones-iluminacion-na').checked
+        },
+        temperatura: {
+            valor: getValue('condiciones-temperatura-input'),
+            na: document.getElementById('condiciones-temperatura-na').checked
+        },
+        ruido: {
+            valor: getValue('condiciones-ruido-input'),
+            na: document.getElementById('condiciones-ruido-na').checked
+        },
+        personal_exp: {
+            valor: getValue('condiciones-personal-input'),
+            na: document.getElementById('condiciones-personal-na').checked
+        }
+    };
+
+    try {
+        ERGOUtils.showToast('Guardando cambios...', 'info');
+        await dataClient.updateWorkCenterConditions(workCenterId, nuevasCondiciones);
+        
+        currentCenterData.scoreSummary.condiciones_ambientales = nuevasCondiciones;
+        renderCondicionesAmbientales(nuevasCondiciones);
+        
+        ERGOUtils.showToast('Condiciones actualizadas.', 'success');
+        cerrarModalCondiciones();
+    } catch (error) {
+        console.error('Error al guardar condiciones:', error);
+        ERGOUtils.showToast(`No se pudieron guardar los cambios: ${error.message}`, 'error');
+    }
+}
 
         // Funciones de carga de datos
     async function loadEvaluacionInicial() {
@@ -972,6 +697,8 @@
         document.getElementById('eval-sugeridas').textContent = 'Error al cargar datos';
     }
 }
+
+
         async function loadFotos() {
             try {
                 if (USE_SUPABASE) {
@@ -1088,36 +815,79 @@
         }
 
 
-        function renderActividades() {
+function renderActividades() {
     const container = document.getElementById('evaluaciones-container');
-    
-    if (evaluacionesEspecificas.length === 0) {
-        container.innerHTML = `
-            <div class="empty-evaluations">
-                <p>No hay actividades creadas.</p>
-                <small>Usa el botón "+ AGREGAR ACTIVIDAD" para empezar.</small>
-            </div>
-        `;
+    if (!evaluacionesEspecificas || evaluacionesEspecificas.length === 0) {
+        container.innerHTML = `<div class="empty-evaluations"><p>No hay actividades creadas.</p></div>`;
         return;
     }
-    
-    container.innerHTML = evaluacionesEspecificas.map(actividad => {
-        const scoreText = actividad.score_final ? `${actividad.score_final} Puntos` : 'Pendiente';
 
-        // Pasamos el objeto 'actividad' completo al abrir el modal
+    container.innerHTML = evaluacionesEspecificas.map(actividad => {
+        const fechaCreacion = ERGOUtils.timeAgo(actividad.created_at);
         return `
-            <div class="evaluacion-item" onclick='abrirModalActividad(${JSON.stringify(actividad)})'>
-                <div class="evaluacion-header">
-                    <div style="flex-grow: 1;">
-                        <span class="evaluacion-metodo">${actividad.nombre}</span>
-                        <div style="font-size: 0.8rem; color: var(--gray-500); font-weight: 500;">Método: ${actividad.metodo}</div>
+            <div class="actividad-item" id="actividad-${actividad.id}">
+                <div class="actividad-header" onclick="toggleActividadDetails('${actividad.id}', this.parentElement)">
+                    <div class="chevron">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
                     </div>
-                    <span class="evaluacion-score">${scoreText}</span>
+                    <div class="actividad-info">
+                        <div class="nombre">${actividad.nombre}</div>
+                        <div class="meta">Método: ${actividad.metodo || 'No definido'} • Creada: ${fechaCreacion}</div>
+                    </div>
+                    <div class="actividad-status">${actividad.score_final ? `${actividad.score_final} Pts` : 'Pendiente'}</div>
+                    <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); abrirModalActividad('${actividad.id}')">Editar</button>
                 </div>
-                <div class="evaluacion-fecha">Creada: ${ERGOUtils.formatDate(actividad.created_at)}</div>
+                <div class="actividad-details">
+                    </div>
             </div>
         `;
     }).join('');
+}
+
+/**
+ * Expande o contrae la vista de detalles de una actividad.
+ * Carga el contenido de la vista previa solo la primera vez que se expande.
+ * @param {HTMLElement} itemElement - El elemento div.actividad-item.
+ * @param {string} actividadId - El ID de la actividad a mostrar.
+ */
+async function toggleActividadDetails(itemElement, actividadId) {
+    const detailsContainer = itemElement.querySelector('.actividad-details');
+    const isExpanded = itemElement.classList.toggle('is-expanded');
+
+    // Si se está expandiendo y aún no tiene contenido, lo cargamos.
+    if (isExpanded && !detailsContainer.innerHTML.trim()) {
+        detailsContainer.innerHTML = '<div class="fotos-info">Cargando vista previa...</div>';
+        
+        const actividad = evaluacionesEspecificas.find(e => e.id === actividadId);
+        if (!actividad) return;
+
+        const fotos = await dataClient.getFotosActividad(actividadId);
+        let fotosHTML = '<div class="fotos-info">No hay fotos.</div>';
+
+        if (fotos && fotos.length > 0) {
+            fotosHTML = `<div class="fotos-grid" id="fotos-grid-summary">` +
+                fotos.slice(0, 4).map(foto => { // Mostramos máximo 4
+                    const publicUrl = `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos/${foto.storage_path}`;
+                    return `<div class="foto-slot occupied"><img src="${publicUrl}" alt="${foto.file_name}"></div>`;
+                }).join('') +
+            `</div>`;
+        }
+
+        detailsContainer.innerHTML = `
+            <div class="details-section">
+                <h4>Fotos</h4>
+                ${fotosHTML}
+            </div>
+            <div class="details-section">
+                <h4>Comentarios</h4>
+                <div class="content">${actividad.comentarios || '<i>Sin comentarios.</i>'}</div>
+            </div>
+            <div class="details-section">
+                <h4>Recomendaciones</h4>
+                <div class="content">${actividad.recomendaciones || '<i>Sin recomendaciones.</i>'}</div>
+            </div>
+        `;
+    }
 }
             async function eliminarEvaluacionEspecifica(event, evalId, tipo) {
             event.stopPropagation(); // ¡Muy importante! Evita que se active el clic para editar.
@@ -1159,6 +929,7 @@
 
         // Funciones de interacción
         function triggerFotoUpload() {
+            if (isCenterClosed) return;
             if (fotosActuales.length >= 5) {
                 alert('Ya tienes el máximo de 5 fotos');
                 return;
@@ -1187,8 +958,16 @@
         }
         
         try {
+                    const options = {
+                        maxSizeMB: 1.5,      // Tamaño máximo después de la compresión
+                        useWebWorker: true,  // Usa un worker para no bloquear la UI
+                    };
+                    
+                    console.log(`Comprimiendo ${file.name}...`);
+                    const compressedFile = await imageCompression(file, options);
+                    console.log(`Compresión finalizada. Nuevo tamaño: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
             if (USE_SUPABASE) {
-                await dataClient.uploadFoto(file, areaId, workCenterId);
+                await dataClient.uploadFotoCentro(file, areaId, workCenterId);
             } else {
                 const fotoData = {
                     id: Date.now().toString() + uploadedCount,
@@ -1246,7 +1025,90 @@
             }
         }
 
+        /**
+ * Dibuja la estructura HTML inicial para la vista de detalles de una actividad.
+ * @param {object} actividad - El objeto de la actividad con los datos.
+ * @param {HTMLElement} detailsContainer - El div donde se renderizará el contenido.
+ */
+function renderActividadDetails(actividad, detailsContainer) {
+    // Escapamos el contenido de texto para prevenir problemas de XSS si los datos vinieran de fuentes no confiables.
+    const comentarios = actividad.comentarios ? actividad.comentarios.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<i>Sin comentarios.</i>';
+    const recomendaciones = actividad.recomendaciones ? actividad.recomendaciones.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<i>Sin recomendaciones.</i>';
+
+    detailsContainer.innerHTML = `
+        <div class="details-section">
+            <h4>Fotos</h4>
+            <div class="fotos-grid" id="fotos-summary-${actividad.id}">
+                <div class="fotos-info">Cargando fotos...</div>
+            </div>
+        </div>
+        <div class="details-section">
+            <h4>Comentarios</h4>
+            <div class="content">${comentarios}</div>
+        </div>
+        <div class="details-section">
+            <h4>Recomendaciones</h4>
+            <div class="content">${recomendaciones}</div>
+        </div>
+    `;
+}
+
+        /**
+ * Expande o contrae la vista de detalles de una actividad.
+ * @param {string} actividadId - El ID de la actividad a mostrar/ocultar.
+ * @param {HTMLElement} element - El elemento HTML del ítem que se ha clickeado.
+ */
+function toggleActividadDetails(actividadId, element) {
+    const detailsContainer = element.querySelector('.actividad-details');
+    const isExpanded = element.classList.toggle('is-expanded');
+
+    // Si se está expandiendo y aún no tiene contenido, cargamos las fotos.
+    // Esto es para que la página cargue rápido y solo pida las fotos cuando las necesites.
+    const hasContent = detailsContainer.querySelector('.fotos-grid');
+    if (isExpanded && !hasContent) {
+        // Mostramos un mensaje de carga
+        detailsContainer.innerHTML = '<div class="fotos-info">Cargando fotos...</div>';
+        
+        // Buscamos el objeto de la actividad en nuestro array local
+        const actividad = evaluacionesEspecificas.find(e => e.id === actividadId);
+        if (actividad) {
+            // Renderizamos la estructura y luego cargamos las fotos
+            renderActividadDetails(actividad, detailsContainer);
+            loadAndRenderPhotosForSummary(actividadId, detailsContainer);
+        }
+    }
+}
+
+/**
+ * Carga y muestra las miniaturas de las fotos en la vista de detalles.
+ * @param {string} actividadId - El ID de la actividad de la que cargar fotos.
+ * @param {HTMLElement} detailsContainer - El div donde se mostrarán las fotos.
+ */
+async function loadAndRenderPhotosForSummary(actividadId, detailsContainer) {
+    const grid = detailsContainer.querySelector('.fotos-grid');
+    if (!grid) return;
+
+    try {
+        const fotos = await dataClient.getFotosActividad(actividadId) || [];
+        if (fotos.length > 0) {
+            grid.innerHTML = fotos.map(foto => {
+                const publicUrl = `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos/${foto.storage_path}`;
+                return `
+                    <div class="foto-slot occupied">
+                        <img src="${publicUrl}" alt="${foto.file_name}">
+                    </div>
+                `;
+            }).join('');
+        } else {
+            grid.innerHTML = '<div class="fotos-info" style="grid-column: 1 / -1;">No hay fotos para esta actividad.</div>';
+        }
+    } catch (error) {
+        grid.innerHTML = '<div class="fotos-info" style="grid-column: 1 / -1;">Error al cargar fotos.</div>';
+    }
+}
+
         function openNotaModal() {
+            if (isCenterClosed) return;
             if (!ERGOAuth.checkPermissionAndShowError('create')) return;
             // Si no estamos editando, reseteamos el formulario
             if (!notaEnEdicion) {
@@ -1259,6 +1121,7 @@
         }
 
         function closeNotaModal() {
+            if (isCenterClosed) return;
             notaEnEdicion = null; // Resetea la variable de edición
             document.getElementById('modal-nota').classList.remove('show');
             document.getElementById('nota-texto').value = '';
@@ -1295,6 +1158,7 @@
         }
 
     function editarNota(nota) {
+        if (isCenterClosed) return;
             if (!ERGOAuth.checkPermissionAndShowError('create')) return; // Reutilizamos el permiso de 'crear' para editar
             notaEnEdicion = nota;
             document.querySelector('#modal-nota h3').textContent = 'Editar Nota';
@@ -1341,8 +1205,96 @@
                 ERGOUtils.showToast(`Error al generar PDF: ${error.message}`, 'error');
             }
         }
+let fotosActividadActual = [];
 
-// --- REEMPLAZA openEvaluacionModal() CON ESTA VERSIÓN ---
+// Se llama cuando se abre el modal en modo edición
+async function loadFotosActividad(actividadId) {
+    try {
+        fotosActividadActual = await dataClient.getFotosActividad(actividadId) || [];
+        renderFotosActividad();
+        // Muestra la sección de fotos si estamos editando
+        document.getElementById('seccion-fotos-actividad').style.display = 'block';
+    } catch (error) {
+        console.error('Error cargando fotos de actividad:', error);
+    }
+}
+
+function renderFotosActividad() {
+    const grid = document.getElementById('fotos-grid-actividad');
+    const maxFotos = 5; // Definimos el total de espacios a mostrar
+    let html = '';
+
+    // 1. Renderizar las fotos que ya existen
+    fotosActividadActual.forEach(foto => {
+        const publicUrl = `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos/${foto.storage_path}`;
+        html += `
+            <div class="foto-slot occupied">
+                <img src="${publicUrl}" alt="${foto.file_name}">
+                <button class="foto-delete" type="button" onclick="deleteFotoActividad('${foto.id}', '${foto.storage_path}')">×</button>
+            </div>
+        `;
+    });
+
+    // 2. Renderizar los espacios vacíos restantes
+    const espaciosVacios = maxFotos - fotosActividadActual.length;
+    for (let i = 0; i < espaciosVacios; i++) {
+        html += `
+            <div class="foto-slot">
+                <span style="font-size: 1.5rem; color: var(--gray-400);">📸</span>
+                <span style="font-size: 0.75rem; color: var(--gray-500); margin-top: 0.5rem; text-align: center;">
+                    Agregar foto
+                </span>
+            </div>
+        `;
+    }
+    
+    grid.innerHTML = html;
+}
+
+    async function handleFotoUploadActividad(event) {
+        const files = event.target.files;
+        if (!files.length || !actividadEnEdicion) return;
+
+        ERGOUtils.showToast(`Procesando ${files.length} foto(s)...`, 'info');
+
+        const uploadPromises = Array.from(files).map(async (file) => {
+            try {
+                // --- INICIO DEL CAMBIO EN LA COMPRESIÓN ---
+                const options = {
+                    maxSizeMB: 1.5,      // Límite máximo de tamaño, pero intentará mantener la calidad.
+                    // Se eliminó la opción 'maxWidthOrHeight' para NO cambiar las dimensiones de la imagen.
+                    useWebWorker: true,
+                    // La librería elimina los metadatos EXIF por defecto al procesar la imagen,
+                    // lo que ayuda a reducir el peso sin afectar la calidad visual.
+                };
+                // --- FIN DEL CAMBIO EN LA COMPRESIÓN ---
+                
+                const compressedFile = await imageCompression(file, options);
+                await dataClient.uploadFotoActividad(compressedFile, actividadEnEdicion.id)
+
+            } catch (error) {
+                console.error(`Error al procesar ${file.name}:`, error);
+                ERGOUtils.showToast(`Error con la foto ${file.name}`, 'error');
+            }
+        });
+
+        await Promise.all(uploadPromises);
+
+        ERGOUtils.showToast('Carga de fotos completada.', 'success');
+        event.target.value = ''; // Limpiar el input
+        await loadFotosActividad(actividadEnEdicion.id); // Recargar
+    }
+
+async function deleteFotoActividad(fotoId, storagePath) {
+    if (!confirm('¿Eliminar esta foto?')) return;
+    try {
+        await dataClient.deleteFotoActividad(fotoId, storagePath);
+        await loadFotosActividad(actividadEnEdicion.id); // Recargar
+    } catch (error) {
+        ERGOUtils.showToast('No se pudo eliminar la foto.', 'error');
+    }
+}
+
 function openEvaluacionModal() {
     if (!ERGOAuth.checkPermissionAndShowError('create')) return;
     
@@ -1720,27 +1672,49 @@ let actividadEnEdicion = null;
  * Si se pasa una actividad, abre en modo "Edición".
  * @param {object|null} actividad - El objeto de la actividad a editar.
  */
-function abrirModalActividad(actividad = null) {
-    const esModoEdicion = actividad !== null;
+function abrirModalActividad(actividadId = null) {
+    const actividad = actividadId ? evaluacionesEspecificas.find(e => e.id === actividadId) : null;
+    actividadEnEdicion = actividad;
+
+    const esEdicion = actividad !== null;
+
+    document.getElementById('modal-actividad-titulo').textContent = esEdicion ? 'Editar Actividad' : 'Nueva Actividad';
+    document.getElementById('form-actividad').reset();
+    document.getElementById('fotos-grid-actividad').innerHTML = '';
     
-    // Guardamos el estado actual
-    actividadEnEdicion = esModoEdicion ? actividad : null;
+    const tipoGroup = document.getElementById('tipo-analisis-group');
+    const btns = tipoGroup.querySelectorAll('.btn-toggle');
+    btns.forEach(btn => {
+        btn.classList.remove('active');
+        btn.onclick = () => {
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        };
+    });
 
-    // Actualizamos la UI del modal
-    document.getElementById('modal-actividad-titulo').textContent = esModoEdicion ? 'Editar Actividad' : 'Nueva Actividad';
-    document.getElementById('modal-actividad-btn-guardar').textContent = esModoEdicion ? 'Guardar Cambios' : 'Crear Actividad';
+    // Apuntamos al ID del botón correcto
+    const btnEvaluarMetodo = document.getElementById('btn-evaluar-metodo');
 
-    // Llenamos el formulario
-    document.getElementById('actividad-id').value = esModoEdicion ? actividad.id : '';
-    document.getElementById('actividad-nombre').value = esModoEdicion ? actividad.nombre : '';
-    document.getElementById('actividad-metodo').value = esModoEdicion ? actividad.metodo : 'REBA';
-    document.getElementById('actividad-comentarios').value = esModoEdicion ? actividad.comentarios || '' : '';
+    if (esEdicion) {
+        document.getElementById('actividad-id').value = actividad.id;
+        document.getElementById('actividad-nombre').value = actividad.nombre;
+        document.getElementById('actividad-metodo').value = actividad.metodo;
+        document.getElementById('actividad-comentarios').value = actividad.comentarios || '';
+        document.getElementById('actividad-recomendaciones').value = actividad.recomendaciones || '';
+
+        const tipoAnalisis = actividad.tipo_analisis || 'EJA';
+        const activeBtn = tipoGroup.querySelector(`[data-value="${tipoAnalisis}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        // Usamos la referencia correcta al botón
+        btnEvaluarMetodo.disabled = !actividad.metodo;
+        loadFotosActividad(actividad.id);
+    } else {
+        // Usamos la referencia correcta al botón
+        btnEvaluarMetodo.disabled = true;
+        tipoGroup.querySelector('[data-value="EJA"]').classList.add('active');
+    }
     
-    // Seleccionamos el radio button correcto
-    const tipoAnalisis = esModoEdicion ? actividad.tipo_analisis : 'EJA';
-    document.querySelector(`input[name="tipo_analisis"][value="${tipoAnalisis}"]`).checked = true;
-
-    // Usamos el sistema de modales de globals.js
     ERGOModal.open('modal-actividad');
 }
 
@@ -1760,16 +1734,19 @@ async function guardarActividad() {
     if (!ERGOAuth.checkPermissionAndShowError('create')) return;
 
     const id = document.getElementById('actividad-id').value;
-    const esModoEdicion = id !== '';
+    const esModoEdicion = !!id;
 
-    // Recolectamos los datos del formulario
+    // Obtener el valor del botón activo
+    const tipoAnalisisActivo = document.querySelector('#tipo-analisis-group .btn-toggle.active');
+    
     const data = {
-        work_center_id: workCenterId, // Asume que 'workCenterId' es una variable global en la página
-        area_id: areaId,           // Asume que 'areaId' es una variable global en la página
+        work_center_id: workCenterId,
+        area_id: areaId,
         nombre: document.getElementById('actividad-nombre').value.trim(),
         metodo: document.getElementById('actividad-metodo').value,
         comentarios: document.getElementById('actividad-comentarios').value.trim(),
-        tipo_analisis: document.querySelector('input[name="tipo_analisis"]:checked').value,
+        recomendaciones: document.getElementById('actividad-recomendaciones').value.trim(), // Guardar recomendaciones
+        tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
         user_id: ERGOAuth.getCurrentUser()?.id
     };
 
@@ -1780,24 +1757,162 @@ async function guardarActividad() {
 
     try {
         if (esModoEdicion) {
-            // Lógica de ACTUALIZACIÓN (requiere dataClient.updateActividad)
             await dataClient.updateActividad(id, data);
-            ERGOUtils.showToast('Actividad actualizada con éxito.', 'success');
+            ERGOUtils.showToast('Actividad actualizada.', 'success');
         } else {
-            // Lógica de CREACIÓN (requiere dataClient.createActividad)
-            await dataClient.createActividad(data);
-            ERGOUtils.showToast('Actividad creada con éxito.', 'success');
+            const nuevaActividadArray = await dataClient.createActividad(data);
+            if (!nuevaActividadArray || nuevaActividadArray.length === 0) {
+                 throw new Error("La creación no devolvió el nuevo registro.");
+            }
+            actividadEnEdicion = nuevaActividadArray[0]; // Actualizamos la actividad en edición
+            document.getElementById('actividad-id').value = actividadEnEdicion.id; // Ponemos el ID en el form
+            ERGOUtils.showToast('Actividad creada. Puedes añadir fotos.', 'success');
         }
-
-        cerrarModalActividad();
-        await loadActividades(); // Recargamos la lista de actividades
+        
+        await loadActividades(); // Recarga la lista principal en ambos casos
+        
+        // Si no es modo edición (es decir, es la primera vez que se guarda), no cerramos el modal.
+        // Si es modo edición, sí lo cerramos.
+        if (esModoEdicion) {
+            cerrarModalActividad();
+        }
 
     } catch (error) {
         console.error('Error al guardar la actividad:', error);
-        ERGOUtils.showToast('No se pudo guardar la actividad.', 'error');
+        ERGOUtils.showToast(`No se pudo guardar la actividad. ${error.message}`, 'error');
     }
 }
+// PEGA ESTE BLOQUE COMPLETO AL FINAL DE TU SCRIPT
 
+        /**
+         * -----------------------------------------------------------------
+         * LÓGICA PARA CERRAR/ABRIR CENTRO DE TRABAJO
+         * -----------------------------------------------------------------
+         */
+
+        /**
+         * Aplica o remueve el estado de "solo lectura" a toda la interfaz.
+         * Esta función centraliza TODO el control de la UI.
+         * @param {boolean} isLocked - True si el centro debe ser bloqueado.
+         */
+ function applyLockState(isLocked) {
+            isCenterClosed = isLocked;
+            const banner = document.getElementById('closed-state-banner');
+            const toggleButton = document.getElementById('btn-toggle-status');
+
+            const mainActionButtons = document.querySelectorAll(
+                'button[onclick="openNotaModal()"],' +
+                'button[onclick="abrirModalActividad()"],' +
+                '.foto-slot:not(.occupied)'
+            );
+            const specificActionButtons = document.querySelectorAll(
+                '.foto-delete, .btn-danger.btn-sm, .btn-ghost.btn-sm'
+            );
+
+            // Función auxiliar para alternar la clase 'hidden'
+            const toggleHidden = (elements, shouldHide) => {
+                elements.forEach(el => el.classList.toggle('hidden', shouldHide));
+            };
+
+            if (isLocked) {
+                // --- ESTADO BLOQUEADO ---
+                banner.classList.remove('hidden');
+                toggleButton.textContent = '🔓 Abrir Centro';
+                
+                // Ocultamos todos los botones de acción usando la clase .hidden
+                toggleHidden(mainActionButtons, true);
+                toggleHidden(specificActionButtons, true);
+
+            } else {
+                // --- ESTADO ABIERTO ---
+                banner.classList.add('hidden');
+                toggleButton.textContent = '🔒 Cerrar Centro';
+
+                // Mostramos/ocultamos según permisos
+                const canCreate = ERGOAuth.hasPermission('create');
+                const canDelete = ERGOAuth.hasPermission('delete');
+                
+                toggleHidden(document.querySelectorAll('button[onclick="openNotaModal()"], button[onclick="abrirModalActividad()"], .foto-slot:not(.occupied), .btn-ghost.btn-sm'), !canCreate);
+                toggleHidden(document.querySelectorAll('.foto-delete, .btn-danger.btn-sm'), !canDelete);
+            }
+            
+            // El botón principal para abrir/cerrar solo lo ven los Admins
+            toggleButton.classList.toggle('hidden', !ERGOAuth.hasPermission('update'));
+        }
+
+        /**
+         * Abre el modal para confirmar la acción con contraseña.
+         */
+        function toggleCenterStatus() {
+            if (!ERGOAuth.checkPermissionAndShowError('update')) return;
+
+            const modalTitle = document.getElementById('modal-password-title');
+            const modalMessage = document.getElementById('modal-password-message');
+            
+            if (isCenterClosed) {
+                modalTitle.textContent = 'Confirmar Apertura';
+                modalMessage.textContent = 'Para habilitar la edición de este centro de trabajo, por favor confirma tu identidad.';
+            } else {
+                modalTitle.textContent = 'Confirmar Cierre';
+                modalMessage.textContent = 'Esta acción pondrá el centro en modo "solo lectura", deshabilitando la creación, edición y eliminación de datos.';
+            }
+            ERGOModal.open('modal-password-confirm');
+            document.getElementById('password-confirm-input').focus();
+        }
+
+        /**
+         * Cierra el modal de confirmación por contraseña.
+         */
+        function closePasswordConfirmModal() {
+            ERGOModal.close('modal-password-confirm');
+            document.getElementById('password-confirm-input').value = '';
+        }
+
+        /**
+         * Verifica que la contraseña ingresada es correcta para el usuario actual.
+         */
+        async function verifyCurrentUserPassword(password) {
+            const currentUser = ERGOAuth.getCurrentUser();
+            if (!currentUser || !password) return false;
+
+            // Se usa authClient para validar credenciales sin alterar la sesión actual.
+            const validationResult = await window.authClient.login(currentUser.email, password);
+            return validationResult !== null;
+        }
+
+        /**
+         * Se ejecuta al confirmar en el modal de contraseña.
+         */
+        async function confirmPasswordAction() {
+            const password = document.getElementById('password-confirm-input').value;
+            if (!password) {
+                ERGOUtils.showToast('Por favor, ingresa tu contraseña', 'error');
+                return;
+            }
+
+            ERGOUtils.showToast('Verificando y actualizando...', 'info');
+            const isPasswordCorrect = await verifyCurrentUserPassword(password);
+
+            if (!isPasswordCorrect) {
+                ERGOUtils.showToast('Contraseña incorrecta', 'error');
+                return;
+            }
+
+            const newState = !isCenterClosed;
+            try {
+                await dataClient.updateWorkCenterStatus(workCenterId, areaId, newState);
+                ERGOUtils.showToast(`Centro ${newState ? 'cerrado' : 'abierto'} correctamente. Recargando...`, 'success');
+                
+                // Forzamos un pequeño delay para que el usuario alcance a ver el mensaje de éxito
+                setTimeout(() => {
+                    window.location.reload(); // <--- LÍNEA AÑADIDA PARA RECARGAR
+                }, 1500); 
+
+            } catch (error) {
+                console.error('Error al actualizar el estado del centro:', error);
+                ERGOUtils.showToast('No se pudo cambiar el estado del centro', 'error');
+            }
+        }
 // Event listeners para el modal
 
     </script>

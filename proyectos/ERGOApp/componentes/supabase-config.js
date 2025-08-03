@@ -38,16 +38,24 @@ async query(table, method = 'GET', data = null, filters = '') {
     const url = `${this.url}/rest/v1/${table}${filters}`;
     const headers = { ...this.baseHeaders };
 
-    // Si hay token, lo añade. ¡Esto activa la seguridad RLS!
     if (this.sessionToken) {
         headers['Authorization'] = `Bearer ${this.sessionToken}`;
     }
+
+    // --- CAMBIO CLAVE 1 ---
+    // Si es un POST o PATCH, añadimos la cabecera 'Prefer' para que Supabase
+    // nos devuelva el registro completo que se creó o actualizó.
+    if (method === 'POST' || method === 'PATCH') {
+        headers['Prefer'] = 'return=representation';
+    }
+    // --- FIN DEL CAMBIO 1 ---
 
     const options = { method, headers };
     if (data && (method === 'POST' || method === 'PATCH')) {
         options.body = JSON.stringify(data);
         console.log('🔍 Datos enviados a Supabase:', JSON.stringify(data, null, 2));
     }
+
     try {
         const response = await fetch(url, options);
         if (!response.ok) {
@@ -55,11 +63,18 @@ async query(table, method = 'GET', data = null, filters = '') {
             console.error('❌ Error response body:', errorBody);
             throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`);
         }
-        if (method !== 'GET') {
+
+        // --- CAMBIO CLAVE 2 ---
+        // Ahora, para POST, PATCH y GET, esperamos una respuesta con cuerpo JSON.
+        // Para DELETE, puede que no haya cuerpo, así que devolvemos un éxito genérico.
+        if (method === 'DELETE') {
             return { success: true };
         }
-        const text = await response.text();
-        return text ? JSON.parse(text) : null;
+        
+        // El método .json() lee el cuerpo de la respuesta y lo transforma en un objeto JavaScript.
+        const responseData = await response.json();
+        return responseData;
+
     } catch (error) {
         console.error('Supabase query error:', error);
         throw error;
@@ -228,15 +243,14 @@ async query(table, method = 'GET', data = null, filters = '') {
     }
     // Agregar al final de la clase SupabaseClient, antes del cierre de la clase
 
-async uploadFoto(file, areaId, workCenterId) {
+async uploadFotoCentro(file, areaId, workCenterId) {
     const fileName = `${areaId}/${workCenterId}/${Date.now()}.${file.name.split('.').pop()}`;
     const uploadUrl = `${this.url}/storage/v1/object/fotos-centros/${fileName}`;
     
-    // CORRECCIÓN: Usar this.sessionToken
     const uploadResponse = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${this.sessionToken}`, // <-- Aquí está el cambio
+            'Authorization': `Bearer ${this.sessionToken}`,
             'x-upsert': 'true'
         },
         body: file
@@ -777,6 +791,71 @@ async backfillScoresResumenCounts() {
     }
 }
 
+async getFotosActividad(actividadId) {
+    // Esta es la función que faltaba
+    return await this.query('fotos_actividades', 'GET', null, `?actividad_id=eq.${actividadId}&order=created_at.asc`);
+}
+
+// 2. Para las fotos de una Actividad (antes era la segunda uploadFoto)
+async uploadFotoActividad(file, actividadId) {
+    const user = ERGOAuth.getCurrentUser();
+    if (!user) throw new Error("Usuario no autenticado.");
+
+    const filePath = `${user.id}/actividades/${actividadId}/${Date.now()}_${file.name}`;
+
+    const { error: uploadError } = await this.supabase.storage
+        .from('fotos')
+        .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const fotoData = {
+        actividad_id: actividadId,
+        user_id: user.id,
+        storage_path: filePath,
+        file_name: file.name
+    };
+
+    const { data, error: dbError } = await this.supabase
+        .from('fotos_actividades')
+        .insert(fotoData)
+        .select()
+        .single();
+
+    if (dbError) {
+        await this.supabase.storage.from('fotos').remove([filePath]);
+        throw dbError;
+    }
+    return data;
+}
+
+async updateWorkCenterConditions(workCenterId, conditionsData) {
+    const { data, error } = await this.supabase
+        .from('scores_resumen')
+        .update({ condiciones_ambientales: conditionsData })
+        .eq('work_center_id', workCenterId)
+        .select();
+
+    if (error) {
+        console.error('Error en updateWorkCenterConditions:', error);
+        throw error;
+    }
+    return data;
+}
+
+async deleteFotoActividad(fotoId, storagePath) {
+    // 1. Eliminar del Storage
+    // Usamos try-catch para que si falla la eliminación del archivo, al menos se borre el registro de la DB
+    try {
+        await this.supabase.storage.from('fotos').remove([storagePath]);
+    } catch (storageError) {
+        console.error("Error eliminando archivo del storage, continuando con la DB:", storageError);
+    }
+    
+    // 2. Eliminar de la base de datos
+    return await this.query('fotos_actividades', 'DELETE', null, `?id=eq.${fotoId}`);
+}
+
 async getActividades(workCenterId) {
     const filter = `?work_center_id=eq.${workCenterId}&estado=eq.activo&order=created_at.desc`;
     return await this.query('actividades', 'GET', null, filter);
@@ -797,6 +876,25 @@ async deleteActividad(id) {
     return await this.query('actividades', 'PATCH', data, `?id=eq.${id}`);
 }
 
+ async updateWorkCenterStatus(workCenterId, areaId, isClosed) { // <--- AÑADIMOS areaId aquí
+        const dataToUpsert = { 
+            work_center_id: workCenterId,
+            area_id: areaId, // <--- Y LO AÑADIMOS AL OBJETO que se envía
+            is_closed: isClosed, 
+            updated_at: new Date().toISOString() 
+        };
+        
+        const { error } = await this.supabase
+            .from('scores_resumen')
+            .upsert(dataToUpsert, { onConflict: 'work_center_id' });
+
+        if (error) {
+            console.error('Error en upsert de work center status:', error);
+            throw error;
+        }
+        
+        return { success: true };
+    }
 }
 
 // Instancia global

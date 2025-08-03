@@ -1,0 +1,834 @@
+/*
+CONVENCIÓN DE NOMENCLATURA Y METODOLOGÍA: BEM (Block, Element, Modifier)
+NOTA: No Borrar este comentario, es parte de la documentación del proyecto.
+
+Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea modular, reutilizable y fácil de mantener. Todas las nuevas clases y refactorizaciones deben adherirse a las siguientes reglas:
+
+1.  **Bloque (Block):** Un componente de interfaz de usuario independiente y autónomo.
+    *   Sintaxis: `.bloque`
+    *   Ejemplo: `.card`, `.menu`
+
+2.  **Elemento (Element):** Una parte de un bloque que no tiene significado por sí misma. Está semánticamente ligado a su bloque.
+    *   Sintaxis: `.bloque__elemento` (dos guiones bajos)
+    *   Ejemplo: `.card__titulo`, `.menu__item`
+
+3.  **Modificador (Modifier):** Una bandera en un bloque o elemento que cambia su apariencia o estado.
+    *   Sintaxis: `.bloque--modificador` o `.bloque__elemento--modificador` (dos guiones medios)
+    *   Ejemplo: `.card--destacado`, `.menu__item--activo`
+
+**Reglas Adicionales:**
+- Utilizar únicamente selectores de clase. Evitar el uso de IDs y selectores de etiqueta para aplicar estilos.
+- Mantener una especificidad baja y plana. No anidar selectores.
+- No utilizar `!important`.
+*/        
+        
+        .centro-header {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .centro-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1.5rem;
+        }
+
+        .centro-info h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .centro-responsable {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+        #modal-actividad .modal-content {
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .score-container {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-category {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .content-sections {
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Estilos para la sección de fotos */
+        .fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .foto-slot {
+            aspect-ratio: 1;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: var(--gray-50);
+        }
+
+        .foto-slot:hover {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+
+        .foto-slot.occupied {
+            border: 2px solid var(--gray-200);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .foto-slot.disabled {
+            background: var(--gray-100);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .foto-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .foto-delete {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--red-500);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .foto-delete:hover {
+            background: var(--red-600);
+        }
+
+        .fotos-info {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-align: center;
+        }
+
+        /* Estilos para evaluaciones */
+        .evaluaciones-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .evaluacion-item {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .evaluacion-item:hover {
+            border-color: var(--primary-300);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .evaluacion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .evaluacion-metodo {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .evaluacion-score {
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .evaluacion-fecha {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .empty-evaluations {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        /* Estilos para notas */
+        .notas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .foto-slot__delete-btn:hover {
+    background: var(--red-600);
+}
+
+        .nota-item {
+            border-left: 4px solid var(--primary-500);
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+        }
+
+        .nota-fecha {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .nota-texto {
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .empty-notas {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        /* Modal para nueva nota */
+        .modal-nota {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-nota.show {
+            display: flex;
+        }
+
+        .modal-nota-content {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-nota textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-md);
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .modal-nota textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .centro-title {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .fotos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .content-sections {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fotos-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Modal para vista completa de fotos */
+.foto-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.foto-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+#fotos-grid-actividad {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Miniaturas más pequeñas */
+    gap: 0.75rem;
+}
+
+.foto-modal-content {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalZoomIn 0.3s ease-out;
+}
+
+@keyframes modalZoomIn {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.foto-modal-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+@media (max-width: 768px) {
+    .foto-modal-image {
+        max-height: 70vh; /* Era 80vh */
+    }
+    
+    .foto-modal-controls {
+        bottom: 20px; /* Mover abajo para mejor acceso */
+        top: auto;
+    }
+}
+.foto-modal-info {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-lg);
+    margin-top: 1rem;
+    text-align: center;
+    color: var(--gray-800);
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+}
+
+.nota-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .nota-actions {
+            display: flex;
+            align-items: center;
+        }
+
+.foto-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--gray-700);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-lg);
+}
+
+.foto-modal-close:hover {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    transform: scale(1.1);
+}
+
+.foto-modal-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-lg);
+    color: var(--gray-700);
+}
+
+.foto-modal-controls:hover {
+    background: rgba(59, 130, 246, 0.9);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.foto-modal-prev {
+    left: 20px;
+}
+
+.foto-modal-next {
+    right: 20px;
+}
+
+.foto-modal-counter {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Zoom functionality */
+.foto-modal-image.zoomed {
+    cursor: zoom-out;
+    transform: scale(1.5);
+}
+
+.foto-modal-image:not(.zoomed) {
+    cursor: zoom-in;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .foto-modal-close,
+    .foto-modal-controls {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .foto-modal-close {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .foto-modal-prev {
+        left: 10px;
+    }
+    
+    .foto-modal-next {
+        right: 10px;
+    }
+    
+    .foto-modal-counter {
+        top: 10px;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .foto-modal-info {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+.modal.show .modal-content {
+    animation: modal-fade-in 0.3s ease-out forwards;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Grilla para organizar el formulario */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Estilos mejorados para los radio buttons */
+.radio-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 44px; /* Misma altura que los inputs */
+    border: 1px solid var(--gray-300);
+    padding: 0 1rem;
+    border-radius: var(--border-radius-md);
+    background-color: var(--gray-50);
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 0.5rem;
+    accent-color: var(--primary-600); /* Color de acento del radio button */
+}
+
+/* Responsividad para la grilla del formulario */
+@media (max-width: 768px) {
+    .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+        /* Estilos para el banner de notificación */
+        .notification {
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius-md);
+            border-left-width: 4px;
+            color: var(--gray-700);
+        }
+        .notification.is-warning {
+            background-color: var(--yellow-50);
+            border-color: var(--yellow-400);
+            color: var(--yellow-800);
+        }
+
+
+        .environmental-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-md);
+    min-width: 220px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+    margin-right: 20px;
+}
+
+.environmental-card:hover {
+    border-color: var(--primary-400);
+    box-shadow: var(--shadow-lg);
+}
+
+.environmental-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    padding: 0.35rem 0;
+}
+
+.environmental-item .label {
+    font-weight: 500;
+    color: var(--gray-600);
+    margin-right: 1rem;
+}
+
+.environmental-item .value {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+/* Estilos para el formulario del modal */
+.form-group-inline {
+    display: grid;
+    grid-template-columns: 140px 1fr 80px;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-group-inline label {
+    font-weight: 500;
+}
+
+.form-group-inline .na-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+/* Clase para ocultar elementos */
+.hidden {
+    display: none !important;
+}
+
+.evaluaciones-list { /* Cambiado de 'evaluaciones-container' */
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Un poco menos de espacio entre ítems */
+}
+
+.actividad-item {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    background-color: white;
+    transition: all 0.3s ease;
+    overflow: hidden; /* Clave para la animación de expansión */
+}
+
+.actividad-item.is-expanded {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-200);
+}
+
+.actividad-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+}
+
+.actividad-header .chevron {
+    transition: transform 0.3s ease;
+    color: var(--gray-500);
+}
+
+.actividad-item.is-expanded .actividad-header .chevron {
+    transform: rotate(90deg);
+}
+
+.actividad-info .nombre {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--gray-800);
+}
+
+.actividad-info .meta {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.actividad-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    background-color: var(--yellow-100);
+    color: var(--yellow-800);
+}
+
+.actividad-details {
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.4s ease-out, opacity 0.3s ease-in-out, padding 0.3s ease;
+    padding: 0 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.actividad-item.is-expanded .actividad-details {
+    max-height: 1000px; /* Suficientemente grande para el contenido */
+    opacity: 1;
+    visibility: visible;
+    padding: 1.5rem;
+}
+
+.details-section {
+    margin-bottom: 1.5rem;
+}
+
+.details-section h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.details-section .content {
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    line-height: 1.6;
+}
+
+#fotos-grid-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+}
+#fotos-grid-summary .foto-slot {
+    height: 80px;
+}
+#fotos-grid-summary .foto-slot img {
+     width: 100%; height: 100%; object-fit: cover; border-radius: var(--border-radius-md);
+}
+
+/* ================================================================== */
+/* ==            2. ESTILOS PARA EL MODAL MEJORADO                 == */
+/* ================================================================== */
+
+#modal-actividad .modal-content {
+    max-width: 900px; /* <-- Modal más ancho */
+    width: 95%;
+}
+
+#modal-actividad .modal-body {
+    max-height: 70vh; /* <-- Altura máxima para el cuerpo */
+    overflow-y: auto; /* <-- Scroll automático */
+    padding: 1.5rem 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 2rem; /* Espacio solo entre columnas */
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1; /* Ocupa todo el ancho */
+}
+
+.form-group-inline {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.form-group-inline > label {
+    flex-shrink: 0; /* Evita que la etiqueta se encoja */
+}
+
+/* Grupo de botones para EJA / WS */
+.btn-group {
+    display: flex;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+
+.btn-group .btn-toggle {
+    flex-grow: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: var(--gray-600);
+}
+
+.btn-group .btn-toggle:not(:last-child) {
+    border-right: 1px solid var(--gray-300);
+}
+
+.btn-group .btn-toggle.active {
+    background-color: var(--primary-500);
+    color: white;
+}
+
+.input-with-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.input-with-button .input-field,
+.input-with-button .btn-group {
+    flex-grow: 1;
+}
+
+.input-with-button .btn,
+.input-with-button .btn-secondary {
+    flex-shrink: 0;
+}
