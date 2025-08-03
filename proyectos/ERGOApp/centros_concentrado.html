@@ -112,22 +112,6 @@
         let currentView = 'grid'; // 'grid' o 'list'
         let filtersVisible = false;
 
-        // Funciones híbridas que usan Supabase o localStorage
-        async function loadAreas() {
-            if (USE_SUPABASE) {
-                try {
-                    // CORRECCIÓN: Usar dataClient en lugar de supabase
-                    areas = await dataClient.getAreas();
-                } catch (error) {
-                    console.error('Error loading areas from Supabase:', error);
-                    areas = JSON.parse(localStorage.getItem('areas')) || [];
-                }
-            } else {
-                areas = JSON.parse(localStorage.getItem('areas')) || [];
-            }
-            return areas;
-        }
-
 async function loadAllWorkCenters() {
     if (USE_SUPABASE) {
         try {
@@ -298,46 +282,6 @@ async function loadAllWorkCenters() {
         }
 
         // Función para obtener score desde Supabase con fallback a localStorage
-async function obtenerScoreFromSupabase(workCenterId) {
-    try {
-        // 1. Consultar directamente la tabla 'evaluaciones' para este centro de trabajo.
-        const evaluaciones = await dataClient.getEvaluaciones(workCenterId);
-
-        // 2. Verificar si se encontraron una o más evaluaciones.
-        if (evaluaciones && evaluaciones.length > 0) {
-            
-            // 3. Ordenar las evaluaciones para obtener la más reciente (por fecha de creación).
-            evaluaciones.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            const evalReciente = evaluaciones[0]; // Tomamos la primera, que es la más nueva.
-
-            // 4. Construir el objeto de resultado a partir de la evaluación encontrada.
-            //    Se usan valores por defecto por si algún campo viniera vacío.
-            return {
-                score_actual: evalReciente.score_final || 0,
-                categoria_riesgo: evalReciente.categoria_riesgo || 'Sin datos',
-                color_riesgo: evalReciente.color_riesgo || '#d1d5db',
-                nivel_riesgo_ergonomico: evalReciente.nivel_riesgo_ergonomico || `${evalReciente.score_final || 0}%`
-            };
-
-        } else {
-            // Si no hay ninguna evaluación en la tabla para este centro, se devuelve el estado por defecto.
-            return {
-                score_actual: 0,
-                categoria_riesgo: 'Sin evaluación',
-                color_riesgo: '#d1d5db',
-                nivel_riesgo_ergonomico: '0%'
-            };
-        }
-    } catch (error) {
-        // Si ocurre un error de red, se registra y se devuelve un estado de error.
-        return {
-            score_actual: 0,
-            categoria_riesgo: 'Error',
-            color_riesgo: '#ef4444',
-            nivel_riesgo_ergonomico: 'Error'
-        };
-    }
-}
 
         async function renderCentros() {
             const container = document.getElementById('centros-container');
@@ -354,7 +298,7 @@ async function obtenerScoreFromSupabase(workCenterId) {
                 return;
             }
 
-            const scoreInfoPromises = workCenters.map(center => obtenerScoreFromSupabase(center.id));
+            const scoreInfoPromises = workCenters.map(center => ERGOData.getWorkCenterScore(center.id));
             const scoreInfos = await Promise.all(scoreInfoPromises);
 
             const filteredCentros = filterCentros(workCenters, scoreInfos);
@@ -407,29 +351,13 @@ async function obtenerScoreFromSupabase(workCenterId) {
                 `;
             }).join('');
             } else {
-                container.innerHTML = sortedCentros.map((center, index) => {
-                    const scoreInfo = sortedScoreInfos[index];
-                    const area = areas.find(a => a.id === center.area_id);
-                    const areaName = area ? area.name : 'Área no encontrada';
-                    
-                    // MODIFICADO: El onclick ahora navega al detalle del centro y se quitó el botón.
-                    return `
-                        <div class="card" onclick="navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-                            <div class="card-header"><div class="card-id">${center.id}</div></div>
-                            <h3>${center.name}</h3>
-                            <div class="card-responsible">
-                                <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
-                                <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
-                            </div>
-                            <div class="summary-badge" style="border-left-color: ${scoreInfo.color_riesgo};">
-                                📊 Riesgo: ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
-                            </div>
-                            <div class="card-footer">
-                                <div class="card-stats">Creado ${ERGOUtils.formatDate(center.created_at)}</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+            container.innerHTML = sortedCentros.map((center, index) => {
+                const scoreInfo = sortedScoreInfos[index];
+                const area = areas.find(a => a.id === center.area_id);
+                const areaName = area ? area.name : 'Área no encontrada';
+
+                return ERGOUtils.createWorkCenterCard(center, scoreInfo, areaName, currentView);
+            }).join('');
             }
         }
         // Función para navegar al área específica con el centro seleccionado
@@ -477,7 +405,7 @@ async function obtenerScoreFromSupabase(workCenterId) {
         document.addEventListener('DOMContentLoaded', async function() {
             // Cargar datos
             try {
-                await loadAreas();
+                await ERGOData.loadAreas();
                 await loadAllWorkCenters();
                 
                 // Poblar filtro de áreas

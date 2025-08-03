@@ -393,7 +393,46 @@ window.ERGOUtils = {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    },
+    createWorkCenterCard(center, scoreInfo, areaName, viewType = 'grid') {
+    if (viewType === 'list') {
+        return `
+            <div class="card-list" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                <div class="card-list__header">
+                    <span class="card-list__id">${center.id}</span>
+                    <span class="card-list__name">${center.name}</span>
+                </div>
+                <div class="card-list__details">
+                    <div class="card-list__detail">📍 ${areaName}</div>
+                    <div class="card-list__detail">👤 ${center.responsible}</div>
+                    <div class="card-list__detail card-list__detail--score">
+                        <span class="card-list__score-indicator" style="background-color: ${scoreInfo.color_riesgo};"></span>
+                        ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+                    </div>
+                </div>
+                <div class="card-list__footer">${this.formatDate(center.created_at)}</div>
+            </div>
+        `;
     }
+    
+    // Vista 'grid' por defecto
+    return `
+        <div class="card" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+            <div class="card-header"><div class="card-id">${center.id}</div></div>
+            <h3>${center.name}</h3>
+            <div class="card-responsible">
+                <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
+                <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
+            </div>
+            <div class="summary-badge" style="border-left-color: ${scoreInfo.color_riesgo};">
+                📊 Riesgo: ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+            </div>
+            <div class="card-footer">
+                <div class="card-stats">Creado ${this.formatDate(center.created_at)}</div>
+            </div>
+        </div>
+    `;
+}
 };
 
 
@@ -478,6 +517,48 @@ window.ERGONavigation = {
         window.location.href = url;
     }
 };
+
+window.ERGOData = {
+    async getWorkCenterScore(workCenterId) {
+        try {
+            const evaluaciones = await dataClient.getEvaluaciones(workCenterId);
+            if (evaluaciones && evaluaciones.length > 0) {
+                evaluaciones.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                const evalReciente = evaluaciones[0];
+                return {
+                    score_actual: evalReciente.score_final || 0,
+                    categoria_riesgo: evalReciente.categoria_riesgo || 'Sin datos',
+                    color_riesgo: evalReciente.color_riesgo || '#d1d5db',
+                    nivel_riesgo_ergonomico: evalReciente.nivel_riesgo_ergonomico || `${evalReciente.score_final || 0}%`
+                };
+            }
+            return { score_actual: 0, categoria_riesgo: 'Sin evaluación', color_riesgo: '#d1d5db', nivel_riesgo_ergonomico: '0%' };
+        } catch (error) {
+            console.error(`Error getting score for center ${workCenterId}:`, error);
+            return { score_actual: 0, categoria_riesgo: 'Error', color_riesgo: '#ef4444', nivel_riesgo_ergonomico: 'Error' };
+        }
+    },
+
+    async loadAreas() {
+        try {
+            return await dataClient.getAreas();
+        } catch (error) {
+            console.error('Error loading areas:', error);
+            return JSON.parse(localStorage.getItem('areas')) || [];
+        }
+    },
+    
+    async loadAllWorkCenters() {
+        try {
+            return await dataClient.getWorkCenters();
+        } catch (error) {
+            console.error('Error loading all work centers:', error);
+            return JSON.parse(localStorage.getItem('workCenters')) || [];
+        }
+    }
+};
+
+
 
 // ===== MANEJO DE STORAGE =====
 window.ERGOStorage = {
