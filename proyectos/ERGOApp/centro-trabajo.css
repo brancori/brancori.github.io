@@ -29,11 +29,19 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
         }
 
         .centro-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            align-items: stretch; /* Clave: Estira los items para que tengan la misma altura */
             gap: 1.5rem;
+        }
+        .info-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Clave: Distribuye el contenido verticalmente */
         }
 
         .centro-info h1 {
@@ -53,12 +61,8 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
         }
 
         .score-container {
-            background: white;
-            border-radius: var(--border-radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-            min-width: 200px;
             text-align: center;
+            gap: 1rem; /* Espacio entre los elementos internos */
         }
 
         .score-value {
@@ -220,6 +224,8 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            padding-left: 0; /* Clave: Elimina cualquier indentación heredada */
+            margin-left: 0;  /* Clave: Asegura que no haya margen que cause el efecto */
         }
         .foto-slot__delete-btn:hover {
     background: var(--red-600);
@@ -831,4 +837,322 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
 .input-with-button .btn,
 .input-with-button .btn-secondary {
     flex-shrink: 0;
+}
+
+/* ================================================================== */
+/* ==                  ESTADO DE CENTRO BLOQUEADO                  == */
+/* ================================================================== */
+/* Oculta todos los botones de acción cuando el centro está bloqueado */
+.is-locked .foto-delete,
+.is-locked .action-edit-note,
+.is-locked .action-delete-note,
+.is-locked button[onclick*="abrirModalActividad"] {
+    display: none !important;
+}
+
+.is-locked .foto-slot:not(.occupied) {
+    cursor: not-allowed;
+    background: var(--gray-100);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.is-locked #btn-abrir-modal-nota,
+.is-locked #btn-abrir-modal-actividad,
+.is-locked #btn-abrir-modal-evaluacion {
+    display: none !important;
+}
+
+.is-locked #fotos-info-texto {
+    display: none !important;
+}
+
+#btn-toggle-status.btn-danger {
+    background-color: var(--red-500, #ef4444);
+    border-color: var(--red-600, #dc2626);
+}
+
+#btn-toggle-status.btn-danger:hover {
+    background-color: var(--red-600, #dc2626);
+}
+
+/* Botón en estado "Abrir Centro" - Color verde */
+#btn-toggle-status.btn-success {
+    background-color: var(--green-500, #22c55e);
+    border-color: var(--green-600, #16a34a);
+}
+
+#btn-toggle-status.btn-success:hover {
+    background-color: var(--green-600, #16a34a);
+}
+
+/* --- ESTILOS PARA LA NUEVA GRILLA SUPERIOR --- */
+
+.vista-general-grid {
+    display: grid;
+    /* Usamos una proporción flexible, 2 partes para las fotos, 1 para el resumen */
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem; /* Espacio antes de la sección de Actividades */
+}
+
+.columna-lateral {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Espacio entre la tarjeta de Evaluación y la de Comentarios */
+}
+
+/* Reemplazamos 'section-card' por 'panel' para consistencia con globals.css */
+.panel {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+
+/* --- ESTILOS PARA LA NUEVA SECCIÓN DE COMENTARIOS --- */
+.comentarios-container textarea {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.comentarios-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+
+/* --- RESPONSIVIDAD PARA LA GRILLA --- */
+@media (max-width: 992px) {
+    .vista-general-grid {
+        grid-template-columns: 1fr; /* Apila las columnas en pantallas medianas y pequeñas */
+    }
+}
+
+/* Estilos para el resumen de evaluación dentro del header */
+
+.header-evaluacion-resumen .section-title {
+    font-size: 1.1rem;
+    color: var(--gray-800);
+}
+
+.header-evaluacion-resumen #evaluacion-inicial-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-evaluacion-resumen #evaluacion-inicial-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+}
+
+/* Ajustes para la columna de información */
+.centro-info #evaluacion-inicial-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(13, 148, 136, 0.2);
+}
+
+.centro-info #evaluacion-inicial-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+/* Ajustes para la tarjeta de condiciones ambientales */
+#environmental-card {
+    justify-content: center; /* Centra el contenido verticalmente en esta tarjeta */
+    padding: 1rem 1.5rem;
+}
+#environmental-card:hover {
+    border-color: transparent;
+    background: transparent; /* Aseguramos que no cambie el fondo al pasar el mouse */
+}
+
+
+/* Estilos para el nuevo contenedor del enlace a la evaluación */
+.evaluacion-link-container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.evaluacion-link-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.evaluacion-link-container a {
+    font-size: 0.8rem;
+    color: var(--primary-600);
+    text-decoration: none;
+}
+
+.evaluacion-link-container a:hover {
+    text-decoration: underline;
+}
+
+/* --- ESTILOS PARA LA TARJETA DE ESTADO (SCORE-CONTAINER) --- */
+
+/* Por defecto (Abierto) es ROJO */
+.info-card.status-open {
+    background-color: var(--red-500);
+    color: white;
+    border: 1px solid var(--red-600);
+}
+
+/* Cuando está cerrado es VERDE */
+.info-card.status-closed {
+    background-color: var(--green-600);
+    color: white;
+    border: 1px solid var(--green-700);
+}
+
+/* Ajusta el color del texto secundario para que sea legible */
+.info-card.status-open .score-category,
+.info-card.status-open .evaluacion-link-title,
+.info-card.status-closed .score-category,
+.info-card.status-closed .evaluacion-link-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Ajusta el color del separador y el botón de evaluación */
+.info-card.status-open .evaluacion-link-container,
+.info-card.status-closed .evaluacion-link-container {
+    border-top-color: rgba(255, 255, 255, 0.3);
+}
+
+.info-card.status-open .btn-ghost,
+.info-card.status-closed .btn-ghost {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    color: white;
+}
+.info-card.status-open .btn-ghost:hover,
+.info-card.status-closed .btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* --- ESTILOS PARA EL BOTÓN DE ESTADO (SIEMPRE BLANCO) --- */
+
+.btn-status-toggle {
+    background-color: white !important;
+    border: 2px solid;
+    font-weight: 600;
+}
+
+/* Color del borde y texto del botón en estado ABIERTO (tarjeta roja) */
+.info-card.status-open .btn-status-toggle {
+    color: var(--red-500);
+    border-color: var(--red-500);
+}
+.info-card.status-open .btn-status-toggle:hover {
+    color: white;
+    background-color: var(--red-500) !important;
+}
+
+/* Color del borde y texto del botón en estado CERRADO (tarjeta verde) */
+.info-card.status-closed .btn-status-toggle {
+    color: var(--green-600);
+    border-color: var(--green-600);
+}
+.info-card.status-closed .btn-status-toggle:hover {
+    color: white;
+    background-color: var(--green-600) !important;
+}
+
+/* --- DISEÑO MEJORADO PARA LA COLUMNA DE INFORMACIÓN --- */
+
+/* Contenedor principal de la información */
+.centro-info {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Asegura que ocupe toda la altura de la fila de la grilla */
+}
+
+/* Bloque para el título y responsable */
+.title-block {
+    flex-grow: 1; /* Empuja los detalles hacia abajo */
+}
+
+.title-block h1 {
+    color: var(--gray-900);
+}
+
+.title-block .centro-responsable {
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    margin-top: -0.5rem; /* Acerca un poco el responsable al título */
+}
+
+/* Contenedor de la cuadrícula de detalles */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    padding-top: 1.25rem;
+    margin-top: 1.25rem;
+    border-top: 1px solid rgba(13, 148, 136, 0.2); /* Reemplaza el <hr> por un borde moderno */
+}
+
+/* Estilo para cada tarjeta de detalle individual */
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.5); /* Fondo semitransparente */
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+}
+
+/* Estilo para la etiqueta (ej. "Fecha", "Score") */
+.detail-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-700);
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espacio entre el ícono y el texto */
+}
+
+/* Estilo para el valor (ej. "Pendiente", "--") */
+.detail-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--gray-800);
+}
+.comentarios-container textarea {
+    width: 100%;
+    margin-bottom: 1rem;
+    min-height: 90px;
+    resize: vertical;
+}
+
+.comentarios-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+textarea.is-readonly {
+    background-color: var(--gray-50);
+    border-color: transparent;
+    border-left: 4px solid var(--primary-500);
+    color: var(--gray-700);
+    cursor: default;
+    resize: none; /* Evita que se pueda cambiar el tamaño */
+}
+
+/* Evita el recuadro azul al hacer clic en el textarea bloqueado */
+textarea.is-readonly:focus {
+    outline: none;
+    box-shadow: none;
 }

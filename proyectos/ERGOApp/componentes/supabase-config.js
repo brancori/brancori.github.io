@@ -855,7 +855,10 @@ async deleteFotoActividad(fotoId, storagePath) {
     // 2. Eliminar de la base de datos
     return await this.query('fotos_actividades', 'DELETE', null, `?id=eq.${fotoId}`);
 }
-
+async updateWorkCenterComments(workCenterId, comments) {
+    const data = { comentarios_generales: comments };
+    return await this.query('work_centers', 'PATCH', data, `?id=eq.${workCenterId}`);
+}
 async getActividades(workCenterId) {
     const filter = `?work_center_id=eq.${workCenterId}&estado=eq.activo&order=created_at.desc`;
     return await this.query('actividades', 'GET', null, filter);

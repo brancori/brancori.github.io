@@ -878,7 +878,57 @@ window.addEventListener('message', function(event) {
 });
 
 // Función para obtener score desde Supabase con fallback a localStorage
-const scoreInfoPromises = workCenters.map(center => ERGOData.getWorkCenterScore(center.id));
+async function obtenerScoreFromSupabase(workCenterId) {
+    if (USE_SUPABASE) {
+        try {
+            const score = await dataClient.getScoreWorkCenter(workCenterId);
+            if (score) {
+                return {
+                    score_actual: score.score_actual,
+                    categoria_riesgo: score.categoria_riesgo,
+                    color_riesgo: score.color_riesgo
+                };
+            }
+        } catch (error) {
+            console.error('Error obteniendo score de Supabase:', error);
+        }
+    }
+    
+    // Fallback a localStorage si Supabase falla
+    try {
+        const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+        const evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+        
+        if (evaluacion && evaluacion.scoreFinal) {
+            const score = parseFloat(evaluacion.scoreFinal);
+            let color = '#d1d5db';
+            let categoria = evaluacion.categoriaRiesgo || 'Evaluado';
+            
+            if (score <= 25) color = '#28a745';
+            else if (score <= 60) color = '#fd7e14';
+            else color = '#dc3545';
+            
+            return {
+                score_actual: score,
+                categoria_riesgo: categoria,
+                color_riesgo: color
+            };
+        }
+        
+        return {
+            score_actual: 0,
+            categoria_riesgo: 'Sin evaluación',
+            color_riesgo: '#d1d5db'
+        };
+    } catch (error) {
+        console.error('Error obteniendo score:', error);
+        return {
+            score_actual: 0,
+            categoria_riesgo: 'Sin evaluación',
+            color_riesgo: '#d1d5db'
+        };
+    }
+}
 
 // Función para calcular promedio de área desde Supabase con fallback a localStorage
 async function calcularPromedioAreaFromSupabase(area_id) {

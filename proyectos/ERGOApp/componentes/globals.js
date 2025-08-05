@@ -539,6 +539,30 @@ window.ERGOData = {
         }
     },
 
+    async getWorkCenterDetails(workCenterId) {
+    try {
+        // Esta función asume que tienes un método en tu cliente de datos
+        // que consulta la tabla scores_resumen.
+        const summary = await dataClient.getScoreSummary(workCenterId);
+
+        if (summary) {
+            return {
+                score_actual: summary.score_final || 0,
+                categoria_riesgo: summary.categoria_riesgo || 'Sin Datos',
+                color_riesgo: summary.color_riesgo || '#d1d5db',
+                nivel_riesgo_ergonomico: summary.nivel_riesgo_ergonomico || '0%',
+                is_closed: summary.is_closed || false
+            };
+        }
+        
+        return { score_actual: 0, categoria_riesgo: 'Sin Evaluación', color_riesgo: '#d1d5db', nivel_riesgo_ergonomico: '0%', is_closed: false };
+
+    } catch (error) {
+        console.error(`Error getting details for center ${workCenterId}:`, error);
+        return { score_actual: 0, categoria_riesgo: 'Error', color_riesgo: '#ef4444', nivel_riesgo_ergonomico: 'Error', is_closed: false };
+    }
+},
+
     async loadAreas() {
         try {
             return await dataClient.getAreas();
