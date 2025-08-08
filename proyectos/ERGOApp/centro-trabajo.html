@@ -120,8 +120,7 @@
     <div class="comentarios-container">
         <textarea id="comentarios-generales" class="input-field" placeholder="Añade comentarios sobre el centro de trabajo en general..." rows="4"></textarea>
         <div class="comentarios-actions">
-            <button id="btn-comentarios" class="btn btn-primary" onclick="gestionarComentario()">Editar Comentario</button>
-        </div>
+        <button id="btn-comentarios" class="btn btn-primary action-button" onclick="gestionarComentario()">Editar Comentario</button>        </div>
     </div>
 </section>
 <section class="section-card">
@@ -456,36 +455,25 @@
 
                 // Aplicar estado de bloqueo inmediatamente
                 const mainContainer = document.querySelector('.container');
+                const centroHeader = document.querySelector('.centro-header');
                 const toggleButton = document.getElementById('btn-toggle-status');
                 const banner = document.getElementById('closed-state-banner');
-
- const scoreCard = document.querySelector('.score-container');
 
             if (isCenterClosed) {
                 // ESTADO: CERRADO
                 mainContainer.classList.add('is-locked');
+                centroHeader.classList.add('status-closed');
+                centroHeader.classList.remove('status-open');
                 banner.style.display = 'block';
                 toggleButton.innerHTML = 'Abrir Centro';
-                
-                // Aplicar clases a la tarjeta
-                scoreCard.classList.add('status-closed');
-                scoreCard.classList.remove('status-open');
-                
-                // Limpiamos clases de color viejas del botón por si acaso
-                toggleButton.classList.remove('btn-danger', 'btn-success');
 
             } else {
                 // ESTADO: ABIERTO (POR DEFECTO)
                 mainContainer.classList.remove('is-locked');
+                centroHeader.classList.add('status-open');
+                centroHeader.classList.remove('status-closed');
                 banner.style.display = 'none';
                 toggleButton.innerHTML = 'Cerrar Centro';
-
-                // Aplicar clases a la tarjeta
-                scoreCard.classList.add('status-open');
-                scoreCard.classList.remove('status-closed');
-
-                // Limpiamos clases de color viejas del botón por si acaso
-                toggleButton.classList.remove('btn-danger', 'btn-success');
             }
 
                 if (scoreSummary) {

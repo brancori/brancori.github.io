@@ -23,7 +23,6 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
 */        
         
         .centro-header {
-            background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
             padding: 2rem;
             border-bottom: 1px solid var(--gray-200);
         }
@@ -298,27 +297,22 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .centro-title {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .fotos-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .content-sections {
-                padding: 1rem;
-            }
-        }
 
         @media (max-width: 480px) {
             .fotos-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        @media (max-width: 375px) {
+    .fotos-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en dispositivos muy pequeños */
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr; /* 1 columna en dispositivos muy pequeños */
+    }
+}
 
         /* Modal para vista completa de fotos */
 .foto-modal {
@@ -375,16 +369,7 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease;
 }
-@media (max-width: 768px) {
-    .foto-modal-image {
-        max-height: 70vh; /* Era 80vh */
-    }
-    
-    .foto-modal-controls {
-        bottom: 20px; /* Mover abajo para mejor acceso */
-        top: auto;
-    }
-}
+
 .foto-modal-info {
     background: rgba(255, 255, 255, 0.95);
     padding: 1rem 1.5rem;
@@ -499,29 +484,181 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
         height: 40px;
         font-size: 1rem;
     }
-    
+
     .foto-modal-close {
         top: 10px;
         right: 10px;
     }
-    
+
     .foto-modal-prev {
         left: 10px;
     }
-    
+
     .foto-modal-next {
         right: 10px;
     }
-    
+
     .foto-modal-counter {
         top: 10px;
         font-size: 0.75rem;
         padding: 0.375rem 0.75rem;
     }
-    
+
     .foto-modal-info {
         padding: 0.75rem 1rem;
         font-size: 0.875rem;
+    }
+
+    .centro-title {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .fotos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .content-sections {
+        padding: 1rem;
+    }
+
+    .foto-modal-image {
+        max-height: 70vh; /* Era 80vh */
+    }
+
+    .foto-modal-controls {
+        bottom: 20px; /* Mover abajo para mejor acceso */
+        top: auto;
+    }
+
+    .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+        .centro-header {
+        padding: 1rem;
+    }
+
+    .centro-title {
+        grid-template-columns: 1fr; /* Cambia a una columna */
+        gap: 1rem;
+    }
+
+    /* Info cards y contenedores */
+    .info-card {
+        padding: 1rem;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr 1fr; /* 2 columnas en móvil */
+        gap: 0.5rem;
+    }
+
+    .detail-item {
+        padding: 0.75rem;
+    }
+
+    /* Vista general y contenido */
+    .vista-general-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .content-sections {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    /* Fotos grid */
+    .fotos-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    /* Modal de fotos */
+    .foto-modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .foto-modal-image {
+        max-height: 60vh;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    .foto-modal-controls {
+        bottom: 1rem;
+        top: auto;
+    }
+
+    .foto-modal-counter {
+        top: 1rem;
+    }
+
+    /* Modales */
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* Para scroll suave en iOS */
+    }
+
+    .modal-header {
+        padding: 1rem;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+    }
+
+    .modal-footer {
+        padding: 1rem;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        z-index: 10;
+    }
+
+    /* Formularios */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-group-inline {
+        grid-template-columns: 1fr;
+    }
+
+    /* Botones y controles */
+    .btn {
+        min-height: 44px; /* Tamaño mínimo para touch targets */
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-group {
+        width: 100%;
+    }
+
+    /* Touch improvements */
+    .foto-slot,
+    .card,
+    .btn,
+    .modal-close,
+    .foto-modal-controls {
+        cursor: default; /* Quitar cursor pointer en dispositivos touch */
     }
 }
 
@@ -570,15 +707,6 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     margin-right: 0.5rem;
     accent-color: var(--primary-600); /* Color de acento del radio button */
 }
-
-/* Responsividad para la grilla del formulario */
-@media (max-width: 768px) {
-    .form-grid-2 {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-}
-
         /* Estilos para el banner de notificación */
         .notification {
             padding: 1.25rem;
@@ -1155,4 +1283,169 @@ textarea.is-readonly {
 textarea.is-readonly:focus {
     outline: none;
     box-shadow: none;
+}
+
+/* Quitar los estilos de color de score-container y hacerlo blanco */
+.score-container.info-card {
+    background-color: white;
+    color: var(--gray-900);
+    border: 1px solid var(--gray-200);
+}
+
+/* Asegurarse que los elementos dentro de score-container sean del color correcto */
+.score-container .score-category,
+.score-container .evaluacion-link-title {
+    color: var(--gray-700);
+}
+
+.score-container .evaluacion-link-container {
+    border-top-color: var(--gray-200);
+}
+
+.score-container .btn-ghost {
+    background-color: transparent;
+    border-color: var(--gray-300);
+    color: var(--gray-600);
+}
+
+.score-container .btn-ghost:hover {
+    background-color: var(--gray-50);
+}
+
+/* Transferir la lógica de colores al centro-header */
+.centro-header {
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+/* Estado abierto - Rojo */
+.centro-header.status-open {
+    background-color: var(--red-500);
+    color: white;
+    border-bottom: 1px solid var(--red-600);
+}
+
+/* Estado cerrado - Verde */
+.centro-header.status-closed {
+    background-color: var(--green-600);
+    color: white;
+    border-bottom: 1px solid var(--green-700);
+}
+
+/* Ajustes para los elementos dentro del header cuando está coloreado */
+.centro-header.status-open h1,
+.centro-header.status-closed h1,
+.centro-header.status-open .centro-responsable,
+.centro-header.status-closed .centro-responsable {
+    color: white;
+}
+
+/* Ajustes para el breadcrumb cuando el header está coloreado */
+.centro-header.status-open .breadcrumb a,
+.centro-header.status-closed .breadcrumb a,
+.centro-header.status-open .breadcrumb .separator,
+.centro-header.status-closed .breadcrumb .separator,
+.centro-header.status-open .breadcrumb span,
+.centro-header.status-closed .breadcrumb span {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.centro-header.status-open .breadcrumb a:hover,
+.centro-header.status-closed .breadcrumb a:hover {
+    color: white;
+}
+
+/* Ajustes para los detalles cuando el header está coloreado */
+.centro-header.status-open .detail-label,
+.centro-header.status-closed .detail-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.centro-header.status-open .detail-value,
+.centro-header.status-closed .detail-value {
+    color: white;
+}
+
+/* Ajustar el borde superior de la grilla de detalles */
+.centro-header.status-open .details-grid,
+.centro-header.status-closed .details-grid {
+    border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Ajustar el fondo de los items de detalle */
+.centro-header.status-open .detail-item,
+.centro-header.status-closed .detail-item {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.is-locked .action-button,
+.is-locked .foto-delete,
+.is-locked .action-edit-note,
+.is-locked .action-delete-note,
+.is-locked button[onclick*="abrirModalActividad"] {
+    display: none !important;
+}
+
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .foto-slot img,
+    .foto-modal-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        image-rendering: pixelated; /* Mejor soporte para Edge y otros navegadores */
+    }
+}
+
+/* Mejoras para modo landscape en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+    .foto-modal-image {
+        max-height: 70vh;
+    }
+
+    .modal-content {
+        max-height: 100vh;
+    }
+
+    .details-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columnas en landscape */
+    }
+}
+
+/* Safe area insets para dispositivos modernos */
+@supports (padding: max(0px)) {
+    .modal-content,
+    .centro-header {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    .modal-footer {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* Optimizaciones para gestos touch */
+@media (hover: none) and (pointer: coarse) {
+    /* Aumentar áreas táctiles */
+    .btn,
+    .foto-slot,
+    .modal-close,
+    .foto-modal-controls {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Mejorar feedback táctil */
+    .btn:active,
+    .card:active,
+    .foto-slot:active {
+        transform: scale(0.98);
+    }
+
+    /* Deshabilitar efectos hover */
+    .btn:hover,
+    .card:hover,
+    .foto-slot:hover {
+        transform: none;
+    }
 }
