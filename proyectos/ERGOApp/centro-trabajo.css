@@ -649,6 +649,7 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
             background-color: var(--yellow-50);
             border-color: var(--yellow-400);
             color: var(--yellow-800);
+            text-align: center;
         }
 
 
@@ -725,6 +726,7 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     border: 1px solid var(--gray-200);
     border-radius: var(--border-radius-lg);
     background-color: white;
+    margin-bottom: 1rem;
     transition: all 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -1541,5 +1543,89 @@ textarea.is-readonly:focus {
     .btn {
         padding: 0.75rem;
         font-size: 0.875rem;
+    }
+}
+
+/* Estilos base para actividad-item */
+.actividad-item {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    background-color: white;
+    margin-bottom: 1rem;
+}
+
+/* Estilos específicos para mobile */
+@media (max-width: 768px) {
+    .actividad-header {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .actividad-info {
+        width: 100%;
+        padding-right: 1.5rem; /* Espacio para el chevron */
+        position: relative;
+    }
+
+    .actividad-info .nombre {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .actividad-info .meta {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        margin-bottom: 1rem;
+    }
+
+    .chevron {
+        position: absolute;
+        right: 0;
+        top: 0.25rem;
+        transition: transform 0.3s ease;
+    }
+
+    .actividad-item.is-expanded .chevron {
+        transform: rotate(90deg);
+    }
+
+    /* Nuevo contenedor para status y botones */
+    .actividad-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 0.75rem;
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--gray-100);
+    }
+
+    .actividad-status {
+        width: 100%;
+        text-align: center;
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+    }
+
+    .actividad-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .actividad-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* Ajustes para el contenido expandible */
+    .actividad-details {
+        border-top: 1px solid var(--gray-200);
+        padding: 1rem;
+        background-color: var(--gray-50);
     }
 }
