@@ -49,16 +49,16 @@
     }
 
     .container-evaluation {
-      margin-top: 10px; /* Cambiado de 20px para ser consistente */
+      margin-top: 10px; /* Margen superior consistente */
       display: flex;
-      align-items: center;
       align-items: stretch;
-      border: 2px solid black;
-      border-radius: 5px;
+      border: 1px solid #d0d7de; /* Bordes suaves por defecto */
+      border-radius: 6px; /* Radio suave por defecto */
       padding: 5px;
       width: 350px;
-      height: 130px; /* Añadido altura fija */
-      box-sizing: border-box; /* Añadido para incluir padding y border en el tamaño total */
+      height: 130px; /* Altura inicial, se ajusta posteriormente por CSS dinámico */
+      box-sizing: border-box; /* Incluye padding y border en el tamaño total */
+      background-color: #ffffff;
     }
 
     img {
@@ -307,7 +307,10 @@
     </div>
 
     <div id="evaluations-container"></div>
-    ...
+
+    <!-- Botón flotante para guardar la evaluación.  Al estar fuera del contenedor de evaluaciones
+         permanece visible durante el desplazamiento. -->
+    <button id="save-button" title="Guardar evaluación">Guardar evaluación</button>
         
     <template id="evaluation-template">
         <section class="container-evaluation">
@@ -360,6 +363,7 @@
             </div>
         </section>
     </template>
+
 
     <script>
         /*
@@ -756,10 +760,134 @@
 
              document.getElementById('Employees').addEventListener('input', updateSummary);
             updateSummary();
+
+            /*
+             * Inject additional styles and behaviours after the initial UI has been generated.
+             * This includes a sticky, collapsible header, internal scrolling for the evaluations,
+             * a floating save button and minor height adjustments. Styles declared here override
+             * earlier rules due to their later insertion in the DOM.
+             */
+            const improvedCss = `
+                :root {
+                    --high-color: #e57373;
+                    --mod-color:  #ffb74d;
+                    --low-color:  #64b5f6;
+                    --ok-color:   #b0bec5;
+                    --na-color:   #81c784;
+                    --text-color:     #333333;
+                    --subtext-color:  #666666;
+                    --border-color:   #d0d7de;
+                    --background:     #f5f7fa;
+                    --card-bg:        #ffffff;
+                }
+                body {
+                    background-color: var(--background);
+                    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+                    color: var(--text-color);
+                    line-height: 1.4;
+                }
+                /* Sticky header setup */
+                #main-header-container {
+                    position: sticky;
+                    top: 0;
+                    background-color: var(--background);
+                    z-index: 10;
+                    transition: all 0.3s ease;
+                    padding: 20px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 24px;
+                }
+                #main-header-container.header-collapsed {
+                    padding: 8px 20px;
+                    gap: 12px;
+                }
+                #main-header-container.header-collapsed .container {
+                    gap: 8px;
+                }
+                #main-header-container.header-collapsed h2 {
+                    font-size: 16px;
+                }
+                #main-header-container.header-collapsed .info-content label {
+                    font-size: 11px;
+                    width: 110px;
+                }
+                #main-header-container.header-collapsed .info-content input {
+                    height: 28px;
+                    font-size: 12px;
+                }
+                #main-header-container.header-collapsed .summary-table td {
+                    padding: 6px 8px;
+                    font-size: 12px;
+                }
+                #main-header-container.header-collapsed .summary-table td strong {
+                    font-size: 12px;
+                }
+                #main-header-container.header-collapsed:hover {
+                    padding: 20px;
+                    gap: 24px;
+                }
+                /* Constrain evaluations list height */
+                #evaluations-container {
+                    height: calc(100vh - 280px);
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+                /* Ajusta la altura de las tarjetas para optimizar el espacio vertical */
+                .container-evaluation {
+                    height: 150px;
+                    border: 1px solid var(--border-color);
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+                    border-radius: 8px;
+                    background-color: var(--card-bg);
+                }
+                /* Floating save button */
+                #save-button {
+                    position: fixed;
+                    bottom: 24px;
+                    right: 24px;
+                    z-index: 100;
+                    padding: 12px 20px;
+                    background-color: var(--high-color);
+                    border: none;
+                    border-radius: 30px;
+                    color: #ffffff;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    transition: background 0.3s, box-shadow 0.3s;
+                }
+                #save-button:hover {
+                    background-color: #b94a48;
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+                }
+            `;
+            const styleEl = document.createElement('style');
+            styleEl.textContent = improvedCss;
+            document.head.appendChild(styleEl);
+
+            // Header collapse on scroll
+            // Collapse the header when se desplaza dentro del contenedor de evaluaciones
+            const headerElement = document.getElementById('main-header-container');
+            const evalContainer = document.getElementById('evaluations-container');
+            function toggleHeader() {
+                // Comprueba si la parte superior del contenedor se ha desplazado más de 60px
+                if (evalContainer.scrollTop > 60) {
+                    headerElement.classList.add('header-collapsed');
+                } else {
+                    headerElement.classList.remove('header-collapsed');
+                }
+            }
+            // Maneja el scroll en el contenedor de evaluaciones para cambiar el tamaño del header
+            evalContainer.addEventListener('scroll', toggleHeader);
+            // Ejecuta una comprobación inicial
+            toggleHeader();
         });
 
         
     </script>
+    
 
 <!-- Code injected by live-server -->
 <script>
@@ -800,7 +928,22 @@
 	// ]]>
 </script>
 
-</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+<script>
+  // Chequeo de sesión congruente con tu auth:
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.ERGOAuth?.checkSession?.()) {
+      window.ERGOAuth?.redirectToLogin?.();
+    }
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../globals.js"></script>
+    <script src="../auth-client.js"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="./johnson-eval.js"></script>
+</body>
+<grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
       div.grammarly-desktop-integration {
         position: absolute;
         width: 1px;

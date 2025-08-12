@@ -241,6 +241,7 @@ redirectToLogin() {
         const token = JSON.parse(sessionToken);
         window.dataClient.setAuth(token);
         window.authClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
+        window.dataClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
         // --- FIN DE LA MODIFICACIÓN ---
 
         console.log('%c🔑 CONTEXTO DE SESIÓN ESTABLECIDO. La página NO debería redirigir.', 'color: green; font-weight: bold;');
@@ -479,7 +480,7 @@ window.ERGONavigation = {
             responsible: responsible || ''
             
         };
-        const url = this.buildUrl('centro-trabajo.html', params);
+        const url = this.buildUrl('../centro-trabajo/centro-trabajo.html', params);
         window.location.href = url;
     },
 

@@ -26,6 +26,10 @@ class ErgoSupabaseClient {
         };
                 if (window.supabase && window.supabase.createClient) {
             this.supabase = window.supabase.createClient(url, key);
+            if (sessionStorage.getItem('sessionToken')) {
+            const t = JSON.parse(sessionStorage.getItem('sessionToken'));
+            this.supabase.auth.setSession({ access_token: t, refresh_token: '' });
+            }
         } else {
             console.error("Librería de Supabase no cargada. Las llamadas RPC fallarán.");
         }
