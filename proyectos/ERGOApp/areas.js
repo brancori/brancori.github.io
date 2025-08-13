@@ -740,7 +740,7 @@ async function renderWorkCenters() {
             const scoreInfo = filteredScoreInfos[index];
             
             return `
-                <div class="card" data-work-center-id="${center.id}" onclick="window.location.href='./centro-trabajo/centro-trabajo.html?workCenter=${center.id}&area=${current_area_id}&areaName=${encodeURIComponent(areas.find(a => a.id === current_area_id)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}'">        
+                <div class="card" data-work-center-id="${center.id}" onclick="window.location.href='./centro-trabajo./centro-trabajo.html?workCenter=${center.id}&area=${current_area_id}&areaName=${encodeURIComponent(areas.find(a => a.id === current_area_id)?.name || '')}&centerName=${encodeURIComponent(center.name)}&responsible=${encodeURIComponent(center.responsible)}'">        
                     <div class="card-header">
                         <div class="card-id">${center.id}</div>
                     </div>
