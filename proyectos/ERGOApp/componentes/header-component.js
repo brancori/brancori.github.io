@@ -3,7 +3,7 @@ class HeaderComponent {
     constructor() {
         this.currentUser = null;
         this.navigationStack = ['Dashboard'];
-        this.pageHistory = [{ title: 'Dashboard', subtitle: 'Dashboard de Control y Monitoreo', url: './index.html' }];
+        this.pageHistory = [{ title: 'Dashboard', subtitle: 'Dashboard de Control y Monitoreo', url: 'index.html' }];
         this.basePath = this.detectBasePath(); // ← AGREGAR ESTA LÍNEA
         this.init();
     }
