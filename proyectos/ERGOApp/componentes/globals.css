@@ -669,3 +669,7 @@ input:checked ~ .slider .sun {
     border-left-style: solid;
     font-weight: 500;
 }
+.report-card:visited {
+  background-color: var(--gray-100); /* Un color sutil para indicar que ya fue visitado */
+  border-color: var(--primary-500);
+}
