@@ -51,16 +51,17 @@ async function loadAndPopulateForm(evalId, tipo) {
 
     try {
         // Buscar evaluación existente por evalId (que viene de la URL)
-        const { data: evaluaciones, error } = await dataClient.supabase
+        const { data: evaluacion, error } = await dataClient.supabase
             .from(tableName)
             .select('*')
-            .eq('work_center_id', workCenterId);
+            .eq('id', evalId) // Cambiamos 'work_center_id' por 'id' y usamos evalId
+            .single(); // Usamos .single() para obtener un solo objeto, no un array
 
-        if (error) throw error;
-
+        if (error && error.code !== 'PGRST116') throw error; // Ignorar si no encuentra nada
+        // aqui termina
         // Por ahora, tomar la primera evaluación encontrada
         // En el futuro, podrías implementar lógica para buscar por título o fecha
-        const evaluacion = evaluaciones?.[0];
+        
 
         if (!evaluacion) {
             ERGOUtils.showToast('Iniciando nueva evaluación.', 'info');

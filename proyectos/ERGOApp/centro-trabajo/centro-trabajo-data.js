@@ -10,7 +10,7 @@
             
             let evaluaciones = [];
             
-              if (USE_SUPABASE) {
+              if (window.ERGOConfig.USE_SUPABASE) {
             try {
                 console.log('🔍 Consultando dataClient...');
                 evaluaciones = await dataClient.getEvaluaciones(workCenterId) || [];
@@ -91,7 +91,7 @@
 
         async function loadFotos() {
             try {
-                if (USE_SUPABASE) {
+                if (window.ERGOConfig.USE_SUPABASE) {
                     fotosActuales = await dataClient.getFotos(workCenterId) || [];
                 } else {
                     fotosActuales = ERGOStorage.getLocal(`fotos_${workCenterId}`, []);
@@ -263,8 +263,8 @@ async function guardarCondicionesAmbientales() {
             
             // Renderizar fotos existentes
             fotosActuales.forEach((foto, index) => {
-                const publicUrl = USE_SUPABASE ? 
-                    `${SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
+                const publicUrl = window.ERGOConfig.USE_SUPABASE ? 
+                    `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
                     foto.url;
                 
                 html += `

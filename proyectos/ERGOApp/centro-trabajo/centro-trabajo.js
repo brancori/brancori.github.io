@@ -1,40 +1,4 @@
         // --- bootstrap de sesión para la página "centro-trabajo" ---
-(async function bootstrapCentroTrabajoAuth() {
-  try {
-    const raw = sessionStorage.getItem('sessionToken');
-    if (!raw) return; // si no hay sesión, que el flujo normal te mande a login
-
-    let access_token = null, refresh_token = '';
-    try {
-      const maybe = JSON.parse(raw);
-      if (maybe && typeof maybe === 'object' && maybe.access_token) {
-        access_token = maybe.access_token;
-        refresh_token = maybe.refresh_token || '';
-      } else {
-        access_token = raw; // era string plano
-      }
-    } catch {
-      access_token = raw; // no era JSON, era string plano
-    }
-
-    // para tu wrapper REST (usa bearer string)
-    if (window.dataClient?.setAuth) {
-      window.dataClient.setAuth(access_token);
-    }
-
-    // para el cliente supabase que usa los INSERT/Storage en esta página
-    if (window.dataClient?.supabase?.auth?.setSession) {
-      await window.dataClient.supabase.auth.setSession({ access_token, refresh_token });
-    }
-
-    // (opcional) si aquí mismo haces lecturas con authClient, lo puedes hidratar también:
-    // if (window.authClient?.supabase?.auth?.setSession) {
-    //   await window.authClient.supabase.auth.setSession({ access_token, refresh_token });
-    // }
-  } catch (e) {
-    console.warn('bootstrapCentroTrabajoAuth: no se pudo hidratar la sesión', e);
-  }
-})();
 
         let tipoEvaluacionACrear = null;
         let notaEnEdicion = null; 
@@ -55,7 +19,6 @@
         const responsibleName = urlParams.get('responsible');
 
         // Configuración Supabase
-        const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
 
             async function eliminarEvaluacionEspecifica(event, evalId, tipo) {

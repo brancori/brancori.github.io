@@ -758,7 +758,16 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
 .actividad-item.is-expanded .actividad-header .chevron {
     transform: rotate(90deg);
 }
+.chevron svg { transition: transform .2s ease; }
+.chevron svg.rotated { transform: rotate(90deg); }
 
+.photo-grid img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.photo-grid img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
 .actividad-info .nombre {
     font-weight: 600;
     font-size: 1.125rem;

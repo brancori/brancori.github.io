@@ -51,20 +51,22 @@ window.ERGOConfig = {
     USE_SUPABASE: true,
     SUPABASE_URL: 'https://ywfmcvmpzvqzkatbkvqo.supabase.co',
     SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3Zm1jdm1wenZxemthdGJrdnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMzcxMjUsImV4cCI6MjA2NDkxMzEyNX0.WNW_EkEvhyw5p0xrQ4SYv4DORidnONhsr-8vUbdzNKM',
-    SESSION_DURATION: 8 * 60 * 60 * 1000, // 8 horas en millisegundos
-    ACTIVITY_CHECK_INTERVAL: 60000 // 1 minuto
+    SESSION_DURATION: 8 * 60 * 60 * 1000,
+    ACTIVITY_CHECK_INTERVAL: 60000
 };
 
 // ===== SISTEMA DE PERMISOS UNIFICADO =====
 window.ERGOAuth = {
-    getCurrentUser() {
-        try {
-            const userData = sessionStorage.getItem('currentUser');
-            return userData ? JSON.parse(userData) : null;
-        } catch (error) {
-            console.error('Error obteniendo usuario:', error);
-            return null;
-        }
+    getCurrentUser: () => ERGOStorage.getItem('currentUser'),
+
+    hasPermission(action) {
+        const user = this.getCurrentUser();
+        if (!user || !user.rango) return false;
+        const rango = user.rango;
+        if (rango === 1) return true; // Admin
+        if (rango === 2) return ['read', 'create'].includes(action); // Editor
+        if (rango === 3) return action === 'read'; // Visualizador
+        return false;
     },
 
     hasPermission(action) {
@@ -116,80 +118,50 @@ window.ERGOAuth = {
     },
     
 redirectToLogin() {
-    const path = window.location.pathname;
-    if (path !== '/index.html' && path !== '/') {
-        window.location.href = ERGONavigation.buildUrl('index.html');
-    }
-},
+        // Redirección robusta que funciona desde subcarpetas
+        window.location.href = '../index.html';
+    },
 
 // En el archivo globals.js, dentro del objeto ERGOAuth
 
-    logout(reason = null) {
-        console.log(`Cerrando sesión. Razón: ${reason || 'Manual'}`);
-
-        // 1. Cerrar la sesión en el backend de Supabase (si el cliente está disponible)
-        if (window.authClient) {
-            window.authClient.logout();
-        }
-
-        // 2. Limpiar el storage local
-        sessionStorage.removeItem('currentUser');
-        sessionStorage.removeItem('sessionExpiry');
-        sessionStorage.removeItem('sessionToken'); // Asegúrate de limpiar el token también
-        localStorage.removeItem('lastActivity');
-                
-        // 4. Forzar la recarga de la página para un estado limpio
-        // Se ejecutará después de mostrar el toast.
-        setTimeout(() => {
-            window.location.reload();
-        }, 500); // Pequeño delay para que el usuario pueda ver el toast
+    logout(reason = 'Cierre de sesión manual') {
+        console.log(`Cerrando sesión: ${reason}`);
+        if (window.authClient) window.authClient.logout();
+        ERGOStorage.clearSession();
+        // Redirige a la raíz del sitio
+        window.location.href = './index.html'; 
     },
 
+        initializeAuthContext() {
+        const token = ERGOStorage.getItem('sessionToken');
+        const expiry = ERGOStorage.getItem('sessionExpiry');
+        const user = ERGOStorage.getItem('currentUser');
+
+        if (!token || !expiry || !user || new Date().getTime() > expiry) {
+            if (new Date().getTime() > expiry) this.logout('Sesión expirada');
+            return false;
+        }
+        
+        if (window.dataClient && window.dataClient.supabase) {
+            window.dataClient.setAuth(token);
+            window.dataClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
+            return true;
+        }
+        return false;
+    },
+    
+    // El resto de funciones se mantienen como estaban
     applyPermissionControls() {
         const currentUser = this.getCurrentUser();
-        if (!currentUser) {
-            console.warn('No hay usuario logueado');
-            return;
-        }
-        
-        console.log(`👤 Usuario: ${currentUser.nombre} - Rango: ${currentUser.rango}`);
-        
-        // Ocultar botones según permisos
-        if (!this.hasPermission('create')) {
-            this.hideCreateButtons();
-        }
-        
-        if (!this.hasPermission('delete')) {
-            this.hideDeleteButtons();
-        }
-        
-        // Mostrar indicador de permisos
-        const rangoTexto = {
-            1: 'Administrador (CRUD completo)',
-            2: 'Editor (Crear y leer)',
-            3: 'Visualizador (Solo lectura)'
-        };
-        
-        console.log(`✅ Permisos aplicados: ${rangoTexto[currentUser.rango] || 'Rango desconocido'}`);
+        if (!currentUser) return;
+        if (!this.hasPermission('create')) this.hideCreateButtons();
+        if (!this.hasPermission('delete')) this.hideDeleteButtons();
     },
-
     hideCreateButtons() {
-        const createButtons = document.querySelectorAll(
-            'button[onclick*="openAreaModal"], button[onclick*="openWorkCenterModal"], ' +
-            'button[onclick*="openEvaluacionModal"], .btn-add-note'
-        );
-        createButtons.forEach(btn => {
-            if (btn) btn.style.display = 'none';
-        });
+        document.querySelectorAll('button[onclick*="openAreaModal"], button[onclick*="openWorkCenterModal"]').forEach(btn => btn.style.display = 'none');
     },
-
     hideDeleteButtons() {
-        const deleteButtons = document.querySelectorAll(
-            'button[onclick*="delete"], .btn-danger, .foto-delete'
-        );
-        deleteButtons.forEach(btn => {
-            if (btn) btn.style.display = 'none';
-        });
+        document.querySelectorAll('button[onclick*="deleteArea"], button[onclick*="deleteWorkCenter"]').forEach(btn => btn.style.display = 'none');
     },
 
     setupSessionMonitoring() {
@@ -210,42 +182,31 @@ redirectToLogin() {
         }, 60000); // Cada minuto
     },
     initializeAuthContext() {
-        console.log('%c🕵️‍♂️ DIAGNÓSTICO DE SESIÓN INICIADO...', 'color: blue; font-weight: bold;');
+        const token = ERGOStorage.getItem('sessionToken');
+        const expiry = ERGOStorage.getItem('sessionExpiry');
+        const user = ERGOStorage.getItem('currentUser');
 
-        const currentUser = sessionStorage.getItem('currentUser');
-        const sessionExpiry = sessionStorage.getItem('sessionExpiry');
-        const sessionToken = sessionStorage.getItem('sessionToken');
-
-        console.log(`1. Verificando 'currentUser': ${currentUser ? `✅ ENCONTRADO (longitud: ${currentUser.length})` : '❌ NO ENCONTRADO'}`);
-        console.log(`2. Verificando 'sessionExpiry': ${sessionExpiry ? `✅ ENCONTRADO (expira: ${new Date(parseInt(sessionExpiry)).toLocaleString()})` : '❌ NO ENCONTRADO'}`);
-        console.log(`3. Verificando 'sessionToken': ${sessionToken ? `✅ ENCONTRADO (longitud: ${sessionToken.length})` : '❌ NO ENCONTRADO'}`);
-
-        if (!currentUser || !sessionExpiry || !sessionToken) {
-            console.error('❌ FALLO: Faltan datos esenciales de la sesión. La redirección es inevitable.');
+        if (!token || !expiry || !user) {
+            console.error('Auth Fallo: Faltan datos de sesión.');
             return false;
         }
-
-        if (new Date().getTime() > parseInt(sessionExpiry)) {
-            console.error('❌ FALLO: La sesión ha expirado.');
+        if (new Date().getTime() > expiry) {
+            console.error('Auth Fallo: Sesión expirada.');
             this.logout('Sesión expirada');
             return false;
         }
-
-        if (!window.dataClient || !window.authClient) {
-            console.error('❌ FALLO: `dataClient` o `authClient` no existen. Revisa el orden de carga.');
-            return false;
+        try {
+            if (window.dataClient && window.dataClient.supabase) {
+                window.dataClient.setAuth(token);
+                window.dataClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
+                console.log('%cAuth Éxito: Contexto de sesión establecido.', 'color: green; font-weight: bold;');
+                return true;
+            }
+        } catch (e) {
+            console.error('Auth Fallo: Error al procesar token.', e);
         }
         
-        // --- INICIO DE LA MODIFICACIÓN ---
-        // Establecemos el token en ambos clientes para consistencia
-        const token = JSON.parse(sessionToken);
-        window.dataClient.setAuth(token);
-        window.authClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
-        window.dataClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
-        // --- FIN DE LA MODIFICACIÓN ---
-
-        console.log('%c🔑 CONTEXTO DE SESIÓN ESTABLECIDO. La página NO debería redirigir.', 'color: green; font-weight: bold;');
-        return true;
+        return false;
     }
 
 
@@ -439,25 +400,28 @@ window.ERGOUtils = {
 
 window.ERGONavigation = {
     /**
-     * Detecta la ruta base del proyecto de forma más inteligente.
-     * Funciona incluso si la app está en un subdirectorio.
+     * Detecta la ruta base del proyecto de forma inteligente.
+     * Funciona si la app está en la raíz o en una subcarpeta como /ERGOApp/.
      */
     basePath: (() => {
         const path = window.location.pathname;
-        const projectRootIndex = path.indexOf('/componentes/');
-        if (projectRootIndex > -1) {
-            return path.substring(0, projectRootIndex + 1);
+        const ergoAppIndex = path.indexOf('/ERGOApp/');
+        if (ergoAppIndex > -1) {
+            // Si encuentra /ERGOApp/, construye la ruta hasta ese punto
+            return path.substring(0, ergoAppIndex + 8); // +8 para incluir "ERGOApp"
         }
-        const lastSlash = path.lastIndexOf('/');
-        return path.substring(0, lastSlash + 1);
+        // Si no, asume que está en la raíz (para cuando abres la carpeta ERGOApp directamente)
+        return '';
     })(),
 
     /**
-     * Construye una URL completa y segura desde la ruta base del proyecto.
+     * Construye una URL completa y segura desde la ruta base detectada.
      */
     buildUrl(filePath, params = {}) {
         const cleanFilePath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
-        let url = this.basePath + cleanFilePath;
+        // Combina la base detectada con la ruta del archivo
+        let url = `${this.basePath}/${cleanFilePath}`;
+        
         const queryString = new URLSearchParams(params).toString();
         if (queryString) {
             url += '?' + queryString;
@@ -465,10 +429,10 @@ window.ERGONavigation = {
         return url;
     },
 
+    // El resto de las funciones de navegación no cambian, pero ahora usarán buildUrl correctamente
     navigateToAreas(areaId = null, areaName = '') {
         const params = areaId ? { area: areaId, areaName: areaName } : {};
-        const url = this.buildUrl('areas.html', params);
-        window.location.href = url;
+        window.location.href = this.buildUrl('areas.html', params);
     },
 
     navigateToWorkCenter(workCenterId, areaId, areaName, centerName, responsible) {
@@ -478,13 +442,11 @@ window.ERGONavigation = {
             areaName: areaName || '',
             centerName: centerName || '',
             responsible: responsible || ''
-            
         };
-        const url = this.buildUrl('../centro-trabajo/centro-trabajo.html', params);
-        window.location.href = url;
+        window.location.href = this.buildUrl('centro-trabajo/centro-trabajo.html', params);
     },
 
-    navigateToEvaluation(workCenterId, areaId, areaName, centerName, responsible) {
+    navigateToEvaluation(workCenterId, areaId, areaName, centerName, responsible, evaluacionId) {
         const params = {
             workCenter: workCenterId,
             area: areaId,
@@ -493,8 +455,7 @@ window.ERGONavigation = {
             responsible: responsible || '',
             evaluacionId: evaluacionId
         };
-        const url = this.buildUrl('componentes/evaluacion_ini/eval_int.html', params);
-        window.location.href = url;
+        window.location.href = this.buildUrl('componentes/evaluacion_ini/eval_int.html', params);
     },
 
     navigateToSpecificEvaluation(type, workCenterId, areaId, areaName, centerName, responsible) {
@@ -514,8 +475,7 @@ window.ERGONavigation = {
             evalId: ERGOUtils.generateShortId()
         };
         const filePath = evaluationFiles[type] || evaluationFiles['REBA'];
-        const url = this.buildUrl(filePath, params);
-        window.location.href = url;
+        window.location.href = this.buildUrl(`componentes/${filePath}`, params);
     }
 };
 
@@ -587,78 +547,29 @@ window.ERGOData = {
 
 // ===== MANEJO DE STORAGE =====
 window.ERGOStorage = {
-    // localStorage helpers
-    setLocal(key, value) {
+    setItem(key, value) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
-            return true;
-        } catch (error) {
-            console.error('Error saving to localStorage:', error);
-            return false;
+        } catch (e) {
+            console.error(`Error guardando en localStorage ('${key}'):`, e);
         }
     },
-
-    getLocal(key, defaultValue = null) {
+    getItem(key, defaultValue = null) {
         try {
             const value = localStorage.getItem(key);
             return value ? JSON.parse(value) : defaultValue;
-        } catch (error) {
-            console.error('Error reading from localStorage:', error);
+        } catch (e) {
+            console.error(`Error leyendo de localStorage ('${key}'):`, e);
             return defaultValue;
         }
     },
-
-    removeLocal(key) {
-        try {
-            localStorage.removeItem(key);
-            return true;
-        } catch (error) {
-            console.error('Error removing from localStorage:', error);
-            return false;
-        }
+    removeItem(key) {
+        localStorage.removeItem(key);
     },
-
-    // sessionStorage helpers
-    setSession(key, value) {
-        try {
-            sessionStorage.setItem(key, JSON.stringify(value));
-            return true;
-        } catch (error) {
-            console.error('Error saving to sessionStorage:', error);
-            return false;
-        }
-    },
-
-    getSession(key, defaultValue = null) {
-        try {
-            const value = sessionStorage.getItem(key);
-            return value ? JSON.parse(value) : defaultValue;
-        } catch (error) {
-            console.error('Error reading from sessionStorage:', error);
-            return defaultValue;
-        }
-    },
-
-    removeSession(key) {
-        try {
-            sessionStorage.removeItem(key);
-            return true;
-        } catch (error) {
-            console.error('Error removing from sessionStorage:', error);
-            return false;
-        }
-    },
-
-    // Limpieza completa
-    clearAll() {
-        try {
-            sessionStorage.clear();
-            localStorage.clear();
-            return true;
-        } catch (error) {
-            console.error('Error clearing storage:', error);
-            return false;
-        }
+    clearSession() {
+        this.removeItem('currentUser');
+        this.removeItem('sessionToken');
+        this.removeItem('sessionExpiry');
     }
 };
 

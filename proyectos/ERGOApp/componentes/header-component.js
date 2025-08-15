@@ -491,15 +491,26 @@ goBack() {
 goHome() {
     console.log('🏠 Navegando a Home...');
     
-    // Actualizar actividad antes de navegar para mantener la sesión
-    const now = new Date().getTime();
-    localStorage.setItem('lastActivity', now.toString());
-    
-    console.log('✅ Actividad actualizada, navegando...');
-    
-    // ← CAMBIAR ESTA LÍNEA:
-    // window.location.href = 'index.html';  // ❌ ELIMINAR
-    window.location.href = './index.html';
+    // FUNCIÓN INTELIGENTE PARA ENCONTRAR LA RAÍZ DEL PROYECTO
+    function getRootPath() {
+        // 1. Obtiene la ruta de la página actual.
+        const currentPath = window.location.pathname;
+
+        // 2. Busca la carpeta "ERGOApp" como el ancla de nuestro proyecto.
+        const ergoAppIndex = currentPath.indexOf('/ERGOApp/');
+
+        if (ergoAppIndex > -1) {
+            // 3. Si la encuentra, construye la ruta base hasta ese punto.
+            // ej: de "/proyectos/ERGOApp/centro-trabajo/..." obtiene "/proyectos/ERGOApp"
+            return currentPath.substring(0, ergoAppIndex + 8); // +8 para incluir "ERGOApp"
+        }
+
+        // 4. Si no la encuentra (porque ya estamos en la raíz), devuelve una ruta vacía.
+        return '';
+    }
+
+    const rootPath = getRootPath();
+    window.location.href = `${rootPath}/index.html`;
 }
 
     // Logout

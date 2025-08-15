@@ -6,6 +6,29 @@
     document.addEventListener('DOMContentLoaded', async function () {
         console.log('🚀 Iniciando aplicación...');
 
+                try {
+            const raw = sessionStorage.getItem('sessionToken');
+            if (raw) {
+                const token = raw.startsWith('"') ? JSON.parse(raw) : raw;
+                if (window.dataClient?.setAuth) {
+                    window.dataClient.setAuth(token);
+                }
+                if (window.dataClient?.supabase?.auth?.setSession) {
+                   await window.dataClient.supabase.auth.setSession({ access_token: token, refresh_token: '' });
+                }
+            }
+        } catch (e) {
+            console.warn('bootstrapAuth: no se pudo hidratar la sesión', e);
+        }
+        // --- FIN: LÓGICA DE ARRANQUE DE SESIÓN ---
+
+        console.log('🚀 Iniciando aplicación...');
+
+        if (!ERGOAuth.initializeAuthContext()) {
+            ERGOAuth.redirectToLogin();
+            return;
+        }
+
         if (!ERGOAuth.initializeAuthContext()) {
             ERGOAuth.redirectToLogin();
             return;

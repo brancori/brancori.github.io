@@ -94,9 +94,9 @@ async handleLogin(e) {
                 const expiryTime = authResult.session.expires_at * 1000; 
                 // --- FIN DE LA CORRECCIÓN ---
 
-                ERGOStorage.setSession('currentUser', this.currentUser);
-                ERGOStorage.setSession('sessionToken', authResult.session.access_token);
-                ERGOStorage.setSession('sessionExpiry', expiryTime); // Ahora se guarda el tiempo de expiración correcto
+                ERGOStorage.setItem('currentUser', this.currentUser);
+                ERGOStorage.setItem('sessionToken', authResult.session.access_token);
+                ERGOStorage.setItem('sessionExpiry', expiryTime);
                 
                 
                 this.hidePreloader();
