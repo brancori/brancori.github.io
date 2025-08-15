@@ -1,0 +1,59 @@
+Estructura de "ERGOApp"
+Generado: 2025-08-14T18:38:05.014Z
+
+- 📁 assets
+  - 📄 acondi.svg
+  - 📄 login_gif.gif
+  - 📄 logo_.png
+  - 📄 map.png
+  - 📄 Sin título-2.svg
+- 📁 centro-trabajo
+  - 📄 centro-trabajo-actions.js
+  - 📄 centro-trabajo-data.js
+  - 📄 centro-trabajo-init.js
+  - 📄 centro-trabajo.css
+  - 📄 centro-trabajo.html
+  - 📄 centro-trabajo.js
+- 📁 componentes
+  - 📁 pages
+    - 📁 Johnson Evaluation_files
+      - 📄 Imagen1.png
+      - 📄 info-content.css
+    - 📄 general_report.html
+    - 📄 gestion_usuarios.html
+    - 📄 Johnson_Evaluation.html
+    - 📄 johnson-eval.js
+    - 📄 repor_page.html
+    - 📄 resumen_riesgos.html
+  - 📄 auth-client.js
+  - 📄 cuestionario-data.js
+  - 📄 dark-theme.css
+  - 📄 globals.css
+  - 📄 globals.js
+  - 📄 header-component.js
+  - 📄 map.js
+  - 📄 supabase-config.js
+- 📁 documentation
+  - 📄 Documentación del Sistema de Autent.txt
+  - 📄 Documentacion_app.txt
+  - 📄 Guía de Arquitectura e Implementaci.txt
+- 📁 evaluacion_ini
+  - 📁 especificas
+    - 📄 calculadora_niosh_excel.html
+    - 📄 ergo-evaluaciones-especificas.js
+    - 📄 formulario_ocra_completo.html
+    - 📄 formulario_reba_completo.html
+    - 📄 formulario_rula_completo.html
+  - 📄 eval_int_supa.js
+  - 📄 eval_int.css
+  - 📄 eval_int.html
+  - 📄 eval_int.js
+  - 📄 Flujo de Datos de Evaluaciones (eval_int).txt
+- 📄 areas.css
+- 📄 areas.html
+- 📄 areas.js
+- 📄 centros_concentrado.html
+- 📄 index.css
+- 📄 index.html
+- 📄 index.js
+- 📄 schema.html

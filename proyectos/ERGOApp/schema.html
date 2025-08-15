@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Jerarquía local – árbol ⟷ texto + export</title>
+<style>
+  :root{
+    --bg:#0f1222; --panel:#171b30; --card:#1f2542; --text:#e9ecff; --muted:#a9b3e8;
+    --border:rgba(255,255,255,.08); --accent:#86b3ff; --good:#9ff3c6;
+  }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{position:sticky;top:0;background:rgba(15,18,34,.8);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);z-index:5}
+  .wrap{max-width:1100px;margin:0 auto;padding:12px 16px}
+  h1{margin:0 0 6px 0;font-size:18px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{background:linear-gradient(180deg,#32427d,#283767);border:1px solid #3b51a0;color:white;border-radius:10px;padding:9px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+  .pill{font-size:12px;color:var(--muted)}
+  input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:10px;outline:none}
+  select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:10px;outline:none}
+  main .wrap{display:grid;grid-template-columns:300px 1fr;gap:14px;padding-top:10px}
+  aside, section{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
+  .small{font-size:12px;color:var(--muted)}
+  .tree{font-size:14px;line-height:1.25;margin:0;padding:0;list-style:none}
+  .node{padding:4px 6px;border-radius:8px}
+  .node:hover{background:rgba(255,255,255,.04)}
+  .folder>.node{font-weight:600}
+  .children{margin-left:14px;border-left:1px dashed rgba(255,255,255,.12);padding-left:10px}
+  .viewToggle{margin-left:auto}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);text-align:left}
+  th{color:var(--muted)}
+  .right{text-align:right}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .chip{border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 8px;border-radius:999px}
+  pre.textview{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;white-space:pre;line-height:1.3}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Jerarquía de archivos (local)</h1>
+    <div class="row">
+      <button class="btn" id="pickBtn">Elegir carpeta…</button>
+      <button class="btn ghost" id="rescanBtn" disabled>Re-escanear</button>
+      <button class="btn ghost" id="autoBtn" disabled>Auto: OFF</button>
+      <input id="interval" type="number" min="5" step="5" value="15" style="width:90px" title="Intervalo (seg)" />
+      <input id="q" placeholder="Buscar / filtrar…" style="flex:1;min-width:200px" />
+      <select id="viewSel" class="viewToggle" disabled title="Cambiar vista">
+        <option value="tree">Vista: Árbol</option>
+        <option value="text">Vista: Texto plano</option>
+      </select>
+      <button class="btn ghost" id="copyBtn" disabled>Copiar listado</button>
+      <button class="btn ghost" id="exportTxtBtn" disabled>Exportar TXT</button>
+      <button class="btn ghost" id="exportJsonBtn" disabled>Exportar JSON</button>
+      <button class="btn ghost" id="exportMdBtn" disabled>Exportar Markdown</button>
+      <span class="pill" id="status">Listo.</span>
+    </div>
+    <div class="small" style="margin-top:4px">
+      Usa “Vista: Texto plano” para exportar
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <aside>
+      <div class="small">Carpeta: <span id="folderName">—</span></div>
+      <div class="small">Última lectura: <span id="lastRead">—</span></div>
+      <div class="chips">
+        <span class="chip">Items: <b id="count">0</b></span>
+        <span class="chip">Dirs: <b id="dirCount">0</b></span>
+        <span class="chip">Files: <b id="fileCount">0</b></span>
+      </div>
+      <h3 class="small" style="margin-top:12px;color:#cbd3ff">Resumen por extensión</h3>
+      <table id="extTable">
+        <thead><tr><th>Extensión</th><th class="right">Archivos</th><th class="right">%</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="small" id="supportMsg" style="margin-top:8px;color:#9ff3c6"></div>
+      <div class="small">Atajos: <b>Enter</b> re-escanea · <b>Ctrl/Cmd+C</b> copia listado</div>
+    </aside>
+
+    <section>
+      <!-- Vista árbol -->
+      <div id="treeView">
+        <ul id="tree" class="tree"></ul>
+        <div id="emptyTree" class="small" style="display:none;color:#a9b3e890">Sin coincidencias.</div>
+      </div>
+      <!-- Vista texto plano -->
+      <div id="textView" style="display:none">
+        <pre id="textOutput" class="textview"></pre>
+        <div id="emptyText" class="small" style="display:none;color:#a9b3e890">Sin coincidencias.</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+/* ====== Soporte API ====== */
+const support = 'showDirectoryPicker' in window;
+document.getElementById('supportMsg').textContent = support
+  ? '✔ Soportado (File System Access API). Ábrelo vía http://localhost.'
+  : '✖ No soportado. Usa Chrome/Edge y abre vía http://localhost.';
+
+const $ = sel => document.querySelector(sel);
+const statusEl = $("#status");
+const folderNameEl = $("#folderName");
+const lastReadEl = $("#lastRead");
+const countEl = $("#count");
+const dirCountEl = $("#dirCount");
+const fileCountEl = $("#fileCount");
+const extTableBody = $("#extTable tbody");
+
+const treeEl = $("#tree");
+const emptyTreeEl = $("#emptyTree");
+const textOutputEl = $("#textOutput");
+const emptyTextEl = $("#emptyText");
+
+const viewSel = $("#viewSel");
+const treeView = $("#treeView");
+const textView = $("#textView");
+
+let dirHandle = null;
+let autoTimer = null;
+let snapshot = []; // [{path, kind}]
+let lastTreeRoot = null;
+
+function setStatus(msg){ statusEl.textContent = msg; }
+function fmt(ts){ return new Date(ts).toLocaleString(); }
+
+/* ====== Explorar carpeta ====== */
+async function* entriesRecursive(dirHandle, prefix=""){
+  for await (const entry of dirHandle.values()){
+    const path = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if(entry.kind === 'file'){
+      yield { path, kind: 'file' };
+    }else if(entry.kind === 'directory'){
+      yield { path, kind: 'dir' };
+      yield* entriesRecursive(entry, path);
+    }
+  }
+}
+
+async function scanDir(handle){
+  const items = [];
+  for await (const e of entriesRecursive(handle)){
+    items.push(e);
+  }
+  items.sort((a,b)=>{
+    if(a.kind!==b.kind) return a.kind==='dir' ? -1 : 1;
+    return a.path.localeCompare(b.path);
+  });
+  return items;
+}
+
+/* ====== Árbol (memoria) ====== */
+function buildTree(items){
+  const root = { name:'/', children:new Map(), files:[] };
+  for(const it of items){
+    const parts = it.path.split('/').filter(Boolean);
+    let curr = root;
+    for(let i=0;i<parts.length;i++){
+      const name = parts[i];
+      const isLast = i===parts.length-1;
+      if(isLast){
+        if(it.kind==='dir'){
+          if(!curr.children.has(name)) curr.children.set(name, {name, children:new Map(), files:[]});
+        }else{
+          curr.files.push(name);
+        }
+      }else{
+        if(!curr.children.has(name)) curr.children.set(name, {name, children:new Map(), files:[]});
+        curr = curr.children.get(name);
+      }
+    }
+  }
+  return root;
+}
+
+/* ====== Render Árbol ====== */
+function renderTree(root, filter=""){
+  treeEl.innerHTML = "";
+  emptyTreeEl.style.display = "none";
+  let matches = 0;
+
+  function makeFolder(name){
+    const li=document.createElement('li'); li.className='folder';
+    const head=document.createElement('div'); head.className='node'; head.textContent=name;
+    const ul=document.createElement('ul'); ul.className='children';
+    li.append(head,ul);
+    return {li,ul};
+  }
+  function makeFile(name){
+    const li=document.createElement('li');
+    const row=document.createElement('div'); row.className='node'; row.textContent=name;
+    li.append(row);
+    return li;
+  }
+
+  function hasDescMatch(node, prefix){
+    for(const f of node.files){
+      const full = prefix?`${prefix}/${f}`:f;
+      if(full.toLowerCase().includes(filter)) return true;
+    }
+    for(const [n,ch] of node.children){
+      const full = prefix?`${prefix}/${n}`:n;
+      if(full.toLowerCase().includes(filter)) return true;
+      if(hasDescMatch(ch, full)) return true;
+    }
+    return false;
+  }
+
+  function walk(node, prefix, parentEl){
+    const dirs = [...node.children.keys()].sort((a,b)=>a.localeCompare(b));
+    const files = [...node.files].sort((a,b)=>a.localeCompare(b));
+
+    for(const d of dirs){
+      const full = prefix?`${prefix}/${d}`:d;
+      if(filter && !hasDescMatch(node.children.get(d), full)) continue;
+      const {li,ul} = makeFolder(d);
+      parentEl.append(li);
+      walk(node.children.get(d), full, ul);
+    }
+    for(const f of files){
+      const full = prefix?`${prefix}/${f}`:f;
+      if(filter && !full.toLowerCase().includes(filter)) continue;
+      matches++; parentEl.append(makeFile(f));
+    }
+  }
+
+  const top = document.createElement('ul'); top.className='children';
+  treeEl.append(top);
+  walk(root, "", top);
+  if(matches===0) emptyTreeEl.style.display = "block";
+  lastTreeRoot = root;
+}
+
+/* ====== Texto plano (📁/📄 con sangría) ====== */
+function treeToText(node, prefix=""){
+  let txt = "";
+  const dirs = [...node.children.keys()].sort((a,b)=>a.localeCompare(b));
+  const files = [...node.files].sort((a,b)=>a.localeCompare(b));
+  for(const d of dirs){
+    txt += `${prefix}- 📁 ${d}\n`;
+    txt += treeToText(node.children.get(d), prefix + "  ");
+  }
+  for(const f of files){
+    txt += `${prefix}- 📄 ${f}\n`;
+  }
+  return txt;
+}
+
+function renderText(root, filter=""){
+  // Para la vista texto, aplicamos el mismo filtro pero generando texto solo de coincidencias
+  function filterTree(node, prefix){
+    const out = { name: node.name, children:new Map(), files:[] };
+    for(const [n,ch] of node.children){
+      const full = prefix?`${prefix}/${n}`:n;
+      const sub = filterTree(ch, full);
+      const selfMatch = full.toLowerCase().includes(filter);
+      if(selfMatch || sub.children.size || sub.files.length){
+        out.children.set(n, sub);
+      }
+    }
+    for(const f of node.files){
+      const full = prefix?`${prefix}/${f}`:f;
+      if(!filter || full.toLowerCase().includes(filter)){
+        out.files.push(f);
+      }
+    }
+    return out;
+  }
+
+  const filtered = filter ? filterTree(lastTreeRoot || buildTree(snapshot), "") : (lastTreeRoot || buildTree(snapshot));
+  const txt = treeToText(filtered);
+  textOutputEl.textContent = txt;
+  emptyTextEl.style.display = txt.trim().length ? "none" : "block";
+}
+
+/* ====== Extensiones ====== */
+function extFromPath(p){
+  const name = p.split('/').pop();
+  const idx = name.lastIndexOf('.');
+  return idx>0 ? name.slice(idx+1).toLowerCase() : '(sin extensión)';
+}
+function buildExtStats(items){
+  const files = items.filter(x=>x.kind==='file');
+  const total = files.length || 1;
+  const map = new Map();
+  for(const f of files){ const ext = extFromPath(f.path); map.set(ext,(map.get(ext)||0)+1); }
+  const rows = [...map.entries()].sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
+  return { total, rows };
+}
+function renderExtTable(items){
+  const { total, rows } = buildExtStats(items);
+  extTableBody.innerHTML = "";
+  for(const [ext,count] of rows){
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${ext}</td><td class="right">${count}</td><td class="right">${((count*100)/total).toFixed(1)}%</td>`;
+    extTableBody.append(tr);
+  }
+}
+
+/* ====== Utilidades ====== */
+function flatList(items){
+  return items.map(x => (x.kind==='dir' ? `[DIR]  ${x.path}` : `      ${x.path}`)).join('\n');
+}
+function isDifferent(prev, next){
+  if(prev.length!==next.length) return true;
+  for(let i=0;i<prev.length;i++){
+    if(prev[i].path!==next[i].path || prev[i].kind!==next[i].kind) return true;
+  }
+  return false;
+}
+function download(name, mime, text){
+  const blob = new Blob([text], {type: mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+}
+
+/* ====== Export JSON/MD/TXT ====== */
+function treeToSerializable(node){
+  const obj = { name: node.name || '/', dirs: [], files: [...node.files] };
+  for(const [n,ch] of node.children){ obj.dirs.push(treeToSerializable(ch)); }
+  obj.dirs.sort((a,b)=>a.name.localeCompare(b.name));
+  obj.files.sort((a,b)=>a.localeCompare(b));
+  return obj;
+}
+function exportJSON(folderName){
+  const info = {
+    folder: folderName,
+    generatedAt: new Date().toISOString(),
+    counts: {
+      items: snapshot.length,
+      dirs: snapshot.filter(x=>x.kind==='dir').length,
+      files: snapshot.filter(x=>x.kind==='file').length
+    },
+    flat: snapshot.map(x=>({path:x.path, kind:x.kind})),
+    tree: treeToSerializable(lastTreeRoot || buildTree(snapshot)),
+    extStats: buildExtStats(snapshot)
+  };
+  download(`${folderName}-estructura.json`, 'application/json', JSON.stringify(info, null, 2));
+}
+function mdEscape(text){ return text.replace(/([\*\_\`\~])/g, '\\$1'); }
+function treeToMarkdown(node, prefix=""){
+  let md = "";
+  const dirs = [...node.children.keys()].sort((a,b)=>a.localeCompare(b));
+  const files = [...node.files].sort((a,b)=>a.localeCompare(b));
+  for(const d of dirs){ md += `${prefix}- 📁 ${mdEscape(d)}\n`; md += treeToMarkdown(node.children.get(d), prefix+"  "); }
+  for(const f of files){ md += `${prefix}- 📄 ${mdEscape(f)}\n`; }
+  return md;
+}
+function exportMarkdown(folderName){
+  const dirs = snapshot.filter(x=>x.kind==='dir').length;
+  const files = snapshot.filter(x=>x.kind==='file').length;
+  const { rows, total } = buildExtStats(snapshot);
+  let md = `# Estructura de “${folderName}”\n\n`;
+  md += `- Generado: ${new Date().toISOString()}\n`;
+  md += `- Items: ${snapshot.length}\n- Directorios: ${dirs}\n- Archivos: ${files}\n\n`;
+  md += `## Extensiones\n\n| Extensión | Archivos | % |\n|---:|---:|---:|\n`;
+  for(const [ext,count] of rows){ md += `| \`${ext}\` | ${count} | ${(count*100/Math.max(1,total)).toFixed(1)}% |\n`; }
+  md += `\n## Árbol\n\n`;
+  const root = lastTreeRoot || buildTree(snapshot);
+  md += treeToMarkdown(root);
+  download(`${folderName}-estructura.md`, 'text/markdown', md);
+}
+function exportTxt(folderName){
+  // Exporta exactamente lo que se ve en la Vista Texto (filtrada o no)
+  const text = textOutputEl.textContent || "";
+  const header = `Estructura de "${folderName}"\nGenerado: ${new Date().toISOString()}\n\n`;
+  download(`${folderName}-estructura.txt`, 'text/plain', header + text);
+}
+
+/* ====== Flujo UI ====== */
+async function pickFolder(){
+  try{
+    dirHandle = await window.showDirectoryPicker({mode:'read'});
+    folderNameEl.textContent = dirHandle.name;
+    $("#rescanBtn").disabled = false;
+    $("#autoBtn").disabled = false;
+    $("#copyBtn").disabled = false;
+    $("#exportTxtBtn").disabled = false;
+    $("#exportJsonBtn").disabled = false;
+    $("#exportMdBtn").disabled = false;
+    $("#viewSel").disabled = false;
+    await rescan(true);
+  }catch(e){
+    if(e.name!=='AbortError') setStatus('Error al elegir carpeta: '+e.message);
+  }
+}
+
+async function rescan(first=false){
+  if(!dirHandle) return;
+  setStatus('Leyendo…');
+  const items = await scanDir(dirHandle);
+  const simple = items.map(it=>({path:it.path, kind:it.kind}));
+  const filter = $("#q").value.trim().toLowerCase();
+
+  countEl.textContent = String(simple.length);
+  dirCountEl.textContent = String(simple.filter(x=>x.kind==='dir').length);
+  fileCountEl.textContent = String(simple.filter(x=>x.kind==='file').length);
+  lastReadEl.textContent = fmt(Date.now());
+  renderExtTable(simple);
+
+  if(first || isDifferent(snapshot, simple) || filter){
+    snapshot = simple;
+    const root = buildTree(snapshot);
+    lastTreeRoot = root;
+    renderByView(filter);
+    setStatus('Actualizado ✓');
+  }else{
+    setStatus('Sin cambios');
+  }
+}
+
+function renderByView(filter){
+  const f = (filter||"").toLowerCase();
+  if(viewSel.value === 'tree'){
+    treeView.style.display = "";
+    textView.style.display = "none";
+    renderTree(lastTreeRoot || buildTree(snapshot), f);
+  }else{
+    treeView.style.display = "none";
+    textView.style.display = "";
+    renderText(lastTreeRoot || buildTree(snapshot), f);
+  }
+}
+
+function toggleAuto(){
+  if(autoTimer){
+    clearInterval(autoTimer); autoTimer=null;
+    $("#autoBtn").textContent = 'Auto: OFF';
+    setStatus('Auto desactivado.');
+  }else{
+    const sec = Math.max(5, parseInt($("#interval").value,10) || 15);
+    autoTimer = setInterval(()=> rescan(), sec*1000);
+    $("#autoBtn").textContent = 'Auto: ON';
+    setStatus(`Auto cada ${sec}s.`);
+  }
+}
+
+/* ====== Eventos ====== */
+document.addEventListener('DOMContentLoaded', ()=>{
+  $("#pickBtn").addEventListener('click', pickFolder);
+  $("#rescanBtn").addEventListener('click', ()=>rescan());
+  $("#autoBtn").addEventListener('click', toggleAuto);
+  $("#q").addEventListener('input', ()=>{
+    if(!snapshot.length) return;
+    renderByView($("#q").value.trim());
+  });
+  $("#interval").addEventListener('change', ()=>{
+    if(autoTimer){ toggleAuto(); toggleAuto(); } // reinicia auto con nuevo intervalo
+  });
+  $("#copyBtn").addEventListener('click', ()=>{
+    if(!snapshot.length) return;
+    // Copia listado plano simple (no la vista texto con iconos)
+    navigator.clipboard.writeText(flatList(snapshot))
+      .then(()=> setStatus('Listado copiado.'))
+      .catch(e=> setStatus('No se pudo copiar: '+e.message));
+  });
+  $("#exportTxtBtn").addEventListener('click', ()=>{
+    if(!snapshot.length) return;
+    exportTxt(dirHandle?.name || 'repo');
+  });
+  $("#exportJsonBtn").addEventListener('click', ()=>{
+    if(!snapshot.length) return;
+    exportJSON(dirHandle?.name || 'repo');
+  });
+  $("#exportMdBtn").addEventListener('click', ()=>{
+    if(!snapshot.length) return;
+    exportMarkdown(dirHandle?.name || 'repo');
+  });
+  viewSel.addEventListener('change', ()=>{
+    renderByView($("#q").value.trim());
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ rescan(); }
+    if((e.ctrlKey||e.metaKey) && e.key==='c'){
+      if(snapshot.length){
+        navigator.clipboard.writeText(flatList(snapshot));
+        setStatus('Listado copiado.');
+      }
+    }
+  });
+  setStatus('Listo. Elige una carpeta para empezar.');
+});
+</script>
+</body>
+</html>
