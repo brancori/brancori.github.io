@@ -884,19 +884,6 @@
     }
 }
 
-/* Mejora del glassmorphism existente */
-.kpi-table-container,
-.action-card,
-.map-container {
-    -webkit-backdrop-filter: blur(10px); 
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-        var(--shadow-md),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
 /* Efecto parallax sutil al hacer scroll (opcional) */
 @supports (transform: translate3d(0,0,0)) {
     .main-content {
@@ -953,11 +940,9 @@ puedes reemplazar el ::after por esto:
 }
 
 .risk-pill.high-risk-glass {
-    background: rgba(220, 53, 69, 0.15) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    color: #dc3545 !important;
+    background: var(--red-50) !important; 
+    border: 1px solid var(--red-500); 
+    color: var(--red-600) !important;
     box-shadow: 
         0 4px 6px rgba(220, 53, 69, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -998,9 +983,9 @@ puedes reemplazar el ::after por esto:
 .table-row.high-risk-row:hover {
     background: linear-gradient(
         90deg,
-        rgba(220, 53, 69, 0.05),
-        rgba(220, 53, 69, 0.02),
-        rgba(220, 53, 69, 0.05)
+        var(--red-50),
+        var(--red-50),
+        var(--red-50)
     ) !important;
     transform: translateX(2px);
     border-left: 3px solid rgba(220, 53, 69, 0.4);
