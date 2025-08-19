@@ -93,17 +93,7 @@
     </div>
 
     <script>
-        // Verificar que hay usuario logueado antes de continuar
-        document.addEventListener('DOMContentLoaded', function() {
-            const userData = sessionStorage.getItem('currentUser');
-            if (!userData) {
-                console.log('❌ No hay usuario en centros_concentrado.js, redirigiendo...');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            console.log('✅ Usuario verificado en centros_concentrado.js');
-        });
+
 
         // Configuración para usar Supabase o localStorage
         const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
@@ -115,12 +105,35 @@
         let filtersVisible = false;
 
     async function loadAllWorkCenters() {
+    const CACHE_KEY = 'workCentersCache';
+    const CACHE_EXPIRY_HOURS = 6;
+    const now = new Date().getTime();
+
+    // 1. Intentar cargar desde el caché
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+        const { timestamp, data } = JSON.parse(cachedData);
+        if (now - timestamp < CACHE_EXPIRY_HOURS * 60 * 60 * 1000) {
+            console.log('✅ Centros de trabajo cargados desde el caché.');
+            workCenters = data;
+            return workCenters;
+        }
+    }
+    
+    // 2. Si no hay caché o ha expirado, cargar de Supabase
+    console.log('⏳ Cargando centros de trabajo desde Supabase...');
     try {
-        // Usamos la nueva función que obtiene todo en una sola llamada
         workCenters = await dataClient.getWorkCentersWithScores() || [];
+        // Guardar en el caché
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            timestamp: now,
+            data: workCenters
+        }));
+        console.log('✅ Centros de trabajo y scores guardados en caché.');
     } catch (error) {
         console.error('Error loading work centers with scores:', error);
-        workCenters = []; // Fallback a un array vacío
+        // Fallback a un array vacío si la llamada falla
+        workCenters = []; 
     }
     return workCenters;
 }

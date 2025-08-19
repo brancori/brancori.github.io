@@ -4,11 +4,35 @@ const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
 // Funciones híbridas que usan Supabase o localStorage
 async function loadAreas() {
+    const CACHE_KEY = 'areasCache';
+    const CACHE_EXPIRY_HOURS = 6;
+    const now = new Date().getTime();
+
+    // 1. Intentar cargar desde el caché
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+        const { timestamp, data } = JSON.parse(cachedData);
+        if (now - timestamp < CACHE_EXPIRY_HOURS * 60 * 60 * 1000) {
+            console.log('✅ Áreas cargadas desde el caché.');
+            areas = data;
+            return areas;
+        }
+    }
+
+    // 2. Si no hay caché o ha expirado, cargar de Supabase
+    console.log('⏳ Cargando áreas desde Supabase...');
     if (USE_SUPABASE) {
         try {
             areas = await dataClient.getAreas();
+            // Guardar en el caché
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                timestamp: now,
+                data: areas
+            }));
+            console.log('✅ Áreas guardadas en caché.');
         } catch (error) {
             console.error('Error loading areas from Supabase:', error);
+            // Fallback a localStorage si la llamada falla
             areas = JSON.parse(localStorage.getItem('areas')) || [];
         }
     } else {
@@ -17,30 +41,113 @@ async function loadAreas() {
     return areas;
 }
 
-async function saveAreaToStorage(area) {
-    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
-    if (USE_SUPABASE) {
+async function saveArea() {
+    const name = document.getElementById('area-name').value.trim();
+    const responsible = document.getElementById('area-responsible').value.trim();
+    
+    if (!name || !responsible) {
+        ERGOUtils.showToast('Por favor, completa todos los campos', 'error');
+        return;
+    }
+    
+    const editingId = document.getElementById('area-id-hidden')?.value;
+    
+    if (editingId) {
+        if (areas.some(area => area.id !== editingId && area.name.toLowerCase() === name.toLowerCase())) {
+            ERGOUtils.showToast('Ya existe un área con ese nombre', 'error');
+            return;
+        }
         try {
-            await dataClient.createArea(area);
+            const updatedArea = {
+                name: name,
+                responsible: responsible,
+                updated_at: new Date().toISOString()
+            };
+            if (USE_SUPABASE) {
+                await dataClient.updateArea(editingId, updatedArea);
+                // Invalida la caché de áreas y de todos los centros
+                localStorage.removeItem('areasCache');
+                localStorage.removeItem('areasTimestamp');
+                localStorage.removeItem('workCentersCache_all');
+                localStorage.removeItem('workCentersTimestamp_all');
+            }
+            const areaIndex = areas.findIndex(a => a.id === editingId);
+            if (areaIndex !== -1) {
+                areas[areaIndex] = { ...areas[areaIndex], ...updatedArea };
+            }
+            localStorage.setItem('areas', JSON.stringify(areas));
+            closeAreaModal();
+            await renderAreas();
+            ERGOUtils.showToast(`Área "${name}" actualizada exitosamente`);
         } catch (error) {
-            console.error('Error saving area to Supabase:', error);
+            console.error('Error updating area:', error);
+            ERGOUtils.showToast('Error al actualizar el área', 'error');
         }
     } else {
-        localStorage.setItem('areas', JSON.stringify(areas));
+        if (areas.some(area => area.name.toLowerCase() === name.toLowerCase())) {
+            ERGOUtils.showToast('Ya existe un área con ese nombre', 'error');
+            return;
+        }
+        const newArea = {
+            id: ERGOUtils.generateShortId(),
+            name: name,
+            responsible: responsible,
+            created_at: new Date().toISOString()
+        };
+        try {
+            if (USE_SUPABASE) {
+                await dataClient.createArea(newArea);
+                areas.push(newArea);
+                // Invalida la caché de áreas y de todos los centros
+                localStorage.removeItem('areasCache');
+                localStorage.removeItem('areasTimestamp');
+                localStorage.removeItem('workCentersCache_all');
+                localStorage.removeItem('workCentersTimestamp_all');
+            } else {
+                areas.push(newArea);
+                localStorage.setItem('areas', JSON.stringify(areas));
+            }
+            closeAreaModal();
+            await renderAreas();
+            ERGOUtils.showToast(`Área "${name}" creada exitosamente`);
+        } catch (error) {
+            console.error('Error saving area:', error);
+            ERGOUtils.showToast('Error al crear el área', 'error');
+        }
     }
 }
 
 async function loadWorkCenters(area_id = null) {
+    const CACHE_KEY_PREFIX = 'workCentersCache_';
+    const CACHE_TIMESTAMP_PREFIX = 'workCentersTimestamp_';
+    const CACHE_EXPIRY_MS = 6 * 60 * 60 * 1000; // 6 horas
+
+    const cacheKey = area_id ? CACHE_KEY_PREFIX + area_id : CACHE_KEY_PREFIX + 'all';
+    const cacheTimestampKey = area_id ? CACHE_TIMESTAMP_PREFIX + area_id : CACHE_TIMESTAMP_PREFIX + 'all';
+    
+    const now = new Date().getTime();
+    const cachedTimestamp = localStorage.getItem(cacheTimestampKey);
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData && cachedTimestamp && (now - cachedTimestamp < CACHE_EXPIRY_MS)) {
+        console.log('✅ Cargando centros de trabajo desde localStorage (caché)');
+        workCenters = JSON.parse(cachedData);
+        return workCenters;
+    }
+    
     if (USE_SUPABASE) {
         try {
+            console.log('⏳ Llamando a Supabase para obtener centros de trabajo...');
             const data = await dataClient.getWorkCenters(area_id);
             workCenters = data || [];
+            localStorage.setItem(cacheKey, JSON.stringify(workCenters));
+            localStorage.setItem(cacheTimestampKey, now);
         } catch (error) {
             console.error('Error loading work centers from Supabase:', error);
-            workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
+            workCenters = JSON.parse(localStorage.getItem(cacheKey)) || [];
         }
     } else {
-        workCenters = JSON.parse(localStorage.getItem('workCenters')) || [];
+        workCenters = JSON.parse(localStorage.getItem(cacheKey)) || [];
     }
     return workCenters;
 }
@@ -347,34 +454,31 @@ async function deleteArea(area_id, event) {
     if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
     const area = areas.find(a => a.id === area_id);
     if (!area) return;
-    
     const areaCenters = workCenters.filter(wc => wc.area_id === area_id);
     const centerCount = areaCenters.length;
-    
     let confirmMessage = `¿Estás seguro de eliminar el área "${area.name}"?`;
     if (centerCount > 0) {
         confirmMessage += `\n\nEsto también eliminará ${centerCount} ${centerCount === 1 ? 'centro de trabajo asociado' : 'centros de trabajo asociados'}.`;
     }
-    
     if (confirm(confirmMessage)) {
         try {
             if (USE_SUPABASE) {
-                // Eliminar centros asociados primero
                 for (const center of areaCenters) {
                     await dataClient.deleteWorkCenter(center.id);
                 }
-                // Luego eliminar el área
                 await dataClient.deleteArea(area_id);
+                // Invalida la caché de áreas, de todos los centros y del área específica
+                localStorage.removeItem('areasCache');
+                localStorage.removeItem('areasTimestamp');
+                localStorage.removeItem('workCentersCache_all');
+                localStorage.removeItem('workCentersTimestamp_all');
+                localStorage.removeItem(`workCentersCache_${area_id}`);
+                localStorage.removeItem(`workCentersTimestamp_${area_id}`);
             }
-            
-            // Actualizar arrays locales
             areas = areas.filter(a => a.id !== area_id);
             workCenters = workCenters.filter(wc => wc.area_id !== area_id);
-            
-            // Actualizar localStorage como fallback
             localStorage.setItem('areas', JSON.stringify(areas));
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
-            
             await renderAreas();
             ERGOUtils.showToast(`Área "${area.name}" eliminada`);
         } catch (error) {
@@ -563,58 +667,54 @@ async function saveWorkCenter() {
         ERGOUtils.showToast('Por favor, completa todos los campos', 'error');
         return;
     }
-    
     if (!current_area_id) {
         ERGOUtils.showToast('Error: No hay área seleccionada', 'error');
         return;
     }
-    
-    // Verificar si es edición
     const editingId = document.getElementById('work-center-id-hidden')?.value;
     
     if (editingId) {
-        // ES EDICIÓN - UPDATE
         const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
         if (areaCenters.some(center => center.id !== editingId && center.name.toLowerCase() === name.toLowerCase())) {
             ERGOUtils.showToast('Ya existe un centro con ese nombre en esta área', 'error');
             return;
         }
-
         try {
             const updatedCenter = {
                 name: name,
                 responsible: responsible,
                 updated_at: new Date().toISOString()
             };
-
             if (USE_SUPABASE) {
                 await dataClient.updateWorkCenter(editingId, updatedCenter);
             }
-            
-            // Actualizar array local
             const centerIndex = workCenters.findIndex(wc => wc.id === editingId);
             if (centerIndex !== -1) {
                 workCenters[centerIndex] = { ...workCenters[centerIndex], ...updatedCenter };
             }
-            
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
-            
             closeWorkCenterModal();
             await renderWorkCenters();
             await renderAreas();
+            // Invalida la caché de todos los centros y del área específica
+            localStorage.removeItem('workCentersCache_all');
+            localStorage.removeItem('workCentersTimestamp_all');
+            localStorage.removeItem(`workCentersCache_${current_area_id}`);
+            localStorage.removeItem(`workCentersTimestamp_${current_area_id}`);
+            // Invalida la caché de la vista concentrada también
+            localStorage.removeItem('allWorkCentersCache');
+            localStorage.removeItem('allWorkCentersTimestamp');
             ERGOUtils.showToast(`Centro "${name}" actualizado exitosamente`);
         } catch (error) {
             console.error('Error updating work center:', error);
             ERGOUtils.showToast('Error al actualizar el centro de trabajo', 'error');
         }
     } else {
-        // ES CREACIÓN - CREATE (código existente)
         const areaCenters = workCenters.filter(wc => wc.area_id === current_area_id);
         if (areaCenters.some(center => center.name.toLowerCase() === name.toLowerCase())) {
             ERGOUtils.showToast('Ya existe un centro con ese nombre en esta área', 'error');
             return;
         }
-
         const newWorkCenter = {
             id: ERGOUtils.generateShortId(),
             name: name,
@@ -622,7 +722,6 @@ async function saveWorkCenter() {
             area_id: current_area_id,
             created_at: new Date().toISOString()
         };
-
         try {
             if (USE_SUPABASE) {
                 await dataClient.createWorkCenter(newWorkCenter);
@@ -631,10 +730,17 @@ async function saveWorkCenter() {
                 workCenters.push(newWorkCenter);
                 localStorage.setItem('workCenters', JSON.stringify(workCenters));
             }
-            
             closeWorkCenterModal();
             await renderWorkCenters();
             await renderAreas();
+            // Invalida la caché de todos los centros y del área específica
+            localStorage.removeItem('workCentersCache_all');
+            localStorage.removeItem('workCentersTimestamp_all');
+            localStorage.removeItem(`workCentersCache_${current_area_id}`);
+            localStorage.removeItem(`workCentersTimestamp_${current_area_id}`);
+            // Invalida la caché de la vista concentrada también
+            localStorage.removeItem('allWorkCentersCache');
+            localStorage.removeItem('allWorkCentersTimestamp');
             ERGOUtils.showToast(`Centro de trabajo "${name}" creado exitosamente`);
         } catch (error) {
             console.error('Error saving work center:', error);
@@ -646,24 +752,25 @@ async function saveWorkCenter() {
 async function deleteWorkCenter(centerId, event) {
     event.stopPropagation();
     if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
-    
     const center = workCenters.find(wc => wc.id === centerId);
     if (!center) return;
-    
     if (confirm(`¿Estás seguro de eliminar el centro "${center.name}"?`)) {
         try {
             if (USE_SUPABASE) {
                 await dataClient.deleteWorkCenter(centerId);
+                // Invalida la caché de todos los centros y del área específica
+                localStorage.removeItem('workCentersCache_all');
+                localStorage.removeItem('workCentersTimestamp_all');
+                localStorage.removeItem(`workCentersCache_${current_area_id}`);
+                localStorage.removeItem(`workCentersTimestamp_${current_area_id}`);
+                // Invalida la caché de la vista concentrada también
+                localStorage.removeItem('allWorkCentersCache');
+                localStorage.removeItem('allWorkCentersTimestamp');
             }
-            
-            // Actualizar array local
             workCenters = workCenters.filter(wc => wc.id !== centerId);
-            
-            // Actualizar localStorage como fallback
             localStorage.setItem('workCenters', JSON.stringify(workCenters));
-            
             await renderWorkCenters();
-            await renderAreas(); // Actualizar contador en vista principal
+            await renderAreas();
             ERGOUtils.showToast(`Centro "${center.name}" eliminado`);
         } catch (error) {
             console.error('Error deleting work center:', error);
@@ -689,7 +796,7 @@ async function renderWorkCenters() {
     }
 
     // Obtener scores de todos los centros de forma paralela
-    const scoreInfoPromises = areaCenters.map(center => obtenerScoreFromSupabase(center.id));
+    const scoreInfoPromises = workCenters.map(center => obtenerScoreFromSupabase(center.id));
     const scoreInfos = await Promise.all(scoreInfoPromises);
 
     // Aplicar filtros
@@ -897,10 +1004,13 @@ async function obtenerScoreFromSupabase(workCenterId) {
     // Fallback a localStorage si Supabase falla
     try {
         const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-        const evaluacion = evaluaciones.find(e => e.workCenterId === workCenterId);
+        const evaluacion = evaluaciones.find(e => 
+            e.workCenterId === workCenterId || 
+            e.work_center_id === workCenterId
+        );
         
-        if (evaluacion && evaluacion.scoreFinal) {
-            const score = parseFloat(evaluacion.scoreFinal);
+        if (evaluacion && (evaluacion.scoreFinal || evaluacion.score_final)) {
+            const score = parseFloat(evaluacion.scoreFinal || evaluacion.score_final);
             let color = '#d1d5db';
             let categoria = evaluacion.categoriaRiesgo || 'Evaluado';
             
