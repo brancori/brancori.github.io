@@ -111,7 +111,7 @@ async function guardarEvaluacion() {
 
 // Asegúrate de que esta función auxiliar también esté en eval_int.js
 function guardarLocalmente(evaluacion, evaluacionId) {
-    let evaluaciones = ERGOStorage.getLocal('evaluaciones', []);
+    let evaluaciones = ERGOStorage.getItem('evaluaciones', []);
     const existingIndex = evaluaciones.findIndex(e => e.id === evaluacionId);
     
     if (existingIndex !== -1) {
@@ -124,7 +124,7 @@ function guardarLocalmente(evaluacion, evaluacionId) {
         console.log('🆕 Nueva evaluación creada localmente:', evaluacionId);
     }
     
-    ERGOStorage.setLocal('evaluaciones', evaluaciones);
+    ERGOStorage.setItem('evaluaciones', evaluaciones);
 }
 
         // Mapeo de métodos y criterios de decisión
@@ -786,9 +786,8 @@ async function cargarDatosExistentes() {
 
     // 2. Prioridad 2: Fallback a localStorage si Supabase falla o está deshabilitado
     if (!evaluacion) {
-        const evaluacionesStorage = ERGOStorage.getLocal('evaluaciones', []);
-        // Búsqueda más flexible, compatible con claves antiguas
-        evaluacion = evaluacionesStorage.find(e => e.work_center_id === workCenterId || e.workCenterId === workCenterId);
+        const evaluacionesLocales = ERGOStorage.getItem('evaluaciones', []);
+        evaluacion = evaluacionesLocales.find(e => e.id === `EVAL_${workCenterId}_${areaId}` || e.work_center_id === workCenterId);
         if (evaluacion) {
             origenDatos = 'LocalStorage';
         }

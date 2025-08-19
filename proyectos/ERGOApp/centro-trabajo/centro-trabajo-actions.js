@@ -38,7 +38,7 @@
                     console.log(`Comprimiendo ${file.name}...`);
                     const compressedFile = await imageCompression(file, options);
                     console.log(`Compresión finalizada. Nuevo tamaño: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
-            if (USE_SUPABASE) {
+            if (window.ERGOConfig.USE_SUPABASE) {
                 await dataClient.uploadFotoCentro(file, areaId, workCenterId);
             } else {
                 const fotoData = {
@@ -63,7 +63,7 @@
 
     if (uploadedCount > 0) {
         ERGOUtils.showToast(`${uploadedCount} foto(s) cargada(s) con éxito.`, 'success');
-        if (USE_SUPABASE) {
+        if (window.ERGOConfig.USE_SUPABASE) {
             await loadFotos(); 
         } else {
             fotosActuales = [...fotosActuales, ...newLocalFotos];
@@ -79,7 +79,7 @@
             if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
             if (confirm('¿Eliminar esta foto?')) {
                 try {
-                    if (USE_SUPABASE) {
+                    if (window.ERGOConfig.USE_SUPABASE) {
                         await dataClient.deleteFoto(fotoId);
                     }
                     
