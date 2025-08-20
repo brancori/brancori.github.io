@@ -148,7 +148,7 @@ function openFotoModal(fotoIndex) {
     const nextBtn = document.getElementById('foto-next-btn');
     
     // Configurar imagen
-    const publicUrl = USE_SUPABASE ? 
+    const publicUrl = window.ERGOConfig.USE_SUPABASE ? 
         `${SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
         foto.url;
     
