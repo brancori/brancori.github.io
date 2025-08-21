@@ -175,9 +175,9 @@ async loadDashboardData() {
         try {
             // Hacemos las consultas en paralelo para mayor eficiencia
             const [dashboardData, pictogramSummary] = await Promise.all([
-                dataClient.getDashboardData(),
-                dataClient.getGlobalPictogramSummary() // Llamamos a la nueva función
-            ]);
+            dataClient.getDashboardData(),
+            dataClient.getGlobalPictogramSummary() // Llamamos a la nueva función
+         ]);
 
             this.updateDashboardTables(dashboardData);
             this.updateTopKPIs(dashboardData);

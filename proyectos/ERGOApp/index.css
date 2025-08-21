@@ -16,8 +16,10 @@
 /* Header */
 .header-content {
     display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan a la siguiente línea */
     justify-content: space-between;
     align-items: center;
+    gap: 1.5rem; /* Espacio uniforme entre elementos */
 }
 
 .header-main h1 {
@@ -831,7 +833,7 @@
         radial-gradient(ellipse 200px 100px at 80% 20%, var(--primary-100) 0%, transparent 50%),
         radial-gradient(ellipse 250px 125px at 60% 70%, var(--primary-50) 0%, transparent 50%),
         radial-gradient(ellipse 180px 90px at 30% 80%, var(--primary-100) 0%, transparent 50%);
-    animation: parallaxMove 20s ease-in-out infinite;
+    animation: parallaxMove 20s ease-in-out; /* <- ¡CAMBIADO! Ya no es infinito */
     opacity: 0.6;
 }
 
@@ -853,7 +855,7 @@
         /* Líneas sutiles que sugieren ergonomía */
         linear-gradient(135deg, transparent 48%, rgba(94, 234, 212, 0.03) 49%, rgba(94, 234, 212, 0.03) 51%, transparent 52%),
         linear-gradient(45deg, transparent 48%, rgba(14, 180, 166, 0.02) 49%, rgba(14, 180, 166, 0.02) 51%, transparent 52%);
-    animation: parallaxFloat 25s ease-in-out infinite reverse;
+    animation: parallaxFloat 25s ease-in-out reverse;
 }
 
 /* Animaciones del parallax */
@@ -1009,3 +1011,18 @@ puedes reemplazar el ::after por esto:
     min-width: 220px;
 }
 
+@media (max-width: 768px) {
+    /* Aquí se aplican los cambios para móviles */
+    .header-content {
+        flex-direction: column; /* Apila los elementos verticalmente */
+        align-items: flex-start; /* Alinea los elementos a la izquierda */
+        gap: 1rem;
+    }
+    .user-info {
+        width: 100%;
+        justify-content: space-between; /* Distribuye los elementos del usuario */
+    }
+    .user-details {
+        flex-grow: 1;
+    }
+}
