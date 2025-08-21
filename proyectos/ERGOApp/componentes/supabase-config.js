@@ -89,6 +89,21 @@ async query(table, method = 'GET', data = null, filters = '') {
     async getAreas() {
         return await this.query('areas');
     }
+
+    async getWorkCenterSummary(workCenterId) {
+    try {
+        const { data, error } = await this.supabase.rpc('get_work_center_summary', { wc_id: workCenterId });
+
+        if (error) {
+            console.error('Error en RPC get_work_center_summary:', error);
+            return [];
+        }
+        return data;
+    } catch (error) {
+        console.error('Error llamando a la función del servidor:', error);
+        return [];
+    }
+}
     async getAllEvaluations() {
         // Usa el método genérico query para mayor consistencia
         // CORRECCIÓN: Pedimos todos los campos necesarios para el script

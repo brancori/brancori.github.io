@@ -107,7 +107,7 @@
 
         async function loadNotas() {
             try {
-                if (USE_SUPABASE) {
+                if (window.ERGOConfig.USE_SUPABASE) {
                     notasActuales = await dataClient.getNotas(workCenterId) || [];
                 } else {
                     notasActuales = ERGOStorage.getLocal(`notas_${workCenterId}`, []);
@@ -121,17 +121,64 @@
             }
         }
 
-        async function loadActividades() {
-            try {
-                // Llama a la nueva función en dataClient
-                evaluacionesEspecificas = await dataClient.getActividades(workCenterId) || [];
-                renderActividades();
-            } catch (error) {
-                console.error('Error cargando actividades:', error);
-                evaluacionesEspecificas = [];
-                renderActividades();
-            }
+async function loadActividades() {
+    const evaluacionesContainer = document.getElementById('evaluaciones-container');
+    evaluacionesContainer.innerHTML = '<div class="empty-evaluations"><p>Cargando actividades...</p></div>';
+
+    try {
+        // aquí inicia
+        evaluacionesEspecificas = await dataClient.getWorkCenterSummary(workCenterId);
+        // aquí termina
+
+        if (evaluacionesEspecificas && evaluacionesEspecificas.length > 0) {
+            evaluacionesContainer.innerHTML = '';
+            evaluacionesEspecificas.forEach(actividad => {
+                const item = document.createElement('div');
+                item.className = `actividad-item`;
+                item.setAttribute('data-id', actividad.id);
+                item.onclick = (e) => toggleActividadDetails(actividad, item);
+
+                // Determina la clase del score
+                let scoreClass = '';
+                if (actividad.score_final > 60) {
+                    scoreClass = 'score-high';
+                } else if (actividad.score_final > 25) {
+                    scoreClass = 'score-medium';
+                }
+
+                item.innerHTML = `
+                    <div class="actividad-header">
+                        <div class="actividad-info">
+                            <span class="nombre">${actividad.nombre}</span>
+                            <span class="meta">${actividad.tipo} - ${new Date(actividad.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div class="actividad-status">
+                            ${actividad.metodo ? 'Evaluada' : 'Pendiente'}
+                        </div>
+                        <div class="actividad-actions">
+                            <button class="btn btn-ghost btn-sm" onclick="eliminarEvaluacionEspecifica(event, '${actividad.id}', '${actividad.tipo}')">Eliminar</button>
+                            <button class="btn btn-ghost btn-sm" onclick="abrirModalActividad('${actividad.id}')">Editar</button>
+                        </div>
+                        <span class="chevron">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </span>
+                    </div>
+                `;
+                evaluacionesContainer.appendChild(item);
+            });
+        } else {
+            evaluacionesContainer.innerHTML = `
+                <div class="empty-evaluations">
+                    <p>No hay evaluaciones específicas realizadas</p>
+                    <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
+                </div>
+            `;
         }
+    } catch (error) {
+        console.error('Error al cargar actividades:', error);
+        evaluacionesContainer.innerHTML = '<p class="error-message">Error al cargar datos.</p>';
+    }
+}
 
 // Render
 
