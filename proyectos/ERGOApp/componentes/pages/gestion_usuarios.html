@@ -53,73 +53,38 @@
         .modal-actions { margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>Gestión de Usuarios</h1>
-            <a href="../../index.html" class="btn btn-ghost">← Volver al Dashboard</a>
-        </header>
-
-        <div id="admin-content" style="display: none;">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Lista de Usuarios</h2>
-                    <button class="btn btn-primary" onclick="openUserModal()">+ Crear Usuario</button>
+<>
+    <div class="container mx-auto p-4">
+        <div class="card p-6 rounded-lg shadow-lg max-w-md w-full bg-white">
+            <h2 class="text-xl font-semibold mb-4">Crear Nuevo Usuario</h2>
+            <form id="registro-form">
+                <div class="mb-4">
+                    <label for="reg-email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="reg-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
                 </div>
-                <div class="card-content">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Puesto</th>
-                                <th>Usuario</th>
-                                <th>Rango</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-list-tbody">
-                        </tbody>
-                    </table>
+                <div class="mb-4">
+                    <label for="reg-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" id="reg-password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
                 </div>
-            </div>
-        </div>
-        <div id="permission-denied" style="display: none;">
-            <p>No tienes permisos para acceder a esta sección.</p>
-        </div>
-    </div>
-
-    <!-- Modal para Crear/Editar Usuario -->
-    <div id="user-modal" class="modal-backdrop">
-        <div class="modal-content">
-            <h3 id="modal-title" style="margin-top: 0;">Crear Nuevo Usuario</h3>
-            <form id="user-form" onsubmit="saveUser(event)">
-                <input type="hidden" id="user-id">
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label for="user-nombre">Nombre Completo</label>
-                        <input type="text" id="user-nombre" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="user-puesto">Puesto</label>
-                        <input type="text" id="user-puesto" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="user-usuario">Usuario (para iniciar sesión)</label>
-                        <input type="text" id="user-usuario" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="user-rango">Rango</label>
-                        <select id="user-rango" required>
-                            <option value="3">3 - Visualizador</option>
-                            <option value="2">2 - Editor</option>
-                            <option value="1">1 - Administrador</option>
-                        </select>
-                    </div>
+                <div class="mb-4">
+                    <label for="reg-nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="reg-nombre" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-ghost" onclick="closeUserModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                <div class="mb-4">
+                    <label for="reg-puesto" class="block text-sm font-medium text-gray-700">Puesto</label>
+                    <input type="text" id="reg-puesto" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
                 </div>
+                <div class="mb-4">
+                    <label for="reg-rango" class="block text-sm font-medium text-gray-700">Rango (1, 2 o 3)</label>
+                    <input type="number" id="reg-rango" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" min="1" max="3" required>
+                </div>
+                <div class="mb-4">
+                    <label for="reg-usuario" class="block text-sm font-medium text-gray-700">Usuario</label>
+                    <input type="text" id="reg-usuario" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
+                    Registrar Usuario
+                </button>
             </form>
         </div>
     </div>
@@ -142,6 +107,43 @@
             document.getElementById('admin-content').style.display = 'block';
             loadUsers();
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const registroForm = document.getElementById('registro-form');
+    if (registroForm) {
+        registroForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const nombre = document.getElementById('reg-nombre').value;
+            const puesto = document.getElementById('reg-puesto').value;
+            const rango = document.getElementById('reg-rango').value;
+            const usuario = document.getElementById('reg-usuario').value;
+
+            // Llamada a la nueva función de registro
+            const { data, error } = await authClient.registerUser(email, password, {
+                nombre,
+                puesto,
+                rango: parseInt(rango),
+                usuario
+            });
+
+            if (error) {
+                console.error("❌ Error en el registro:", error.message);
+                ERGOUtils.showToast(`Error: ${error.message}`, 'error');
+            } else if (data && data.user) {
+                console.log("✅ Usuario creado con éxito:", data.user);
+                ERGOUtils.showToast("Usuario creado con éxito. Revisa el correo para confirmar.", 'success');
+                registroForm.reset();
+            } else {
+                // Este caso ocurre cuando email confirmations está activado.
+                ERGOUtils.showToast("Usuario creado con éxito. Revisa tu correo para confirmar.", 'success');
+                registroForm.reset();
+            }
+        });
+    }
+});
 
         async function loadUsers() {
             try {

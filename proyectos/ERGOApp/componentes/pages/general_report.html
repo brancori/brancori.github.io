@@ -193,6 +193,9 @@
         .hide-col-specific-evals th.col-specific-evals, .hide-col-specific-evals td.col-specific-evals { 
             display: none; 
         }
+        .hide-col-closed th.col-closed, .hide-col-closed td.col-closed {
+            display: none;
+        }
         .report-card-title .area-name {
             display: block;
             font-size: 0.75em;
@@ -205,6 +208,12 @@
             color: #888;
             margin-top: 2px;
             font-weight: 400;
+        }
+        .header-count {
+            font-weight: 400;
+            font-size: 0.9em;
+            color: var(--gray-500);
+            margin-left: 0.5rem;
         }
             .col-expand { width: 5px; text-align: center; }
             .expand-arrow { cursor: pointer; display: inline-block; transition: transform 0.2s ease-in-out; font-size: 0.8em; color: var(--gray-400); }
@@ -223,13 +232,12 @@
     </style>
 </head>
 <body>
-    
-
     <div class="main-container">
         
         <div class="kpi-container">
             <div class="kpi-card"><div class="kpi-title">Centros de Trabajo</div><div class="kpi-value" id="kpi-total-centers">...</div></div>
             <div class="kpi-card"><div class="kpi-title">Cumplimiento (Eval. Inicial)</div><div class="kpi-value" id="kpi-compliance-rate">...</div></div>
+            <div class="kpi-card"><div class="kpi-title">Centros Cerrados</div><div class="kpi-value" id="kpi-closed-centers">...</div></div>
             <div class="kpi-card"><div class="kpi-title">Riesgo Promedio</div><div class="kpi-value" id="kpi-avg-risk">...</div></div>
         </div>
 
@@ -237,6 +245,7 @@
             <h3>Elegir Atributos a Visualizar</h3>
             <div class="checkbox-grid">
                 <label class="custom-checkbox"><input type="checkbox" data-column="score" checked><span class="checkmark"></span> Score</label>
+                <label class="custom-checkbox"><input type="checkbox" data-column="closed" checked><span class="checkmark"></span> Status</label>
                 <label class="custom-checkbox"><input type="checkbox" data-column="eval-inicial" checked><span class="checkmark"></span> Eval. Inicial</label>
                 <label class="custom-checkbox"><input type="checkbox" data-column="fotos" checked><span class="checkmark"></span> Fotos</label>
                 <label class="custom-checkbox"><input type="checkbox" data-column="specific-evals" checked><span class="checkmark"></span> Eval. Específicas</label>
@@ -255,23 +264,28 @@
                         <tr>
                             <th class="col-expand"></th>
                             <th class="col-name sortable-header" data-sort-key="name">Centro de Trabajo</th>
-                            <th class="col-score sortable-header" data-sort-key="score_general">Score</th>
-                            
+                            <th class="col-score sortable-header" data-sort-key="score_general">Score</th>                          
                             <th class="col-eval-inicial filterable-header" data-filter-key="hasInitialEval" data-filter-type="boolean">
                                 <div class="header-content-wrapper">
-                                    <span>Eval. Inicial</span>
+                                    <span>Eval. Inicial <span class="header-count" data-header-count="hasInitialEval"></span></span>
                                     <i class="fa-solid fa-filter filter-icon"></i>
                                 </div>
                             </th>
                             <th class="col-fotos filterable-header" data-filter-key="hasPhotos" data-filter-type="boolean">
                                 <div class="header-content-wrapper">
-                                    <span>Fotos</span>
+                                    <span>Fotos <span class="header-count" data-header-count="hasPhotos"></span></span>
                                     <i class="fa-solid fa-filter filter-icon"></i>
                                 </div>
                             </th>
                             <th class="col-specific-evals filterable-header" data-filter-key="hasSpecificEval" data-filter-type="boolean">
                                 <div class="header-content-wrapper">
-                                    <span>Eval. Específicas</span>
+                                    <span>Eval. Específicas <span class="header-count" data-header-count="hasSpecificEval"></span></span>
+                                    <i class="fa-solid fa-filter filter-icon"></i>
+                                </div>
+                            </th>
+                            <th class="col-closed filterable-header" data-filter-key="is_closed" data-filter-type="boolean">
+                                <div class="header-content-wrapper">
+                                    <span>Cerrado <span class="header-count" data-header-count="is_closed"></span></span>
                                     <i class="fa-solid fa-filter filter-icon"></i>
                                 </div>
                             </th>
@@ -285,7 +299,6 @@
             </table>
         </div>
     </div>
-
     <script>
 
         let activeFilters = {};
@@ -297,10 +310,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 setTimeout(() => {
                     ERGOAuth.redirectToLogin();
                 }, 1500);
-
                 return; 
             }
-
             if (window.HeaderComponent) {
                 HeaderComponent.init({ title: "Reporte de Cumplimiento", breadcrumb: "Reportes" });
             }
@@ -310,13 +321,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             let currentSortKey = 'name';
             let isSortAscending = true;
 
-            const getStatusIcon = (condition) => condition ? `<div class="status-icon success"><i class="fa-solid fa-check-circle"></i></div>` : `<div class="status-icon danger"><i class="fa-solid fa-times-circle"></i></div>`;
-            
+            const getStatusIcon = (condition) => condition ? `<div class="status-icon success"><i class="fa-solid fa-check-circle"></i></div>` : `<div class="status-icon danger"><i class="fa-solid fa-times-circle"></i></div>`;            
             const updateKPIs = (data) => {
                 const totalCenters = data.length;
                 const centersWithEval = data.filter(c => c.hasInitialEval).length;
                 const complianceRate = totalCenters > 0 ? (centersWithEval / totalCenters) * 100 : 0;
+                const totalClosedCenters = data.filter(c => c.is_closed).length;
                 const avgRisk = totalCenters > 0 ? data.reduce((sum, c) => sum + (c.score_general || 0), 0) / totalCenters : 0;
+                document.getElementById('kpi-total-centers').textContent = totalCenters;
+                document.getElementById('kpi-compliance-rate').innerHTML = `${complianceRate.toFixed(0)}<span class="unit">%</span>`;
+                document.getElementById('kpi-closed-centers').textContent = totalClosedCenters;
                 document.getElementById('kpi-total-centers').textContent = totalCenters;
                 document.getElementById('kpi-compliance-rate').innerHTML = `${complianceRate.toFixed(0)}<span class="unit">%</span>`;
                 document.getElementById('kpi-avg-risk').innerHTML = `${avgRisk.toFixed(1)}<span class="unit">%</span>`;
@@ -343,17 +357,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
                         <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
                         <td class="col-specific-evals">${getStatusIcon(center.hasSpecificEval)}</td>
+                        <td class="col-closed">${getStatusIcon(center.is_closed)}</td>
                     `;
                     fragment.appendChild(dataRow);
-
                     const detailsRow = document.createElement('tr');
                     detailsRow.className = 'details-row';
-                    detailsRow.setAttribute('data-details-for', center.id);
-                    
+                    detailsRow.setAttribute('data-details-for', center.id);                    
                     let detailsContent = '<h4>No hay evaluaciones específicas registradas.</h4>';
                     if (center.specificEvaluations && center.specificEvaluations.length > 0) {
                         detailsContent = `
-                            <h4>Actividades</h4>
+document.querySelectorAll('.column-selector input[type                            <h4>Actividades</h4>
                             <ul class="evaluation-list">
                                 ${center.specificEvaluations.map(ev => `
                                     <li class="evaluation-item">
@@ -421,13 +434,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const scores = scoresData ? scoresData.find(s => s.work_center_id === center.id) || {} : {};
                         const latestEval = latestEvalsMap.get(center.id);
                         const hasEnoughPhotos = (photosCountMap.get(center.id) || 0) > 3;
-
                         return {
                             ...center,
                             area_name: areaMap.get(center.area_id) || 'Sin Área',
                             score_general: latestEval ? latestEval.score_final : 0,
                             hasInitialEval: !!latestEval,
                             hasPhotos: hasEnoughPhotos,
+                            is_closed: scores.is_closed,
                             // Nueva propiedad que consolida las evaluaciones específicas
                             hasSpecificEval: (scores.evaluaciones_reba || 0) > 0 ||
                                             (scores.evaluaciones_rula || 0) > 0 ||
@@ -446,7 +459,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
                 }
             }
-            
         
         function populateAreaFilter(areas) {
                 const areaFilter = document.getElementById('filter-area');
@@ -475,8 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 function applyFiltersAndSort() {
                 const nameValue = document.getElementById('filter-name').value.toLowerCase();
                 const areaValue = document.getElementById('filter-area').value;
-                const riskValue = document.getElementById('filter-risk').value;
-                
+                const riskValue = document.getElementById('filter-risk').value;                
                 let filteredData = allCentersData.filter(center => {
                     const nameMatch = center.name.toLowerCase().includes(nameValue);
                     const areaMatch = !areaValue || center.area_id === areaValue;
@@ -501,9 +512,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 const sortedData = sortData(filteredData);
                 renderTable(sortedData);
-                updateSortHeadersUI();
+                updateHeaderCounts(filteredData);
             }
-
 
             function applyFiltersAndSort() {
     const nameValue = document.getElementById('filter-name').value.toLowerCase();
@@ -527,8 +537,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return true;
             }
             return center[key] === filterValue;
-        });
-        
+        });        
         return nameMatch && areaMatch && riskMatch && popoverFiltersMatch;
     });
     
@@ -644,6 +653,14 @@ document.addEventListener('click', function(event) {
             });
 
             document.querySelectorAll('.column-selector input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const column = e.target.dataset.column;
+                    const tableWrapper = document.getElementById('report-table-wrapper');
+                    tableWrapper.classList.toggle(`hide-col-${column}`, !e.target.checked);
+                });
+            });
+
+             document.querySelectorAll('.column-selector input[type="checkbox"]').forEach(checkbox => {
                 checkbox.addEventListener('change', (e) => {
                     const column = e.target.dataset.column;
                     const tableWrapper = document.getElementById('report-table-wrapper');

@@ -67,10 +67,42 @@ class ERGOAuthenticator {
 
     /**
      * Inicia sesión de un usuario usando el sistema oficial de Supabase.
+     * 
      * @param {string} email - El email del usuario.
      * @param {string} password - La contraseña del usuario.
+     * @param {object} profileData - Un objeto con los datos del perfil (nombre, puesto, rango, usuario).
      * @returns {Promise<{user: object, session: object}|null>} Un objeto con el usuario y la sesión, o null si falla.
      */
+
+    async signInAnonymously() {
+        const { data, error } = await this.supabase.auth.signInAnonymously();
+        if (error) {
+            console.error('Error en authClient.signInAnonymously:', error.message);
+            return null;
+        }
+        return data;
+    }
+    async registerUser(email, password, profileData) {
+        // La función oficial de Supabase para registrar usuarios
+        const { data, error } = await this.supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: profileData
+            }
+        });
+
+        if (error) {
+            console.error('Error en authClient.registerUser:', error.message);
+            return null;
+        }
+
+        if (data.user) {
+            // El trigger en la base de datos se encargará de crear el perfil.
+            return data;
+        }
+        return null;
+    }
     async login(email, password) {
         const { data, error } = await this.supabase.auth.signInWithPassword({
             email,
