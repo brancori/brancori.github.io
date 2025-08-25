@@ -10,6 +10,7 @@
     <script src="./componentes/globals.js"></script>
     <script src="./componentes/supabase-config.js"></script>
     
+    
 </head>
 
 <body>
@@ -261,65 +262,80 @@ function sortCentros(centrosToSort) {
 
         async function renderCentros() {
     const container = document.getElementById('centros-container');
+    if (!container) return;
+
+    if (allWorkCenters.length === 0) {
+        updateCentrosCount(0);
+        container.innerHTML = `<div class="empty-state">
+                                <h3>No hay centros de trabajo registrados</h3>
+                                <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
+                              </div>`;
+        return;
+    }
+
+    const filteredCentros = filterCentros(allWorkCenters);
+    const sortedCentros = sortCentros(filteredCentros);
+
+    updateCentrosCount(sortedCentros.length);
+    container.className = currentView === 'list' ? 'content-list' : 'content-grid';
+
+    if (sortedCentros.length === 0) {
+        container.innerHTML = `<div class="no-results">
+                                <h3>No se encontraron centros</h3>
+                                <p>Intenta ajustar los filtros de búsqueda</p>
+                              </div>`;
+        return;
+    }
     
-    // aqui inicia
-    if (workCenters.length === 0) {
-                updateCentrosCount(0); 
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>No hay centros de trabajo registrados</h3>
-                        <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
+    // 💡 AÑADE ESTA LÍNEA AQUÍ PARA DEPURAR
+    console.log('Datos de centros de trabajo recibidos:', sortedCentros);
+
+    container.innerHTML = sortedCentros.map(center => {
+        const areaName = allAreas.find(a => a.id === center.area_id)?.name || 'Área no encontrada';
+        const score = parseFloat(center.score_actual || 0);
+        const color = ERGOUtils.getScoreColor(score);
+        const scoreText = score > 0 ? `${score.toFixed(2)}%` : 'N/A';
+        const riskLevel = center.categoria_riesgo || 'Sin evaluación';
+        
+        // Determina el color de fondo basado en la propiedad is_closed
+        const backgroundColor = center.is_closed ? '#e6f1e6' : 'white';
+
+        if (currentView === 'list') {
+            return `
+                <div class="card-list" style="cursor: pointer; background-color: ${backgroundColor};" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                    <div class="card-list__header">
+                        <span class="card-list__name">${center.name}</span>
+                        <span class="card-list__id">${center.id}</span>
                     </div>
-                `;
-                return;
-            }
-
-            const filteredCentros = filterCentros(workCenters);
-            const sortedCentros = sortCentros(filteredCentros);
-
-            updateCentrosCount(sortedCentros.length);
-
-            container.className = currentView === 'list' ? 'content-list' : 'content-grid';
-
-            if (sortedCentros.length === 0) {
-                container.innerHTML = `
-                    <div class="no-results">
-                        <h3>No se encontraron centros</h3>
-                        <p>Intenta ajustar los filtros de búsqueda</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            if (currentView === 'list') {
-                container.innerHTML = sortedCentros.map(center => {
-                    const areaName = center.area_name || 'Área no encontrada';
-                    return `
-                        <div class="card-list" style="cursor: pointer;" onclick="navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-                            <div class="card-list__header">
-                                <span class="card-list__id">${center.id}</span>
-                                <span class="card-list__name">${center.name}</span>
-                            </div>
-                            <div class="card-list__details">
-                                <div class="card-list__detail">📍 ${areaName}</div>
-                                <div class="card-list__detail">👤 ${center.responsible}</div>
-                                <div class="card-list__detail card-list__detail--score">
-                                    <span class="card-list__score-indicator" style="background-color: ${center.color_riesgo};"></span>
-                                    ${center.nivel_riesgo_ergonomico} - ${center.categoria_riesgo}
-                                </div>
-                            </div>
-                            <div class="card-list__footer">${ERGOUtils.formatDate(center.created_at)}</div>
+                    <div class="card-list__details">
+                        <div class="card-list__detail">📍 ${areaName}</div>
+                        <div class="card-list__detail">👤 ${center.responsible}</div>
+                        <div class="card-list__detail card-list__detail--score">
+                            <span class="card-list__score-indicator" style="background-color: ${color};"></span>
+                            ${riskLevel} - ${scoreText}
                         </div>
-                    `;
-                }).join('');
-            } else {
-            container.innerHTML = sortedCentros.map(center => {
-                    const areaName = center.area_name || 'Área no encontrada';
-                    // Pasamos 'center' como segundo argumento, ya que contiene toda la info de score.
-                    return ERGOUtils.createWorkCenterCard(center, center, areaName, currentView);
-                }).join('');
-            }
+                    </div>
+                    <div class="card-list__footer">${ERGOUtils.formatDate(center.created_at)}</div>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="card" style="cursor: pointer; background-color: ${backgroundColor};" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                    <h3 class="card-title">${center.name}</h3>
+                    <p class="card-area">📍 ${areaName}</p>
+                    <p class="card-responsible">👤 ${center.responsible}</p>
+                    <div class="card-score">
+                        <div class="score-indicator" style="background-color: ${color};"></div>
+                        <span class="score-text">${scoreText}</span>
+                    </div>
+                    <div class="card-status status-${riskLevel.toLowerCase().replace(/[^a-z0-9]/g, '')}">
+                        <span>${riskLevel}</span>
+                    </div>
+                </div>
+            `;
         }
+    }).join('');
+}
         // Función para navegar al área específica con el centro seleccionado
         function navigateToAreaCenter(areaId, centerId, areaName, centerName, responsible) {
             const url = `areas.html?area=${areaId}&areaName=${areaName}&fromConcentrado=true`;
@@ -359,34 +375,205 @@ function sortCentros(centrosToSort) {
             ERGOUtils.showToast('Datos exportados exitosamente');
         }
 
-        // Event listeners e inicialización
-        document.addEventListener('DOMContentLoaded', async function() {
-            // 1. Inicializar y verificar el contexto de autenticación ANTES de hacer nada.
-            //    Esta es la línea clave que faltaba.
+        document.addEventListener('DOMContentLoaded', async () => {
+            let allWorkCenters = [];
+            let allAreas = [];
+            let isFirstLoad = true;
+        
             if (!ERGOAuth.initializeAuthContext()) {
-                console.log('❌ No hay sesión válida en centros_concentrado.js, redirigiendo...');
-                ERGOAuth.redirectToLogin();
+                console.log('❌ No hay sesión válida, redirigiendo a login...');
+                window.location.href = 'index.html';
                 return;
             }
-            console.log('✅ Sesión y token verificados en centros_concentrado.js');
-
-            // 2. Ahora sí, cargar los datos (dataClient ya tiene el token).
-            try {
-                areas = await ERGOData.loadAreas(); // Esta función debería estar en globals.js o dataClient
-                await loadAllWorkCenters();
-                
-                populateAreaFilter();
-                await renderCentros();
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                ERGOUtils.showToast('Error al cargar los datos', 'error');
+            
+            console.log('✅ Sesión y token verificados, iniciando la carga de datos.');
+            
+            async function loadAndRenderData() {
+                try {
+                    const [areas, workCenters] = await Promise.all([
+                        dataClient.getAreas(),
+                        dataClient.getWorkCentersWithScores()
+                    ]);
+                    
+                    allAreas = areas || [];
+                    allWorkCenters = workCenters || [];
+                    
+                    if (isFirstLoad && areas) {
+                        populateAreaFilter();
+                        isFirstLoad = false;
+                    }
+                    
+                    renderCentros();
+        
+                } catch (error) {
+                    console.error('❌ Error cargando datos de centros:', error);
+                    ERGOUtils.showToast('Error cargando datos. Intenta recargar.', 'error');
+                }
             }
-            
-            // 3. Configurar el resto de la página.
-            ERGOAuth.applyPermissionControls();
-            
-            const setupFilters = () => {
+        
+            function populateAreaFilter() {
+                const areaFilter = document.getElementById('filter-centro-area');
+                if (!areaFilter) return;
+                areaFilter.innerHTML = '<option value="">Todas las áreas</option>';
+                allAreas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id;
+                    option.textContent = area.name;
+                    areaFilter.appendChild(option);
+                });
+            }
+        
+            function renderCentros() {
+                const container = document.getElementById('centros-container');
+                if (!container) return;
+                
+                if (allWorkCenters.length === 0) {
+                    updateCentrosCount(0);
+                    container.innerHTML = `<div class="empty-state">
+                                            <h3>No hay centros de trabajo registrados</h3>
+                                            <p>Los centros aparecerán aquí cuando se creen desde las áreas</p>
+                                          </div>`;
+                    return;
+                }
+                
+                const filteredCentros = filterCentros(allWorkCenters);
+                const sortedCentros = sortCentros(filteredCentros);
+                
+                updateCentrosCount(sortedCentros.length);
+                container.className = currentView === 'list' ? 'content-list' : 'content-grid';
+        
+                if (sortedCentros.length === 0) {
+                    container.innerHTML = `<div class="no-results">
+                                            <h3>No se encontraron centros</h3>
+                                            <p>Intenta ajustar los filtros de búsqueda</p>
+                                          </div>`;
+                    return;
+                }
+                
+                container.innerHTML = sortedCentros.map(center => {
+                    const areaName = allAreas.find(a => a.id === center.area_id)?.name || 'Área no encontrada';
+                    const score = parseFloat(center.score_actual || 0);
+                    const color = ERGOUtils.getScoreColor(score);
+                    const scoreText = score > 0 ? `${score.toFixed(2)}%` : 'N/A';
+                    const riskLevel = center.categoria_riesgo || 'Sin evaluación';
+                    
+                    if (currentView === 'list') {
+                        return `
+                            <div class="card-list" style="cursor: pointer;" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                                <div class="card-list__header">
+                                    <span class="card-list__name">${center.name}</span>
+                                    <span class="card-list__id">${center.id}</span>
+                                </div>
+                                <div class="card-list__details">
+                                    <div class="card-list__detail">📍 ${areaName}</div>
+                                    <div class="card-list__detail">👤 ${center.responsible}</div>
+                                    <div class="card-list__detail card-list__detail--score">
+                                        <span class="card-list__score-indicator" style="background-color: ${color};"></span>
+                                        ${riskLevel} - ${scoreText}
+                                    </div>
+                                </div>
+                                <div class="card-list__footer">${ERGOUtils.formatDate(center.created_at)}</div>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                                <div class="card" style="cursor: pointer; background-color: ${center.is_closed ? '#e6f1e6' : 'white'};" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                                    <h3 class="card-title">${center.name}</h3>
+                                    <p class="card-area">📍 ${areaName}</p>
+                                    <p class="card-responsible">👤 ${center.responsible}</p>
+                                    <div class="card-score">
+                                        <div class="score-indicator" style="background-color: ${color};"></div>
+                                        <span class="score-text">${scoreText}</span>
+                                    </div>
+                                    <div class="card-status status-${riskLevel.toLowerCase().replace(/[^a-z0-9]/g, '')}">
+                                        <span>${riskLevel}</span>
+                                    </div>
+                                </div>
+                            `;
+                        // aquí termina
+                    }
+                }).join('');
+            }
+        
+            function filterCentros(centrosToFilter) {
+                const nameFilter = document.getElementById('filter-centro-name')?.value.toLowerCase() || '';
+                const areaFilter = document.getElementById('filter-centro-area')?.value || '';
+                const responsibleFilter = document.getElementById('filter-centro-responsible')?.value.toLowerCase() || '';
+                const scoreFilter = document.getElementById('filter-centro-score')?.value || '';
+                const statusFilter = document.getElementById('filter-centro-status')?.value || '';
+                
+                return centrosToFilter.filter(center => {
+                    if (nameFilter && !center.name.toLowerCase().includes(nameFilter)) return false;
+                    if (areaFilter && center.area_id !== areaFilter) return false;
+                    if (responsibleFilter && !(center.responsible || '').toLowerCase().includes(responsibleFilter)) return false;
+                    
+                    if (scoreFilter) {
+                        const score = parseFloat(center.score_actual || 0);
+                        switch (scoreFilter) {
+                            case 'low': if (score > 25) return false; break;
+                            case 'medium': if (score <= 25 || score > 60) return false; break; 
+                            case 'high': if (score <= 60) return false; break;
+                        }
+                    }
+        
+                    if (statusFilter) {
+                        const hasEvaluation = center.score_actual > 0;
+                        if (statusFilter === 'evaluated' && !hasEvaluation) return false;
+                        if (statusFilter === 'pending' && hasEvaluation) return false;
+                    }
+                    return true;
+                });
+            }
+        
+            function sortCentros(centrosToSort) {
+                const ordenFilter = document.getElementById('filter-centro-orden')?.value || 'riesgo-desc';
+                if (!ordenFilter) return centrosToSort;
+                
+                return [...centrosToSort].sort((a, b) => {
+                    switch (ordenFilter) {
+                        case 'riesgo-desc': return (b.score_actual || 0) - (a.score_actual || 0);
+                        case 'riesgo-asc': return (a.score_actual || 0) - (b.score_actual || 0);
+                        case 'nombre': return a.name.localeCompare(b.name);
+                        default: return 0;
+                    }
+                });
+            }
+        
+            function updateCentrosCount(count) {
+                const countElement = document.getElementById('centros-count');
+                if (countElement) {
+                    countElement.textContent = `${count} ${count === 1 ? 'centro' : 'centros'}`;
+                }
+            }
+        
+            // Funciones de vista y filtros
+            let currentView = 'grid';
+            let filtersVisible = false;
+
+            function toggleCentrosView() {
+                currentView = currentView === 'grid' ? 'list' : 'grid';
+                const icon = document.getElementById('view-toggle-icon');
+                const text = document.getElementById('view-toggle-text');
+                
+                if (currentView === 'list') {
+                    icon.textContent = '⊞';
+                    text.textContent = 'Tarjetas';
+                } else {
+                    icon.textContent = '📋';
+                    text.textContent = 'Lista';
+                }
+                renderCentros();
+            }
+
+            function toggleCentrosFilters() {
+                filtersVisible = !filtersVisible;
+                const filtersContainer = document.getElementById('centros-filters');
+                if (filtersContainer) {
+                    filtersContainer.style.display = filtersVisible ? 'flex' : 'none';
+                }
+            }
+
+            function clearCentrosFilters() {
                 const nameFilter = document.getElementById('filter-centro-name');
                 const areaFilter = document.getElementById('filter-centro-area');
                 const responsibleFilter = document.getElementById('filter-centro-responsible');
@@ -394,26 +581,44 @@ function sortCentros(centrosToSort) {
                 const statusFilter = document.getElementById('filter-centro-status');
                 const ordenFilter = document.getElementById('filter-centro-orden');
                 
-                if (nameFilter) nameFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
-                if (areaFilter) areaFilter.addEventListener('change', renderCentros);
-                if (responsibleFilter) responsibleFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
-                if (scoreFilter) scoreFilter.addEventListener('change', renderCentros);
-                if (statusFilter) statusFilter.addEventListener('change', renderCentros);
-                if (ordenFilter) ordenFilter.addEventListener('change', renderCentros);
-            };
-
-            setTimeout(setupFilters, 500);
-        });
-
-        // Manejar navegación de vuelta desde areas.html
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                // La página se está mostrando desde el cache del navegador
+                if (ordenFilter) ordenFilter.value = 'riesgo-desc';
+                if (nameFilter) nameFilter.value = '';
+                if (areaFilter) areaFilter.value = '';
+                if (responsibleFilter) responsibleFilter.value = '';
+                if (scoreFilter) scoreFilter.value = '';
+                if (statusFilter) statusFilter.value = '';
+                
                 renderCentros();
             }
+
+            // Event Listeners
+            const nameFilter = document.getElementById('filter-centro-name');
+            const areaFilter = document.getElementById('filter-centro-area');
+            const responsibleFilter = document.getElementById('filter-centro-responsible');
+            const scoreFilter = document.getElementById('filter-centro-score');
+            const statusFilter = document.getElementById('filter-centro-status');
+            const ordenFilter = document.getElementById('filter-centro-orden');
+
+            if (nameFilter) nameFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
+            if (areaFilter) areaFilter.addEventListener('change', renderCentros);
+            if (responsibleFilter) responsibleFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
+            if (scoreFilter) scoreFilter.addEventListener('change', renderCentros);
+            if (statusFilter) statusFilter.addEventListener('change', renderCentros);
+            if (ordenFilter) ordenFilter.addEventListener('change', renderCentros);
+            
+            // Suscribirse a los cambios en tiempo real
+            if (window.realtimeClient) {
+                window.realtimeClient.subscribeToTable('centros-scores', 'scores_resumen', () => loadAndRenderData());
+                window.realtimeClient.subscribeToTable('centros-work-centers', 'work_centers', () => loadAndRenderData());
+            }
+
+            // Carga inicial de datos
+            loadAndRenderData();
         });
     </script>
-        <script src="./componentes/header-component.js"></script>
+    <script src="./componentes/auth-client.js"></script>
+    <script src="./componentes/realtime-client.js"></script>
+    <script src="./componentes/header-component.js"></script>
 
 </body>
 </html>

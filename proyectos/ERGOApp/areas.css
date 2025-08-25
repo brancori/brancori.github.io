@@ -502,3 +502,21 @@
         display: none;
     }
 }
+
+.table-row.is-closed {
+    background-color: #d4edda; /* Un verde claro */
+    color: #155724; /* Un verde oscuro para el texto */
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+/* Opcional: puedes cambiar el estilo de las tarjetas también */
+.card.is-closed {
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+}
+
+.card.is-closed,
+.card-list.is-closed {
+    background-color: #e6f1e6;
+}

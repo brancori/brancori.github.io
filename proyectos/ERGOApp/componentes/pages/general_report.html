@@ -126,9 +126,17 @@
         /* --- Estilos para Tarjetas de KPI --- */
         .kpi-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
+            /* Por defecto, una columna en móviles */
+            grid-template-columns: 1fr; 
+        }
+
+        /* En pantallas más grandes, pasamos a un diseño de columnas */
+        @media (min-width: 768px) {
+            .kpi-container {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
         }
         .kpi-card {
             background-color: white;
@@ -226,9 +234,49 @@
             .evaluation-list { list-style: none; padding: 0; margin: 0; }
             .evaluation-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid var(--gray-200); }
             .evaluation-item:last-child { border-bottom: none; }
-            .eval-type-badge { font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; color: white; }
+            .eval-type-badge { font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.875rem; color: white; }
             .eval-score { font-weight: 500; color: var(--gray-800); }
-            .eval-date { font-size: 0.8rem; color: var(--gray-500); margin-left: auto; }
+            .eval-date { font-size: 0.875rem; color: var(--gray-500); margin-left: auto; }
+            @media (max-width: 768px) {
+                .report-table thead {
+                    display: none;
+                }
+                .report-table, .report-table tbody, .report-table tr, .report-table td {
+                    display: block;
+                    width: 100%;
+                }
+                .report-table tr {
+                    margin-bottom: 1.5rem;
+                    border: 1px solid var(--gray-200);
+                    border-radius: var(--border-radius-lg);
+                    padding: 1rem;
+                    box-shadow: var(--shadow-sm);
+                    background-color: white;
+                }
+                .report-table td {
+                    text-align: right;
+                    padding-left: 50%;
+                    position: relative;
+                }
+                .report-table td::before {
+                    content: attr(data-label);
+                    position: absolute;
+                    left: 1rem;
+                    width: calc(50% - 1.5rem);
+                    white-space: nowrap;
+                    text-align: left;
+                    font-weight: 600;
+                    color: var(--gray-700);
+                }
+                .col-expand, .col-name {
+                    text-align: left !important;
+                    padding-left: 1rem !important;
+                }
+                .col-expand::before {
+                    content: '' !important;
+                    display: none;
+                }
+            }
     </style>
 </head>
 <body>
@@ -348,16 +396,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const dataRow = document.createElement('tr');
                     
                     dataRow.innerHTML = `
-                        <td class="col-expand"><span class="expand-arrow" data-center-id="${center.id}">▶</span></td>
-                        <td class="col-name">
+                        <td class="col-expand" data-label=""><span class="expand-arrow" data-center-id="${center.id}">▶</span></td>
+                        <td class="col-name" data-label="Centro de Trabajo">
                             <div class="center-name">${center.name}</div>
                             <div class="area-name-report">${center.area_name}</div>
                         </td>
-                        <td class="col-score">${(center.score_general || 0).toFixed(2)}%</td>
-                        <td class="col-eval-inicial">${getStatusIcon(center.hasInitialEval)}</td>
-                        <td class="col-fotos">${getStatusIcon(center.hasPhotos)}</td>
-                        <td class="col-specific-evals">${getStatusIcon(center.hasSpecificEval)}</td>
-                        <td class="col-closed">${getStatusIcon(center.is_closed)}</td>
+                        <td class="col-score" data-label="Score">${(center.score_general || 0).toFixed(2)}%</td>
+                        <td class="col-eval-inicial" data-label="Eval. Inicial">${getStatusIcon(center.hasInitialEval)}</td>
+                        <td class="col-fotos" data-label="Fotos">${getStatusIcon(center.hasPhotos)}</td>
+                        <td class="col-specific-evals" data-label="Eval. Específicas">${getStatusIcon(center.hasSpecificEval)}</td>
+                        <td class="col-closed" data-label="Cerrado">${getStatusIcon(center.is_closed)}</td>
                     `;
                     fragment.appendChild(dataRow);
                     const detailsRow = document.createElement('tr');

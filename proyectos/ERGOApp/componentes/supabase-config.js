@@ -110,8 +110,8 @@ async query(table, method = 'GET', data = null, filters = '') {
         return await this.query('evaluaciones', 'GET', null, '?select=id,area_id,respuestas,riesgos_por_categoria');
     }
     async getWorkCentersWithScores() {
-    // Llama a la nueva vista que creamos en Supabase
-    return await this.query('work_centers_with_scores', 'GET', null, '?order=name.asc');
+        // Llama a la nueva vista que creamos en Supabase
+        return await this.query('work_centers_with_scores_v2', 'GET', null, '?order=name.asc');
     }
     /**
      * Obtiene TODAS las áreas (solo los campos necesarios para el script).
