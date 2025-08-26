@@ -111,8 +111,9 @@ async query(table, method = 'GET', data = null, filters = '') {
     }
     async getWorkCentersWithScores() {
         // Llama a la nueva vista que creamos en Supabase
-        return await this.query('work_centers_with_scores_v2', 'GET', null, '?order=name.asc');
+        return await this.query('work_centers_with_scores', 'GET', null, '?order=name.asc');
     }
+
     /**
      * Obtiene TODAS las áreas (solo los campos necesarios para el script).
      * @returns {Promise<Array|null>}

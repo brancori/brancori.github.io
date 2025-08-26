@@ -387,7 +387,7 @@ window.ERGOUtils = {
                 <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
             </div>
             <div class="summary-badge" style="border-left-color: ${scoreInfo.color_riesgo};">
-                📊 Riesgo: ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+                📊 Riesgo: ${center.score_actual} - ${scoreInfo.categoria_riesgo}
             </div>
             <div class="card-footer">
                 <div class="card-stats">Creado ${this.formatDate(center.created_at)}</div>

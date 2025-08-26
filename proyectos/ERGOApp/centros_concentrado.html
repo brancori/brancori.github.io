@@ -124,7 +124,8 @@
     // 2. Si no hay caché o ha expirado, cargar de Supabase
     console.log('⏳ Cargando centros de trabajo desde Supabase...');
     try {
-        workCenters = await dataClient.getWorkCentersWithScores() || [];
+         workCenters = await dataClient.getWorkCentersWithScores() || []; // <-- Línea original REACTIVADA
+        // workCenters = await dataClient.testGetBaseTable() || []; // <-- Línea de PRUEBA DESACTIVADA
         // Guardar en el caché
         localStorage.setItem(CACHE_KEY, JSON.stringify({
             timestamp: now,
@@ -253,7 +254,7 @@ function sortCentros(centrosToSort) {
             areas.forEach(area => {
                 const option = document.createElement('option');
                 option.value = area.id;
-                option.textContent = area.name;
+                option.textContent = area.areaName;
                 areaFilter.appendChild(option);
             });
         }
@@ -294,7 +295,7 @@ function sortCentros(centrosToSort) {
             
             if (currentView === 'list') {
                 container.innerHTML = sortedCentros.map(center => {
-                    const areaName = center.area_name || 'Área no encontrada';
+                     
                     return `
                         <div class="card-list" style="cursor: pointer;" onclick="navigateToCenterDetail('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
                             <div class="card-list__header">
@@ -302,11 +303,11 @@ function sortCentros(centrosToSort) {
                                 <span class="card-list__name">${center.name}</span>
                             </div>
                             <div class="card-list__details">
-                                <div class="card-list__detail">📍 ${areaName}</div>
+                                <div class="card-list__detail">📍 ${center.areaName}</div>
                                 <div class="card-list__detail">👤 ${center.responsible}</div>
                                 <div class="card-list__detail card-list__detail--score">
                                     <span class="card-list__score-indicator" style="background-color: ${center.color_riesgo};"></span>
-                                    ${center.nivel_riesgo_ergonomico} - ${center.categoria_riesgo}
+                                    ${center.score_actual} - ${center.categoria_riesgo}
                                 </div>
                             </div>
                             <div class="card-list__footer">${ERGOUtils.formatDate(center.created_at)}</div>
@@ -316,8 +317,17 @@ function sortCentros(centrosToSort) {
             } else {
             container.innerHTML = sortedCentros.map(center => {
                     const areaName = center.area_name || 'Área no encontrada';
-                    // Pasamos 'center' como segundo argumento, ya que contiene toda la info de score.
-                    return ERGOUtils.createWorkCenterCard(center, center, areaName, currentView);
+                    
+                    // Creamos un objeto 'scoreInfo' para compatibilidad, con valores por defecto
+                     const scoreInfo = {
+                        score_actual: center.score_actual || 0,
+                        nivel_riesgo_ergonomico: center.nivel_riesgo_ergonomico || 'No evaluado',
+                        categoria_riesgo: center.categoria_riesgo || 'Sin datos',
+                        color_riesgo: center.color_riesgo || '#a9a9a9' // Un color gris por defecto
+                    };
+
+                    // Pasamos el centro y el objeto de score con valores por defecto
+                   return ERGOUtils.createWorkCenterCard(center, center, areaName, 'grid');
                 }).join('');
             }
         }
@@ -329,8 +339,9 @@ function sortCentros(centrosToSort) {
 
         // Función para navegar al detalle del centro
         function navigateToCenterDetail(centerId, areaId, areaName, centerName, responsible) {
-        const url = `/centro-trabajo.html?workCenter=${centerId}&area=${areaId}&areaName=${areaName}&centerName=${centerName}&responsible=${responsible}`;        }
-
+        const url = `/centro-trabajo.html?workCenter=${centerId}&area=${areaId}&areaName=${areaName}&centerName=${centerName}&responsible=${responsible}`;
+            window.location.href = url;
+        }
         // Función para exportar datos
         function exportCentrosData() {
             const data = {
@@ -340,7 +351,9 @@ function sortCentros(centrosToSort) {
                         id: center.id,
                         nombre: center.name,
                         responsable: center.responsible,
-                        area: area ? area.name : 'Área no encontrada',
+                        area: area ? area.area_name : 'Área no encontrada',
+                        score_actual: center.score_actual || 0, // Añadido
+                        is_closed: center.is_closed || false, // Añadido
                         fecha_creacion: center.created_at
                     };
                 }),
