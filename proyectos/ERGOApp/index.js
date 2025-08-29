@@ -24,6 +24,7 @@ checkExistingSession() {
         this.hideLoginModal();
         this.showMainContent();
         this.updateUserInterface();
+        this.setupRealtimeListeners();
         
         // Verificar que ERGOMap esté disponible antes de crear la instancia
         if (typeof ERGOMap !== 'undefined') {
@@ -139,7 +140,51 @@ async handleLogin(e) {
         if (!this.currentUser) return;
         document.getElementById('userName').textContent = this.currentUser.nombre || 'Usuario';
         document.getElementById('userRole').textContent = this.currentUser.puesto || 'Sin cargo definido';
+        if (this.ergoMap) {
+            this.loadMapData();
+        }
     }
+
+async loadMapData() {
+    const localStorageKey = 'workCentersWithRisk';
+
+    // 1. Intenta cargar desde la Caché
+    const cachedData = LocalStorageCache.loadCachedData(localStorageKey);
+    if (cachedData) {
+        console.log('📦 Mapa cargado desde: Caché (LocalStorage)');
+        this.ergoMap.update(cachedData);
+    }
+
+    // 2. Busca datos frescos en la Red
+    try {
+        const freshData = await dataClient.getWorkCentersWithRisk();
+        if (freshData) {
+            if (JSON.stringify(freshData) !== JSON.stringify(cachedData)) {
+                console.log('🌐 Mapa actualizado desde: Red (Supabase)');
+                this.ergoMap.update(freshData);
+                LocalStorageCache.cacheData(localStorageKey, freshData);
+            } else {
+                // Si los datos no han cambiado, no hacemos nada, pero es bueno saberlo.
+                console.log('✔️ Los datos de la caché ya estaban actualizados.');
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error al buscar datos frescos para el mapa.', error);
+    }
+}
+
+setupRealtimeListeners() {
+    realtimeClient.subscribeAndCache(
+        'dashboard-updates',
+        'evaluaciones',
+        (payload) => {
+            // El console.log que verifica la actualización en tiempo real
+            console.log('⚡ ¡Actualización Realtime recibida! Refrescando el mapa...');
+            this.loadMapData();
+        },
+        'evaluaciones_cache_dummy'
+    );
+}
 
     showMainContent() {
         const container = document.querySelector('.container');
@@ -439,17 +484,20 @@ window.indexApp = null;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Iniciando Sistema de Evaluación Ergonómica');
     
-    // Verificar que Supabase esté disponible
+    // 1. Verificar que Supabase esté disponible
     if (typeof supabase === 'undefined') {
         console.error('❌ Supabase no está disponible. Verifica que supabase-config.js esté cargado.');
         alert('Error: No se pudo conectar con la base de datos. Recarga la página.');
         return;
     }
 
-    // Inicializar aplicación
-    window.indexApp = new IndexApp();
-    
-    console.log('✅ Sistema inicializado correctamente');
+    // 2. Patrón Singleton para evitar doble inicialización
+    if (!window.ergoAppInstance) {
+        window.ergoAppInstance = new IndexApp();
+        console.log('✅ Sistema inicializado correctamente');
+    } else {
+        console.warn('⚠️ Se ha prevenido una doble inicialización de la aplicación.');
+    }
 });
 
 // Manejar errores globales

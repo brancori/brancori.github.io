@@ -477,17 +477,24 @@ async function toggleActividadDetails(itemElement, actividadId) {
 async function loadAndRenderPhotosForSummary(actividadId, detailsContainer) {
     const grid = detailsContainer.querySelector('.miniaturas-grid');
     if (!grid) return;
-    try {
-        const fotos = await dataClient.getFotosActividad(actividadId) || [];
-        if (fotos.length > 0) {
-            grid.innerHTML = fotos.map(foto => {
-                const publicUrl = `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos/${foto.storage_path}`;
-                return `
-                    <div class="miniatura">
-                        <img src="${publicUrl}" alt="${foto.file_name}">
-                    </div>
-                `;
-            }).join('');
+try {
+    const fotos = await dataClient.getFotosActividad(actividadId) || [];
+    if (fotos.length > 0) {
+        grid.innerHTML = fotos.map(foto => {
+            const { data } = supabase.storage.from('fotos').getPublicUrl(foto.storage_path, {
+                transform: {
+                    width: 150,
+                    height: 150,
+                    resize: 'cover' // 'cover' recorta para ajustar, 'contain' ajusta sin recortar
+                }
+            });
+            const publicUrl = data.publicUrl;
+            return `
+                <div class="miniatura">
+                    <img src="${publicUrl}" alt="${foto.file_name}">
+                </div>
+            `;
+        }).join('');
         } else {
             grid.innerHTML = '<div class="fotos-info" style="grid-column: 1 / -1;">No hay fotos para esta actividad.</div>';
         }
@@ -495,7 +502,32 @@ async function loadAndRenderPhotosForSummary(actividadId, detailsContainer) {
         grid.innerHTML = '<div class="fotos-info" style="grid-column: 1 / -1;">Error al cargar fotos.</div>';
     }
 }
+async function loadAndRenderActividades() {
+    const localStorageKey = `actividades_${workCenterId}`;
+    const container = document.getElementById('actividades-list');
+    if (!container) return; // Salir si el contenedor no existe
 
+    // 1. Mostrar datos de la caché inmediatamente si existen
+    const cachedActividades = LocalStorageCache.loadCachedData(localStorageKey);
+    if (cachedActividades && cachedActividades.length > 0) {
+        console.log('📦 Renderizando actividades desde caché...');
+        renderActividades(cachedActividades);
+    } else {
+        container.innerHTML = '<p class="loading-state">Cargando actividades...</p>';
+    }
+
+    // 2. Buscar datos frescos en Supabase y actualizar la caché
+    try {
+        const freshActividades = await dataClient.getActividades(workCenterId);
+        if (freshActividades) {
+            renderActividades(freshActividades);
+            LocalStorageCache.cacheData(localStorageKey, freshActividades);
+        }
+    } catch (error) {
+        console.error('Error al obtener actividades frescas:', error);
+        container.innerHTML = '<p class="error-state">No se pudieron cargar las actividades.</p>';
+    }
+}
 
 
         function getMetodosRecomendados(score) {

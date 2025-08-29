@@ -6,289 +6,104 @@
     <title>Reporte General de Cumplimiento</title>
     
     <link rel="stylesheet" href="../globals.css">
+    <link rel="stylesheet" href="./general_report.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     
     <script src="../globals.js"></script>
     <script src="../supabase-config.js"></script>
     <script src="../auth-client.js"></script> 
     <script src="../header-component.js"></script>
-
-    <style>
-        body { 
-            background-color: var(--gray-50); 
-            font-family: 'Inter', sans-serif; /* Fuente más moderna */
-        }
-        .main-container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
-
-        /* --- Estilos para Scrollbar (Especial para Chrome/Safari) --- */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--gray-100);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gray-300);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-400);
-        }
-        .report-table th.filterable-header {
-            position: relative; /* Clave para posicionar el popover */
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header-content-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%; /* Ocupa todo el espacio de la celda */
-        }
-        .report-table th.filterable-header span {
-            display: inline-block;
-            padding-right: 25px; /* Deja espacio para el ícono que se posicionará encima. */
-        }
-
-        /* Ícono del filtro */
-        .filter-icon {
-            position: absolute; /* Se saca del flujo normal del texto. */
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%); /* Centrado vertical perfecto. */
-            font-size: 0.8em;
-            color: var(--gray-400);
-            padding: 0.5rem;
-            cursor: pointer;
-            border-radius: var(--border-radius-sm);
-            transition: all 0.2s ease;
-        }
-        .filter-icon:hover {
-            background-color: var(--gray-200);
-            color: var(--primary-600);
-        }
-
-        /* Ícono cuando un filtro está activo en esa columna */
-        .filter-icon.active {
-            color: white;
-            background-color: var(--primary-600);
-        }
-
-        /* El panel emergente (popover) */
-        .filter-popover {
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            z-index: 50;
-            min-width: 200px;
-            padding: 0.5rem 0;
-            animation: fadeIn 0.15s ease-out;
-        }
-        .filter-popover::before {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 8px solid transparent;
-            border-bottom-color: white;
-            filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.05));
-        }
-
-    .filter-option {
-        padding: 0.75rem 1.25rem;
-        font-size: 0.875rem;
-        color: var(--gray-700);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    .filter-option:hover {
-        background-color: var(--primary-50);
-    }
-    .filter-option.selected {
-        font-weight: 600;
-        color: var(--primary-600);
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-        to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-        /* --- Estilos para Tarjetas de KPI --- */
-        .kpi-container {
-            display: grid;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            /* Por defecto, una columna en móviles */
-            grid-template-columns: 1fr; 
-        }
-
-        /* En pantallas más grandes, pasamos a un diseño de columnas */
-        @media (min-width: 768px) {
-            .kpi-container {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            }
-        }
-        .kpi-card {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--gray-200);
-            -webkit-box-shadow: var(--shadow-sm);
-            box-shadow: var(--shadow-sm);
-            -webkit-transition: all 0.3s ease;
-            transition: all 0.3s ease;
-        }
-        .kpi-card:hover {
-            -webkit-transform: translateY(-4px);
-            transform: translateY(-4px);
-            -webkit-box-shadow: var(--shadow-md);
-            box-shadow: var(--shadow-md);
-        }
-        .kpi-title { font-size: 0.875rem; color: var(--gray-500); margin-bottom: 0.5rem; }
-        .kpi-value { font-size: 2.25rem; font-weight: 700; color: var(--primary-600); line-height: 1; }
-        .kpi-value .unit { font-size: 1.5rem; color: var(--gray-400); margin-left: 0.25rem; }
-        
-        /* --- Estilos para Checkbox de Columnas --- */
-        .column-selector { background: white; padding: 1.5rem; border-radius: var(--border-radius-lg); margin-bottom: 2rem; border: 1px solid var(--gray-200); }
-        .column-selector h3 { margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--gray-700); }
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
-        .custom-checkbox { position: relative; display: flex; align-items: center; cursor: pointer; font-size: 0.875rem; -webkit-user-select: none; user-select: none; color: var(--gray-800); }
-        .custom-checkbox input { position: absolute; opacity: 0; cursor: pointer; }
-        .checkmark { position: relative; height: 22px; width: 22px; background-color: var(--gray-200); border-radius: var(--border-radius-sm); -webkit-transition: background-color 0.2s ease; transition: background-color 0.2s ease; margin-right: 0.75rem; border: 1px solid var(--gray-300); }
-        .custom-checkbox:hover .checkmark { background-color: var(--gray-300); }
-        .custom-checkbox input:checked ~ .checkmark { background-color: var(--primary-600); border-color: var(--primary-600); }
-        .checkmark:after { content: ""; position: absolute; display: none; left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; -webkit-transform: rotate(45deg); transform: rotate(45deg); }
-        .custom-checkbox input:checked ~ .checkmark:after { display: block; }
-
-        /* --- Estilos para Filtros Avanzados --- */
-        .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; background-color: white; padding: 1.5rem; border-radius: var(--border-radius-lg); margin-bottom: 2rem; border: 1px solid var(--gray-200); }
-        .filter-bar .input-field, .filter-bar .filter-select { -webkit-appearance: none; appearance: none; width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--gray-300); border-radius: var(--border-radius-md); font-size: 0.875rem; background-color: var(--gray-50); }
-        .filter-bar .input-field:focus, .filter-bar .filter-select:focus { outline: none; border-color: var(--primary-500); background-color: white; }
-        
-        /* --- Estilos para Tabla de Reporte y Skeleton --- */
-        .report-table-container { background-color: white; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); overflow-x: auto; border: 1px solid var(--gray-200); }
-        .report-table { width: 100%; border-collapse: collapse; }
-        .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--gray-200); white-space: nowrap; }
-        .report-table tbody tr { cursor: pointer; -webkit-transition: background-color 0.2s ease; transition: background-color 0.2s ease; }
-        .report-table tbody tr:hover { background-color: var(--primary-50); }
-        .report-table th.sortable-header { cursor: pointer; position: relative; -webkit-user-select: none; user-select: none; }
-        .report-table th.sortable-header:hover { background-color: var(--gray-100); }
-        .report-table th.sortable-header::after { content: '▲'; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%) scale(0.6); -webkit-transform: translateY(-50%) scale(0.6); color: var(--gray-300); opacity: 1; -webkit-transition: color 0.2s ease; transition: color 0.2s ease; }
-        .report-table th.sorted-asc::after, .report-table th.sorted-desc::after { color: var(--primary-600); }
-        .report-table th.sorted-desc::after { content: '▼'; }
-        .center-name { font-weight: 600; color: var(--gray-800); }
-        .status-icon { font-size: 1.25rem; text-align: center; }
-        .status-icon.success { color: var(--green-500); }
-        .status-icon.danger { color: var(--red-500); }
-        .skeleton-bar { height: 1.25rem; width: 80%; background-color: var(--gray-200); border-radius: var(--border-radius-sm); }
-        .skeleton-circle { height: 20px; width: 20px; background-color: var(--gray-200); border-radius: 50%; margin: 0 auto; }
-        .report-table .loading-skeleton .skeleton-bar, .report-table .loading-skeleton .skeleton-circle { -webkit-animation: loading 1.5s infinite; animation: loading 1.5s infinite; }
-        
-        /* Lógica para ocultar columnas */
-        .hide-col-score th.col-score, .hide-col-score td.col-score,
-        .hide-col-eval-inicial th.col-eval-inicial, .hide-col-eval-inicial td.col-eval-inicial,
-        .hide-col-fotos th.col-fotos, .hide-col-fotos td.col-fotos,
-        .hide-col-specific-evals th.col-specific-evals, .hide-col-specific-evals td.col-specific-evals { 
-            display: none; 
-        }
-        .hide-col-closed th.col-closed, .hide-col-closed td.col-closed {
-            display: none;
-        }
-        .report-card-title .area-name {
-            display: block;
-            font-size: 0.75em;
-            color: #888;
-            font-weight: 500;
-            margin-top: 4px;
-        }
-        .area-name-report {
-            font-size: 0.8em;
-            color: #888;
-            margin-top: 2px;
-            font-weight: 400;
-        }
-        .header-count {
-            font-weight: 400;
-            font-size: 0.9em;
-            color: var(--gray-500);
-            margin-left: 0.5rem;
-        }
-            .col-expand { width: 5px; text-align: center; }
-            .expand-arrow { cursor: pointer; display: inline-block; transition: transform 0.2s ease-in-out; font-size: 0.8em; color: var(--gray-400); }
-            .expand-arrow:hover { color: var(--primary-600); }
-            .expand-arrow.expanded { transform: rotate(90deg); }
-            .details-row { display: none; }
-            .details-row td { background-color: var(--gray-50); padding: 0 !important; }
-            .details-content { padding: 1rem 1.5rem 1.5rem 4rem; }
-            .details-content h4 { margin-top: 0; margin-bottom: 1rem; color: var(--gray-700); font-size: 0.9rem; }
-            .evaluation-list { list-style: none; padding: 0; margin: 0; }
-            .evaluation-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid var(--gray-200); }
-            .evaluation-item:last-child { border-bottom: none; }
-            .eval-type-badge { font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.875rem; color: white; }
-            .eval-score { font-weight: 500; color: var(--gray-800); }
-            .eval-date { font-size: 0.875rem; color: var(--gray-500); margin-left: auto; }
-            @media (max-width: 768px) {
-                .report-table thead {
-                    display: none;
-                }
-                .report-table, .report-table tbody, .report-table tr, .report-table td {
-                    display: block;
-                    width: 100%;
-                }
-                .report-table tr {
-                    margin-bottom: 1.5rem;
-                    border: 1px solid var(--gray-200);
-                    border-radius: var(--border-radius-lg);
-                    padding: 1rem;
-                    box-shadow: var(--shadow-sm);
-                    background-color: white;
-                }
-                .report-table td {
-                    text-align: right;
-                    padding-left: 50%;
-                    position: relative;
-                }
-                .report-table td::before {
-                    content: attr(data-label);
-                    position: absolute;
-                    left: 1rem;
-                    width: calc(50% - 1.5rem);
-                    white-space: nowrap;
-                    text-align: left;
-                    font-weight: 600;
-                    color: var(--gray-700);
-                }
-                .col-expand, .col-name {
-                    text-align: left !important;
-                    padding-left: 1rem !important;
-                }
-                .col-expand::before {
-                    content: '' !important;
-                    display: none;
-                }
-            }
-    </style>
 </head>
 <body>
     <div class="main-container">
-        
-        <div class="kpi-container">
-            <div class="kpi-card"><div class="kpi-title">Centros de Trabajo</div><div class="kpi-value" id="kpi-total-centers">...</div></div>
-            <div class="kpi-card"><div class="kpi-title">Cumplimiento (Eval. Inicial)</div><div class="kpi-value" id="kpi-compliance-rate">...</div></div>
-            <div class="kpi-card"><div class="kpi-title">Centros Cerrados</div><div class="kpi-value" id="kpi-closed-centers">...</div></div>
-            <div class="kpi-card"><div class="kpi-title">Riesgo Promedio</div><div class="kpi-value" id="kpi-avg-risk">...</div></div>
+        <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background-color: #eef2ff;">
+                <i class="fa-solid fa-layer-group kpi-icon" style="color: #4f46e5;"></i>
+            </div>
+            <div class="kpi-content">
+            <p class="kpi-title">Total de Áreas</p>
+            <div id="total-areas-kpi" class="kpi-value">
+                <span class="kpi-number">--</span>
+                <div class="areas-detail-panel">
+                    <ul class="areas-detail-list">
+                        <!-- Se llenará dinámicamente -->
+                    </ul>
+                </div>
+            </div>
         </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background-color: #f0fdf4;">
+                <i class="fa-solid fa-clipboard-check kpi-icon" style="color: #22c55e;"></i>
+            </div>
+            <div class="kpi-content">
+                <p class="kpi-title">Centros Evaluados</p>
+                <p id="centros-evaluados-kpi" class="kpi-value">--</p>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background-color: #fffbeb;">
+                <i class="fa-solid fa-tachometer-alt kpi-icon" style="color: #f59e0b;"></i>
+            </div>
+            <div class="kpi-content">
+                <p class="kpi-title">Score Promedio General</p>
+                <p id="score-promedio-kpi" class="kpi-value">--</p>
+            </div>
+        </div>
+         <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background-color: #fef2f2;">
+                <i class="fa-solid fa-bolt kpi-icon" style="color: #ef4444;"></i>
+            </div>
+            <div class="kpi-content">
+                <p class="kpi-title">Actividades Totales</p>
+                <p id="total-actividades-kpi" class="kpi-value">--</p>
+            </div>
+        </div>
+    </div>
+         <div class="dashboard-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Distribución de Centros de Trabajo</h3>
+                    <button class="expand-btn" title="Ampliar gráfica">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+                <p class="chart-subtitle">Porcentaje del total de centros que representa cada área.</p>
+                <div class="chart-container">
+                    <canvas id="areasDistributionChart"></canvas>
+                </div>
+            </div>
 
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Actividades por Área</h3>
+                    <button class="expand-btn" title="Ampliar gráfica">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+                <p class="chart-subtitle">Número de actividades de riesgo registradas en cada área.</p>
+                <div class="chart-container">
+                    <canvas id="activitiesByAreaChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Composición de Riesgo por Área</h3>
+                    <button class="expand-btn" title="Ampliar gráfica">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+                <p class="chart-subtitle">Total de centros de trabajo y su desglose por nivel de riesgo.</p>
+                <div class="chart-container">
+                    <canvas id="riskCompositionChart"></canvas>
+                </div>
+            </div>
+        </div>
         <div class="column-selector">
             <h3>Elegir Atributos a Visualizar</h3>
             <div class="checkbox-grid">
@@ -351,38 +166,41 @@
 
         let activeFilters = {};
 document.addEventListener('DOMContentLoaded', async () => {
+            // Inicialización y Autenticación
             if (!ERGOAuth.initializeAuthContext()) {
                 console.error("Fallo en la autenticación. Redirigiendo al login...");
                 ERGOUtils.showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.', 'error');
-                
-                setTimeout(() => {
-                    ERGOAuth.redirectToLogin();
-                }, 1500);
-                return; 
+                setTimeout(() => ERGOAuth.redirectToLogin(), 1500);
+                return;
             }
             if (window.HeaderComponent) {
                 HeaderComponent.init({ title: "Reporte de Cumplimiento", breadcrumb: "Reportes" });
             }
 
+            // Variables de estado
             const tbody = document.getElementById('report-tbody');
             let allCentersData = [];
             let currentSortKey = 'name';
             let isSortAscending = true;
+            let activeFilters = {};
 
             const getStatusIcon = (condition) => condition ? `<div class="status-icon success"><i class="fa-solid fa-check-circle"></i></div>` : `<div class="status-icon danger"><i class="fa-solid fa-times-circle"></i></div>`;            
-            const updateKPIs = (data) => {
-                const totalCenters = data.length;
-                const centersWithEval = data.filter(c => c.hasInitialEval).length;
-                const complianceRate = totalCenters > 0 ? (centersWithEval / totalCenters) * 100 : 0;
-                const totalClosedCenters = data.filter(c => c.is_closed).length;
-                const avgRisk = totalCenters > 0 ? data.reduce((sum, c) => sum + (c.score_general || 0), 0) / totalCenters : 0;
-                document.getElementById('kpi-total-centers').textContent = totalCenters;
-                document.getElementById('kpi-compliance-rate').innerHTML = `${complianceRate.toFixed(0)}<span class="unit">%</span>`;
-                document.getElementById('kpi-closed-centers').textContent = totalClosedCenters;
-                document.getElementById('kpi-total-centers').textContent = totalCenters;
-                document.getElementById('kpi-compliance-rate').innerHTML = `${complianceRate.toFixed(0)}<span class="unit">%</span>`;
-                document.getElementById('kpi-avg-risk').innerHTML = `${avgRisk.toFixed(1)}<span class="unit">%</span>`;
-            };
+            const updateKPIs = (centers, areas, specificEvals) => {
+    const totalAreas = areas.length;
+    const centersWithEval = centers.filter(c => c.hasInitialEval).length;
+    const totalSpecificEvals = specificEvals.length;
+    const avgScore = centers.length > 0 ? centers.reduce((sum, c) => sum + (c.score_general || 0), 0) / centers.length : 0;
+
+    const totalAreasKPI = document.getElementById('total-areas-kpi');
+    if (totalAreasKPI) {
+        const kpiNumber = totalAreasKPI.querySelector('.kpi-number');
+        if (kpiNumber) kpiNumber.textContent = totalAreas;
+    }
+    
+    document.getElementById('centros-evaluados-kpi').textContent = `${centersWithEval} / ${centers.length}`;
+    document.getElementById('score-promedio-kpi').textContent = `${avgScore.toFixed(1)}%`;
+    document.getElementById('total-actividades-kpi').textContent = totalSpecificEvals;
+};
 
             const renderTable = (data) => {
                 tbody.innerHTML = '';
@@ -436,75 +254,57 @@ document.querySelectorAll('.column-selector input[type                          
             
             async function fetchAndProcessData() {
                 try {
-                    const [centrosData, evalsData, scoresData, areasData, todasLasFotos, allSpecificEvals] = await Promise.all([
+                    const [centrosData, scoresData, areasData, todasLasFotos, allSpecificEvals] = await Promise.all([
                         dataClient.getWorkCenters(),
-                        dataClient.getEvaluaciones(),
                         dataClient.query('scores_resumen'),
                         dataClient.getAreas(),
                         dataClient.query('fotos_centros', 'GET', null, '?select=work_center_id'),
                         dataClient.getAllSpecificEvaluationsFlat()
                     ]);
-                    const areaMap = new Map(areasData.map(area => [area.id, area.name]));
 
                     if (!centrosData || !areasData) {
                         throw new Error("No se pudieron cargar los datos de centros o áreas.");
                     }
-
-                    const photosCountMap = new Map();
-                    const specificEvalsMap = new Map();
-                    if (allSpecificEvals) {
-                        allSpecificEvals.forEach(ev => {
-                            if (!specificEvalsMap.has(ev.work_center_id)) {
-                                specificEvalsMap.set(ev.work_center_id, []);
-                            }
-                            specificEvalsMap.get(ev.work_center_id).push(ev);
-                        });
-                    }
-
-                    if (todasLasFotos) {
-                        todasLasFotos.forEach(foto => {
-                            const count = photosCountMap.get(foto.work_center_id) || 0;
-                            photosCountMap.set(foto.work_center_id, count + 1);
-                        });
-                    }
-
-                    const latestEvalsMap = new Map();
-                    if (evalsData) {
-                        for (const evaluation of evalsData) {
-                            const existing = latestEvalsMap.get(evaluation.work_center_id);
-                            if (!existing || new Date(evaluation.created_at) > new Date(existing.created_at)) {
-                                latestEvalsMap.set(evaluation.work_center_id, evaluation);
-                            }
-                        }
-                    }
                     
+                    const areaMap = new Map(areasData.map(area => [area.id, area.name]));
+                    const photosCountMap = new Map();
+                    todasLasFotos.forEach(foto => {
+                        const count = photosCountMap.get(foto.work_center_id) || 0;
+                        photosCountMap.set(foto.work_center_id, count + 1);
+                    });
+
+                    const specificEvalsMap = new Map();
+                    allSpecificEvals.forEach(ev => {
+                        if (!specificEvalsMap.has(ev.work_center_id)) {
+                            specificEvalsMap.set(ev.work_center_id, []);
+                        }
+                        specificEvalsMap.get(ev.work_center_id).push(ev);
+                    });
+
                     allCentersData = centrosData.map(center => {
-                        const scores = scoresData ? scoresData.find(s => s.work_center_id === center.id) || {} : {};
-                        const latestEval = latestEvalsMap.get(center.id);
-                        const hasEnoughPhotos = (photosCountMap.get(center.id) || 0) > 3;
+                        const scoreInfo = scoresData.find(s => s.work_center_id === center.id) || {};
+                        const specificEvalsForCenter = specificEvalsMap.get(center.id) || [];
+                        
                         return {
                             ...center,
-                            area_name: areaMap.get(center.area_id) || 'Sin Área',
-                            score_general: latestEval ? latestEval.score_final : 0,
-                            hasInitialEval: !!latestEval,
-                            hasPhotos: hasEnoughPhotos,
-                            is_closed: scores.is_closed,
-                            // Nueva propiedad que consolida las evaluaciones específicas
-                            hasSpecificEval: (scores.evaluaciones_reba || 0) > 0 ||
-                                            (scores.evaluaciones_rula || 0) > 0 ||
-                                            (scores.evaluaciones_ocra || 0) > 0 ||
-                                            (scores.evaluaciones_niosh || 0) > 0,
-                            specificEvaluations: specificEvalsMap.get(center.id) || []
+                            area_name: areaMap.get(center.area_id) || 'Sin área',
+                            score_general: scoreInfo.score_actual || 0,
+                            is_closed: scoreInfo.is_closed || false,
+                            hasInitialEval: !!scoreInfo.fecha_ultima_evaluacion, 
+                            hasPhotos: (photosCountMap.get(center.id) || 0) > 0,
+                            hasSpecificEval: specificEvalsForCenter.length > 0,
+                            specificEvaluations: specificEvalsForCenter
                         };
                     });
-                    
-                    updateKPIs(allCentersData);
+
+                    // Una vez que los datos están listos, actualizamos la UI
+                    updateKPIs(allCentersData, areasData, allSpecificEvals);
                     populateAreaFilter(areasData);
-                    applyFiltersAndSort();
+                    applyFiltersAndSort(); // Esto renderiza la tabla inicial y actualiza los contadores
 
                 } catch (error) {
                     console.error("Error al cargar los datos del reporte:", error);
-                    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 3rem; color: var(--red-500);">Error al cargar los datos.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error al cargar los datos. Por favor, recarga la página.</td></tr>`;
                 }
             }
         
@@ -531,68 +331,52 @@ document.querySelectorAll('.column-selector input[type                          
                     return isSortAscending ? comparison : -comparison;
                 });
             }
+function updateHeaderCounts(data) {
+			const counts = { hasInitialEval: 0, hasPhotos: 0, hasSpecificEval: 0, is_closed: 0 };
+			data.forEach(center => {
+				if (center.hasInitialEval) counts.hasInitialEval++;
+				if (center.hasPhotos) counts.hasPhotos++;
+				if (center.hasSpecificEval) counts.hasSpecificEval++;
+				if (center.is_closed) counts.is_closed++;
+			});
 
+			for (const key in counts) {
+				const countElement = document.querySelector(`.header-count[data-header-count="${key}"]`);
+				if (countElement) {
+					countElement.textContent = `(${counts[key]})`;
+				}
+			}
+		}
                 function applyFiltersAndSort() {
-                const nameValue = document.getElementById('filter-name').value.toLowerCase();
-                const areaValue = document.getElementById('filter-area').value;
-                const riskValue = document.getElementById('filter-risk').value;                
-                let filteredData = allCentersData.filter(center => {
-                    const nameMatch = center.name.toLowerCase().includes(nameValue);
-                    const areaMatch = !areaValue || center.area_id === areaValue;
-                    
-                    let riskMatch = true;
-                    if (riskValue === 'low') riskMatch = (center.score_general || 0) <= 40;
-                    else if (riskValue === 'medium') riskMatch = (center.score_general || 0) > 40 && (center.score_general || 0) <= 70;
-                    else if (riskValue === 'high') riskMatch = (center.score_general || 0) > 70;
+                const nameValue = document.getElementById('filter-name').value.toLowerCase();
+                const areaValue = document.getElementById('filter-area').value;
+                const riskValue = document.getElementById('filter-risk').value;                
+                let filteredData = allCentersData.filter(center => {
+                    const nameMatch = center.name.toLowerCase().includes(nameValue);
+                    const areaMatch = !areaValue || center.area_id.toString() === areaValue;
+                    
+                    let riskMatch = true;
+                    if (riskValue === 'low') riskMatch = (center.score_general || 0) <= 40;
+                    else if (riskValue === 'medium') riskMatch = (center.score_general || 0) > 40 && (center.score_general || 0) <= 70;
+                    else if (riskValue === 'high') riskMatch = (center.score_general || 0) > 70;
 
-                    // --- NUEVA LÓGICA PARA FILTROS DE POPOVER ---
-                    const popoverFiltersMatch = Object.keys(activeFilters).every(key => {
-                        const filterValue = activeFilters[key];
-                        // Si el valor del filtro es nulo (ej. "Todos"), no se filtra por esa clave
-                        if (filterValue === null || filterValue === undefined) {
-                            return true;
-                        }
-                        return center[key] === filterValue;
-                    });
-                    
-                    return nameMatch && areaMatch && riskMatch && popoverFiltersMatch;
-                });
-                
-                const sortedData = sortData(filteredData);
-                renderTable(sortedData);
-                updateHeaderCounts(filteredData);
-            }
+                    const popoverFiltersMatch = Object.keys(activeFilters).every(key => {
+                        const filterValue = activeFilters[key];
+                        if (filterValue === null || filterValue === undefined) {
+                            return true;
+                        }
+                        return center[key] === filterValue;
+                    });
+                    
+                    return nameMatch && areaMatch && riskMatch && popoverFiltersMatch;
+                });
+                
+                const sortedData = sortData(filteredData);
+                renderTable(sortedData);
+                updateHeaderCounts(filteredData);
+                updateSortHeadersUI();
+            }
 
-            function applyFiltersAndSort() {
-    const nameValue = document.getElementById('filter-name').value.toLowerCase();
-    const areaValue = document.getElementById('filter-area').value;
-    const riskValue = document.getElementById('filter-risk').value;
-    
-    let filteredData = allCentersData.filter(center => {
-        const nameMatch = center.name.toLowerCase().includes(nameValue);
-        const areaMatch = !areaValue || center.area_id === areaValue;
-        
-        let riskMatch = true;
-        if (riskValue === 'low') riskMatch = (center.score_general || 0) <= 40;
-        else if (riskValue === 'medium') riskMatch = (center.score_general || 0) > 40 && (center.score_general || 0) <= 70;
-        else if (riskValue === 'high') riskMatch = (center.score_general || 0) > 70;
-
-        // --- NUEVA LÓGICA PARA FILTROS DE POPOVER ---
-        const popoverFiltersMatch = Object.keys(activeFilters).every(key => {
-            const filterValue = activeFilters[key];
-            // Si el valor del filtro es nulo (ej. "Todos"), no se filtra por esa clave
-            if (filterValue === null || filterValue === undefined) {
-                return true;
-            }
-            return center[key] === filterValue;
-        });        
-        return nameMatch && areaMatch && riskMatch && popoverFiltersMatch;
-    });
-    
-    const sortedData = sortData(filteredData);
-    renderTable(sortedData);
-    updateSortHeadersUI();
-}
 
 
 // --- AÑADIR TODA ESTA NUEVA SECCIÓN DE CÓDIGO ---
@@ -737,8 +521,357 @@ document.addEventListener('click', function(event) {
                 }
             });
 
-            fetchAndProcessData();
+            async function createDistributionChart() {
+    try {
+        Chart.register(ChartDataLabels);
+
+        const areas = await dataClient.getAreas();
+        if (!areas || areas.length === 0) {
+            console.warn('No hay datos de áreas para mostrar en la gráfica.');
+            return;
+        }
+
+        const labels = areas.map(area => area.name);
+        const dataPoints = areas.map(area => area.total_centros);
+        const totalGlobalCentros = dataPoints.reduce((sum, current) => sum + current, 0);
+
+        const ctx = document.getElementById('areasDistributionChart').getContext('2d');
+
+        // 🎨 Gradientes modernos con transparencia
+        const gradients = [
+            ['rgba(76,110,245,0.9)', 'rgba(34,139,230,0.6)'],
+            ['rgba(21,170,191,0.9)', 'rgba(18,184,134,0.6)'],
+            ['rgba(64,192,87,0.9)', 'rgba(130,201,30,0.6)'],
+            ['rgba(250,176,5,0.9)', 'rgba(253,126,20,0.6)'],
+            ['rgba(255,99,132,0.9)', 'rgba(230,73,128,0.6)'],
+            ['rgba(190,75,219,0.9)', 'rgba(121,80,242,0.6)'],
+            ['rgba(52,152,219,0.9)', 'rgba(41,128,185,0.6)']
+        ].map(pair => {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, pair[0]);
+            gradient.addColorStop(1, pair[1]);
+            return gradient;
         });
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Centros de Trabajo',
+                    data: dataPoints,
+                    backgroundColor: gradients,
+                    borderColor: 'rgba(255,255,255,0.8)',
+                    borderWidth: 2,
+                    hoverOffset: 30 // más grande al hover
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: 30
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 1500,
+                    easing: 'easeOutBack'
+                },
+                plugins: {
+                    // 🔠 Título más chico y sutil
+                    title: {
+                        display: true,
+                        text: 'Distribución de Centros por Área',
+                        color: 'rgba(255,255,255,0.8)',
+                        font: {
+                            size: 16,
+                            weight: '400',
+                            family: "'Inter', sans-serif"
+                        },
+                        padding: { bottom: 10 }
+                    },
+                    // 🚫 Ocultamos leyenda estática
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(255,255,255,0.3)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255,255,255,0.5)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 12,
+                        caretPadding: 10,
+                        caretSize: 8,
+                        callbacks: {
+                            title: function (context) {
+                                return context[0].label; // aparece el título sólo al hover
+                            },
+                            label: function (context) {
+                                const value = context.raw;
+                                const percentage = ((value / totalGlobalCentros) * 100).toFixed(1) + '%';
+                                return ` ${value} centros (${percentage})`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: (value) => ((value / totalGlobalCentros) * 100).toFixed(1) + '%',
+                        color: 'rgba(255,255,255,0.95)',
+                        font: {
+                            weight: 'bold',
+                            size: 16,
+                            family: "'Inter', sans-serif"
+                        },
+                        textStrokeColor: 'rgba(0,0,0,0.4)',
+                        textStrokeWidth: 4,
+                        shadowBlur: 12,
+                        shadowColor: 'rgba(0,0,0,0.6)'
+                    }
+                }
+            }
+        });
+
+        // 🎇 CSS extra para efecto glass
+        const chartCanvas = document.getElementById('areasDistributionChart');
+        chartCanvas.style.background = "rgba(255,255,255,0.15)";
+        chartCanvas.style.backdropFilter = "blur(12px)";
+        chartCanvas.style.borderRadius = "20px";
+        chartCanvas.style.boxShadow = "0 8px 32px rgba(0,0,0,0.3)";
+
+    } catch (error) {
+        console.error('Error al crear la gráfica de distribución:', error);
+        const chartContainer = document.querySelector('.chart-container');
+        if (chartContainer) {
+            chartContainer.innerHTML = '<p style="text-align:center; color: var(--danger-500);">No se pudo cargar la gráfica.</p>';
+        }
+    }
+}
+            async function createActivitiesDashboard() {
+    try {
+        const { data: summary, error } = await dataClient.supabase.rpc('get_reporte_actividades_summary');
+        if (error) throw error;
+        if (!summary) return;
+
+        // --- KPI ---
+        document.getElementById('total-actividades-kpi').textContent = summary.totalActividades;
+
+        // --- Datos ---
+        const activitiesData = summary.actividadesPorArea;
+        const labels = activitiesData.map(item => item.area_name);
+        const dataPoints = activitiesData.map(item => item.count);
+
+        const ctx = document.getElementById('activitiesByAreaChart').getContext('2d');
+
+        // Gradiente azul pro
+        const gradient = ctx.createLinearGradient(0, 0, 600, 0);
+        gradient.addColorStop(0, "rgba(76, 110, 245, 0.9)");
+        gradient.addColorStop(1, "rgba(34, 197, 255, 0.7)");
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Nº de Actividades',
+                    data: dataPoints,
+                    backgroundColor: gradient,
+                    borderRadius: 12,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: { display: false },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        backgroundColor: 'rgba(255,255,255,0.6)',
+                        borderRadius: 6,
+                        padding: 4,
+                        color: '#1e293b',
+                        font: { weight: 'bold', size: 12 }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { drawTicks: false, color: 'rgba(0,0,0,0.05)' },
+                        ticks: { precision: 0, color: '#64748b' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#475569', font: { weight: 500 } }
+                    }
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error al crear el dashboard de actividades:', error);
+    }
+}
+             async function createRiskCompositionChart() {
+    try {
+        const { data, error } = await dataClient.supabase.rpc('get_reporte_riesgo_por_area');
+        if (error) throw error;
+
+        const labels = data.map(item => item.area_name);
+        const redData = data.map(item => item.riesgos.rojo);
+        const orangeData = data.map(item => item.riesgos.naranja);
+        const greenData = data.map(item => item.riesgos.verde);
+
+        const ctx = document.getElementById('riskCompositionChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Riesgo Alto',
+                        data: redData,
+                        backgroundColor: 'linear-gradient(90deg, rgba(239,68,68,0.9), rgba(239,68,68,0.6))',
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Riesgo Moderado',
+                        data: orangeData,
+                        backgroundColor: 'rgba(249,115,22,0.8)',
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Riesgo Bajo',
+                        data: greenData,
+                        backgroundColor: 'rgba(34,197,94,0.8)',
+                        borderRadius: 8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1200,
+                    easing: 'easeOutBack'
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 13, weight: '500' },
+                            color: '#334155'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30,41,59,0.9)',
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const dataset = context.dataset.label;
+                                return `${dataset}: ${value}`;
+                            },
+                            footer: function(tooltipItems) {
+                                const index = tooltipItems[0].dataIndex;
+                                const areaData = data[index];
+                                const total = areaData.riesgos.total;
+                                return `Total Centros: ${total}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { drawTicks: false, color: 'rgba(0,0,0,0.05)' },
+                        ticks: { color: '#475569' }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: { precision: 0, color: '#475569' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error al crear la gráfica de composición de riesgo:', error);
+    }
+}
+
+            fetchAndProcessData();
+            createDistributionChart();
+            createActivitiesDashboard();
+            createRiskCompositionChart();
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const totalAreasKPI = document.getElementById('total-areas-kpi');
+    if (!totalAreasKPI) return; // Validación de existencia
+
+    const detailPanel = totalAreasKPI.querySelector('.areas-detail-panel');
+    if (!detailPanel) return; // Validación de existencia
+
+    const detailList = detailPanel.querySelector('.areas-detail-list');
+    if (!detailList) return; // Validación de existencia
+
+    let isOpen = false;
+
+    // Función para actualizar el panel con los datos
+    const updateAreasPanel = (areasData) => {
+        if (!areasData || !Array.isArray(areasData)) return;
+
+        detailList.innerHTML = areasData
+            .sort((a, b) => b.total_centros - a.total_centros)
+            .map(area => `
+                <li class="area-detail-item">
+                    <span class="area-name">${area.name}</span>
+                    <span class="area-count">${area.total_centros}</span>
+                </li>
+            `).join('');
+    };
+
+    // Click en el KPI
+    totalAreasKPI.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        isOpen = !isOpen;
+        detailPanel.classList.toggle('active', isOpen);
+
+        if (isOpen) {
+            try {
+                const areas = await dataClient.getAreas();
+                if (areas) {
+                    updateAreasPanel(areas);
+                }
+            } catch (error) {
+                console.error('Error al cargar detalles de áreas:', error);
+                detailList.innerHTML = '<li class="area-detail-item">Error al cargar los datos</li>';
+            }
+        }
+    });
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (isOpen && !totalAreasKPI.contains(e.target)) {
+            isOpen = false;
+            detailPanel.classList.remove('active');
+        }
+    });
+});
     </script>
 </body>
 </html>
