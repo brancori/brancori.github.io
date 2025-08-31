@@ -1187,6 +1187,46 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     border-radius: var(--border-radius-md);
 }
 
+.kpi-card--expandable {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.kpi-card-main-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#total-areas-kpi {
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+#total-areas-kpi::after {
+    content: '\f078'; /* Ícono de flecha hacia abajo */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.5em;
+    margin-left: 0.5rem;
+    opacity: 0.5;
+    transition: transform 0.3s ease; /* Transición para la rotación */
+}
+
+#total-areas-kpi.expanded::after {
+    transform: rotate(180deg); /* Flecha apunta hacia arriba */
+}
+
+/* Panel expandible para detalles de áreas */
+.areas-detail-panel {
+    width: 100%;
+    max-height: 250px;
+    transition: max-height 0.4s ease-out;
+    box-sizing: border-box;
+    overflow-y: auto; 
+}
 /* Estilo para la etiqueta (ej. "Fecha", "Score") */
 .detail-label {
     font-size: 0.8rem;

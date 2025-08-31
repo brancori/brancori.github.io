@@ -130,6 +130,8 @@
             box-shadow: var(--shadow-sm);
             -webkit-transition: all 0.3s ease;
             transition: all 0.3s ease;
+            text-align: center;
+            z-index: 910;
         }
         .kpi-card:hover {
             -webkit-transform: translateY(-4px);
@@ -189,7 +191,7 @@
         }
         .report-card-title .area-name {
             display: block;
-            font-size: 0.75em;
+            font-size: 0.175em;
             color: #888;
             font-weight: 500;
             margin-top: 4px;
@@ -392,15 +394,14 @@
 .areas-detail-panel {
     position: absolute;
     top: 100%;
-    left: 0;
+    left: -150px;
     width: 300px;
     background: white;
     border-radius: 12px;
     box-shadow: var(--shadow-lg);
-    z-index: 1000;
+    z-index: 920;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px);
     transition: all 0.2s ease;
 }
 
@@ -416,6 +417,7 @@
     margin: 0;
     max-height: 300px;
     overflow-y: auto;
+    text-align: center;
 }
 
 .area-detail-item {
@@ -424,6 +426,7 @@
     align-items: center;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--gray-100);
+    z-index: 900;
 }
 
 .area-detail-item:last-child {
@@ -433,6 +436,7 @@
 .area-name {
     font-weight: 500;
     color: var(--gray-700);
+    font-size: 1rem;
 }
 
 .area-count {

@@ -56,7 +56,11 @@ createAreaMapping() {
     this.areaMapping = {
         'LINEA 14 ( CREMER )': {
             workCenterId: '3HZ6Z8'  // Solo necesitamos el ID del área
+        },
+        'LINEA 15 ( SACHETS )': {
+            workCenterId: '3HZ6Z8'  // Solo necesitamos el ID del área
         }
+        
         // Agregar más mapeos aquí con solo el areaId
     };
     

@@ -184,32 +184,43 @@ document.addEventListener('DOMContentLoaded', async () => {
             let isSortAscending = true;
             let activeFilters = {};
 
+            
             const getStatusIcon = (condition) => condition ? `<div class="status-icon success"><i class="fa-solid fa-check-circle"></i></div>` : `<div class="status-icon danger"><i class="fa-solid fa-times-circle"></i></div>`;            
             const updateKPIs = (centers, areas, specificEvals) => {
-    const totalAreas = areas.length;
-    const centersWithEval = centers.filter(c => c.hasInitialEval).length;
-    const totalSpecificEvals = specificEvals.length;
-    const avgScore = centers.length > 0 ? centers.reduce((sum, c) => sum + (c.score_general || 0), 0) / centers.length : 0;
+                
+                const totalAreas = areas.length;
+                const centersWithEval = centers.filter(c => c.hasInitialEval).length;
+                const totalSpecificEvals = specificEvals.length;
+                const headerCount = document.getElementById("header-count");
+                const avgScoreEl = document.getElementById("average-score");
 
-    const totalAreasKPI = document.getElementById('total-areas-kpi');
-    if (totalAreasKPI) {
-        const kpiNumber = totalAreasKPI.querySelector('.kpi-number');
-        if (kpiNumber) kpiNumber.textContent = totalAreas;
-    }
-    
-    document.getElementById('centros-evaluados-kpi').textContent = `${centersWithEval} / ${centers.length}`;
-    document.getElementById('score-promedio-kpi').textContent = `${avgScore.toFixed(1)}%`;
-    document.getElementById('total-actividades-kpi').textContent = totalSpecificEvals;
-};
+                const scored = centers.filter(c => typeof c.score_general === "number");
+                const avgScore = scored.length
+                ? scored.reduce((sum, c) => sum + c.score_general, 0) / scored.length
+                : 0;
+                
+
+                const totalAreasKPI = document.getElementById('total-areas-kpi');
+                if (totalAreasKPI) {
+                    const kpiNumber = totalAreasKPI.querySelector('.kpi-number');
+                    if (kpiNumber) kpiNumber.textContent = totalAreas;
+                }
+                
+                document.getElementById('centros-evaluados-kpi').textContent = `${centersWithEval} / ${centers.length}`;
+                document.getElementById('score-promedio-kpi').textContent = `${avgScore.toFixed(1)}%`;
+                document.getElementById('total-actividades-kpi').textContent = totalSpecificEvals;
+            };
 
             const renderTable = (data) => {
-                tbody.innerHTML = '';
+                const tbody = document.getElementById("report-tbody");
+                
                 if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 3rem;">No se encontraron centros que coincidan con los filtros.</td></tr>`;
                     return;
                 }
 
-                const fragment = document.createDocumentFragment();
+                tbody.innerHTML = "";
+  const fragment = document.createDocumentFragment();
                 data.forEach(center => {
                     const dataRow = document.createElement('tr');
                     
@@ -232,21 +243,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                     let detailsContent = '<h4>No hay evaluaciones específicas registradas.</h4>';
                     if (center.specificEvaluations && center.specificEvaluations.length > 0) {
                         detailsContent = `
-document.querySelectorAll('.column-selector input[type                            <h4>Actividades</h4>
-                            <ul class="evaluation-list">
-                                ${center.specificEvaluations.map(ev => `
-                                    <li class="evaluation-item">
-                                        <div style="flex-grow: 1;">
-                                            <span style="font-weight: 600; color: var(--gray-800); display: block;">${ev.titulo || 'Actividad sin nombre'}</span>
-                                            <span style="font-size: 0.85em; color: var(--gray-500);">Método: ${ev.tipo} &bull; Score: ${(ev.score_final || 0).toFixed(1)}%</span>
-                                        </div>
-                                        <span class="eval-date">${ERGOUtils.formatDate(ev.created_at)}</span>
-                                    </li>
-                                `).join('')}
-                            </ul>`;
+                        <h4>Actividades</h4>
+                        <ul class="evaluation-list">
+                            ${center.specificEvaluations.map(ev => `
+                            <li class="evaluation-item">
+                                <div style="flex-grow:1;">
+                                <span style="font-weight:600; color: var(--gray-800); display:block;">
+                                    ${ev.titulo || 'Actividad sin nombre'}
+                                </span>
+                                <span style="font-size:0.85em; color: var(--gray-500);">
+                                    Método: ${ev.tipo} • Score: ${(ev.score_final || 0).toFixed(1)}%
+                                </span>
+                                </div>
+                                <span class="eval-date">${ERGOUtils.formatDate(ev.created_at)}</span>
+                            </li>`).join('')}
+                        </ul>`;
                     }
                     
-                    detailsRow.innerHTML = `<td colspan="9"><div class="details-content">${detailsContent}</div></td>`;
+                    detailsRow.innerHTML = `<td colspan="7"><div class="details-content">${detailsContent}</div></td>`;
                     fragment.appendChild(detailsRow);
                 });
                 tbody.appendChild(fragment);
@@ -300,7 +314,8 @@ document.querySelectorAll('.column-selector input[type                          
                     // Una vez que los datos están listos, actualizamos la UI
                     updateKPIs(allCentersData, areasData, allSpecificEvals);
                     populateAreaFilter(areasData);
-                    applyFiltersAndSort(); // Esto renderiza la tabla inicial y actualiza los contadores
+                    createDistributionChart(areasData); // 🔹 Pasamos las áreas ya descargadas
+                    applyFiltersAndSort(); // Renderiza tabla inicial y contadores
 
                 } catch (error) {
                     console.error("Error al cargar los datos del reporte:", error);
@@ -318,19 +333,6 @@ document.querySelectorAll('.column-selector input[type                          
                 });
             }
 
-            function sortData(data) {
-                return [...data].sort((a, b) => {
-                    const valA = a[currentSortKey] ?? (typeof a[currentSortKey] === 'number' ? 0 : '');
-                    const valB = b[currentSortKey] ?? (typeof b[currentSortKey] === 'number' ? 0 : '');
-                    let comparison = 0;
-                    if (typeof valA === 'number') {
-                        comparison = valA - valB;
-                    } else {
-                        comparison = String(valA).localeCompare(String(valB));
-                    }
-                    return isSortAscending ? comparison : -comparison;
-                });
-            }
 function updateHeaderCounts(data) {
 			const counts = { hasInitialEval: 0, hasPhotos: 0, hasSpecificEval: 0, is_closed: 0 };
 			data.forEach(center => {
@@ -383,6 +385,17 @@ function updateHeaderCounts(data) {
 
 function closeAllPopovers() {
     document.querySelectorAll('.filter-popover').forEach(popover => popover.remove());
+}
+
+const numericKeys = new Set(['score_general']);
+function sortData(data) {
+  return [...data].sort((a, b) => {
+    const isNum = numericKeys.has(currentSortKey);
+    const valA = (a[currentSortKey] ?? (isNum ? 0 : ''));
+    const valB = (b[currentSortKey] ?? (isNum ? 0 : ''));
+    const cmp = isNum ? (valA - valB) : String(valA).localeCompare(String(valB), 'es');
+    return isSortAscending ? cmp : -cmp;
+  });
 }
 
 function createFilterPopover(headerElement) {
@@ -469,7 +482,6 @@ document.addEventListener('click', function(event) {
 
             document.getElementById('filter-name').addEventListener('input', applyFiltersAndSort);
             document.getElementById('filter-area').addEventListener('change', applyFiltersAndSort);
-            document.getElementById('filter-risk').addEventListener('change', applyFiltersAndSort);
 
             document.querySelectorAll('.sortable-header').forEach(header => {
                 header.addEventListener('click', () => {
@@ -481,14 +493,6 @@ document.addEventListener('click', function(event) {
                         isSortAscending = true;
                     }
                     applyFiltersAndSort();
-                });
-            });
-
-            document.querySelectorAll('.column-selector input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', (e) => {
-                    const column = e.target.dataset.column;
-                    const tableWrapper = document.getElementById('report-table-wrapper');
-                    tableWrapper.classList.toggle(`hide-col-${column}`, !e.target.checked);
                 });
             });
 
@@ -521,15 +525,14 @@ document.addEventListener('click', function(event) {
                 }
             });
 
-            async function createDistributionChart() {
-    try {
-        Chart.register(ChartDataLabels);
+    function createDistributionChart(areas) {
+        try {
+            Chart.register(ChartDataLabels);
 
-        const areas = await dataClient.getAreas();
-        if (!areas || areas.length === 0) {
-            console.warn('No hay datos de áreas para mostrar en la gráfica.');
-            return;
-        }
+            if (!areas || areas.length === 0) {
+                console.warn('No hay datos de áreas para mostrar en la gráfica.');
+                return;
+            }
 
         const labels = areas.map(area => area.name);
         const dataPoints = areas.map(area => area.total_centros);
@@ -614,17 +617,21 @@ document.addEventListener('click', function(event) {
                             }
                         }
                     },
-                    datalabels: {
-                        formatter: (value) => ((value / totalGlobalCentros) * 100).toFixed(1) + '%',
+                    datalabels: areas.length > 25 ? false : {
+                        formatter: (value, context) => {
+                            const percentage = (value / totalGlobalCentros) * 100;
+                            // 🔹 Ocultar etiquetas con menos del 3%
+                            return percentage >= 3 ? percentage.toFixed(1) + '%' : '';
+                        },
                         color: 'rgba(255,255,255,0.95)',
                         font: {
                             weight: 'bold',
-                            size: 16,
+                            size: 14,
                             family: "'Inter', sans-serif"
                         },
                         textStrokeColor: 'rgba(0,0,0,0.4)',
-                        textStrokeWidth: 4,
-                        shadowBlur: 12,
+                        textStrokeWidth: 3,
+                        shadowBlur: 8,
                         shadowColor: 'rgba(0,0,0,0.6)'
                     }
                 }
@@ -737,20 +744,20 @@ document.addEventListener('click', function(event) {
                     {
                         label: 'Riesgo Alto',
                         data: redData,
-                        backgroundColor: 'linear-gradient(90deg, rgba(239,68,68,0.9), rgba(239,68,68,0.6))',
-                        borderRadius: 8
+                        backgroundColor: ' rgba(239,68,69,0.9)',
+                        borderRadius: 6
                     },
                     {
                         label: 'Riesgo Moderado',
                         data: orangeData,
                         backgroundColor: 'rgba(249,115,22,0.8)',
-                        borderRadius: 8
+                        borderRadius: 6
                     },
                     {
                         label: 'Riesgo Bajo',
                         data: greenData,
                         backgroundColor: 'rgba(34,197,94,0.8)',
-                        borderRadius: 8
+                        borderRadius: 6
                     }
                 ]
             },
@@ -767,7 +774,7 @@ document.addEventListener('click', function(event) {
                         labels: {
                             usePointStyle: true,
                             pointStyle: 'circle',
-                            font: { size: 13, weight: '500' },
+                            font: { size: 8, weight: '500' },
                             color: '#334155'
                         }
                     },
@@ -851,6 +858,7 @@ document.addEventListener('click', function(event) {
         e.stopPropagation();
         isOpen = !isOpen;
         detailPanel.classList.toggle('active', isOpen);
+        totalAreasKPI.classList.toggle('expanded', isOpen); // Añadido para rotar la flecha
 
         if (isOpen) {
             try {
