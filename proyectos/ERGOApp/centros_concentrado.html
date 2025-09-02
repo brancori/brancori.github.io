@@ -249,12 +249,12 @@ function sortCentros(centrosToSort) {
 
             // Limpiar opciones existentes (excepto la primera)
             areaFilter.innerHTML = '<option value="">Todas las áreas</option>';
-
+            console.log('Áreas recibidas de Supabase:', areas);
             // Agregar áreas disponibles
             areas.forEach(area => {
                 const option = document.createElement('option');
                 option.value = area.id;
-                option.textContent = area.areaName;
+                option.textContent = area.name;
                 areaFilter.appendChild(option);
             });
         }
@@ -275,7 +275,7 @@ function sortCentros(centrosToSort) {
                 `;
                 return;
             }
-
+            
             const filteredCentros = filterCentros(workCenters);
             const sortedCentros = sortCentros(filteredCentros);
 
@@ -321,7 +321,7 @@ function sortCentros(centrosToSort) {
                     // Creamos un objeto 'scoreInfo' para compatibilidad, con valores por defecto
                      const scoreInfo = {
                         score_actual: center.score_actual || 0,
-                        nivel_riesgo_ergonomico: center.nivel_riesgo_ergonomico || 'No evaluado',
+                        nFivel_riesgo_ergonomico: center.nivel_riesgo_ergonomico || 'No evaluado',
                         categoria_riesgo: center.categoria_riesgo || 'Sin datos',
                         color_riesgo: center.color_riesgo || '#a9a9a9' // Un color gris por defecto
                     };
@@ -399,6 +399,9 @@ function sortCentros(centrosToSort) {
             
             // 3. Configurar el resto de la página.
             ERGOAuth.applyPermissionControls();
+
+
+            
             
             const setupFilters = () => {
                 const nameFilter = document.getElementById('filter-centro-name');

@@ -29,11 +29,6 @@
             return;
         }
 
-        if (!ERGOAuth.initializeAuthContext()) {
-            ERGOAuth.redirectToLogin();
-            return;
-        }
-
         if (!workCenterId || !areaId) {
             ERGOUtils.showToast('Error: Parámetros de URL faltantes', 'error');
             window.location.href = '../areas.html';
@@ -218,8 +213,12 @@
                     actividadNombre: actividadEnEdicion.nombre
                 };
 
-                const url = ERGONavigation.buildUrl('../componentes/pages/Johnson_Evaluation.html', params);
-                window.location.href = url;
+const url = ERGONavigation.buildUrl(
+  'componentes/pages/Johnson_Evaluation.html',
+  params
+);
+window.location.href = url;
+
             } else {
                 // Aquí podrías añadir la lógica para "WS" u otros tipos en el futuro
                 ERGOUtils.showToast('Esta evaluación solo está disponible para el tipo de análisis EJA.', 'info');
