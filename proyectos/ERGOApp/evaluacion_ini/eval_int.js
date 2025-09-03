@@ -234,6 +234,7 @@ function guardarLocalmente(evaluacion, evaluacionId) {
             document.getElementById('analizarMetodosBtn').addEventListener('click', analizarMetodosRequeridos);
             
             document.getElementById('exportBtn').addEventListener('click', exportarPDFCompleto);
+            document.getElementById('exportBtnView').addEventListener('click', exportarPDFCompleto);
             // Event listeners para botones de modo
             document.getElementById('editBtn').addEventListener('click', enterEditMode);
             document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
@@ -869,8 +870,7 @@ function poblarFormularioConDatos(evaluacionData) {
                 const fechaEvaluacion = document.getElementById('fechaEvaluacion').value || new Date().toLocaleDateString();
                 
                 // Crear nombre de archivo con fecha y hora para que sea único
-                const fechaHora = new Date().toISOString().replace(/[:.]/g, '-');
-                const nombreArchivo = `${fechaHora}_Evaluacion_Integrada_${nombreArea.replace(/\s+/g, '_')}.pdf`;
+                const nombreArchivo = `${nombreArea.replace(/\s+/g, ' ')}_${ubicacionArea.replace(/\s+/g, ' ')}.pdf`;
                 
                 // Inicializar jsPDF
                 const { jsPDF } = window.jspdf;

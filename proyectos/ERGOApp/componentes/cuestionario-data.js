@@ -20,7 +20,7 @@
                 {pregunta: "¿El nivel de ruido en el área permite una comunicación efectiva y no genera fatiga auditiva durante tareas prolongadas?", peso: 3},
                 {pregunta: "¿Se dispone de vestuarios y servicios higiénicos limpios y en buen estado?", peso: 1},
                 {pregunta: "¿Hay áreas designadas para comidas, descanso y bebidas disponibles?", peso: 1},
-                {pregunta: "¿Se han identificado previamente quejas musculoesqueléticas o lesiones por parte del personal en esta área?", peso: 3},
+                {pregunta: "¿El área esta libre de quejas musculoesqueléticas o lesiones por parte del personal en esta área?", peso: 3},
                 {pregunta: "¿Se ubican stocks intermedios entre procesos para evitar presión de tiempo?", peso: 1},
                 {pregunta: "¿Se consideran habilidades y preferencias de los trabajadores en su asignación?", peso: 2},
                 {pregunta: "¿Se adaptan estaciones y equipos para personas con discapacidad?", peso: 2}
