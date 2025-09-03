@@ -87,6 +87,51 @@
     return 'Crítico';
   }
 
+  async function cargarEvaluacion(actividadId) {
+  if (!actividadId) return;
+
+  const { data, error } = await dataClient.supabase
+    .from('actividades')
+    .select('datos_analisis')
+    .eq('id', actividadId)
+    .single();
+
+  if (error || !data?.datos_analisis) return;
+
+  const evalData = data.datos_analisis;
+
+  // --- Rellenar info general ---
+  if (evalData.infoGeneral) {
+    document.getElementById('job').value = evalData.infoGeneral.job || '';
+    document.getElementById('company').value = evalData.infoGeneral.company || '';
+    document.getElementById('location').value = evalData.infoGeneral.location || '';
+    document.getElementById('Employees').value = evalData.infoGeneral.employees || 0;
+    document.getElementById('nAnalyst').value = evalData.infoGeneral.analyst || '';
+  }
+
+  // --- Rellenar detalles ---
+  const detalles = evalData.detalles || [];
+  detalles.forEach(det => {
+    const card = [...document.querySelectorAll('.container-evaluation')]
+      .find(c => (c.querySelector('.evaluation-title')?.textContent || '') === det.factor);
+
+    if (card) {
+      const scoreEl = card.querySelector('.selected-score');
+      if (scoreEl) scoreEl.textContent = det.puntaje;
+      
+      // Marcar el checkbox correspondiente
+      const checkboxes = card.querySelectorAll('.score-indicators input[type="checkbox"]');
+      checkboxes.forEach(chk => {
+        const label = chk.parentElement.querySelector('label');
+        if (label && label.textContent === det.puntaje) {
+          chk.checked = true;
+          chk.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+  });
+}
+
   document.addEventListener('DOMContentLoaded', () => {
     // 0) Validar sesión y, sobre todo, INYECTAR TOKEN AL CLIENTE
     const hasAuth = ensureAuthContextForThisPage();
@@ -100,6 +145,7 @@
     const params = new URLSearchParams(location.search);
     const workCenterId = params.get('workCenter') || params.get('work_center_id') || '';
     const areaId = params.get('area') || params.get('area_id') || '';
+    const actividadId = params.get('actividadId') || params.get('actividad') || '';
 
     const saveBtn = document.getElementById('save-button');
     if (!saveBtn) {
@@ -107,86 +153,65 @@
       return;
     }
 
+
     saveBtn.addEventListener('click', async () => {
-      try {
-        window.ERGOAuth?.updateActivity?.();
+  try {
 
-        if (!workCenterId || !areaId) {
-          window.ERGOUtils?.showToast?.('Faltan parámetros: area/workCenter en la URL', 'error');
-          return;
-        }
+    if (!workCenterId || !areaId || !actividadId) {
+      window.ERGOUtils?.showToast?.('Faltan parámetros: area/workCenter/actividadId en la URL', 'error');
+      return;
+    }
 
-        // 2) Leer UI → items/raw/norm
-        const { items, raw, norm } = collectItemsAndTotals();
+    // 2) Leer UI → items/raw/norm
+    const { items, raw, norm } = collectItemsAndTotals();
 
-        // 3) Metadatos del header
-        const job       = (document.getElementById('job')?.value || '').trim();
-        const company   = (document.getElementById('company')?.value || '').trim();
-        const location  = (document.getElementById('location')?.value || '').trim();
-        const employees = parseInt(document.getElementById('Employees')?.value, 10) || 0;
-        const analyst   = (document.getElementById('nAnalyst')?.value || '').trim();
+    // 3) Metadatos del header
+    const job       = (document.getElementById('job')?.value || '').trim();
+    const company   = (document.getElementById('company')?.value || '').trim();
+    const location  = (document.getElementById('location')?.value || '').trim();
+    const employees = parseInt(document.getElementById('Employees')?.value, 10) || 0;
+    const analyst   = (document.getElementById('nAnalyst')?.value || '').trim();
 
-        // 4) JSON compacto en "respuestas"
-        const respuestas = {
-          v: 1,
-          items,                       // [["Q1",2], ["Q2",1], ...]
-          tot: { raw, norm },          // totales
-          meta: { job, company, location, employees, analyst },
-          method: 'JOHNSON'
-        };
+    // 4) JSON compacto en "respuestas"
+    const respuestas = {
+      v: 1,
+      items,
+      tot: { raw, norm },
+      meta: { job, company, location, employees, analyst },
+      method: 'JOHNSON'
+    };
 
-        // 5) Score/categoría/color
-        const categoria_riesgo = classifyRisk(norm);
-        const color_riesgo = window.ERGOUtils?.getScoreColor ? ERGOUtils.getScoreColor(norm) : '#fd7e14';
+    // 5) Score/categoría/color
+    const categoria_riesgo = classifyRisk(norm);
+    const color_riesgo = window.ERGOUtils?.getScoreColor ? ERGOUtils.getScoreColor(norm) : '#fd7e14';
 
-        // 6) Payload para public.evaluaciones (¡con id!)
-        const payload = {
-          id: uuidv4(),                       // <- evita el NOT NULL de tu tabla
-          work_center_id: workCenterId,
-          area_id: areaId,
-          score_final: norm,
-          categoria_riesgo,
-          color_riesgo,
-          respuestas,
-          riesgos_por_categoria: { johnson_total: raw },
-          created_at: new Date().toISOString()
-        };
+    // 6) Guardar en ACTIVIDADES (NO en evaluaciones / scores_resumen)
+    const evaluacionData = {
+      infoGeneral: { job, company, location, employees, analyst },
+      resumen: {
+        puntajeRiesgo: document.getElementById('job-risk-score')?.textContent || String(raw),
+        nivelRiesgo: document.getElementById('risk-level-text')?.textContent || `(Riesgo ${categoria_riesgo})`,
+        puntajeTotal: document.getElementById('total-job-score')?.textContent || String((raw || 0) * (employees || 0))
+      },
+      detalles: Array.from(document.querySelectorAll('.container-evaluation')).map(t => ({
+        factor: t.querySelector('.evaluation-title')?.textContent || '',
+        puntaje: t.querySelector('.selected-score')?.textContent || '-'
+      }))
+    };
 
-        // 7) Guardar (una sola llamada)
-        await dataClient.createEvaluacion(payload);
+    await dataClient.updateActividad(actividadId, { datos_analisis: evaluacionData });
 
-        // Actualizar resumen del centro (si RLS lo permite)
-try {
-  await dataClient.updateScoreWorkCenter(workCenterId, areaId, {
-    score: norm,
-    categoria: categoria_riesgo,
-    color: color_riesgo
-  });
-} catch (e) {
-  console.warn('No se pudo actualizar scores_resumen (RLS o permisos). La evaluación sí fue guardada.', e);
-}
+    window.ERGOUtils?.showToast?.('Evaluación Johnson guardada');
 
+window.ERGOUtils?.showToast?.('Evaluación guardada con éxito', 'success');
 
-        // 8) Actualizar resumen del centro (ahora con token ya inyectado)
-        await dataClient.updateScoreWorkCenter(workCenterId, areaId, {
-          score: norm,
-          categoria: categoria_riesgo,
-          color: color_riesgo
-        });
-
-        window.ERGOUtils?.showToast?.('Evaluación Johnson guardada');
-
-        // 9) Volver al centro de trabajo
-        const back = ERGONavigation.buildUrl('../../centro-trabajo/centro-trabajo.html', {
-          workCenter: workCenterId,
-          area: areaId
-        });
-        window.location.href = back;
-
-      } catch (err) {
-        console.error('johnson-eval.js: error guardando evaluación', err);
-        window.ERGOUtils?.showToast?.('Error al guardar la evaluación', 'error');
-      }
-    }, { once: true });
-  });
+  } catch (err) {
+    console.error('johnson-eval.js: error guardando evaluación', err);
+    window.ERGOUtils?.showToast?.('Error al guardar la evaluación', 'error');
+  }
+}, { once: true });
+if (actividadId) {
+  cargarEvaluacion(actividadId);
+}  
+});
 })();

@@ -256,6 +256,7 @@
     .low { color: #2e7d32; } /* Verde */
     .moderate { color: #ff8f00; } /* Naranja */
     .high { color: #c62828; } /* Rojo */
+
 </style>
 
 </head>
@@ -337,20 +338,28 @@
                 },
 
                 cargarDatosExistentes: async function() {
-                    try {
-                        const datos = await dataClient.getDatosAnalisisActividad(this.actividadId);
-                        if (datos) {
-                            console.log("Cargando datos existentes...", datos);
-                            this.poblarFormulario(datos);
-                            this.bloquearFormulario();
-                        } else {
-                            console.log("No se encontraron datos previos. Formulario listo para nueva entrada.");
-                            this.desbloquearFormulario();
+                const params = new URLSearchParams(window.location.search);
+                const workCenterId = params.get('workCenter') || params.get('work_center_id') || '';
+                const actividadId = params.get('actividadId') || params.get('actividad') || '';
+
+                try {
+                    const actividades = await dataClient.getActividades(workCenterId);
+                    const actividad = actividades.find(a => a.id === actividadId);
+
+                    if (actividad && actividad.datos_analisis) {
+                    console.log("Cargando datos existentes...", actividad.datos_analisis);
+                    if (actividad.datos_analisis.infoGeneral) {
+                        this.poblarFormulario(actividad.datos_analisis);
                         }
-                    } catch (error) {
-                        console.error("Error al cargar datos existentes:", error);
-                        ERGOUtils.showToast("No se pudieron cargar los datos previos.", "error");
+                    this.bloquearFormulario();
+                    } else {
+                    console.log("No se encontraron datos previos. Formulario listo para nueva entrada.");
+                    this.desbloquearFormulario();
                     }
+                } catch (error) {
+                    console.error("Error al cargar datos existentes:", error);
+                    ERGOUtils.showToast("No se pudieron cargar los datos previos.", "error");
+                }
                 },
 
                 poblarFormulario: function(datos) {
@@ -376,39 +385,6 @@
                     this.editButton.addEventListener('click', () => this.desbloquearFormulario());
                 },
 
-                guardarEvaluacion: async function() {
-                    const evaluacionData = {
-                        infoGeneral: {
-                            job: document.getElementById('job').value,
-                            company: document.getElementById('company').value,
-                            location: document.getElementById('location').value,
-                            employees: document.getElementById('Employees').value,
-                            analyst: document.getElementById('nAnalyst').value
-                        },
-                        resumen: {
-                            puntajeRiesgo: document.getElementById('job-risk-score').textContent,
-                            nivelRiesgo: document.getElementById('risk-level-text').textContent,
-                            puntajeTotal: document.getElementById('total-job-score').textContent
-                        },
-                        detalles: []
-                    };
-                    document.querySelectorAll('.container-evaluation').forEach(tarjeta => {
-                        evaluacionData.detalles.push({
-                            factor: tarjeta.querySelector('.evaluation-title').textContent,
-                            puntaje: tarjeta.querySelector('.selected-score').textContent
-                        });
-                    });
-
-                    try {
-                        ERGOUtils.showToast('Guardando evaluación...', 'info');
-                        await dataClient.actualizarDatosAnalisisActividad(this.actividadId, evaluacionData);
-                        ERGOUtils.showToast('Evaluación guardada con éxito.', 'success');
-                        this.bloquearFormulario();
-                    } catch (error) {
-                        console.error('Error al guardar la evaluación:', error);
-                        ERGOUtils.showToast('No se pudo guardar la evaluación.', 'error');
-                    }
-                }
             };
 
             // Iniciar la lógica de la página
@@ -611,12 +587,12 @@
                         nivelRiesgo: document.getElementById('risk-level-text').textContent,
                         puntajeTotal: document.getElementById('total-job-score').textContent
                     },
-                    detalles: []
+                    datos_analisis: []
                 };
 
                 // 2. Recolecta los detalles de cada uno de los 40 factores
                 document.querySelectorAll('.container-evaluation').forEach(tarjeta => {
-                    evaluacionData.detalles.push({
+                    evaluacionData.datos_analisis.push({
                         factor: tarjeta.querySelector('.evaluation-title').textContent,
                         puntaje: tarjeta.querySelector('.selected-score').textContent
                     });
@@ -625,7 +601,7 @@
                 // 3. Envía el objeto JSON completo a Supabase
                 try {
                     ERGOUtils.showToast('Guardando evaluación...', 'info');
-                    await dataClient.actualizarDatosAnalisisActividad(actividadId, evaluacionData);
+                    await dataClient.updateActividad(actividadId, { datos_analisis: evaluacionData });
                     ERGOUtils.showToast('Evaluación guardada con éxito.', 'success');
                 } catch (error) {
                     console.error('Error al guardar la evaluación:', error);
@@ -633,10 +609,6 @@
                 }
             }
 
-            // 4. Asigna la función al botón de guardar
-            document.getElementById('save-button').addEventListener('click', guardarEvaluacion);
-            // --- FIN: LÓGICA DE GUARDADO ---
-// aquí termina
         });
     </script>
 </body>
