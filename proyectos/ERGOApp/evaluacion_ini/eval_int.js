@@ -857,304 +857,284 @@ function poblarFormularioConDatos(evaluacionData) {
 }
 
         // Función mejorada para exportar PDF con recomendaciones de métodos
-        function exportarPDFCompleto() {
-            guardarEvaluacion();
-            // Mostrar spinner
-            document.getElementById('spinner').classList.remove('hidden');
+ // Función corregida para exportar PDF con manejo de errores de Supabase Storage
+async function exportarPDFCompleto() {
+    await guardarEvaluacion();
+    document.getElementById('spinner').classList.remove('hidden');
+
+    try {
+        const nombreArea = document.getElementById('nombreArea').value || 'No especificado';
+        const ubicacionArea = document.getElementById('ubicacionArea').value || 'No especificada';
+        const responsableArea = document.getElementById('responsableArea').value || 'No especificado';
+        const fechaEvaluacion = document.getElementById('fechaEvaluacion').value || new Date().toLocaleDateString();
+        const nombreArchivo = `${nombreArea.replace(/\s+/g, '_')}_${ubicacionArea.replace(/\s+/g, '_')}.pdf`;
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let posY = 20;
+
+        // --- 1. TÍTULO E INFORMACIÓN GENERAL ---
+        doc.setFontSize(16);
+        doc.text('Reporte de Evaluación Ergonómica Integrada', 105, posY, { align: 'center' });
+        posY += 10;
+        
+        // Agregar logo (CORREGIDO)
+        try {
+            const logoImg = window.ERGOUtils.getLogoImage();
+            if (logoImg) {
+                posY = agregarImagenConAspecto(doc, logoImg, 150, 15, 40, 20);
+            }
+        } catch (logoError) {
+            console.warn('No se pudo cargar el logo:', logoError);
+        }
+        
+        doc.setFontSize(10);
+        doc.text(`Área: ${nombreArea} | Ubicación: ${ubicacionArea} | Responsable: ${responsableArea}`, 14, posY);
+        posY += 6;
+        doc.text(`Fecha evaluación: ${fechaEvaluacion} | Generado: ${new Date().toLocaleDateString()}`, 14, posY);
+        posY += 15;
+
+        // --- 2. TABLAS (sin cambios) ---
+        const tablasDatos = [];
+        tablasDatos.push({ titulo: 'Criterios Generales', datos: obtenerDatosTabla('preguntas-generales') });
+        if (document.getElementById('manipulaCargas').checked) tablasDatos.push({ titulo: 'Manipulación de Cargas', datos: obtenerDatosTabla('preguntas-manipulaCargas')});
+        if (document.getElementById('usaPantallas').checked) tablasDatos.push({ titulo: 'Uso de Pantallas', datos: obtenerDatosTabla('preguntas-usaPantallas')});
+        if (document.getElementById('usaHerramientas').checked) tablasDatos.push({ titulo: 'Uso de Herramientas', datos: obtenerDatosTabla('preguntas-usaHerramientas')});
+        if (document.getElementById('mantienePosturas').checked) tablasDatos.push({ titulo: 'Mantenimiento de Posturas', datos: obtenerDatosTabla('preguntas-mantienePosturas')});
+
+        tablasDatos.forEach(seccion => {
+            if (seccion.datos.length > 0) {
+                if (posY > 250) {
+                    doc.addPage();
+                    posY = 20;
+                }
+                doc.setFontSize(11);
+                doc.text(seccion.titulo, 14, posY);
+                posY += 8;
+                doc.autoTable({
+                    startY: posY,
+                    head: [['Pregunta', 'Respuesta']],
+                    body: seccion.datos,
+                    theme: 'grid',
+                    headStyles: {fillColor: [52, 152, 219], fontSize: 9},
+                    styles: {fontSize: 8, cellPadding: 2},
+                    columnStyles: { 1: {cellWidth: 25, halign: 'center'} },
+                    margin: {left: 14, right: 14}
+                });
+                posY = doc.lastAutoTable.finalY + 10;
+            }
+        });
+
+        // --- 3. FOTOS MEJORADAS ---
+        const fotos = await dataClient.query('fotos_centros', 'GET', null, `?work_center_id=eq.${workCenterId}&area_id=eq.${areaId}&select=foto_url`);
+
+        if (Array.isArray(fotos) && fotos.length > 0) {
+            console.log(`Procesando ${fotos.length} fotos...`);
             
-            try {
-                // Obtener datos del área
-                const nombreArea = document.getElementById('nombreArea').value || 'No especificado';
-                const ubicacionArea = document.getElementById('ubicacionArea').value || 'No especificada';
-                const responsableArea = document.getElementById('responsableArea').value || 'No especificado';
-                const fechaEvaluacion = document.getElementById('fechaEvaluacion').value || new Date().toLocaleDateString();
+            // Cargar todas las imágenes de forma optimizada
+            const imagePromises = fotos.map(foto => {
+                const publicUrl = `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}`;
+                return cargarImagenOptimizada(publicUrl);
+            });
+
+            const loadedImages = (await Promise.all(imagePromises)).filter(Boolean);
+
+            if (loadedImages.length > 0) {
+                // Agregar nueva página para fotos
+                if (posY > 240) { 
+                    doc.addPage(); 
+                    posY = 20; 
+                }
                 
-                // Crear nombre de archivo con fecha y hora para que sea único
-                const nombreArchivo = `${nombreArea.replace(/\s+/g, ' ')}_${ubicacionArea.replace(/\s+/g, ' ')}.pdf`;
-                
-                // Inicializar jsPDF
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                // Añadir título
-                doc.setFontSize(16);
-                doc.text('Reporte de Evaluación Ergonómica Integrada', 105, 15, {align: 'center'});
-                
-                // Sección compacta de información
-                doc.setFontSize(10);
-                doc.text(`Área: ${nombreArea} | Ubicación: ${ubicacionArea} | Responsable: ${responsableArea}`, 14, 25);
-                doc.text(`Fecha evaluación: ${fechaEvaluacion} | Generado: ${new Date().toLocaleDateString()}`, 14, 31);
-                
-                // Score y métodos en una línea compacta
-                const score = calcularScoreFinal();
                 doc.setFontSize(12);
-                doc.text(`Riesgo Ergonómico: ${score}%`, 14, 42);
+                doc.text('Evidencia Fotográfica', 14, posY);
+                posY += 10;
 
-                // Analizar y mostrar métodos de forma compacta
-                const preguntas = document.querySelectorAll('.question');
-                const metodosDetectados = {};
+                // Configuración mejorada para el layout de fotos
+                const margin = 14;
+                const gap = 8;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const availableWidth = pageWidth - (margin * 2);
+                const boxWidth = (availableWidth - gap) / 2; // 2 columnas
+                const maxBoxHeight = 80; // Altura máxima por foto
                 
-                preguntas.forEach(pregunta => {
-                    const metodo = pregunta.getAttribute('data-metodo');
-                    const critica = pregunta.getAttribute('data-critica') === 'true';
-                    const radioSeleccionado = pregunta.querySelector('input[type="radio"]:checked');
-                    const respuesta = radioSeleccionado ? radioSeleccionado.value : null;
+                let x_coord = margin;
+                let currentRow = 0;
+
+                for (let i = 0; i < loadedImages.length; i++) {
+                    const imgData = loadedImages[i];
                     
-                    if (metodo && respuesta === 'no') {
-                        if (!metodosDetectados[metodo]) {
-                            metodosDetectados[metodo] = { count: 0, criticas: 0 };
-                        }
-                        metodosDetectados[metodo].count++;
-                        if (critica) metodosDetectados[metodo].criticas++;
-                    }
-                });
-
-                // Métodos recomendados de forma muy compacta
-                if (Object.keys(metodosDetectados).length > 0) {
-                    let metodosTexto = 'Métodos recomendados: ';
-                    Object.entries(metodosDetectados).forEach(([metodo, data], index) => {
-                        const inicial = metodo.charAt(0);
-                        const prioridad = data.criticas > 0 ? '!' : data.count > 2 ? '*' : '';
-                        metodosTexto += `${inicial}${prioridad}`;
-                        if (index < Object.keys(metodosDetectados).length - 1) metodosTexto += ', ';
-                    });
-                    doc.setFontSize(9);
-                    doc.text(metodosTexto, 14, 50);
-                } else {
-                    doc.setFontSize(9);
-                    doc.text('Métodos: Seguimiento rutinario', 14, 50);
-                }
-
-
-
-                const metodosContainer = document.getElementById('metodosRecomendados');
-                let posY = 65;
-                
-                if (!metodosContainer.classList.contains('hidden')) {
-                    // Crear tabla para métodos recomendados
-                    const metodoCards = document.querySelectorAll('.metodo-card');
-                    if (metodoCards.length > 0) {
-                        const metodosData = [];
-                        
-                        metodoCards.forEach(card => {
-                            const titulo = card.querySelector('.metodo-title').textContent.replace('🎯 ', '');
-                            const justificacionCompleta = card.querySelector('.metodo-justification').textContent;
-                            const prioridad = card.querySelector('.metodo-priority').textContent;
-                            
-                            // Extraer solo la información esencial
-                            const razonMatch = justificacionCompleta.match(/Razón: (.+?)(?=Factores|$)/);
-                            const razon = razonMatch ? razonMatch[1].trim() : 'Múltiples indicadores';
-                            
-                            // Crear fila para la tabla
-                            metodosData.push([
-                                titulo,
-                                razon,
-                                prioridad
-                            ]);
-                        });
-                        
-                        // Crear tabla compacta y profesional
-                        doc.autoTable({
-                            startY: posY,
-                            head: [['Método Recomendado', 'Justificación', 'Prioridad']],
-                            body: metodosData,
-                            theme: 'striped',
-                            headStyles: {
-                                fillColor: [52, 152, 219],
-                                textColor: 255,
-                                fontSize: 10,
-                                fontStyle: 'bold',
-                                halign: 'center'
-                            },
-                            bodyStyles: {
-                                fontSize: 9,
-                                cellPadding: 4
-                            },
-                            columnStyles: {
-                                0: {cellWidth: 60, fontStyle: 'bold', valign: 'middle'},
-                                1: {cellWidth: 90, valign: 'top'},
-                                2: {
-                                    cellWidth: 30, 
-                                    halign: 'center', 
-                                    valign: 'middle',
-                                    fontStyle: 'bold'
-                                }
-                            },
-                            alternateRowStyles: {
-                                fillColor: [249, 249, 249]
-                            },
-                            margin: {left: 14, right: 14},
-                            didDrawCell: function(data) {
-                                // Colorear las celdas de prioridad según el tipo
-                                if (data.column.index === 2) {
-                                    const prioridad = data.cell.text[0];
-                                    if (prioridad === 'OBLIGATORIO') {
-                                        data.cell.styles.fillColor = [231, 76, 60];
-                                        data.cell.styles.textColor = 255;
-                                    } else if (prioridad === 'RECOMENDADO') {
-                                        data.cell.styles.fillColor = [243, 156, 18];
-                                        data.cell.styles.textColor = 255;
-                                    } else if (prioridad === 'OPCIONAL') {
-                                        data.cell.styles.fillColor = [39, 174, 96];
-                                        data.cell.styles.textColor = 255;
-                                    }
-                                }
-                            }
-                        });
-                        
-                        posY = doc.lastAutoTable.finalY + 15;
-                        
-                        // Añadir nota explicativa
-                        doc.setFontSize(8);
-                        doc.setTextColor(100, 100, 100);
-                        doc.text('Nota: Aplicar métodos según prioridad. OBLIGATORIO requiere implementación inmediata.', 14, posY);
-                        posY += 10;
-                    }
-                } else {
-                    // Si no hay métodos específicos, añadir nota
-                    doc.setFontSize(10);
-                    doc.setFontSize(8);
-                    doc.setTextColor(100, 100, 100);
-                    posY += 20;
-                }
-
-                // Recopilar datos para las tablas
-                let tablasDatos = [];
-                
-                // Añadir preguntas generales
-                tablasDatos.push({
-                    titulo: 'Criterios Generales',
-                    datos: obtenerDatosTabla('preguntas-generales')
-                });
-                
-                // Añadir secciones condicionales
-                if (document.getElementById('manipulaCargas').checked) {
-                    tablasDatos.push({
-                        titulo: 'Manipulación de Cargas',
-                        datos: obtenerDatosTabla('preguntas-manipulaCargas')
-                    });
-                }
-                
-                if (document.getElementById('usaPantallas').checked) {
-                    tablasDatos.push({
-                        titulo: 'Uso de Pantallas',
-                        datos: obtenerDatosTabla('preguntas-usaPantallas')
-                    });
-                }
-                
-                if (document.getElementById('usaHerramientas').checked) {
-                    tablasDatos.push({
-                        titulo: 'Uso de Herramientas',
-                        datos: obtenerDatosTabla('preguntas-usaHerramientas')
-                    });
-                }
-                
-                if (document.getElementById('mantienePosturas').checked) {
-                    tablasDatos.push({
-                        titulo: 'Mantenimiento de Posturas',
-                        datos: obtenerDatosTabla('preguntas-mantienePosturas')
-                    });
-                }
-                
-                // Crear tablas para cada sección
-                tablasDatos.forEach(seccion => {
-                    // Si la posición es muy baja, añadir nueva página
-                    if (posY > 250) {
+                    // Verificar si necesitamos nueva página
+                    if (posY + maxBoxHeight > doc.internal.pageSize.getHeight() - 20) {
                         doc.addPage();
                         posY = 20;
+                        x_coord = margin;
+                        currentRow = 0;
                     }
-                    
-                    // Añadir título de sección
-                    doc.setFontSize(11);
-                    doc.text(seccion.titulo, 14, posY);
-                    posY += 8;
-                    
-                    // Crear tabla usando autotable
-                    doc.autoTable({
-                        startY: posY,
-                        head: [['Pregunta', 'Respuesta']],
-                        body: seccion.datos,
-                        theme: 'grid',
-                        headStyles: {fillColor: [52, 152, 219], fontSize: 9},
-                        columnStyles: {
-                            0: {cellWidth: 150, fontSize: 8},
-                            1: {cellWidth: 25, halign: 'center', fontSize: 8}
-                        },
-                        margin: {left: 14, right: 14},
-                        styles: {fontSize: 8, cellPadding: 2}
-                    });
-                    
-                    // Actualizar posición Y para la siguiente tabla
-                    posY = doc.lastAutoTable.finalY + 10;
-                });
-                
-                // Guardar el PDF
-                if (window.cordova) {
-                    // Para entorno Cordova/Android
-                    const pdfOutput = doc.output('arraybuffer');
-                    const dirDestino = cordova.file.externalDataDirectory;
-                    
-                    window.resolveLocalFileSystemURL(dirDestino, function(dir) {
-                        dir.getFile(nombreArchivo, {create: true}, function(file) {
-                            file.createWriter(function(writer) {
-                                writer.onwriteend = function() {
-                                    // Ocultar spinner
-                                    document.getElementById('spinner').classList.add('hidden');
-                                    
-                                    // Mostrar ruta y abrir el archivo
-                                    alert(`PDF guardado en: ${dirDestino}${nombreArchivo}`);
-                                    
-                                    // Abrir el PDF con una aplicación externa
-                                    if (cordova.plugins && cordova.plugins.fileOpener2) {
-                                        cordova.plugins.fileOpener2.open(
-                                            file.toURL(),
-                                            'application/pdf',
-                                            {
-                                                error: function() {
-                                                    alert('El archivo se ha guardado, pero no se pudo abrir automáticamente.');
-                                                },
-                                                success: function() {
-                                                    console.log('PDF abierto correctamente');
-                                                }
-                                            }
-                                        );
-                                    }
-                                };
-                                
-                                writer.onerror = function(e) {
-                                    document.getElementById('spinner').classList.add('hidden');
-                                    alert('Error al escribir el archivo: ' + JSON.stringify(e));
-                                };
-                                
-                                // Escribir el contenido del PDF
-                                const blob = new Blob([pdfOutput], {type: 'application/pdf'});
-                                writer.write(blob);
-                            });
-                        });
-                    });
-                } else {
-                    // Para navegador web
-                    doc.save(nombreArchivo);
-                    document.getElementById('spinner').classList.add('hidden');
-                    alert('PDF generado correctamente');
-                    // Notificar actualización del score después de exportar
-                    if (window.parent && window.parent.postMessage) {
-                        const score = calcularScoreFinal();
-                        const categoria = ERGOUtils.getScoreCategory(parseFloat(score));
-                        window.parent.postMessage({
-                            type: 'evaluacionActualizada',
-                            workCenterId: workCenterId,
-                            score: score,
-                            categoria: categoria.texto
-                        }, '*');
+
+                    // Agregar imagen con dimensiones controladas
+                    const newY = agregarImagenConAspecto(doc, imgData, x_coord, posY, boxWidth, maxBoxHeight);
+
+                    // Calcular posición para siguiente imagen
+                    if ((i + 1) % 2 === 0) {
+                        // Final de fila: bajar y resetear X
+                        posY = Math.max(newY, posY + maxBoxHeight) + gap;
+                        x_coord = margin;
+                        currentRow++;
+                    } else {
+                        // Mover a siguiente columna
+                        x_coord += boxWidth + gap;
                     }
                 }
-            } catch (error) {
-                console.error('Error al generar PDF:', error);
-                alert('Error al generar el PDF: ' + error.message);
-                document.getElementById('spinner').classList.add('hidden');
+                
+                // Ajustar posY final si la última fila no está completa
+                if (loadedImages.length % 2 !== 0) {
+                    posY += maxBoxHeight + gap;
+                }
             }
         }
+
+        // --- 4. GUARDAR PDF ---
+        doc.save(nombreArchivo);
+        ERGOUtils.showToast('✅ Reporte generado con éxito', 'success');
+
+    } catch (error) {
+        console.error('Error al generar PDF:', error);
+        ERGOUtils.showToast(`Error al generar el PDF: ${error.message}`, 'error');
+    } finally {
+        document.getElementById('spinner').classList.add('hidden');
+    }
+}
+    
+// aquí inicia
+/**
+ * Agrega una imagen al documento PDF manteniendo su relación de aspecto.
+ * @param {jsPDF} doc - La instancia del documento jsPDF.
+ * @param {string} imageData - Los datos de la imagen (ej. en base64).
+ * @param {number} x - Coordenada X donde iniciar a dibujar.
+ * @param {number} y - Coordenada Y donde iniciar a dibujar.
+ * @param {number} maxWidth - El ancho máximo que la imagen debe ocupar.
+ */
+
+
+function agregarImagenConAspecto(doc, imageData, x, y, maxWidth, maxHeight = null) {
+    try {
+        // Validar que imageData no es null o vacío
+        if (!imageData) {
+            console.warn('⚠️ imageData es null o vacío, omitiendo imagen');
+            return y;
+        }
+
+        // Obtener propiedades de la imagen usando jsPDF
+        let props;
+        try {
+            props = doc.getImageProperties(imageData);
+        } catch (error) {
+            console.error('❌ Error obteniendo propiedades de imagen:', error);
+            return y;
+        }
+
+        // Validar dimensiones
+        if (!props || !props.width || !props.height || props.width === 0 || props.height === 0) {
+            console.warn('⚠️ Propiedades de imagen inválidas:', props);
+            return y;
+        }
+
+        console.log(`📏 Dimensiones originales: ${props.width}x${props.height}`);
+
+        // Calcular aspect ratio
+        const aspectRatio = props.height / props.width;
+        
+        // Calcular dimensiones finales respetando límites
+        let finalWidth = maxWidth;
+        let finalHeight = finalWidth * aspectRatio;
+        
+        // Si se especifica maxHeight y la altura calculada la excede, ajustar
+        if (maxHeight && finalHeight > maxHeight) {
+            finalHeight = maxHeight;
+            finalWidth = finalHeight / aspectRatio;
+        }
+        
+        console.log(`📐 Dimensiones finales: ${finalWidth}x${finalHeight}`);
+        
+        // Verificar si cabe en la página actual
+        const pageHeight = doc.internal.pageSize.getHeight();
+        if (y + finalHeight > pageHeight - 20) {
+            doc.addPage();
+            y = 20;
+            console.log('📄 Nueva página creada');
+        }
+
+        // Centrar horizontalmente en el espacio disponible
+        const centeredX = x + (maxWidth - finalWidth) / 2;
+
+        // Agregar imagen al PDF
+        doc.addImage(imageData, 'JPEG', centeredX, y, finalWidth, finalHeight);
+        console.log(`✅ Imagen agregada al PDF en posición: (${centeredX}, ${y})`);
+        
+        return y + finalHeight + 5; // Agregar un pequeño margen
+        
+    } catch (error) {
+        console.error("❌ Error al agregar imagen al PDF:", error);
+        return y;
+    }
+}
+async function cargarImagenOptimizada(url) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = function() {
+            console.log(`✅ Imagen cargada: ${url}, Dimensiones: ${this.naturalWidth}x${this.naturalHeight}`);
+            
+            // Verificar que la imagen tiene dimensiones válidas
+            if (this.naturalWidth === 0 || this.naturalHeight === 0) {
+                console.warn('❌ Imagen con dimensiones inválidas:', url);
+                resolve(null);
+                return;
+            }
+
+            try {
+                // Crear canvas para procesar la imagen
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Establecer dimensiones del canvas
+                canvas.width = this.naturalWidth;
+                canvas.height = this.naturalHeight;
+                
+                // Dibujar imagen en el canvas
+                ctx.drawImage(this, 0, 0);
+                
+                // Convertir a base64 con calidad optimizada
+                const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                console.log(`📸 Imagen procesada correctamente: ${url}`);
+                resolve(dataURL);
+                
+            } catch (error) {
+                console.error('❌ Error procesando imagen:', error);
+                resolve(null);
+            }
+        };
+        
+        img.onerror = function(error) {
+            console.warn('❌ Error cargando imagen:', url, error);
+            resolve(null);
+        };
+        
+        // Agregar parámetros para evitar cache y mejorar compatibilidad
+        const separator = url.includes('?') ? '&' : '?';
+        img.src = url + separator + 't=' + Date.now() + '&cors=anonymous';
+        
+        // Timeout para evitar esperas infinitas
+        setTimeout(() => {
+            if (!img.complete) {
+                console.warn('⏰ Timeout cargando imagen:', url);
+                resolve(null);
+            }
+        }, 10000); // 10 segundos timeout
+    });
+}
         
 // En eval_int.js, reemplaza la función completa
 function mostrarPictogramasActivos() {

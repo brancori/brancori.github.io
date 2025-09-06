@@ -356,45 +356,63 @@ window.ERGOUtils = {
             timeout = setTimeout(later, wait);
         };
     },
+
     createWorkCenterCard(center, scoreInfo, areaName, viewType = 'grid') {
-    if (viewType === 'list') {
-        return `
-            <div class="card-list" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-                <div class="card-list__header">
-                    <span class="card-list__id">${center.id}</span>
-                    <span class="card-list__name">${center.name}</span>
-                </div>
-                <div class="card-list__details">
-                    <div class="card-list__detail">📍 ${areaName}</div>
-                    <div class="card-list__detail">👤 ${center.responsible}</div>
-                    <div class="card-list__detail card-list__detail--score">
-                        <span class="card-list__score-indicator" style="background-color: ${scoreInfo.color_riesgo};"></span>
-                        ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+        if (viewType === 'list') {
+            return `
+                <div class="card-list" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                    <div class="card-list__header">
+                        <span class="card-list__id">${center.id}</span>
+                        <span class="card-list__name">${center.name}</span>
                     </div>
+                    <div class="card-list__details">
+                        <div class="card-list__detail">📍 ${areaName}</div>
+                        <div class="card-list__detail">👤 ${center.responsible}</div>
+                        <div class="card-list__detail card-list__detail--score">
+                            <span class="card-list__score-indicator" style="background-color: ${scoreInfo.color_riesgo};"></span>
+                            ${scoreInfo.nivel_riesgo_ergonomico} - ${scoreInfo.categoria_riesgo}
+                        </div>
+                    </div>
+                    <div class="card-list__footer">${this.formatDate(center.created_at)}</div>
                 </div>
-                <div class="card-list__footer">${this.formatDate(center.created_at)}</div>
+            `;
+        }
+        
+        // Vista 'grid' por defecto
+        return `
+            <div class="card" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
+                <div class="card-header"><div class="card-id">${center.id}</div></div>
+                <h3>${center.name}</h3>
+                <div class="card-responsible">
+                    <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
+                </div>
+                <div class="summary-badge" style="border-left-color: ${scoreInfo.color_riesgo};">
+                    📊 Riesgo: ${center.score_actual} - ${scoreInfo.categoria_riesgo}
+                </div>
+                <div class="card-footer">
+                    <div class="card-stats">Creado ${this.formatDate(center.created_at)}</div>
+                </div>
             </div>
         `;
+    },
+
+    // FUNCIÓN NUEVA - Obtener logo como base64
+    getLogoImage: function() {
+        // Logo placeholder en base64 (pixel transparente)
+        // REEMPLAZA esto con tu logo real en base64
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+        
+        // Para obtener tu logo en base64:
+        // 1. Ve a https://www.base64-image.de/
+        // 2. Sube tu logo (PNG o JPG)
+        // 3. Copia el resultado completo (incluyendo "data:image/png;base64,")
+        // 4. Reemplaza la línea de arriba con tu resultado
+        
+        /* EJEMPLO de cómo se vería con un logo real:
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVGiB7ZpNaBNBFMd/...';
+        */
     }
-    
-    // Vista 'grid' por defecto
-    return `
-        <div class="card" onclick="ERGONavigation.navigateToWorkCenter('${center.id}', '${center.area_id}', '${encodeURIComponent(areaName)}', '${encodeURIComponent(center.name)}', '${encodeURIComponent(center.responsible)}')">
-            <div class="card-header"><div class="card-id">${center.id}</div></div>
-            <h3>${center.name}</h3>
-            <div class="card-responsible">
-                <div style="margin-bottom: 0.5rem;">👤 ${center.responsible}</div>
-                <div style="font-size: 0.75rem; color: var(--gray-500); font-weight: 500;">📍 ${areaName}</div>
-            </div>
-            <div class="summary-badge" style="border-left-color: ${scoreInfo.color_riesgo};">
-                📊 Riesgo: ${center.score_actual} - ${scoreInfo.categoria_riesgo}
-            </div>
-            <div class="card-footer">
-                <div class="card-stats">Creado ${this.formatDate(center.created_at)}</div>
-            </div>
-        </div>
-    `;
-}
 };
 
 

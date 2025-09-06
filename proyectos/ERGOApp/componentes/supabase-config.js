@@ -38,6 +38,8 @@ class ErgoSupabaseClient {
         this.sessionToken = token;
         console.log('Token de sesión establecido en el cliente de datos.');
     }
+
+    
 async query(table, method = 'GET', data = null, filters = '') {
     const url = `${this.url}/rest/v1/${table}${filters}`;
     const headers = { ...this.baseHeaders };
@@ -1121,3 +1123,17 @@ window.ERGOAnalytics = {
     }
 };
 
+const ergoSupa = new ErgoSupabaseClient(window.ERGOConfig.supabaseUrl, window.ERGOConfig.supabaseKey);
+window.dataClient = ergoSupa;
+window.supabase = ergoSupa.getClient();
+
+try {
+    if (window.ERGOConfig?.USE_SUPABASE && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
+        // Tu código de Supabase aquí
+    }
+} catch (error) {
+    console.error('Error al inicializar Supabase:', error);
+    if (window.ERGOConfig) {
+        window.ERGOConfig.USE_SUPABASE = false;
+    }
+}
