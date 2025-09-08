@@ -1139,7 +1139,6 @@ puedes reemplazar el ::after por esto:
 .carousel-btn:hover {
   background: var(--gray-300);
 }
-
 .map-carousel-controls {
   display: flex;
   justify-content: center;
@@ -1147,7 +1146,6 @@ puedes reemplazar el ::after por esto:
   gap: 1rem;
   margin-bottom: 0.5rem;
 }
-
 .map-carousel-controls button {
   background: var(--gray-200);
   border: none;
@@ -1157,7 +1155,6 @@ puedes reemplazar el ::after por esto:
   font-size: 1rem;
   transition: background 0.2s;
 }
-
 .map-carousel-controls button:hover {
   background: var(--gray-300);
 }

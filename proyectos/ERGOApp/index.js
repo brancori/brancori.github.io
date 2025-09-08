@@ -3,7 +3,6 @@ import data from './componentes/cuestionario-data.js';
 // REEMPLAZA la clase existente en index.js con este bloque completo
 class IndexApp {
     constructor() {
-        // Prevenir múltiples instancias
         if (window.ergoAppInstance) {
             return window.ergoAppInstance;
         }
@@ -13,7 +12,10 @@ class IndexApp {
         this.currentMapIndex = 0;
         this.mapContainers = [];
         this.isInitialized = false;
+        this.sessionCheckInProgress = false;
         
+        // Evitar múltiples inicializaciones
+        window.ergoAppInstance = this;
         this.init();
         return this;
     }
@@ -27,45 +29,124 @@ class IndexApp {
         this.setupEventListeners(); 
         this.checkExistingSession();
         ERGOAuth.setupSessionMonitoring();
-        
-        if (!this.currentUser) {
-            this.showLoginModal();
-        }
-        
         this.isInitialized = true;
     }
 
-checkExistingSession() {
-    if (ERGOAuth.initializeAuthContext()) {
-        this.currentUser = ERGOAuth.getCurrentUser();
-        this.hidePreloader();
-        this.hideLoginModal();
-        this.showMainContent();
-        this.updateUserInterface();
-        this.setupRealtimeListeners();
+    createDefaultMapContainer() {
+        const mapSection = document.querySelector('.map-section') || 
+                          document.querySelector('#risk-map') ||
+                          document.querySelector('.dashboard-content');
         
-        // Inicializamos el carrusel de mapas aquí
-        this.setupMapCarousel();
-    } else {
-        // Si no hay sesión, a ún necesitamos ocultar el preloader y mostrar el login
-        this.hidePreloader();
-        this.showLoginModal();
+        if (mapSection) {
+            const defaultContainer = document.createElement('div');
+            defaultContainer.className = 'map-instance';
+            defaultContainer.id = 'default-map-container';
+            defaultContainer.dataset.mapName = 'Mapa Principal';
+            
+            mapSection.appendChild(defaultContainer);
+            
+            // Reintentar configuración
+            setTimeout(() => this.setupMapCarousel(), 100);
+        }
     }
-}
-setupMapCarousel() {
-        // Si ya hay mapas inicializados, no crear nuevos
-        if (this.mapInstances.length > 0) {
-            console.log('⚠️ Mapas ya inicializados, saltando creación');
+
+    // Nuevo método para cargar ERGOMap dinámicamente
+    loadERGOMapScript() {
+        if (document.querySelector('script[src*="map.js"]')) {
+            return; // Ya está cargado
+        }
+
+        const script = document.createElement('script');
+        script.src = './componentes/map.js';
+        script.onload = () => {
+            console.log('✅ ERGOMap cargado dinámicamente');
+            setTimeout(() => this.setupMapCarousel(), 100);
+        };
+        script.onerror = () => {
+            console.error('❌ Error cargando ERGOMap');
+        };
+        document.head.appendChild(script);
+    }
+
+checkExistingSession() {
+        if (this.sessionCheckInProgress) {
+            console.log('🔄 Verificación de sesión ya en progreso...');
             return;
+        }
+        
+        this.sessionCheckInProgress = true;
+        
+        try {
+            // Intentar inicializar contexto de autenticación
+            const authInitialized = ERGOAuth.initializeAuthContext();
+            
+            if (authInitialized) {
+                const user = ERGOAuth.getCurrentUser();
+                const token = ERGOStorage.getItem('sessionToken');
+                const expiry = ERGOStorage.getItem('sessionExpiry');
+                
+                // Verificar que la sesión sea válida
+                if (user && token && expiry && Date.now() < expiry) {
+                    this.currentUser = user;
+                    this.hidePreloader();
+                    this.hideLoginModal();
+                    this.showMainContent();
+                    this.updateUserInterface();
+                    this.setupRealtimeListeners();
+                    
+                    // PROBLEMA 3: Mapas no se cargan después del login
+                    // SOLUCIÓN: Retrasar inicialización de mapas
+                    setTimeout(() => {
+                        this.setupMapCarousel();
+                        this.loadDashboardData();
+                    }, 500);
+                    
+                } else {
+                    // Sesión inválida o expirada
+                    this.clearInvalidSession();
+                    this.showLoginForm();
+                }
+            } else {
+                this.showLoginForm();
+            }
+        } catch (error) {
+            console.error('Error verificando sesión:', error);
+            this.clearInvalidSession();
+            this.showLoginForm();
+        } finally {
+            this.sessionCheckInProgress = false;
+        }
+    }
+setupMapCarousel() {
+        // Verificar que el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setupMapCarousel());
+            return;
+        }
+
+        // Si ya hay mapas inicializados, limpiarlos primero
+        if (this.mapInstances.length > 0) {
+            console.log('🔄 Limpiando mapas existentes...');
+            this.mapInstances.forEach(map => {
+                if (map && typeof map.destroy === 'function') {
+                    map.destroy();
+                }
+            });
+            this.mapInstances = [];
         }
 
         this.mapContainers = document.querySelectorAll('.map-instance');
         if (this.mapContainers.length === 0) {
             console.warn('⚠️ No se encontraron contenedores de mapa (.map-instance)');
+            // Intentar crear contenedor por defecto si no existe
+            this.createDefaultMapContainer();
             return;
         }
 
-        console.log(`📍 Inicializando ${this.mapContainers.length} mapas...`);
+
+        
+
+        console.log(`🗺️ Inicializando ${this.mapContainers.length} mapas...`);
 
         this.mapContainers.forEach((container, index) => {
             const mapId = `ergo-map-${index}`;
@@ -81,11 +162,15 @@ setupMapCarousel() {
                 }
             } else {
                 console.error(`Error: ERGOMap no está definido al crear mapa ${index}`);
+                // Intentar cargar ERGOMap si no está disponible
+                this.loadERGOMapScript();
             }
         });
         
-        this.showMap(this.currentMapIndex);
-        this.setupMapNavigation();
+        if (this.mapInstances.length > 0) {
+            this.showMap(this.currentMapIndex);
+            this.setupMapNavigation();
+        }
     }
 
         setupMapNavigation() {
@@ -326,38 +411,97 @@ hideMainContent() {
     }
     
 async loadDashboardData() {
-    try {
-        // Hacemos las consultas en paralelo para mayor eficiencia
-        const [dashboardData, pictogramSummary] = await Promise.all([
-            dataClient.getDashboardData(),
-            dataClient.getGlobalPictogramSummary()
-        ]);
+        const maxRetries = 3;
+        let currentRetry = 0;
 
-        this.updateDashboardTables(dashboardData);
-        this.updateTopKPIs(dashboardData);
-        this.renderGlobalRiskChart(pictogramSummary);
-
-        // Actualizar todos los mapas del carrusel con los nuevos datos
-        if (this.mapInstances && this.mapInstances.length > 0) {
-            this.mapInstances.forEach(mapInstance => {
-                if (mapInstance && typeof mapInstance.updateRiskData === 'function') {
-                    mapInstance.updateRiskData(dashboardData.areas || []);
+        while (currentRetry < maxRetries) {
+            try {
+                console.log(`📊 Cargando datos del dashboard (intento ${currentRetry + 1}/${maxRetries})`);
+                
+                // Verificar que el cliente de datos esté inicializado
+                if (!dataClient) {
+                    throw new Error('dataClient no está inicializado');
                 }
-            });
-        }
 
-        // Mantener compatibilidad con el mapa individual (si existe)
-        if (typeof ERGOMap !== 'undefined' && !this.ergoMap) {
-            this.ergoMap = new ERGOMap('risk-map', dashboardData);
-        } else if (this.ergoMap && dashboardData.areas) {
-            this.ergoMap.updateRiskData(dashboardData.areas);
-        }
+                // Hacer las consultas en paralelo
+                const [dashboardData, pictogramSummary] = await Promise.all([
+                    dataClient.getDashboardData(),
+                    dataClient.getGlobalPictogramSummary()
+                ]);
 
-    } catch (error) {
-        console.error('Error cargando datos del dashboard:', error);
-        ERGOUtils.showToast('Error al cargar datos del dashboard', 'error');
+                if (!dashboardData) {
+                    throw new Error('No se recibieron datos del dashboard');
+                }
+
+                this.updateDashboardTables(dashboardData);
+                this.updateTopKPIs(dashboardData);
+                this.renderGlobalRiskChart(pictogramSummary);
+
+                // Actualizar todos los mapas del carrusel con los nuevos datos
+                if (this.mapInstances && this.mapInstances.length > 0) {
+                    this.mapInstances.forEach(mapInstance => {
+                        if (mapInstance && typeof mapInstance.updateRiskData === 'function') {
+                            mapInstance.updateRiskData(dashboardData.areas || []);
+                        }
+                    });
+                } else {
+                    // Si no hay mapas, intentar crearlos
+                    console.log('🔄 No hay mapas disponibles, reintentando inicialización...');
+                    setTimeout(() => {
+                        this.setupMapCarousel();
+                        if (this.mapInstances.length > 0) {
+                            this.loadDashboardData();
+                        }
+                    }, 1000);
+                }
+
+                // Si llegamos aquí, todo salió bien
+                console.log('✅ Datos del dashboard cargados correctamente');
+                return;
+
+            } catch (error) {
+                currentRetry++;
+                console.error(`❌ Error cargando datos del dashboard (intento ${currentRetry}):`, error);
+                
+                if (currentRetry < maxRetries) {
+                    // Esperar antes del siguiente intento
+                    await new Promise(resolve => setTimeout(resolve, 1000 * currentRetry));
+                } else {
+                    // Último intento fallido
+                    ERGOUtils.showToast('Error al cargar datos del dashboard', 'error');
+                    this.handleDashboardLoadError();
+                }
+            }
+        }
     }
-}
+
+
+        handleDashboardLoadError() {
+        // Mostrar datos desde caché si están disponibles
+        const cachedAreas = ERGOStorage.getItem('areasCache');
+        if (cachedAreas && cachedAreas.data) {
+            console.log('📦 Usando datos desde caché');
+            this.updateDashboardTables({ areas: cachedAreas.data });
+            ERGOUtils.showToast('Mostrando datos desde caché', 'warning');
+        } else {
+            // Sin datos disponibles
+            console.log('❌ Sin datos disponibles');
+            this.showNoDashboardData();
+        }
+    }
+
+        showNoDashboardData() {
+        const areasTbody = document.getElementById('areas-table-body');
+        const topRiskTbody = document.getElementById('top-risk-table-body');
+        
+        if (areasTbody) {
+            areasTbody.innerHTML = '<div class="table-row"><div class="cell">Error cargando datos. <button onclick="location.reload()">Recargar página</button></div></div>';
+        }
+        
+        if (topRiskTbody) {
+            topRiskTbody.innerHTML = '<div class="table-row"><div class="cell">Error cargando datos. <button onclick="location.reload()">Recargar página</button></div></div>';
+        }
+    }
 
     updateDashboardTables(data) {
         if (!data) return;
@@ -592,6 +736,7 @@ renderGlobalRiskChart(summary) {
     }
 }
 
+
 window.navigateToConfig = function() {
     // La ruta es relativa a index.html
     window.location.href = 'componentes/pages/gestion_usuarios.html';
@@ -774,7 +919,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { title: "Almacén Planta", src: "./assets/alma_plant_.svg" },
     { title: "Almacén Deliver", src: "./assets/deliver_.svg" },
     { title: "Laboratorio de Control de Calidad", src: "./assets/Labcoca.svg" },
-    { title: "Laboratorio de Microbiologia", src: "./assets/labmicro.svg" }
+    { title: "Laboratorio de Microbiologia", src: "./assets/labmicro.svg" },
+    { title: "Fabricación", src: "./assets/fabricacion_lineas_curvas.svg" }
   ];
 
   let currentMap = 0;
