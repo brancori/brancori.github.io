@@ -711,22 +711,3 @@ input:checked ~ .slider .sun {
   background-color: var(--gray-100); /* Un color sutil para indicar que ya fue visitado */
   border-color: var(--primary-500);
 }
-
-
-.container {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease-in-out;
-    display: none; /* Importante: oculto por defecto */
-}
-
-.container.authenticated {
-    opacity: 1;
-    transform: translateY(0);
-    display: block;
-}
-
-/* Asegurar que el modal de login esté visible */
-#loginModal.show {
-    display: flex !important;
-}
