@@ -1026,3 +1026,143 @@ puedes reemplazar el ::after por esto:
         flex-grow: 1;
     }
 }
+
+.map-area {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    stroke-width: 1px;
+    stroke: rgba(0,0,0,0.1);
+}
+
+.map-area:hover {
+    opacity: 0.8 !important;
+    stroke: #0d6efd !important;
+    stroke-width: 2px !important;
+}
+
+/* Colores de riesgo para mapas */
+.map-area.risk-low {
+    fill: #28a745;
+    fill-opacity: 0.7;
+}
+
+.map-area.risk-medium {
+    fill: #ffc107;
+    fill-opacity: 0.7;
+}
+
+.map-area.risk-high {
+    fill: #fd7e14;
+    fill-opacity: 0.7;
+}
+
+.map-area.risk-critical {
+    fill: #dc3545;
+    fill-opacity: 0.7;
+}
+
+/* Preservar elementos de texto */
+.map-area text, svg text {
+    fill: #333 !important;
+    stroke: none !important;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+/* Filtros aplicados */
+.map-area.filtered {
+    opacity: 0.2 !important;
+}
+
+.container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease-in-out;
+    display: none; /* Importante: oculto por defecto */
+}
+
+.container.authenticated {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
+}
+
+/* Asegurar que el modal de login esté visible */
+#loginModal.show {
+    display: flex !important;
+}
+
+.map-area.hover-active {
+    opacity: 0.8;
+    stroke: #0d6efd;
+    stroke-width: 2px;
+}
+
+.map-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.map-carousel-inner {
+  width: 100%;
+  max-width: 1000px;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-item {
+  display: none;
+  text-align: center;
+}
+
+.map-item.active {
+  display: block;
+}
+
+.map-item h3 {
+  margin-bottom: 0.5rem;
+}
+
+.carousel-btn {
+  background: var(--gray-200);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+
+.carousel-btn:hover {
+  background: var(--gray-300);
+}
+
+.map-carousel-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.map-carousel-controls button {
+  background: var(--gray-200);
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.map-carousel-controls button:hover {
+  background: var(--gray-300);
+}
+
+#map-title {
+  font-weight: bold;
+  font-size: 1rem;
+}

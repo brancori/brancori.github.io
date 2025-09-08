@@ -160,6 +160,7 @@
             <div class="table-body" id="top-risk-table-body">
                 <!-- Se llenará dinámicamente -->
             </div>
+            </div>
         </div>
     </div>
 </div>
@@ -172,7 +173,7 @@
                 <div class="actions-grid">
                     <button class="action-card glassmorphism" id="goToAreasBtn">
                         <div class="action-icon">🏢</div>
-                        <h3>Ir a Áreas</h3>
+                         <h3>Ir a Áreas</h3>
                         <p>Gestionar áreas y centros de trabajo</p>
                     </button>
                     
@@ -191,16 +192,23 @@
 
             <!-- Map Section -->
             <section class="dashboard-section">
-                <h2>Mapa de Riesgos</h2>
-                            <div class="map-container panel neumorphism">
-                            <div id="risk-map" class="map-svg-container" data-map-source="./assets/acondi.svg">
-                            <div id="risk-map" class="map-svg-container" data-map-source="./assets/acondi.svg"></div>
-                            <!-- El mapa se generará aquí -->
-                            </div>
-            </section>
-        </div>
+  <h2>Mapa de Riesgos</h2>
+  <div class="map-container panel neumorphism">
+    <!-- Controles del carrusel -->
+    <div class="map-carousel-controls">
+      <button id="map-prev">⬅️</button>
+      <span id="map-title">Producción</span>
+      <button id="map-next">➡️</button>
     </div>
 
+    <!-- Contenedor único del mapa -->
+    <div id="risk-map" 
+         class="map-svg-container" 
+         data-map-source="./assets/produccion.svg"></div>
+  </div>
+</section>
+        </div>
+    </div>
 
     <!-- Toast Notifications -->
     <div id="toast" class="toast"></div>

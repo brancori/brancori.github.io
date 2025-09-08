@@ -3,50 +3,145 @@ import data from './componentes/cuestionario-data.js';
 // REEMPLAZA la clase existente en index.js con este bloque completo
 class IndexApp {
     constructor() {
+        // Prevenir múltiples instancias
+        if (window.ergoAppInstance) {
+            return window.ergoAppInstance;
+        }
+
         this.currentUser = null;
+        this.mapInstances = [];
+        this.currentMapIndex = 0;
+        this.mapContainers = [];
+        this.isInitialized = false;
+        
         this.init();
+        return this;
     }
 
     init() {
-        this.setupEventListeners();
-        this.checkExistingSession(); // Ahora encontrará la función de abajo
+        if (this.isInitialized) {
+            console.warn('⚠️ IndexApp ya está inicializado');
+            return;
+        }
+
+        this.setupEventListeners(); 
+        this.checkExistingSession();
         ERGOAuth.setupSessionMonitoring();
+        
         if (!this.currentUser) {
             this.showLoginModal();
         }
+        
+        this.isInitialized = true;
     }
 
 checkExistingSession() {
     if (ERGOAuth.initializeAuthContext()) {
         this.currentUser = ERGOAuth.getCurrentUser();
-        
         this.hidePreloader();
         this.hideLoginModal();
         this.showMainContent();
         this.updateUserInterface();
         this.setupRealtimeListeners();
         
-        // Verificar que ERGOMap esté disponible antes de crear la instancia
-        if (typeof ERGOMap !== 'undefined') {
-            this.ergoMap = new ERGOMap('risk-map');
-        } else {
-            console.warn('⚠️ ERGOMap no está disponible aún, se creará después');
-            // Reintentar después de un momento
-            setTimeout(() => {
-                if (typeof ERGOMap !== 'undefined') {
-                    this.ergoMap = new ERGOMap('risk-map');
-                    console.log('✅ ERGOMap creado con retraso');
-                }
-            }, 500);
-        }
-        
-        this.loadDashboardData();
-        
+        // Inicializamos el carrusel de mapas aquí
+        this.setupMapCarousel();
     } else {
-        console.log('🧹 No hay sesión válida. Se mostrará el login.');
-        this.hideMainContent();
+        // Si no hay sesión, a ún necesitamos ocultar el preloader y mostrar el login
         this.hidePreloader();
+        this.showLoginModal();
     }
+}
+setupMapCarousel() {
+        // Si ya hay mapas inicializados, no crear nuevos
+        if (this.mapInstances.length > 0) {
+            console.log('⚠️ Mapas ya inicializados, saltando creación');
+            return;
+        }
+
+        this.mapContainers = document.querySelectorAll('.map-instance');
+        if (this.mapContainers.length === 0) {
+            console.warn('⚠️ No se encontraron contenedores de mapa (.map-instance)');
+            return;
+        }
+
+        console.log(`📍 Inicializando ${this.mapContainers.length} mapas...`);
+
+        this.mapContainers.forEach((container, index) => {
+            const mapId = `ergo-map-${index}`;
+            container.id = mapId;
+            
+            if (typeof ERGOMap !== 'undefined') {
+                try {
+                    const map = new ERGOMap(mapId); 
+                    this.mapInstances.push(map);
+                    console.log(`✅ Mapa ${index} inicializado`);
+                } catch (error) {
+                    console.error(`Error creando mapa ${index}:`, error);
+                }
+            } else {
+                console.error(`Error: ERGOMap no está definido al crear mapa ${index}`);
+            }
+        });
+        
+        this.showMap(this.currentMapIndex);
+        this.setupMapNavigation();
+    }
+
+        setupMapNavigation() {
+        const prevBtn = document.getElementById('prev-map-btn');
+        const nextBtn = document.getElementById('next-map-btn');
+        
+        // Remover listeners anteriores para evitar duplicados
+        if (prevBtn) {
+            prevBtn.replaceWith(prevBtn.cloneNode(true));
+            document.getElementById('prev-map-btn').addEventListener('click', () => this.showPreviousMap());
+        }
+        if (nextBtn) {
+            nextBtn.replaceWith(nextBtn.cloneNode(true));
+            document.getElementById('next-map-btn').addEventListener('click', () => this.showNextMap());
+        }
+    }
+
+showMap(index) {
+    // Validar índice
+    if (index < 0 || index >= this.mapContainers.length) {
+        console.warn('Índice de mapa inválido:', index);
+        return;
+    }
+
+    // Ocultar todos los mapas
+    this.mapContainers.forEach(container => container.classList.remove('active'));
+    
+    // Mostrar mapa activo
+    const activeMapContainer = this.mapContainers[index];
+    activeMapContainer.classList.add('active');
+    
+    // Actualizar título
+    const mapTitle = document.getElementById('map-title');
+    if (mapTitle) {
+        mapTitle.textContent = activeMapContainer.dataset.mapName || 'Mapa de Riesgos';
+    }
+    
+    // Actualizar instancia de mapa con datos si están disponibles
+    if (this.mapInstances[index] && this.areas && this.areas.length > 0) {
+        this.mapInstances[index].updateRiskData(this.areas);
+    }
+    
+    this.currentMapIndex = index;
+}
+
+showNextMap() {
+    let newIndex = (this.currentMapIndex + 1) % this.mapContainers.length;
+    this.showMap(newIndex);
+}
+
+showPreviousMap() {
+    let newIndex = this.currentMapIndex - 1;
+    if (newIndex < 0) {
+        newIndex = this.mapContainers.length - 1; // Va al final
+    }
+    this.showMap(newIndex);
 }
 
 
@@ -173,33 +268,47 @@ async loadMapData() {
     }
 }
 
-setupRealtimeListeners() {
-    realtimeClient.subscribeAndCache(
-        'dashboard-updates',
-        'evaluaciones',
-        (payload) => {
-            // El console.log que verifica la actualización en tiempo real
-            console.log('⚡ ¡Actualización Realtime recibida! Refrescando el mapa...');
-            this.loadMapData();
-        },
-        'evaluaciones_cache_dummy'
-    );
-}
+    setupRealtimeListeners() {
+        // Verificar si ya existe una suscripción antes de crear nueva
+        if (window.realtimeSubscriptions && window.realtimeSubscriptions['dashboard-updates']) {
+            console.log('⚠️ Suscripción realtime ya existe, saltando...');
+            return;
+        }
 
-    showMainContent() {
-        const container = document.querySelector('.container');
-        if (container) {
-            container.classList.remove('hidden'); // <-- ESTA LÍNEA ES LA SOLUCIÓN
-            container.style.display = 'block';
+        realtimeClient.subscribeAndCache(
+            'dashboard-updates',
+            'evaluaciones',
+            (payload) => {
+                console.log('⚡ ¡Actualización Realtime recibida! Refrescando el mapa...');
+                this.loadMapData();
+            },
+            'evaluaciones_cache_dummy'
+        );
+    }
+
+showMainContent() {
+    const container = document.querySelector('.container');
+    if (container) {
+        container.style.display = 'block'; // Mostrar primero
+        container.classList.add('authenticated'); // Luego animar
+        
+        // Forzar reflow para que la animación funcione
+        setTimeout(() => {
             container.style.opacity = '1';
             container.style.transform = 'translateY(0)';
-        }
+        }, 50);
     }
+}
 
-    hideMainContent() {
-        const container = document.querySelector('.container');
-        if (container) container.classList.add('hidden');
+hideMainContent() {
+    const container = document.querySelector('.container');
+    if (container) {
+        container.classList.remove('authenticated');
+        container.style.display = 'none';
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(20px)';
     }
+}
 
     navigateToAreas() {
         ERGOAuth.updateActivity();
@@ -217,28 +326,38 @@ setupRealtimeListeners() {
     }
     
 async loadDashboardData() {
-        try {
-            // Hacemos las consultas en paralelo para mayor eficiencia
-            const [dashboardData, pictogramSummary] = await Promise.all([
+    try {
+        // Hacemos las consultas en paralelo para mayor eficiencia
+        const [dashboardData, pictogramSummary] = await Promise.all([
             dataClient.getDashboardData(),
-            dataClient.getGlobalPictogramSummary() // Llamamos a la nueva función
-         ]);
+            dataClient.getGlobalPictogramSummary()
+        ]);
 
-            this.updateDashboardTables(dashboardData);
-            this.updateTopKPIs(dashboardData);
-            this.renderGlobalRiskChart(pictogramSummary); // Llamamos a la nueva función de la gráfica
+        this.updateDashboardTables(dashboardData);
+        this.updateTopKPIs(dashboardData);
+        this.renderGlobalRiskChart(pictogramSummary);
 
-            // Crear el mapa con los datos (sin cambios)
-            if (typeof ERGOMap !== 'undefined' && !this.ergoMap) {
-                this.ergoMap = new ERGOMap('risk-map', dashboardData);
-            } else if (this.ergoMap && dashboardData.areas) {
-                this.ergoMap.updateRiskData(dashboardData.areas);
-            }
-
-        } catch (error) {
-            console.error('Error cargando datos del dashboard:', error);
+        // Actualizar todos los mapas del carrusel con los nuevos datos
+        if (this.mapInstances && this.mapInstances.length > 0) {
+            this.mapInstances.forEach(mapInstance => {
+                if (mapInstance && typeof mapInstance.updateRiskData === 'function') {
+                    mapInstance.updateRiskData(dashboardData.areas || []);
+                }
+            });
         }
+
+        // Mantener compatibilidad con el mapa individual (si existe)
+        if (typeof ERGOMap !== 'undefined' && !this.ergoMap) {
+            this.ergoMap = new ERGOMap('risk-map', dashboardData);
+        } else if (this.ergoMap && dashboardData.areas) {
+            this.ergoMap.updateRiskData(dashboardData.areas);
+        }
+
+    } catch (error) {
+        console.error('Error cargando datos del dashboard:', error);
+        ERGOUtils.showToast('Error al cargar datos del dashboard', 'error');
     }
+}
 
     updateDashboardTables(data) {
         if (!data) return;
@@ -325,7 +444,7 @@ renderGlobalRiskChart(summary) {
             return;
         }
 
-        // Extraemos solo los conteos "Críticos" (que en la tabla se muestran como "Alto")
+        // Extraemos solo los conteos "Crí­ticos" (que en la tabla se muestran como "Alto")
         const riskData = Object.entries(summary).map(([id, data]) => ({
             id: id,
             nombre: ERGOAnalytics.pictogramasConfig[id].nombre,
@@ -484,19 +603,24 @@ window.indexApp = null;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Iniciando Sistema de Evaluación Ergonómica');
     
-    // 1. Verificar que Supabase esté disponible
+    // Verificar que Supabase esté disponible
     if (typeof supabase === 'undefined') {
-        console.error('❌ Supabase no está disponible. Verifica que supabase-config.js esté cargado.');
+        console.error('⌧ Supabase no está disponible. Verifica que supabase-config.js esté cargado.');
         alert('Error: No se pudo conectar con la base de datos. Recarga la página.');
         return;
     }
 
-    // 2. Patrón Singleton para evitar doble inicialización
-    if (!window.ergoAppInstance) {
+    // SINGLETON: Solo una instancia de la aplicación
+    if (window.ergoAppInstance) {
+        console.warn('⚠️ Aplicación ya inicializada, evitando duplicación.');
+        return;
+    }
+
+    try {
         window.ergoAppInstance = new IndexApp();
         console.log('✅ Sistema inicializado correctamente');
-    } else {
-        console.warn('⚠️ Se ha prevenido una doble inicialización de la aplicación.');
+    } catch (error) {
+        console.error('Error crítico al inicializar la aplicación:', error);
     }
 });
 
@@ -557,7 +681,7 @@ async function actualizarEvaluacionesAntiguas() {
         ERGOUtils.showToast('Iniciando actualización... Revisa la consola (F12) para ver el progreso.', 'info');
         
         // --- CORRECCIÓN CLAVE EN LA CONSULTA ---
-        // Ahora busca evaluaciones donde la columna es NULA O es un objeto JSON vacío '{}'.
+        // Ahora busca evaluaciones donde la columna es NULA O es un objeto JSON vací­o '{}'.
         const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
         
         const evaluacionesAntiguas = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
@@ -643,5 +767,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  // Definimos lista de mapas disponibles
+  const mapas = [
+    { title: "Acondicionado", src: "./assets/acondi.svg" },
+    { title: "Almacén Planta", src: "./assets/alma_plant_.svg" },
+    { title: "Almacén Deliver", src: "./assets/deliver_.svg" },
+    { title: "Laboratorio de Control de Calidad", src: "./assets/Labcoca.svg" },
+    { title: "Laboratorio de Microbiologia", src: "./assets/labmicro.svg" }
+  ];
 
+  let currentMap = 0;
+  const mapContainer = document.getElementById("risk-map");
+  const mapTitle = document.getElementById("map-title");
+  let ergoMapInstance = null;
 
+  function loadMap(index) {
+    currentMap = index;
+    mapContainer.dataset.mapSource = mapas[index].src;
+    mapTitle.textContent = mapas[index].title;
+
+    if (ergoMapInstance) {
+      ergoMapInstance.destroy();
+    }
+    ergoMapInstance = new ERGOMap("risk-map");
+  }
+
+  // Controles
+  document.getElementById("map-prev").addEventListener("click", () => {
+    const newIndex = (currentMap - 1 + mapas.length) % mapas.length;
+    loadMap(newIndex);
+  });
+
+  document.getElementById("map-next").addEventListener("click", () => {
+    const newIndex = (currentMap + 1) % mapas.length;
+    loadMap(newIndex);
+  });
+
+  // Cargar primer mapa
+  loadMap(0);
+});
