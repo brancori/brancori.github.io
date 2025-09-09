@@ -116,7 +116,7 @@
 
         <div class="nav_module">
             <button type="button" class="btn" onclick="window.location.href='centros_concentrado.html'">Centros de trabajo</button>
-            <button type="button" class="btn" onclick="ERGODashboard.navigateTo('mapas')">Mapas</button>
+            <button type="button" class="btn" onclick="ERGODashboard.openMapFullscreen()">Mapas</button>
             <button type="button" class="btn" onclick="ERGODashboard.navigateTo('riesgos')">Riesgos</button>
             <button type="button" class="btn" onclick="ERGODashboard.navigateTo('ruido')">Ruido</button>
         </div>
@@ -199,6 +199,8 @@
       <button id="map-prev">⬅️</button>
       <span id="map-title">Producción</span>
       <button id="map-next">➡️</button>
+       <button type="button" class="btn" onclick="ERGODashboard.openMapFullscreen()">Ver Mapas en Pantalla Completa</button>
+      
     </div>
 
     <!-- Contenedor único del mapa -->
@@ -213,6 +215,22 @@
     <!-- Toast Notifications -->
     <div id="toast" class="toast"></div>
     <div id="map-tooltip" class="map-tooltip"></div>
+
+<div id="original-map-container">
+  <div class="map-carousel"></div>
+</div>
+
+
+<div id="map-fullscreen" class="map-fullscreen hidden">
+  <div class="map-fullscreen-header">
+    <button class="btn-exit" onclick="ERGODashboard.exitFullscreen()">❌ Salir</button>
+  </div>
+  <div class="map-fullscreen-body">
+    </div>
+  <div class="map-fullscreen-body">
+    <div id="map-carousel-container"></div>
+  </div>
+</div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

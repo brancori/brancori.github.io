@@ -923,6 +923,9 @@ async deleteActividad(id) {
         
         return { success: true };
     }
+    getClient() {
+    return this.supabase;
+}
 }
 
 // Instancia global
@@ -1123,17 +1126,25 @@ window.ERGOAnalytics = {
     }
 };
 
-const ergoSupa = new ErgoSupabaseClient(window.ERGOConfig.supabaseUrl, window.ERGOConfig.supabaseKey);
-window.dataClient = ergoSupa;
-window.supabase = ergoSupa.getClient();
+if (window.ERGOConfig?.SUPABASE_URL && window.ERGOConfig?.SUPABASE_ANON_KEY) {
+    if (!window.dataClient) {
+        window.dataClient = new ErgoSupabaseClient(
+            window.ERGOConfig.SUPABASE_URL,
+            window.ERGOConfig.SUPABASE_ANON_KEY
+        );
+        console.log('✅ Supabase: cliente Ergo inicializado una sola vez');
+    } else {
+        console.log('⚠️ Supabase: cliente ya estaba inicializado, se reutiliza');
+    }
+} else {
+    console.warn('❌ Configuración incompleta de Supabase.');
+}
+//window.supabase = ergoSupa.getClient();
 
-try {
-    if (window.ERGOConfig?.USE_SUPABASE && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
-        // Tu código de Supabase aquí
-    }
-} catch (error) {
-    console.error('Error al inicializar Supabase:', error);
-    if (window.ERGOConfig) {
-        window.ERGOConfig.USE_SUPABASE = false;
-    }
+if (window.ERGOConfig?.USE_SUPABASE && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
+    console.log('Configuración de Supabase válida, inicializando...');
+    console.log('Supabase URL:', window.ERGOConfig.SUPABASE_URL);
+    // Puedes dejarlo vacío si no necesitas hacer nada más aquí
+} else {
+    console.warn('Configuración incompleta de Supabase.');
 }

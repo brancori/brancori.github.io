@@ -4,6 +4,9 @@ class ERGOMap {
         this.containerId = containerId;
         this.container = d3.select(`#${containerId}`);
         this.containerElement = document.getElementById(containerId);
+        const dims = this.containerElement.getBoundingClientRect();
+        this.width = dims.width;
+        this.height = dims.height > 0 ? dims.height : 600;
         this.mapDataSource = this.containerElement.dataset.mapSource;
         this.svg = null;
         this.mapGroup = null;
@@ -23,6 +26,7 @@ class ERGOMap {
         
         // Configuración del mapa
         this.config = {
+            margin: { top: 20, right: 20, bottom: 20, left: 20 },
             width: 1000,
             height: 600,
             margin: { top: 20, right: 20, bottom: 20, left: 20 },
@@ -40,10 +44,22 @@ class ERGOMap {
         };
 
         // Verificar contenedor y fuente de datos
-        if (!this.containerElement || !this.mapDataSource) {
-            console.error("Contenedor de mapa o fuente de datos no encontrada.");
-            return;
-        }
+if (!this.containerElement) {
+    console.warn("Contenedor del mapa no encontrado para id:", containerId);
+    // crear un contenedor DOM mínimo para que el mapa pueda renderizar placeholder
+    const fallback = document.createElement('div');
+    fallback.id = containerId;
+    fallback.className = 'map-instance';
+    document.body.appendChild(fallback);
+    this.containerElement = document.getElementById(containerId);
+    this.container = d3.select(`#${containerId}`);
+}
+
+// mapDataSource puede llegar undefined; usar data-map-source o fallback
+if (!this.mapDataSource) {
+    console.warn('data-map-source no especificado en el contenedor. Usando plano por defecto.');
+    this.mapDataSource = this.containerElement.dataset.mapSource || './assets/acondi.svg';
+}
 
         // Inicializar mapeo de áreas (ahora asíncrono)
         this.createAreaMapping();
@@ -154,6 +170,9 @@ createAreaMapping() {
         // Crear SVG principal
         this.svg = this.container
             .append('svg')
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .attr('viewBox', `0 0 ${this.width} ${this.height}`)
             .attr('width', '100%')
             .attr('height', this.config.height)
             .attr('viewBox', `0 0 ${this.config.width} ${this.config.height}`)

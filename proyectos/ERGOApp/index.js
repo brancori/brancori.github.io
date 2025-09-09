@@ -1,7 +1,56 @@
 import data from './componentes/cuestionario-data.js';
 // index.js - Sistema de Evaluación Ergonómica
 // REEMPLAZA la clase existente en index.js con este bloque completo
+
+
+const ERGODashboard = {
+  mapContainer: null,
+  fullscreenContainer: null,
+  fullscreenBody: null,
+  originalMapParent: null,
+  ergoMapInstance: null,
+
+  initMapFullscreen(mapInstance) {
+    this.ergoMapInstance = mapInstance;
+    this.mapContainer = document.getElementById("risk-map");
+    this.fullscreenContainer = document.getElementById("map-fullscreen");
+    this.fullscreenBody = document.querySelector(".map-fullscreen-body");
+    this.originalMapParent = this.mapContainer.parentNode;
+  },
+
+  openMapFullscreen() {
+    if (!this.mapContainer) return; // Salvaguarda
+
+    // Mueve el mapa al contenedor fullscreen
+    this.fullscreenBody.appendChild(this.mapContainer);
+    this.fullscreenContainer.classList.remove("hidden");
+    document.body.style.overflow = 'hidden'; // Evita el scroll
+
+    // Redibuja el mapa para ajustarse al nuevo tamaño
+    if (this.ergoMapInstance) {
+      this.ergoMapInstance.destroy();
+      this.ergoMapInstance = new ERGOMap("risk-map");
+    }
+  },
+
+  exitFullscreen() {
+    if (!this.mapContainer) return; // Salvaguarda
+
+    // Devuelve el mapa a su contenedor original
+    this.originalMapParent.appendChild(this.mapContainer);
+    this.fullscreenContainer.classList.add("hidden");
+    document.body.style.overflow = 'auto'; // Restaura el scroll
+
+    // Redibuja el mapa al tamaño original
+    if (this.ergoMapInstance) {
+      this.ergoMapInstance.destroy();
+      this.ergoMapInstance = new ERGOMap("risk-map");
+       ERGODashboard.initMapFullscreen(ergoMapInstance);
+    }
+  }
+};
 class IndexApp {
+    
     constructor() {
         if (window.ergoAppInstance) {
             return window.ergoAppInstance;
@@ -18,9 +67,16 @@ class IndexApp {
         window.ergoAppInstance = this;
         this.init();
         return this;
+        
     }
 
+    
+
     init() {
+        if (!window.dataClient || !window.dataClient.supabase) {
+    console.error("❌ Supabase client no está inicializado. Verifica supabase-config.js");
+    return;
+}
         if (this.isInitialized) {
             console.warn('⚠️ IndexApp ya está inicializado');
             return;
@@ -31,24 +87,48 @@ class IndexApp {
         ERGOAuth.setupSessionMonitoring();
         this.isInitialized = true;
     }
+showLoginForm() {
+    // Puede reutilizar tu modal de login
+    this.showLoginModal();
+}
 
-    createDefaultMapContainer() {
-        const mapSection = document.querySelector('.map-section') || 
-                          document.querySelector('#risk-map') ||
-                          document.querySelector('.dashboard-content');
-        
-        if (mapSection) {
-            const defaultContainer = document.createElement('div');
-            defaultContainer.className = 'map-instance';
-            defaultContainer.id = 'default-map-container';
-            defaultContainer.dataset.mapName = 'Mapa Principal';
-            
-            mapSection.appendChild(defaultContainer);
-            
-            // Reintentar configuración
-            setTimeout(() => this.setupMapCarousel(), 100);
-        }
+clearInvalidSession() {
+    // Limpiar variables de sesión
+    this.currentUser = null;
+    ERGOStorage.removeItem('currentUser');
+    ERGOStorage.removeItem('sessionToken');
+    ERGOStorage.removeItem('sessionExpiry');
+    this.hideMainContent();
+}
+createDefaultMapContainer() {
+    const mapSection = document.querySelector('.map-section') || 
+                      document.querySelector('#risk-map') ||
+                      document.querySelector('.dashboard-content');
+
+    if (document.getElementById('risk-map')) {
+        // Ya existe contenedor principal
+        return;
     }
+
+    if (mapSection) {
+        const defaultContainer = document.createElement('div');
+        defaultContainer.className = 'map-instance';
+        defaultContainer.id = 'risk-map'; // importante: map.js y otras partes esperan 'risk-map'
+        defaultContainer.dataset.mapSource = './assets/acondi.svg'; // valor por defecto
+        defaultContainer.dataset.mapName = 'Mapa Principal';
+
+        mapSection.appendChild(defaultContainer);
+
+        // Reintentar setup del carrusel y del mapa
+        setTimeout(() => {
+            this.setupMapCarousel();
+            // si ERGOMap aún no está disponible, intentar cargar
+            if (typeof ERGOMap === 'undefined') this.loadERGOMapScript();
+        }, 200);
+    } else {
+        console.warn('No se pudo crear contenedor default de mapa: no hay sección adecuada en DOM');
+    }
+}
 
     // Nuevo método para cargar ERGOMap dinámicamente
     loadERGOMapScript() {
@@ -117,6 +197,7 @@ checkExistingSession() {
             this.sessionCheckInProgress = false;
         }
     }
+
 setupMapCarousel() {
         // Verificar que el DOM esté listo
         if (document.readyState === 'loading') {
@@ -142,9 +223,6 @@ setupMapCarousel() {
             this.createDefaultMapContainer();
             return;
         }
-
-
-        
 
         console.log(`🗺️ Inicializando ${this.mapContainers.length} mapas...`);
 
@@ -411,69 +489,82 @@ hideMainContent() {
     }
     
 async loadDashboardData() {
-        const maxRetries = 3;
-        let currentRetry = 0;
+    const maxRetries = 3;
+    let currentRetry = 0;
 
-        while (currentRetry < maxRetries) {
-            try {
-                console.log(`📊 Cargando datos del dashboard (intento ${currentRetry + 1}/${maxRetries})`);
-                
-                // Verificar que el cliente de datos esté inicializado
-                if (!dataClient) {
-                    throw new Error('dataClient no está inicializado');
+    // 1. Cargar cache antes de intentar Supabase
+    const cached = ERGOStorage.getItem("dashboardData");
+    if (cached) {
+        console.log("📦 Dashboard cargado desde cache");
+        this.updateDashboardTables(cached);
+        this.updateTopKPIs(cached);
+        if (this.mapInstances?.length > 0) {
+            this.mapInstances.forEach(mapInstance => {
+                if (mapInstance?.updateRiskData) {
+                    mapInstance.updateRiskData(cached.areas || []);
                 }
+            });
+        }
+    }
 
-                // Hacer las consultas en paralelo
-                const [dashboardData, pictogramSummary] = await Promise.all([
-                    dataClient.getDashboardData(),
-                    dataClient.getGlobalPictogramSummary()
-                ]);
+    while (currentRetry < maxRetries) {
+        try {
+            console.log(`📊 Cargando datos del dashboard (intento ${currentRetry + 1}/${maxRetries})`);
 
-                if (!dashboardData) {
-                    throw new Error('No se recibieron datos del dashboard');
-                }
+            // Verificar cliente
+            if (!window.dataClient) {
+                throw new Error("dataClient no está inicializado");
+            }
 
-                this.updateDashboardTables(dashboardData);
-                this.updateTopKPIs(dashboardData);
-                this.renderGlobalRiskChart(pictogramSummary);
+            // Consultar Supabase
+            const [dashboardData, pictogramSummary] = await Promise.all([
+                window.dataClient.getDashboardData(),
+                window.dataClient.getGlobalPictogramSummary()
+            ]);
 
-                // Actualizar todos los mapas del carrusel con los nuevos datos
-                if (this.mapInstances && this.mapInstances.length > 0) {
-                    this.mapInstances.forEach(mapInstance => {
-                        if (mapInstance && typeof mapInstance.updateRiskData === 'function') {
-                            mapInstance.updateRiskData(dashboardData.areas || []);
-                        }
-                    });
-                } else {
-                    // Si no hay mapas, intentar crearlos
-                    console.log('🔄 No hay mapas disponibles, reintentando inicialización...');
-                    setTimeout(() => {
-                        this.setupMapCarousel();
-                        if (this.mapInstances.length > 0) {
-                            this.loadDashboardData();
-                        }
-                    }, 1000);
-                }
+            if (!dashboardData) throw new Error("No se recibieron datos del dashboard");
 
-                // Si llegamos aquí, todo salió bien
-                console.log('✅ Datos del dashboard cargados correctamente');
-                return;
+            // 2. Actualizar UI con datos frescos
+            this.updateDashboardTables(dashboardData);
+            this.updateTopKPIs(dashboardData);
+            this.renderGlobalRiskChart(pictogramSummary);
 
-            } catch (error) {
-                currentRetry++;
-                console.error(`❌ Error cargando datos del dashboard (intento ${currentRetry}):`, error);
-                
-                if (currentRetry < maxRetries) {
-                    // Esperar antes del siguiente intento
-                    await new Promise(resolve => setTimeout(resolve, 1000 * currentRetry));
-                } else {
-                    // Último intento fallido
-                    ERGOUtils.showToast('Error al cargar datos del dashboard', 'error');
-                    this.handleDashboardLoadError();
-                }
+            // 3. Guardar cache
+            ERGOStorage.setItem("dashboardData", dashboardData);
+
+            // Actualizar mapas
+            if (this.mapInstances?.length > 0) {
+                this.mapInstances.forEach(mapInstance => {
+                    if (mapInstance?.updateRiskData) {
+                        mapInstance.updateRiskData(dashboardData.areas || []);
+                    }
+                });
+            } else {
+                console.log("🔄 No hay mapas disponibles, reintentando inicialización...");
+                setTimeout(() => {
+                    this.setupMapCarousel();
+                    if (this.mapInstances.length > 0) {
+                        this.loadDashboardData();
+                    }
+                }, 1000);
+            }
+
+            console.log("✅ Datos del dashboard cargados correctamente");
+            return;
+
+        } catch (error) {
+            currentRetry++;
+            console.error(`❌ Error cargando datos del dashboard (intento ${currentRetry}):`, error);
+
+            if (currentRetry < maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, 1000 * currentRetry));
+            } else {
+                ERGOUtils.showToast("Error al cargar datos del dashboard", "error");
+                this.handleDashboardLoadError();
             }
         }
     }
+}
 
 
         handleDashboardLoadError() {
@@ -771,7 +862,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Manejar errores globales
 window.addEventListener('error', (e) => {
-    console.error('Error global:', e.error);
+    // e.error puede ser null; mostrar info útil
+    console.error('Error global:', e.message || e.reason || e.error || e);
+});
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('Promesa rechazada:', e.reason || e);
 });
 
 // Manejar promesas rechazadas
@@ -799,7 +894,33 @@ window.ERGODashboard = {
         }
     },
 
+    // Abrir mapa en fullscreen
+    openMapFullscreen() {
+        const fullscreen = document.getElementById("map-fullscreen");
+        fullscreen.classList.remove("hidden");
+
+        // mover el carrusel al contenedor fullscreen
+        const carousel = document.querySelector(".map-carousel");
+        const container = document.getElementById("map-carousel-container");
+        if (carousel && container) {
+            container.appendChild(carousel);
+        }
+    },
+
+    // Salir del fullscreen
+    exitFullscreen() {
+        const fullscreen = document.getElementById("map-fullscreen");
+        fullscreen.classList.add("hidden");
+
+        // regresar el carrusel a su contenedor original
+        const carousel = document.querySelector(".map-carousel");
+        const originalContainer = document.getElementById("original-map-container");
+        if (carousel && originalContainer) {
+            originalContainer.appendChild(carousel);
+        }
+    }
 };
+
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const main = document.querySelector('.main-content');
@@ -906,12 +1027,6 @@ async function diagnosticarDatos() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    // ... tu código de inicialización existente ...
-    window.indexApp = new IndexApp();
-
-});
-
 document.addEventListener("DOMContentLoaded", () => {
   // Definimos lista de mapas disponibles
   const mapas = [
@@ -937,6 +1052,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ergoMapInstance.destroy();
     }
     ergoMapInstance = new ERGOMap("risk-map");
+    ERGODashboard.initMapFullscreen(ergoMapInstance);
   }
 
   // Controles
@@ -953,3 +1069,4 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cargar primer mapa
   loadMap(0);
 });
+
