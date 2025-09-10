@@ -1035,7 +1035,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { title: "Almacén Deliver", src: "./assets/deliver_.svg" },
     { title: "Laboratorio de Control de Calidad", src: "./assets/Labcoca.svg" },
     { title: "Laboratorio de Microbiologia", src: "./assets/labmicro.svg" },
-    { title: "Fabricación", src: "./assets/fabricacion_lineas_curvas.svg" }
+    { title: "Fabricaci", src: "./assets/Fabri_nuevo.svg" }
   ];
 
   let currentMap = 0;

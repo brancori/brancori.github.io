@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Evaluación Ergonómica</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1724; --card:#071022; --accent:#06b6d4; --muted:#93a3b3; --glass: rgba(255,255,255,0.03);
+    --success:#10b981; --danger:#ef4444; --text:#e6eef6; --strong:#cbd5e1;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071226 0%, #071423 60%);color:var(--text)}
+  .wrap{max-width:1100px;margin:18px auto;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 8px 24px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+  header{display:flex;gap:14px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;color:#021226;font-size:20px}
+  h1{margin:0;font-size:18px;color:var(--strong)}
+  p.lead{margin:6px 0 12px;color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:14px;margin-top:14px}
+  .card{background:var(--card);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+  label.small{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"], input[type="number"], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);font-size:14px}
+  .row{display:flex;gap:12px}
+  .caps{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .box{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+  .sliderWrap{padding:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:8px}
+  .vasBar{height:12px;background:linear-gradient(90deg,#06202a 0%, rgba(6,182,212,0.06) 100%);border-radius:8px;position:relative}
+  .vasFill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent),#7c3aed);width:0%}
+  .scaleLabels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+  .big{font-size:26px;font-weight:700;color:var(--accent)}
+  .muted{color:var(--muted);font-size:13px}
+  .btn{padding:10px 14px;border-radius:8px;border:0;background:linear-gradient(90deg,var(--accent),#7c3aed);color:#021226;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--accent)}
+  .checkGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .footnote{font-size:12px;color:var(--muted);margin-top:8px}
+  .summaryBox{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:10px;border-radius:8px}
+  .label-strong{color:#cbd5e1;font-weight:700}
+  footer{display:flex;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+  pre{white-space:pre-wrap;color:var(--muted);font-size:13px}
+  @media (max-width:1100px){.grid{grid-template-columns:1fr}.logo{width:48px;height:48px}.card{padding:12px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="reportArea">
+  <header>
+    <div class="logo">EG</div>
+    <div>
+      <h1>Evaluación Ergonómica</h1>
+    </div>
+  </header>
+
+
+  <div class="grid" style="margin-top:14px">
+    <div>
+      <div class="card" style="margin-top:12px">
+
+        <div style="margin-top:10px" class="box">
+          <label class="small">Datos generales</label>
+          <div class="row">
+            <input id="name" type="text" placeholder="Nombre / ID">
+            <input id="area" type="text" placeholder="Área / Puesto">
+          </div>
+
+          <div style="margin-top:10px" class="caps">1. Dolor en pies — VAS (0–10)</div>
+          <div class="sliderWrap" style="margin-top:8px">
+            <input id="vas" type="range" min="0" max="10" value="3" oninput="updateVAS(this.value)"  style="width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div class="muted">Nivel (VAS):</div><div class="big" id="vasValue">3</div>
+            </div>
+            <div class="footnote">La escala suma <strong>27 puntos</strong> al índice máximo.</div>
+          </div>
+
+          <div style="margin-top:10px" class="caps">2. Fatiga percibida — Borg CR10 (0–10)</div>
+          <div style="margin-top:8px">
+            <input id="borg" type="range" min="0" max="10" value="4" oninput="updateBorg(this.value)" style="width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div class="muted">Fatiga (Borg):</div><div class="big" id="borgValue">4</div>
+            </div>
+            <div class="footnote">La escala suma <strong>10 puntos</strong>.</div>
+          </div>
+
+          <div style="margin-top:10px" class="caps">3. Síntomas — NMQ adaptado (últ. 4 sem)</div>
+          <div class="checkGrid" style="margin-top:8px">
+            <label><input type="checkbox" class="nmq" value="dolor_plantas"> Dolor en plantas</label>
+            <label><input type="checkbox" class="nmq" value="talon"> Dolor en talones</label>
+            <label><input type="checkbox" class="nmq" value="calambres"> Calambres</label>
+            <label><input type="checkbox" class="nmq" value="hinchazon"> Hinchazón</label>
+            <label><input type="checkbox" class="nmq" value="hormigueo"> Hormigueo/entumecimiento</label>
+            <label><input type="checkbox" class="nmq" value="otro"> Otro</label>
+          </div>
+          <input id="nmqOther" type="text" placeholder="Si marcó 'Otro', especifique">
+
+          <div style="margin-top:10px" class="caps">4. Calzado y plantillas (informativo)</div>
+          <div style="margin-top:8px;color:var(--muted)">
+            <label class="small">¿Su calzado actual le resulta cómodo para jornadas largas?</label>
+            <select id="comfortable"><option value="si">Sí</option><option value="no">No</option><option value="parcial">Parcial</option></select>
+            <label class="small" style="margin-top:8px">¿Ha usado plantillas personalizadas?</label>
+            <select id="usedInsole"><option value="no">No</option><option value="si">Sí</option></select>
+            <label class="small" style="margin-top:8px">Si las usa, ¿han reducido dolor o fatiga?</label>
+            <select id="insolesEffect"><option value="na">N/A</option><option value="si">Sí</option><option value="no">No</option><option value="parcial">Parcial</option></select>
+          </div>
+
+          <div style="margin-top:10px" class="caps">5. Variables posturales</div>
+          <div style="margin-top:8px;color:var(--muted)">
+            <label class="small">¿Pudo sentarse en algún momento?</label>
+            <select id="canSit"><option value="yes">Sí</option><option value="no">No</option></select>
+            <label class="small" style="margin-top:8px">Horas promedio de pie por jornada</label>
+            <input id="hours" type="number" min="0" max="24" step="0.5" value="8">
+            <label class="small" style="margin-top:8px">Tipo de bipedestación</label>
+            <select id="stance"><option value="static">Estático (quieto)</option><option value="dynamic">Dinámico (movimientos limitados)</option><option value="walking">Predominantemente caminando</option></select>
+            <label class="small" style="margin-top:8px">¿Cuánto tiempo caminó aproximadamente?</label>
+            <input id="walking" type="number" min="0" max="24" step="0.5" value="0">
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" onclick="computeScore()">Calcular Score</button>
+            <button class="btn ghost" onclick="resetForm()">Limpiar</button>
+            <button class="btn" id="exportPdfBtn" onclick="exportPDF()">Exportar a PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="caps">DOCUMENTACIÓN / COMENTARIOS</div>
+        <textarea id="comments" rows="5" placeholder="Comentarios abiertos..."></textarea>
+      </div>
+    </div>
+
+    <aside class="card">
+      <div class="caps">DESGLOSE & RESULTADO</div>
+      <div style="margin-top:8px" class="summaryBox" id="resultBox">
+        <div class="muted">Completa el cuestionario y presiona <strong>Calcular Score</strong>. Se mostrará el riesgo 0–100, clasificación y desglose de puntos.</div>
+      </div>
+
+      <div style="margin-top:12px" class="card box">
+        <div class="caps">PUNTUACIÓN (resumen)</div>
+        <pre id="pointsPre">vas: —
+borg: —
+hours: —
+symptoms: —
+sit: —
+stance: —
+walking: —
+TOTAL (raw): —
+RiskIndex: —
+Classification: —</pre>
+      </div>
+
+
+    </aside>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  // Init visuals
+  function updateVAS(v){ document.getElementById('vasValue').textContent = v; document.getElementById('vasFill').style.width = (v*10)+'%'; }
+  function updateBorg(v){ document.getElementById('borgValue').textContent = v; }
+  updateVAS(document.getElementById('vas').value);
+  updateBorg(document.getElementById('borg').value);
+
+  function computeScore(){
+    const name = document.getElementById('name').value || '—';
+    const area = document.getElementById('area').value || '—';
+    const vas = parseInt(document.getElementById('vas').value);
+    const borg = parseInt(document.getElementById('borg').value);
+    let nmq = Array.from(document.querySelectorAll('.nmq:checked')).map(i=>i.value);
+    const nmqOther = document.getElementById('nmqOther').value.trim();
+    if(nmq.includes('otro') && nmqOther) nmq.push(nmqOther);
+    const comfortable = document.getElementById('comfortable').value;
+    const usedInsole = document.getElementById('usedInsole').value;
+    const insolesEffect = document.getElementById('insolesEffect').value;
+    const canSit = document.getElementById('canSit').value;
+    const hours = parseFloat(document.getElementById('hours').value) || 0;
+    const stance = document.getElementById('stance').value;
+    const walking = parseFloat(document.getElementById('walking').value) || 0;
+    const comments = document.getElementById('comments').value || '';
+
+    // Calculations per spec
+    const P_vas = Math.round((vas/10)*27); // max 27
+    const P_borg = Math.round((borg/10)*10); // max 10
+
+    let P_hours = 0;
+    if(hours >=2 && hours <4) P_hours = 10;
+    else if(hours >=4 && hours <6) P_hours = 20;
+    else if(hours >=6) P_hours = 28;
+
+    let symptomCount = nmq.length;
+    let P_symptoms = 0;
+    if(symptomCount === 1) P_symptoms = 15;
+    else if(symptomCount === 2) P_symptoms = 25;
+    else if(symptomCount >= 3) P_symptoms = 35;
+
+    const P_sit = (canSit === 'no') ? 20 : 0;
+
+    let P_stance = 0;
+    if(stance === 'static') P_stance = 15;
+    else if(stance === 'dynamic') P_stance = 10;
+    else P_stance = 0;
+
+    const P_walking = (walking >= 2) ? -10 : 0;
+
+    let raw = P_vas + P_borg + P_hours + P_symptoms + P_sit + P_stance + P_walking;
+
+    // clamp 0-100
+    let riskIndex = Math.max(0, Math.min(100, raw));
+
+    // ensure symptoms >=2 -> at least medium (>=40)
+    if(symptomCount >=2 && riskIndex < 40) riskIndex = 40;
+
+    let classification = 'Bajo';
+    if(riskIndex >= 70) classification = 'Alto';
+    else if(riskIndex >= 40) classification = 'Medio';
+
+    // Build result box HTML
+    const resultHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:800;color:var(--accent);font-size:15px">Evaluación — ${name}</div>
+          <div class="muted" style="margin-top:6px">Área: ${area} · Fecha: ${new Date().toLocaleString()}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:20px;font-weight:800;color:${riskIndex>=70? '#ff6b6b': riskIndex>=40? '#f59e0b': '#10b981'}">${riskIndex} / 100</div>
+          <div style="margin-top:4px;font-weight:700;color:var(--strong)">${classification}</div>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:10px 0">
+      <div style="color:var(--muted)"><strong>Desglose de puntos:</strong>
+        <ul>
+          <li>VAS (27 max): ${P_vas}</li>
+          <li>Borg (10 max): ${P_borg}</li>
+          <li>Horas de pie: ${P_hours}</li>
+          <li>Síntomas: ${P_symptoms} (${symptomCount})</li>
+          <li>No pudo sentarse: ${P_sit}</li>
+          <li>Tipo postura: ${P_stance}</li>
+          <li>Caminar (protector): ${P_walking}</li>
+        </ul>
+      </div>
+      <div style="margin-top:8px;color:var(--muted)"><strong>Recomendación:</strong> ${classification === 'Alto' ? 'Intervención prioritaria: tapete antifatiga + plantillas personalizadas + rotación + revisar mandiles' : classification === 'Medio' ? 'Plantillas + considerar tapete en áreas fijas; seguimiento 1 mes' : 'Monitorizar; medidas de confort opcionales'}</div>
+      <div style="margin-top:8px;color:var(--muted)"><strong>Comentarios:</strong><div>${comments || '—'}</div></div>
+    `;
+
+    document.getElementById('resultBox').innerHTML = resultHTML;
+
+    // update points pre
+    document.getElementById('pointsPre').textContent = `vas: ${P_vas}
+borg: ${P_borg}
+hours: ${P_hours}
+symptoms: ${P_symptoms}
+sit: ${P_sit}
+stance: ${P_stance}
+walking: ${P_walking}
+TOTAL (raw): ${raw}
+RiskIndex: ${riskIndex}
+Classification: ${classification}`;
+
+    // Save last record
+    window._lastRecord = {
+      name, area, date: new Date().toISOString(), vas, borg, P_vas, P_borg, hours, P_hours,
+      symptoms: nmq, P_symptoms, canSit, P_sit, stance, P_stance, walking, P_walking,
+      raw, riskIndex, classification, comfortable, usedInsole, insolesEffect, comments
+    };
+  }
+
+  function resetForm(){
+    document.getElementById('name').value='';
+    document.getElementById('area').value='';
+    document.getElementById('vas').value='3'; updateVAS(3);
+    document.getElementById('borg').value='4'; updateBorg(4);
+    document.querySelectorAll('.nmq').forEach(n=>n.checked=false);
+    document.getElementById('nmqOther').value='';
+    document.getElementById('comfortable').value='si';
+    document.getElementById('usedInsole').value='no';
+    document.getElementById('insolesEffect').value='na';
+    document.getElementById('canSit').value='yes';
+    document.getElementById('hours').value='8';
+    document.getElementById('stance').value='static';
+    document.getElementById('walking').value='0';
+    document.getElementById('comments').value='';
+    document.getElementById('resultBox').innerHTML = '<div class="muted">Completa el cuestionario y presiona <strong>Calcular Score</strong>.</div>';
+    document.getElementById('pointsPre').textContent = `vas: —\nborg: —\nhours: —\nsymptoms: —\nsit: —\nstance: —\nwalking: —\nTOTAL (raw): —\nRiskIndex: —\nClassification: —`;
+    window._lastRecord = null;
+  }
+
+  async function exportPDF(){
+    if(!window._lastRecord){ alert('Genera el score primero.'); return; }
+    const el = document.getElementById('reportArea');
+    const originalWidth = el.style.width;
+    el.style.width = '1200px';
+    const canvas = await html2canvas(el, {scale:2, useCORS:true, backgroundColor:null});
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'px', format:[canvas.width, canvas.height]});
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    const fn = `evaluacion_ergonomia_pies_final_${(new Date()).toISOString().slice(0,10)}.pdf`;
+    pdf.save(fn);
+    el.style.width = originalWidth;
+  }
+</script>
+</body>
+</html>
