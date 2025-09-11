@@ -856,45 +856,151 @@ function poblarFormularioConDatos(evaluacionData) {
     }, 200); // Aumentado ligeramente para mayor seguridad
 }
 
+/**
+ * Función auxiliar para cargar imágenes de forma asíncrona.
+ * Es crucial para no bloquear la generación del PDF mientras se cargan los logos.
+ * @param {string} url - La ruta de la imagen.
+ * @returns {Promise<HTMLImageElement|null>}
+ */
+
+async function loadLogoCandidate(src) {
+    if (!src) return null;
+
+    // Si viene de ERGOUtils.getLogoImage() puede ser: HTMLImageElement, dataURL o URL string
+    if (typeof src === 'string') {
+        // dataURL -> devolver tal cual
+        if (src.startsWith('data:')) return src;
+        // URL -> intentar optimizar (devuelve dataURL) y si falla intentar cargar como Image
+        const optimized = await cargarImagenOptimizada(src).catch(() => null);
+        if (optimized) return optimized;
+        // fallback a Image element
+        return await new Promise(resolve => {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+    }
+
+    // Si es un elemento HTMLImageElement ya listo
+    if (src instanceof HTMLImageElement) return src;
+
+    return null;
+}
+
+function cargarImagen(url) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+            console.error(`No se pudo cargar la imagen: ${url}`);
+            resolve(null);
+        };
+        img.src = url;
+    });
+}
         // Función mejorada para exportar PDF con recomendaciones de métodos
  // Función corregida para exportar PDF con manejo de errores de Supabase Storage
 async function exportarPDFCompleto() {
-    await guardarEvaluacion();
     document.getElementById('spinner').classList.remove('hidden');
 
     try {
+        // Recolección de datos
         const nombreArea = document.getElementById('nombreArea').value || 'No especificado';
         const ubicacionArea = document.getElementById('ubicacionArea').value || 'No especificada';
         const responsableArea = document.getElementById('responsableArea').value || 'No especificado';
         const fechaEvaluacion = document.getElementById('fechaEvaluacion').value || new Date().toLocaleDateString();
-        const nombreArchivo = `${nombreArea.replace(/\s+/g, '_')}_${ubicacionArea.replace(/\s+/g, '_')}.pdf`;
+
+        // Evaluación desde storage
+        const evaluacionId = `EVAL_${workCenterId}_${areaId}`;
+        const evaluaciones = ERGOStorage.getItem('evaluaciones', []);
+        const evaluacionActual = evaluaciones.find(e => e.id === evaluacionId);
+
+        const scoreFinal = evaluacionActual ? evaluacionActual.score_final : calcularScoreFinal();
+        const categoriaRiesgo = evaluacionActual ? evaluacionActual.categoria_riesgo : ERGOUtils.getScoreCategory(parseFloat(scoreFinal)).texto;
+        const colorRiesgo = evaluacionActual ? evaluacionActual.color_riesgo : ERGOUtils.getScoreCategory(parseFloat(scoreFinal)).color;
+
+        const nombreArchivo = `${nombreArea.replace(/\s+/g, '_')}_Evaluacion_Ergonomica.pdf`;
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         let posY = 20;
 
-        // --- 1. TÍTULO E INFORMACIÓN GENERAL ---
-        doc.setFontSize(16);
-        doc.text('Reporte de Evaluación Ergonómica Integrada', 105, posY, { align: 'center' });
-        posY += 10;
-        
-        // Agregar logo (CORREGIDO)
-        try {
-            const logoImg = window.ERGOUtils.getLogoImage();
-            if (logoImg) {
-                posY = agregarImagenConAspecto(doc, logoImg, 150, 15, 40, 20);
-            }
-        } catch (logoError) {
-            console.warn('No se pudo cargar el logo:', logoError);
-        }
-        
-        doc.setFontSize(10);
-        doc.text(`Área: ${nombreArea} | Ubicación: ${ubicacionArea} | Responsable: ${responsableArea}`, 14, posY);
-        posY += 6;
-        doc.text(`Fecha evaluación: ${fechaEvaluacion} | Generado: ${new Date().toLocaleDateString()}`, 14, posY);
-        posY += 15;
+        // --- CABECERA: intentar primero ERGOUtils.getLogoImage() y si no está, probar rutas relativas ---
+        let logoErgoApp = null;
+        let logoSiresi = null;
 
-        // --- 2. TABLAS (sin cambios) ---
+        try {
+            let candidateLogo = null;
+            if (window.ERGOUtils && typeof window.ERGOUtils.getLogoImage === 'function') {
+                candidateLogo = window.ERGOUtils.getLogoImage();
+            }
+            // cargar candidato y fallback a rutas
+            logoErgoApp = await loadLogoCandidate(candidateLogo);
+
+
+
+            // Siresi (intenta rutas comunes)
+            logoSiresi = await loadLogoCandidate('./assets/siresi_logo.jpg')
+                       || await loadLogoCandidate('../assets/siresi_logo.jpg')
+                       || await loadLogoCandidate('/assets/siresi_logo.jpg');
+
+        } catch (err) {
+            console.warn('No se pudo obtener logos con loadLogoCandidate:', err);
+        }
+
+        // Fondo y logos
+        doc.setFillColor(255, 255, 255);
+
+        if (logoSiresi) {
+            if (typeof logoSiresi === 'string') {
+                const fmt = logoSiresi.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                doc.addImage(logoSiresi, fmt, 170, 8, 25, 8);
+            } else {
+                doc.addImage(logoSiresi, 'JPEG', 170, 8, 25, 8);
+            }
+        }
+
+        // Título y línea
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(44, 62, 80);
+        doc.text('EVALUACIÓN INICIAL DE', 105, 12, { align: 'center' });
+        doc.text('ERGONOMÍA', 105, 18, { align: 'center' });
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(52, 152, 219);
+        doc.line(14, 25, 196, 25);
+
+        // Información principal
+        posY = 35;
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(33, 37, 41);
+        const nombreCentro = centerName ? decodeURIComponent(centerName) : nombreArea;
+        doc.text(nombreCentro.toUpperCase(), 105, posY, { align: 'center' });
+        posY += 10;
+
+        // Sección en dos columnas: izquierda info, derecha score
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const infoIzquierda = `Área: ${nombreArea} | Ubicación: ${ubicacionArea}\nResponsable: ${responsableArea} | Fecha: ${fechaEvaluacion}`;
+
+        // Imprimir info a la izquierda
+        doc.text(infoIzquierda, 14, posY, { align: 'left' });
+
+        // Score Final en la derecha
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255); // Texto blanco
+        doc.setFillColor(colorRiesgo);   // Fondo según riesgo
+        doc.roundedRect(150, posY - 5, 45, 15, 3, 3, 'F');
+        doc.text(`${scoreFinal}%`, 172, posY + 6, { align: 'center' });
+
+        posY += 25;
+
+        // --- TABLAS DE PREGUNTAS (igual que antes) ---
         const tablasDatos = [];
         tablasDatos.push({ titulo: 'Criterios Generales', datos: obtenerDatosTabla('preguntas-generales') });
         if (document.getElementById('manipulaCargas').checked) tablasDatos.push({ titulo: 'Manipulación de Cargas', datos: obtenerDatosTabla('preguntas-manipulaCargas')});
@@ -903,108 +1009,113 @@ async function exportarPDFCompleto() {
         if (document.getElementById('mantienePosturas').checked) tablasDatos.push({ titulo: 'Mantenimiento de Posturas', datos: obtenerDatosTabla('preguntas-mantienePosturas')});
 
         tablasDatos.forEach(seccion => {
-            if (seccion.datos.length > 0) {
-                if (posY > 250) {
-                    doc.addPage();
-                    posY = 20;
-                }
+            if (seccion.datos && seccion.datos.length > 0) {
+                if (posY > 250) { doc.addPage(); posY = 20; }
                 doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(33, 37, 41);
                 doc.text(seccion.titulo, 14, posY);
                 posY += 8;
+
                 doc.autoTable({
                     startY: posY,
                     head: [['Pregunta', 'Respuesta']],
                     body: seccion.datos,
                     theme: 'grid',
-                    headStyles: {fillColor: [52, 152, 219], fontSize: 9},
-                    styles: {fontSize: 8, cellPadding: 2},
-                    columnStyles: { 1: {cellWidth: 25, halign: 'center'} },
-                    margin: {left: 14, right: 14}
+                    headStyles: { fillColor: [52, 152, 219], fontSize: 9 },
+                     styles: {fontSize: 8, cellPadding: 2, fillColor: [255, 255, 255]},
+                     columnStyles: { 1: {cellWidth: 25, halign: 'center'} },
+                    margin: { left: 14, right: 14 }
                 });
-                posY = doc.lastAutoTable.finalY + 10;
+                posY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : posY + 10;
             }
         });
 
-        // --- 3. FOTOS MEJORADAS ---
-        const fotos = await dataClient.query('fotos_centros', 'GET', null, `?work_center_id=eq.${workCenterId}&area_id=eq.${areaId}&select=foto_url`);
+        // --- FOTOS: primero intentamos supabase (si existe dataClient), si no, fallback a evaluacionActual.fotos / localStorage ---
+        let fotosUrls = [];
 
-        if (Array.isArray(fotos) && fotos.length > 0) {
-            console.log(`Procesando ${fotos.length} fotos...`);
-            
-            // Cargar todas las imágenes de forma optimizada
-            const imagePromises = fotos.map(foto => {
-                const publicUrl = `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}`;
-                return cargarImagenOptimizada(publicUrl);
-            });
-
-            const loadedImages = (await Promise.all(imagePromises)).filter(Boolean);
-
-            if (loadedImages.length > 0) {
-                // Agregar nueva página para fotos
-                if (posY > 240) { 
-                    doc.addPage(); 
-                    posY = 20; 
+        try {
+            if (window.dataClient && typeof window.dataClient.query === 'function' && workCenterId) {
+                // Consulta Supabase como en eval_int_fotos.js
+                const fotos = await window.dataClient.query('fotos_centros', 'GET', null, `?work_center_id=eq.${workCenterId}&area_id=eq.${areaId}&select=foto_url`);
+                if (Array.isArray(fotos) && fotos.length) {
+                    fotosUrls = fotos.map(f => `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos-centros/${f.foto_url}`);
                 }
-                
-                doc.setFontSize(12);
-                doc.text('Evidencia Fotográfica', 14, posY);
-                posY += 10;
+            }
+        } catch (e) {
+            console.warn('No se pudo consultar fotos desde dataClient:', e);
+        }
 
-                // Configuración mejorada para el layout de fotos
-                const margin = 14;
-                const gap = 8;
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const availableWidth = pageWidth - (margin * 2);
-                const boxWidth = (availableWidth - gap) / 2; // 2 columnas
-                const maxBoxHeight = 80; // Altura máxima por foto
-                
-                let x_coord = margin;
-                let currentRow = 0;
-
-                for (let i = 0; i < loadedImages.length; i++) {
-                    const imgData = loadedImages[i];
-                    
-                    // Verificar si necesitamos nueva página
-                    if (posY + maxBoxHeight > doc.internal.pageSize.getHeight() - 20) {
-                        doc.addPage();
-                        posY = 20;
-                        x_coord = margin;
-                        currentRow = 0;
+        // Fallback: fotos en evaluacionActual (pueden ser URLs o nombres de archivo)
+        if (!fotosUrls.length) {
+            const fotosFromEval = evaluacionActual?.fotos || (JSON.parse(localStorage.getItem('currentEvaluation') || '{}')).fotos || [];
+            if (Array.isArray(fotosFromEval) && fotosFromEval.length) {
+                fotosUrls = fotosFromEval.map(f => {
+                    if (typeof f !== 'string') return null;
+                    if (f.startsWith('http') || f.startsWith('data:')) return f;
+                    // si es solo nombre de archivo, construir URL pública de Supabase si existe
+                    if (window.ERGOConfig && window.ERGOConfig.SUPABASE_URL) {
+                        return `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos-centros/${f}`;
                     }
-
-                    // Agregar imagen con dimensiones controladas
-                    const newY = agregarImagenConAspecto(doc, imgData, x_coord, posY, boxWidth, maxBoxHeight);
-
-                    // Calcular posición para siguiente imagen
-                    if ((i + 1) % 2 === 0) {
-                        // Final de fila: bajar y resetear X
-                        posY = Math.max(newY, posY + maxBoxHeight) + gap;
-                        x_coord = margin;
-                        currentRow++;
-                    } else {
-                        // Mover a siguiente columna
-                        x_coord += boxWidth + gap;
-                    }
-                }
-                
-                // Ajustar posY final si la última fila no está completa
-                if (loadedImages.length % 2 !== 0) {
-                    posY += maxBoxHeight + gap;
-                }
+                    return f;
+                }).filter(Boolean);
             }
         }
 
-        // --- 4. GUARDAR PDF ---
+        // Cargar y optimizar todas las fotos (cargarImagenOptimizada devuelve dataURL JPEG)
+        if (fotosUrls.length > 0) {
+            const imagePromises = fotosUrls.map(url => cargarImagenOptimizada(url));
+            const loadedImages = (await Promise.all(imagePromises)).filter(Boolean);
+
+            if (loadedImages.length > 0) {
+    if (posY > 240) { doc.addPage(); posY = 20; }
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(33, 37, 41);
+    doc.text('EVIDENCIA FOTOGRÁFICA', 14, posY);
+    posY += 10;
+
+    const margin = 14;
+    const gap = 8;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const availableWidth = pageWidth - (margin * 2);
+    const boxWidth = (availableWidth - gap) / 2;
+    const maxBoxHeight = 80;
+
+    let x_coord = margin;
+
+    for (let i = 0; i < loadedImages.length; i++) {
+        const imgData = loadedImages[i];
+        if (posY + maxBoxHeight > doc.internal.pageSize.getHeight() - 20) {
+            doc.addPage();
+            posY = 20;
+            x_coord = margin;
+        }
+
+        agregarImagenConAspecto(doc, imgData, x_coord, posY, boxWidth, maxBoxHeight);
+
+        if ((i + 1) % 2 === 0) {
+            posY += maxBoxHeight + gap;
+            x_coord = margin;
+        } else {
+            x_coord += boxWidth + gap;
+        }
+    }
+}
+        }
+
+        // Guardar PDF
         doc.save(nombreArchivo);
         ERGOUtils.showToast('✅ Reporte generado con éxito', 'success');
 
     } catch (error) {
         console.error('Error al generar PDF:', error);
-        ERGOUtils.showToast(`Error al generar el PDF: ${error.message}`, 'error');
+        ERGOUtils.showToast(`Error al generar el PDF: ${error?.message || error}`, 'error');
     } finally {
         document.getElementById('spinner').classList.add('hidden');
     }
 }
+
     
 // aquí inicia
 /**
@@ -1015,6 +1126,8 @@ async function exportarPDFCompleto() {
  * @param {number} y - Coordenada Y donde iniciar a dibujar.
  * @param {number} maxWidth - El ancho máximo que la imagen debe ocupar.
  */
+
+
 
 
 function agregarImagenConAspecto(doc, imageData, x, y, maxWidth, maxHeight = null) {
@@ -1081,61 +1194,57 @@ function agregarImagenConAspecto(doc, imageData, x, y, maxWidth, maxHeight = nul
 }
 async function cargarImagenOptimizada(url) {
     return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        
-        img.onload = function() {
-            console.log(`✅ Imagen cargada: ${url}, Dimensiones: ${this.naturalWidth}x${this.naturalHeight}`);
-            
-            // Verificar que la imagen tiene dimensiones válidas
-            if (this.naturalWidth === 0 || this.naturalHeight === 0) {
-                console.warn('❌ Imagen con dimensiones inválidas:', url);
-                resolve(null);
-                return;
-            }
+        try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
 
-            try {
-                // Crear canvas para procesar la imagen
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Establecer dimensiones del canvas
-                canvas.width = this.naturalWidth;
-                canvas.height = this.naturalHeight;
-                
-                // Dibujar imagen en el canvas
-                ctx.drawImage(this, 0, 0);
-                
-                // Convertir a base64 con calidad optimizada
-                const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-                console.log(`📸 Imagen procesada correctamente: ${url}`);
-                resolve(dataURL);
-                
-            } catch (error) {
-                console.error('❌ Error procesando imagen:', error);
+            img.onload = function () {
+                // validación de dimensiones
+                if (!this.naturalWidth || !this.naturalHeight) {
+                    console.warn('❌ Imagen con dimensiones inválidas:', url);
+                    resolve(null);
+                    return;
+                }
+
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = this.naturalWidth;
+                    canvas.height = this.naturalHeight;
+                    ctx.drawImage(this, 0, 0);
+
+                    // Convertir a JPEG optimizado
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(dataURL);
+                } catch (err) {
+                    console.error('❌ Error procesando imagen en canvas:', err);
+                    resolve(null);
+                }
+            };
+
+            img.onerror = function (err) {
+                console.warn('❌ Error cargando imagen:', url, err);
                 resolve(null);
-            }
-        };
-        
-        img.onerror = function(error) {
-            console.warn('❌ Error cargando imagen:', url, error);
+            };
+
+            // Evitar cache y mejorar compatibilidad
+            const separator = url.includes('?') ? '&' : '?';
+            img.src = url + separator + 't=' + Date.now() + '&cors=anonymous';
+
+            // Timeout para evitar bloqueo indefinido
+            setTimeout(() => {
+                if (!img.complete) {
+                    console.warn('⏰ Timeout cargando imagen:', url);
+                    resolve(null);
+                }
+            }, 10000);
+        } catch (e) {
+            console.error('❌ Excepción en cargarImagenOptimizada:', e);
             resolve(null);
-        };
-        
-        // Agregar parámetros para evitar cache y mejorar compatibilidad
-        const separator = url.includes('?') ? '&' : '?';
-        img.src = url + separator + 't=' + Date.now() + '&cors=anonymous';
-        
-        // Timeout para evitar esperas infinitas
-        setTimeout(() => {
-            if (!img.complete) {
-                console.warn('⏰ Timeout cargando imagen:', url);
-                resolve(null);
-            }
-        }, 10000); // 10 segundos timeout
+        }
     });
 }
-        
+
 // En eval_int.js, reemplaza la función completa
 function mostrarPictogramasActivos() {
     const respuestas = {};
