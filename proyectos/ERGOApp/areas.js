@@ -1,4 +1,3 @@
-
 // Configuración para usar Supabase o localStorage
 const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
