@@ -322,6 +322,7 @@ function guardarLocalmente(evaluacion, evaluacionId) {
             
             return seccionDiv;
         }
+        
 
         // Función para crear el elemento de una pregunta
         function crearElementoPregunta(pregunta, categoria, index, peso, metodo, critica) {
@@ -764,7 +765,6 @@ function inicializarEvaluacionBlanco() {
     }
 }
 
-
 async function cargarDatosExistentes() {
     if (!workCenterId) {
         console.log("ℹ️ No hay workCenterId, iniciando evaluación en blanco.");
@@ -921,7 +921,7 @@ async function exportarPDFCompleto() {
         const scoreFinal = evaluacionActual ? evaluacionActual.score_final : calcularScoreFinal();
         const categoriaRiesgo = evaluacionActual ? evaluacionActual.categoria_riesgo : ERGOUtils.getScoreCategory(parseFloat(scoreFinal)).texto;
         const colorRiesgo = evaluacionActual ? evaluacionActual.color_riesgo : ERGOUtils.getScoreCategory(parseFloat(scoreFinal)).color;
-
+        const AREA = 'Área';
         const nombreArchivo = `${nombreArea.replace(/\s+/g, '_')}_Evaluacion_Ergonomica.pdf`;
 
         const { jsPDF } = window.jspdf;
@@ -962,9 +962,11 @@ async function exportarPDFCompleto() {
                 doc.addImage(logoSiresi, 'JPEG', 170, 8, 25, 8);
             }
         }
+        
+        
 
         // Título y línea
-        doc.setFontSize(14);
+        doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(44, 62, 80);
         doc.text('EVALUACIÓN INICIAL DE', 105, 12, { align: 'center' });
@@ -985,18 +987,22 @@ async function exportarPDFCompleto() {
         // Sección en dos columnas: izquierda info, derecha score
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        const infoIzquierda = `Área: ${nombreArea} | Ubicación: ${ubicacionArea}\nResponsable: ${responsableArea} | Fecha: ${fechaEvaluacion}`;
+
+        
+        const infoIzquierda = `Área: ${nombreArea}\nUbicación: ${ubicacionArea}\nResponsable: ${responsableArea} | Fecha: ${fechaEvaluacion}\nEvaluador: Brandon Cortes | Planta: Huejotzingo Puebla.` ;
 
         // Imprimir info a la izquierda
         doc.text(infoIzquierda, 14, posY, { align: 'left' });
 
         // Score Final en la derecha
-        doc.setFontSize(14);
+        doc.setFontSize(20);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(255, 255, 255); // Texto blanco
         doc.setFillColor(colorRiesgo);   // Fondo según riesgo
         doc.roundedRect(150, posY - 5, 45, 15, 3, 3, 'F');
-        doc.text(`${scoreFinal}%`, 172, posY + 6, { align: 'center' });
+        doc.text(`${scoreFinal}%`, 172, posY + 2, { align: 'center' });
+        doc.setFontSize(6);
+        doc.text(`${categoriaRiesgo}`, 172, posY + 9, { align: 'center' });
 
         posY += 25;
 
@@ -1126,8 +1132,6 @@ async function exportarPDFCompleto() {
  * @param {number} y - Coordenada Y donde iniciar a dibujar.
  * @param {number} maxWidth - El ancho máximo que la imagen debe ocupar.
  */
-
-
 
 
 function agregarImagenConAspecto(doc, imageData, x, y, maxWidth, maxHeight = null) {
