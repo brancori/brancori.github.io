@@ -26,6 +26,29 @@
             }
         }
 
+        ERGOUtils.getScoreCategory = function(score) {
+    // Asegura que el score sea un número para comparar
+    const numericScore = parseFloat(score);
+
+    // Si el score no es un número válido, devuelve un color neutral
+    if (isNaN(numericScore)) {
+        return { texto: 'Inválido', color: '#808080' }; // Gris
+    }
+
+    // Lógica de Riesgo Alto (Rojo)
+    if (numericScore >= 60) {
+        return { texto: 'Riesgo Alto', color: '#e74c3c' }; // Rojo
+    } 
+    // Lógica de Riesgo Medio (Naranja)
+    else if (numericScore >= 25 && numericScore < 60) {
+        return { texto: 'Riesgo Medio', color: '#f39c12' }; // Naranja
+    } 
+    // Lógica de Riesgo Bajo (Verde)
+    else {
+        return { texto: 'Riesgo Bajo', color: '#2ecc71' }; // Verde
+    }
+};
+
         // Escuchar evento deviceready para inicializar en entorno Cordova/Capacitor
         document.addEventListener('deviceready', function() {
             console.log('Dispositivo listo');
@@ -764,12 +787,25 @@ function inicializarEvaluacionBlanco() {
         inputs.forEach(input => input.disabled = true);
     }
 }
+window.ERGOImageCache = {};
+
+async function precargarFotos(fotosUrls) {
+    const promises = fotosUrls.map(async url => {
+        if (!window.ERGOImageCache[url]) {
+            const imgData = await cargarImagenOptimizada(url);
+            if (imgData) {
+                window.ERGOImageCache[url] = imgData; // guarda base64 en cache
+            }
+        }
+        return window.ERGOImageCache[url] || null;
+    });
+    return Promise.all(promises);
+}
 
 async function cargarDatosExistentes() {
     if (!workCenterId) {
         console.log("ℹ️ No hay workCenterId, iniciando evaluación en blanco.");
-        // Aquí podrías llamar a una función que prepare un formulario vacío si es necesario.
-        enterEditMode(); // O la función que corresponda para una nueva evaluación.
+        enterEditMode();
         return;
     }
 
@@ -777,30 +813,35 @@ async function cargarDatosExistentes() {
     let evaluacion = null;
     let origenDatos = '';
 
-    // 1. Prioridad 1: Intentar cargar desde Supabase
+    // 1. Prioridad 1: Supabase
     if (USE_SUPABASE_EVAL) {
         evaluacion = await window.ERGOEvalSupa.cargarEvaluacionDesdeSupabase(workCenterId);
-        if (evaluacion) {
-            origenDatos = 'Supabase';
-        }
+        if (evaluacion) origenDatos = 'Supabase';
     }
 
-    // 2. Prioridad 2: Fallback a localStorage si Supabase falla o está deshabilitado
+    // 2. LocalStorage
     if (!evaluacion) {
         const evaluacionesLocales = ERGOStorage.getItem('evaluaciones', []);
-        evaluacion = evaluacionesLocales.find(e => e.id === `EVAL_${workCenterId}_${areaId}` || e.work_center_id === workCenterId);
-        if (evaluacion) {
-            origenDatos = 'LocalStorage';
-        }
+        evaluacion = evaluacionesLocales.find(
+            e => e.id === `EVAL_${workCenterId}_${areaId}` || e.work_center_id === workCenterId
+        );
+        if (evaluacion) origenDatos = 'LocalStorage';
     }
 
-    // 3. Procesar los datos si se encontraron
+    // 3. Procesar datos
     if (evaluacion) {
         console.log(`✅ Datos encontrados. Origen: ${origenDatos}`);
         poblarFormularioConDatos(evaluacion);
+
+        // 🔥 PRE-CARGA DE FOTOS DESDE AQUÍ
+        const fotosUrls = evaluacion.fotos || [];
+        if (Array.isArray(fotosUrls) && fotosUrls.length > 0) {
+            await precargarFotos(fotosUrls);
+            console.log("✅ Fotos precargadas en cache");
+        }
+
     } else {
         console.log("🆕 No se encontró evaluación existente. Cargando datos básicos desde URL para una nueva evaluación.");
-        // Cargar datos básicos de la URL para una nueva evaluación
         if (centerName) document.getElementById('nombreArea').value = decodeURIComponent(centerName);
         if (areaName) document.getElementById('ubicacionArea').value = decodeURIComponent(areaName);
         if (responsibleName) document.getElementById('responsableArea').value = decodeURIComponent(responsibleName);
@@ -922,7 +963,8 @@ async function exportarPDFCompleto() {
         const categoriaRiesgo = evaluacionActual ? evaluacionActual.categoria_riesgo : ERGOUtils.getScoreCategory(parseFloat(scoreFinal)).texto;
         const colorRiesgo = evaluacionActual ? evaluacionActual.color_riesgo : ERGOUtils.getScoreCategory(parseFloat(scoreFinal)).color;
         const AREA = 'Área';
-        const nombreArchivo = `${nombreArea.replace(/\s+/g, '_')}_Evaluacion_Ergonomica.pdf`;
+        const nombreArchivo = `${nombreArea.replace(/\s+/g, '_')}_${ubicacionArea.replace(/\s+/g, '_')}.pdf`;
+
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -989,10 +1031,56 @@ async function exportarPDFCompleto() {
         doc.setFont('helvetica', 'normal');
 
         
-        const infoIzquierda = `Área: ${nombreArea}\nUbicación: ${ubicacionArea}\nResponsable: ${responsableArea} | Fecha: ${fechaEvaluacion}\nEvaluador: Brandon Cortes | Planta: Huejotzingo Puebla.` ;
+// --- Información detallada con negritas ---
+        const startX = 14;
+        const lineHeight = 6; // Espacio entre líneas
+        doc.setFontSize(10);
 
-        // Imprimir info a la izquierda
-        doc.text(infoIzquierda, 14, posY, { align: 'left' });
+        // Función auxiliar para medir texto
+        const getTextWidth = (text) => doc.getTextWidth(text);
+
+        // Línea 1: Área
+        doc.setFont('helvetica', 'bold');
+        doc.text('Área:', startX, posY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(nombreArea, startX + getTextWidth('Área: '), posY);
+        posY += lineHeight;
+
+        // Línea 2: Ubicación
+        doc.setFont('helvetica', 'bold');
+        doc.text('Ubicación:', startX, posY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(ubicacionArea, startX + getTextWidth('Ubicación: '), posY);
+        posY += lineHeight;
+
+        // Línea 3: Responsable y Fecha
+        let currentX = startX;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Responsable:', currentX, posY);
+        currentX += getTextWidth('Responsable: ');
+        doc.setFont('helvetica', 'normal');
+        doc.text(responsableArea, currentX, posY);
+        currentX += getTextWidth(responsableArea) + getTextWidth(' | ');
+        doc.setFont('helvetica', 'bold');
+        doc.text('Fecha:', currentX, posY);
+        currentX += getTextWidth('Fecha: ');
+        doc.setFont('helvetica', 'normal');
+        doc.text(fechaEvaluacion, currentX, posY);
+        posY += lineHeight;
+
+        // Línea 4: Evaluador y Planta
+        currentX = startX;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Evaluador:', currentX, posY);
+        currentX += getTextWidth('Evaluador: ');
+        doc.setFont('helvetica', 'normal');
+        doc.text('Brandon Cortes', currentX, posY);
+        currentX += getTextWidth('Brandon Cortes') + getTextWidth(' | ');
+        doc.setFont('helvetica', 'bold');
+        doc.text('Planta:', currentX, posY);
+        currentX += getTextWidth('Planta: ');
+        doc.setFont('helvetica', 'normal');
+        doc.text('Huejotzingo Puebla.', currentX, posY);
 
         // Score Final en la derecha
         doc.setFontSize(20);

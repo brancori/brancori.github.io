@@ -429,153 +429,214 @@ function cerrarEvaluacionModal() {
             window.location.href = `areas.html#area-${areaId}`;
         }
 
+async function exportarPDFDesdeServidor() {
+    if (!ERGOAuth.checkPermissionAndShowError('export')) return;
+
+    try {
+        ERGOUtils.showToast('Generando PDF...', 'info');
+        const pdfUrl = await dataClient.exportarPDF(workCenterId);
+        
+        if (pdfUrl) {
+            window.open(pdfUrl, '_blank');
+            ERGOUtils.showToast('PDF generado exitosamente.', 'success');
+        } else {
+            throw new Error('No se pudo generar el PDF.');
+        }
+    } catch (error) {
+        console.error('Error al generar PDF:', error);
+        ERGOUtils.showToast(`Error al generar PDF: ${error.message}`, 'error');
+    }
+}
+
         async function exportarPDFCompleto() {
-            try {
-                // Verificar que jsPDF esté disponible
-                if (typeof window.jspdf === 'undefined') {
-                    ERGOUtils.showToast('Cargando librerías PDF...', 'info');
-                    return;
-                }
+    try {
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+            ERGOUtils.showToast('Las librerías PDF no están listas, intenta de nuevo.', 'info');
+            return;
+        }
 
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+        ERGOUtils.showToast('Generando reporte...', 'info');
 
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-                const nombreArchivo = `${timestamp}_Reporte_Completo_${currentCenterData.name.replace(/\s+/g, '_')}.pdf`;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let posY = 20;
 
-                // Título principal
-                doc.setFontSize(16);
-                doc.text('Reporte Completo de Centro de Trabajo', 105, 15, {align: 'center'});
+        const centroNombre = document.getElementById('centro-name').textContent;
+        const centroResponsable = document.getElementById('centro-responsable').textContent;
+        const areaNombre = document.getElementById('breadcrumb-area').textContent;
+        const scoreValue = document.getElementById('score-value').textContent;
+        const scoreCategory = document.getElementById('score-category').textContent;
+        const scoreColor = ERGOUtils.getScoreColor(parseFloat(scoreValue));
+        const evalFecha = document.getElementById('eval-fecha').textContent;
+        const evalSugeridas = document.getElementById('eval-sugeridas').textContent;
+        const timestamp = new Date().toLocaleDateString();
+        const nombreArchivo = `Reporte_${centroNombre.replace(/\s/g, '_')}.pdf`;
+        
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Reporte de Centro de Trabajo', 105, posY, { align: 'center' });
+        posY += 10;
 
-                // Información del centro
-                doc.setFontSize(12);
-                let posY = 30;
-                doc.text(`Centro: ${currentCenterData.name}`, 14, posY);
-                posY += 8;
-                doc.text(`Responsable: ${currentCenterData.responsible}`, 14, posY);
-                posY += 8;
-                doc.text(`Área: ${decodeURIComponent(areaName || 'No especificada')}`, 14, posY);
-                posY += 8;
-                doc.text(`Fecha del reporte: ${new Date().toLocaleDateString()}`, 14, posY);
-                posY += 15;
+        doc.setFontSize(12);
+        doc.text(centroNombre, 14, posY);
+        doc.setFontSize(10);
+        doc.text(centroResponsable, 14, posY + 5);
+        doc.text(`Área: ${areaNombre} | Reporte del: ${timestamp}`, 14, posY + 10);
 
-                // Score de evaluación
-                const scoreValue = document.getElementById('score-value').textContent;
-                const scoreCategory = document.getElementById('score-category').textContent;
-                
-                doc.setFontSize(14);
-                doc.text('📊 Evaluación Ergonómica', 14, posY);
-                posY += 10;
-                doc.setFontSize(12);
-                doc.text(`Score de Riesgo: ${scoreValue}`, 14, posY);
-                posY += 6;
-                doc.text(`Categoría: ${scoreCategory}`, 14, posY);
-                posY += 15;
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.setFillColor(scoreColor);
+        doc.roundedRect(150, posY - 5, 45, 20, 3, 3, 'F');
+        doc.text(scoreValue, 172, posY + 4, { align: 'center' });
+        doc.setFontSize(8);
+        doc.text(scoreCategory, 172, posY + 12, { align: 'center' });
+        
+        posY += 25;
+        doc.setTextColor(0, 0, 0);
 
-                // Información de evaluación inicial
-                const evalFecha = document.getElementById('eval-fecha').textContent;
-                const evalSugeridas = document.getElementById('eval-sugeridas').textContent;
-                
-                doc.text(`Fecha de evaluación: ${evalFecha}`, 14, posY);
-                posY += 6;
-                doc.text(`Métodos recomendados: ${evalSugeridas}`, 14, posY);
-                posY += 15;
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Resumen de Evaluación Inicial', 14, posY);
+        posY += 8;
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Fecha de Evaluación: ${evalFecha}`, 14, posY);
+        doc.text(`Sugerencias: ${evalSugeridas}`, 14, posY + 6);
+        posY += 20;
 
-                // Sección de fotos
-                if (fotosActuales && fotosActuales.length > 0) {
-                    doc.setFontSize(14);
-                    doc.text('📸 Fotos del Centro de Trabajo', 14, posY);
-                    posY += 15;
+        if (evaluacionesEspecificas && evaluacionesEspecificas.length > 0) {
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Actividades Registradas', 14, posY);
+            posY += 8;
+            const actividadesBody = evaluacionesEspecificas.map(act => [
+                act.nombre,
+                act.metodo || 'No definido',
+                act.score_final ? `${act.score_final} Pts` : 'Pendiente',
+                new Date(act.created_at).toLocaleDateString()
+            ]);
+            doc.autoTable({
+                startY: posY,
+                head: [['Nombre', 'Método', 'Score', 'Fecha']],
+                body: actividadesBody,
+                theme: 'grid',
+                headStyles: { fillColor: [41, 128, 185] }
+            });
+            posY = doc.lastAutoTable.finalY + 15;
+        }
 
-                    for (let i = 0; i < fotosActuales.length; i++) {
-                        const foto = fotosActuales[i];
-                        
-                        try {
-                            const publicUrl = USE_SUPABASE ? 
-                                `${SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
-                                foto.url;
-                            
-                            const img = new Image();
-                            img.crossOrigin = 'anonymous';
-                            
-                            await new Promise((resolve, reject) => {
-                                img.onload = () => resolve();
-                                img.onerror = () => reject(new Error('No se pudo cargar la imagen'));
-                                img.src = publicUrl;
-                            });
-                            
-                            const col = i % 2;
-                            const row = Math.floor(i / 2);
-                            let imgX = 14 + (col * 95);
-                            let imgY = posY + (row * 70);
-                            
-                            if (imgY > 200) {
-                                doc.addPage();
-                                posY = 20;
-                                const newRow = Math.floor((i % 4) / 2);
-                                imgY = posY + (newRow * 70);
-                            }
-                            
-                            doc.addImage(img, 'JPEG', imgX, imgY, 80, 60);
-                            
-                            doc.setFontSize(8);
-                            doc.text(foto.foto_name || `Foto ${i + 1}`, imgX, imgY + 65, {maxWidth: 80});
-                            
-                            if (col === 1) {
-                                posY += 80;
-                            }
-                            
-                        } catch (imgError) {
-                            console.error(`Error cargando foto ${i + 1}:`, imgError);
-                            doc.setFontSize(10);
-                            doc.text(`❌ Error cargando: ${foto.foto_name}`, 14, posY);
-                            posY += 10;
-                        }
+        if (fotosActuales && fotosActuales.length > 0) {
+             if (posY > 240) { doc.addPage(); posY = 20; }
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Evidencia Fotográfica', 14, posY);
+            posY += 10;
+
+            const fotosUrls = fotosActuales.map(foto => {
+                return window.ERGOConfig.USE_SUPABASE ?
+                    `${window.ERGOConfig.SUPABASE_URL}/storage/v1/object/public/fotos-centros/${foto.foto_url}` :
+                    foto.url;
+            });
+            
+            const imagePromises = fotosUrls.map(url => cargarImagenOptimizada(url));
+            const loadedImages = (await Promise.all(imagePromises)).filter(Boolean);
+
+            if (loadedImages.length > 0) {
+                const margin = 14;
+                const gap = 8;
+                const boxWidth = (doc.internal.pageSize.getWidth() - (margin * 2) - gap) / 2;
+                const boxHeight = 70;
+                let x_coord = margin;
+
+                for (let i = 0; i < loadedImages.length; i++) {
+                    if (posY + boxHeight > doc.internal.pageSize.getHeight() - 20) {
+                        doc.addPage();
+                        posY = 20;
+                        x_coord = margin;
                     }
-                } else {
-                    doc.setFontSize(12);
-                    doc.text('📸 No hay fotos disponibles para este centro', 14, posY);
-                    posY += 15;
+                    agregarImagenConAspecto(doc, loadedImages[i], x_coord, posY, boxWidth, boxHeight);
+                    if ((i + 1) % 2 === 0) {
+                        posY += boxHeight + gap;
+                        x_coord = margin;
+                    } else {
+                        x_coord += boxWidth + gap;
+                    }
                 }
-
-                // Asegurar nueva página para notas si es necesario
-                if (posY > 200) {
-                    doc.addPage();
-                    posY = 20;
-                }
-
-                // Sección de notas
-                if (notasActuales && notasActuales.length > 0) {
-                    doc.setFontSize(14);
-                    doc.text('📝 Notas y Observaciones', 14, posY);
-                    posY += 15;
-
-                    notasActuales.reverse().forEach((nota, index) => {
-                        if (posY > 250) {
-                            doc.addPage();
-                            posY = 20;
-                        }
-
-                        doc.setFontSize(10);
-                        doc.text(`${ERGOUtils.formatDate(nota.fecha)}:`, 14, posY);
-                        posY += 6;
-                        
-                        doc.setFontSize(9);
-                        const textLines = doc.splitTextToSize(nota.texto, 180);
-                        doc.text(textLines, 14, posY);
-                        posY += textLines.length * 4 + 8;
-                    });
-                } else {
-                    doc.setFontSize(12);
-                    doc.text('📝 No hay notas registradas', 14, posY);
-                }
-
-                // Guardar PDF
-                doc.save(nombreArchivo);
-                ERGOUtils.showToast('PDF generado correctamente', 'success');
-
-            } catch (error) {
-                console.error('Error generando PDF:', error);
-                ERGOUtils.showToast('Error al generar PDF: ' + error.message, 'error');
+                 posY += boxHeight + gap;
             }
         }
+        
+        if (notasActuales && notasActuales.length > 0) {
+             if (posY > 250) { doc.addPage(); posY = 20; }
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Notas y Observaciones', 14, posY);
+            posY += 10;
+            doc.setFont('helvetica', 'normal');
+            notasActuales.forEach(nota => {
+                const fechaNota = ERGOUtils.formatDate(nota.created_at || nota.fecha);
+                const textoNota = doc.splitTextToSize(`(${fechaNota}): ${nota.texto}`, 180);
+                 if (posY + (textoNota.length * 5) > 280) { doc.addPage(); posY = 20; }
+                doc.setFontSize(9);
+                doc.text(textoNota, 14, posY);
+                posY += textoNota.length * 5 + 3;
+            });
+        }
+
+        doc.save(nombreArchivo);
+        ERGOUtils.showToast('Reporte generado con éxito', 'success');
+
+    } catch (error) {
+        console.error('Error generando PDF:', error);
+        ERGOUtils.showToast(`Error al generar el PDF: ${error.message || error}`, 'error');
+    }
+}
+
+async function cargarImagenOptimizada(url) {
+    return new Promise((resolve) => {
+        try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function () {
+                if (!this.naturalWidth || !this.naturalHeight) {
+                    resolve(null);
+                    return;
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = this.naturalWidth;
+                canvas.height = this.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(this, 0, 0);
+                const dataURL = canvas.toDataURL('image/jpeg', 0.85);
+                resolve(dataURL);
+            };
+            img.onerror = () => resolve(null);
+            img.src = url;
+        } catch (e) {
+            resolve(null);
+        }
+    });
+}
+
+function agregarImagenConAspecto(doc, imageData, x, y, maxWidth, maxHeight) {
+    if (!imageData) return;
+    try {
+        const props = doc.getImageProperties(imageData);
+        const aspectRatio = props.width / props.height;
+        let finalWidth = maxWidth;
+        let finalHeight = finalWidth / aspectRatio;
+
+        if (finalHeight > maxHeight) {
+            finalHeight = maxHeight;
+            finalWidth = finalHeight * aspectRatio;
+        }
+        
+        const centeredX = x + (maxWidth - finalWidth) / 2;
+        const centeredY = y + (maxHeight - finalHeight) / 2;
+
+        doc.addImage(imageData, 'JPEG', centeredX, centeredY, finalWidth, finalHeight);
+    } catch (error) {
+        console.error("No se pudo agregar una imagen al PDF:", error);
+    }
+}
