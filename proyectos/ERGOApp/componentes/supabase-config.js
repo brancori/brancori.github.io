@@ -61,7 +61,13 @@ async query(table, method = 'GET', data = null, filters = '') {
         options.body = JSON.stringify(data);
         console.log('🔍 Datos enviados a Supabase:', JSON.stringify(data, null, 2));
     }
-
+    console.groupCollapsed(`[DEBUG] Petición a Supabase: ${method} ${table}`);
+    console.log('➡️ URL Completa:', url);
+    console.log('📋 Encabezados (Headers):', options.headers);
+    if (options.body) {
+        console.log('📦 Cuerpo (Body) enviado:', JSON.parse(options.body));
+    }
+    console.groupEnd();
     try {
         const response = await fetch(url, options);
         if (!response.ok) {
@@ -73,12 +79,12 @@ async query(table, method = 'GET', data = null, filters = '') {
         // --- CAMBIO CLAVE 2 ---
         // Ahora, para POST, PATCH y GET, esperamos una respuesta con cuerpo JSON.
         // Para DELETE, puede que no haya cuerpo, así que devolvemos un éxito genérico.
-        if (method === 'DELETE') {
-            return { success: true };
-        }
-        
-        // El método .json() lee el cuerpo de la respuesta y lo transforma en un objeto JavaScript.
-        const responseData = await response.json();
+if (method === 'DELETE' || response.status === 204) {
+    return { success: true };
+}
+
+// El método .json() lee el cuerpo de la respuesta y lo transforma en un objeto JavaScript.
+const responseData = await response.json();
         return responseData;
 
     } catch (error) {
@@ -673,6 +679,7 @@ async getGlobalPictogramSummary() {
                 }
             }
             return summary;
+            
         } catch (error) {
             console.error('Error getting global pictogram summary:', error);
             return null;
@@ -682,7 +689,51 @@ async getGlobalPictogramSummary() {
     async getAllAreasConResumen() {
         return await this.query('areas', 'GET', null, '?select=name,resumen_pictogramas');
     }
+/**
+     * Obtiene y resume los datos de pictogramas para un área específica.
+     * @param {string} areaId - El ID del área para filtrar las evaluaciones.
+     * @returns {Promise<object>} - Un objeto con el resumen de pictogramas para el área.
+     */
+ async getAreaPictogramSummary(areaId) {
+        if (!areaId) {
+            console.error("Se requiere un ID de área para obtener el resumen.");
+            return {};
+        }
 
+        const { data: evaluations, error } = await this.supabase
+            .from('public.ergo_evaluations') // <-- CORRECCIÓN AQUÍ
+            .select('area_id, result_pictogram, risk_level')
+            .eq('area_id', areaId);
+
+        if (error) {
+            console.error(`Error al obtener evaluaciones para el área ${areaId}:`, error);
+            throw error;
+        }
+
+        if (!evaluations || evaluations.length === 0) {
+            return {};
+        }
+
+        const summary = evaluations.reduce((acc, curr) => {
+            if (!curr.result_pictogram || !curr.risk_level) return acc;
+
+            const pictogramId = curr.result_pictogram;
+            const riskLevel = ERGOAnalytics.normalizeRiskLevel(curr.risk_level);
+
+            if (!acc[pictogramId]) {
+                acc[pictogramId] = { Total: 0, Critico: 0, Alto: 0, Medio: 0, Bajo: 0 };
+            }
+
+            acc[pictogramId].Total++;
+            if (acc[pictogramId][riskLevel] !== undefined) {
+                acc[pictogramId][riskLevel]++;
+            }
+
+            return acc;
+        }, {});
+
+        return summary;
+    }
 
 async getUsers() {
         return await this.query('usuarios', 'GET', null, '?select=*&order=nombre.asc');

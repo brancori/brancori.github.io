@@ -1,6 +1,360 @@
 // Configuración para usar Supabase o localStorage
 const USE_SUPABASE = window.ERGOConfig.USE_SUPABASE;
 
+/**
+ * Renderiza una gráfica de barras de riesgo con animación de crecimiento.
+ * @param {string} containerId - El ID del elemento contenedor para la gráfica.
+ * @param {object} summary - El objeto con los datos de resumen.
+ */
+
+
+function renderRiskChart(containerId, summary) {
+    console.log('🎯 [renderRiskChart] Iniciando con:', { containerId, summary });
+    
+    const chartContainer = document.getElementById(containerId);
+    if (!chartContainer) {
+        console.error(`❌ Container ${containerId} not found`);
+        return;
+    }
+
+    if (!summary || Object.keys(summary).length === 0) {
+        console.log('⚠️ No hay datos de summary');
+        chartContainer.innerHTML = '<p class="no-data-chart">No hay datos para la gráfica.</p>';
+        return;
+    }
+
+    if (typeof ERGOAnalytics === 'undefined' || !ERGOAnalytics.pictogramasConfig) {
+        console.error("❌ ERGOAnalytics.pictogramasConfig no está definido.");
+        chartContainer.innerHTML = '<p class="no-data-chart">Error de configuración.</p>';
+        return;
+    }
+
+    // Procesar datos con logs
+    const riskData = Object.entries(summary)
+        .map(([id, data]) => {
+            const item = {
+                id,
+                count: data.Critico || 0,
+                nombre: ERGOAnalytics.pictogramasConfig[id]?.nombre || id
+            };
+            console.log(`📊 Procesando ${id}:`, item);
+            return item;
+        })
+        .filter(item => {
+            const include = item.count > 0;
+            if (!include) console.log(`🚫 Filtrando ${item.id} (count: ${item.count})`);
+            return include;
+        })
+        .sort((a, b) => b.count - a.count);
+
+    console.log('📈 Datos finales para el gráfico:', riskData);
+
+    if (riskData.length === 0) {
+        console.log('✅ Sin datos de riesgo crítico');
+        chartContainer.innerHTML = '<p class="no-data-chart_areas">✅<br>Sin riesgos de alta prioridad detectados.</p>';
+        return;
+    }
+    
+    const maxValue = Math.max(...riskData.map(d => d.count), 1);
+    console.log(`📏 Valor máximo encontrado: ${maxValue}`);
+
+    // Calcular alturas con logs
+    const chartHTML = riskData.map((data, index) => {
+        const percentage = (data.count / maxValue) * 100;
+        const barHeight = Math.max(percentage, 5); // Mínimo 5% para visibilidad
+        const animationDelay = index * 0.15; // 150ms entre barras
+        
+        console.log(`🏗️ Barra ${data.id}: count=${data.count}, percentage=${percentage.toFixed(2)}%, height=${barHeight.toFixed(2)}%, delay=${animationDelay}s`);
+        
+        return `
+            <div class="bar-chart-item_areas" title="${data.nombre}: ${data.count} hallazgos de riesgo crítico">
+                <div class="bar-value_areas">${data.count}</div>
+                <div class="bar-wrapper_areas">
+                    <div class="bar_areas" 
+                         data-target-height="${barHeight}" 
+                         data-count="${data.count}"
+                         data-delay="${animationDelay}"
+                         style="height: 0px; background: linear-gradient(to top, #dc3545, #e74c3c);">
+                    </div>
+                </div>
+                <div class="bar-label_areas">${data.id}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Crear contenedor con estructura correcta
+    chartContainer.innerHTML = `<div class="risk-chart-container_areas">${chartHTML}</div>`;
+    console.log('🎨 HTML generado e insertado');
+
+    // Aplicar animaciones con logs detallados
+    setTimeout(() => {
+        console.log('🚀 Iniciando animaciones...');
+        // AQUÍ ESTÁ EL CAMBIO: de '.bar' a '.bar_areas'
+        const bars = chartContainer.querySelectorAll('.bar_areas'); 
+        console.log(`🎯 Encontradas ${bars.length} barras`);
+        
+        bars.forEach((bar, index) => {
+            const targetHeight = parseFloat(bar.dataset.targetHeight);
+            const count = parseInt(bar.dataset.count);
+            const delay = parseFloat(bar.dataset.delay) * 1000;
+            
+            console.log(`⏱️ Programando barra ${index}: height=${targetHeight}%, count=${count}, delay=${delay}ms`);
+            
+            setTimeout(() => {
+                console.log(`🎬 Animando barra ${index} a ${targetHeight}%`);
+                
+                // Aplicar altura con transición
+                bar.style.transition = 'height 0.8s ease-out';
+                bar.style.height = `${targetHeight}%`;
+                
+                // Verificar después de un momento
+                setTimeout(() => {
+                    const computedStyle = window.getComputedStyle(bar);
+                    const actualHeight = computedStyle.height;
+                    console.log(`✅ Barra ${index} altura final: ${actualHeight} (esperada: ${targetHeight}%)`);
+                }, 900);
+                
+            }, delay);
+        });
+    }, 100);
+}
+
+// Función auxiliar para verificar el estado del DOM
+function debugChartState(containerId) {
+    console.log('🔍 [debugChartState] Verificando estado del gráfico');
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`❌ Container ${containerId} no encontrado`);
+        return;
+    }
+    
+    const bars = container.querySelectorAll('.bar');
+    console.log(`🎯 Encontradas ${bars.length} barras en ${containerId}`);
+    
+    bars.forEach((bar, index) => {
+        const computedStyle = window.getComputedStyle(bar);
+        const height = computedStyle.height;
+        const targetHeight = bar.dataset.targetHeight;
+        const count = bar.dataset.count;
+        
+        console.log(`📏 Barra ${index}: target=${targetHeight}%, actual=${height}, count=${count}`);
+    });
+}
+
+// Función para inyectar CSS si no existe
+function ensureChartCSS() {
+    if (!document.getElementById('chart-debug-css')) {
+        const style = document.createElement('style');
+        style.id = 'chart-debug-css';
+        style.textContent = requiredCSS;
+        document.head.appendChild(style);
+        console.log('🎨 CSS del gráfico inyectado');
+    }
+}
+
+
+async function getAreaPictogramSummaryCorrected(areaId) {
+    if (!areaId) return null;
+
+    try {
+        const supabaseClient = window.dataClient.supabase; 
+        
+        const { data, error } = await supabaseClient
+            .from('evaluaciones')
+            .select('riesgos_por_categoria')
+            .eq('area_id', areaId)
+            .not('riesgos_por_categoria', 'is', null);
+
+        if (error) {
+            console.error(`Error en la consulta final para el área ${areaId}:`, error);
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            console.log(`No se encontraron evaluaciones con 'riesgos_por_categoria' para el área ${areaId}.`);
+            return {};
+        }
+        
+        // Objeto para acumular los conteos de niveles de riesgo
+        const summary = data.reduce((acc, evaluacion) => {
+            const riesgos = evaluacion.riesgos_por_categoria;
+            if (!riesgos || typeof riesgos !== 'object') return acc;
+
+            for (const pictoId in riesgos) {
+                const riesgoInfo = riesgos[pictoId];
+                if (!riesgoInfo || !riesgoInfo.nivel) continue;
+
+                // Inicializamos el pictograma en el acumulador si no existe
+                if (!acc[pictoId]) {
+                    acc[pictoId] = { "Critico": 0, "Alto": 0, "Medio": 0, "Bajo": 0 };
+                }
+
+                // Normalizamos el nombre del nivel de riesgo para que coincida con las claves
+                // Ej: "Crítico" -> "Critico", "Bajo/Nulo" -> "Bajo"
+                let nivelNormalizado = riesgoInfo.nivel.replace('í', 'i').split('/')[0];
+
+                // Incrementamos el contador para el nivel correspondiente
+                if (acc[pictoId].hasOwnProperty(nivelNormalizado)) {
+                    acc[pictoId][nivelNormalizado]++;
+                }
+            }
+            return acc;
+        }, {});
+
+        console.log(`✅ Resumen de riesgos construido exitosamente para el área ${areaId}:`, summary);
+        return summary;
+
+    } catch (e) {
+        console.error("Fallo crítico en getAreaPictogramSummaryCorrected:", e);
+        throw e;
+    }
+}
+async function loadPictogramSummary(area_id = null) {
+    const CACHE_KEY = area_id ? `pictogramSummary_${area_id}` : 'pictogramSummary_global';
+    
+    // 1. Intentar cargar desde caché
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+        try {
+            const parsed = JSON.parse(cachedData);
+            if (parsed && parsed.data && Object.keys(parsed.data).length > 0) {
+                 console.log(`✅ Resumen de pictogramas cargado desde caché: ${CACHE_KEY}`);
+                 return parsed.data;
+            }
+        } catch (error) {
+            localStorage.removeItem(CACHE_KEY);
+        }
+    }
+
+    let summaryData = {};
+    // 2. Intentar Supabase si está habilitado
+    if (USE_SUPABASE) {
+        console.log(`⏳ Intentando cargar desde Supabase: ${CACHE_KEY}`);
+        try {
+            if (area_id) {
+                // --- ¡Usa nuestra función corregida final! ---
+                summaryData = await getAreaPictogramSummaryCorrected(area_id);
+            } else {
+                summaryData = await dataClient.getGlobalPictogramSummary();
+            }
+        } catch (error) {
+            console.error(`⚠️ Error al cargar desde Supabase: ${error.message}. Se usará fallback.`);
+        }
+    }
+
+    // 3. Fallback (si Supabase falla o está deshabilitado)
+    if (!summaryData || Object.keys(summaryData).length === 0) {
+        console.log(`📊 Construyendo resumen desde fallback local: ${CACHE_KEY}`);
+        summaryData = buildPictogramSummaryFromLocal(area_id);
+    }
+    
+    // Guardar en caché el resultado
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+        timestamp: new Date().getTime(),
+        data: summaryData
+    }));
+    
+    return summaryData;
+}
+
+function buildPictogramSummaryFromLocal(area_id = null) {
+
+    try {
+        const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+        let filteredEvaluaciones = evaluaciones;
+
+        if (area_id) {
+            // Filtrar evaluaciones por área específica
+            const areaCenters = workCenters.filter(wc => wc.area_id === area_id);
+            const centerIds = areaCenters.map(center => center.id);
+            filteredEvaluaciones = evaluaciones.filter(evaluacion => 
+                centerIds.includes(evaluacion.workCenterId || evaluacion.work_center_id)
+            );
+                console.log('🔍 Evaluaciones encontradas:', evaluaciones.length);
+console.log('🔍 Centros del área:', areaCenters.length);
+console.log('🔍 Evaluaciones filtradas:', filteredEvaluaciones.length);
+        }
+
+        console.log(`📈 Procesando ${filteredEvaluaciones.length} evaluaciones para ${area_id || 'global'}`);
+
+        // Construir resumen de pictogramas
+        const summary = {};
+        
+        filteredEvaluaciones.forEach(evaluacion => {
+            // Verificar diferentes estructuras de pictogramas evaluados
+            const pictogramas = evaluacion.pictogramasEvaluados || 
+                               evaluacion.pictograms_evaluated || 
+                               evaluacion.pictogramas || 
+                               [];
+            
+            if (Array.isArray(pictogramas)) {
+                pictogramas.forEach(pictograma => {
+                    const id = pictograma.id || pictograma.pictogram_id;
+                    if (!id) return;
+
+                    if (!summary[id]) {
+                        summary[id] = { severidad: 0 };
+                    }
+                    
+                    // Determinar severidad basada en diferentes campos
+                    let severidad = 0;
+                    
+                    // Opción 1: Campo directo de severidad
+                    if (pictograma.severidad) {
+                        severidad = pictograma.severidad;
+                    }
+                    // Opción 2: Nivel de riesgo textual
+                    else if (pictograma.nivelRiesgo || pictograma.nivel_riesgo || pictograma.risk_level) {
+                        const riesgo = (pictograma.nivelRiesgo || pictograma.nivel_riesgo || pictograma.risk_level).toLowerCase();
+                        if (riesgo.includes('crítico') || riesgo.includes('critico') || riesgo.includes('alto')) {
+                            severidad = 3;
+                        } else if (riesgo.includes('moderado') || riesgo.includes('medio')) {
+                            severidad = 2;
+                        } else if (riesgo.includes('bajo')) {
+                            severidad = 1;
+                        }
+                    }
+                    // Opción 3: Score numérico
+                    else if (pictograma.score || pictograma.puntuacion) {
+                        const score = pictograma.score || pictograma.puntuacion;
+                        if (score >= 75) severidad = 3;
+                        else if (score >= 50) severidad = 2;
+                        else if (score > 0) severidad = 1;
+                    }
+                    
+                    // Mantener la severidad máxima
+                    summary[id].severidad = Math.max(summary[id].severidad, severidad);
+                });
+            }
+        });
+
+        console.log(`✅ Resumen construido con ${Object.keys(summary).length} pictogramas`);
+        return summary;
+        
+    } catch (error) {
+        console.error('Error building pictogram summary from local data:', error);
+        return {};
+    }
+
+    
+}
+
+function invalidatePictogramCache(area_id = null) {
+    if (area_id) {
+        localStorage.removeItem(`pictogramSummary_${area_id}`);
+        console.log(`🗑️ Cache invalidado para área: ${area_id}`);
+    } else {
+        // Invalidar todos los cachés de pictogramas
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith('pictogramSummary_')) {
+                localStorage.removeItem(key);
+            }
+        });
+        console.log('🗑️ Todos los cachés de pictogramas invalidados');
+    }
+}
+
 // Funciones híbridas que usan Supabase o localStorage
 async function loadAreas() {
     const CACHE_KEY = 'areasCache';
@@ -490,6 +844,15 @@ async function deleteArea(area_id, event) {
 async function renderAreas() {
     const container = document.getElementById('areas-container');
     updateAreasCount();
+
+    // Cargar y renderizar la gráfica de riesgo global
+    try {
+        const globalSummary = await loadPictogramSummary();
+        renderRiskChart('global-risk-chart', globalSummary);
+    } catch (error) {
+        console.error("Error al cargar el resumen global de riesgos:", error);
+        document.getElementById('global-risk-chart').innerHTML = '<p class="no-data-chart">No se pudo cargar la gráfica.</p>';
+    }
         
     if (areas.length === 0) {
         container.innerHTML = `
@@ -609,13 +972,33 @@ function showAreasPage() {
 }
 
 async function showAreaDetail(area_id) {
+    console.log(`🕵️‍♂️ [showAreaDetail] Iniciando vista de detalle para area_id: ${area_id}`);
+
+    // ... (el resto del código de la función para ocultar/mostrar páginas y actualizar UI)
+    document.getElementById('areas-page').classList.remove('active');
+    document.getElementById('area-detail-page').classList.add('active');
     const area = areas.find(a => a.id === area_id);
     if (!area) {
         ERGOUtils.showToast('Área no encontrada', 'error');
         return;
     }
-
     current_area_id = area_id;
+
+    // Cargar y renderizar la gráfica de riesgo del área con caché mejorado
+try {
+    // Se utiliza la función especializada que sí obtiene el resumen de pictogramas para un área específica.
+    // Esta función ya contiene la lógica de caché, llamada a Supabase y fallback.
+    const areaSummary = await loadPictogramSummary(area_id);
+    
+    console.log(`📊 Datos del resumen para el área ${area_id} cargados:`, areaSummary);
+    renderRiskChart('area-risk-chart', areaSummary);
+} catch (error) {
+    console.error(`Error al cargar resumen de riesgos para el área ${area_id}:`, error);
+    const chartContainer = document.getElementById('area-risk-chart');
+    if (chartContainer) {
+        chartContainer.innerHTML = '<p class="no-data-chart">No se pudo cargar la gráfica del área.</p>';
+    }
+}
     
     // Actualizar contenido de la página
     document.getElementById('area-detail-title').textContent = area.name;
@@ -629,6 +1012,7 @@ async function showAreaDetail(area_id) {
     await loadWorkCenters(area_id);
     await renderWorkCenters();
 }
+
 
 // Gestión de centros de trabajo
 function openWorkCenterModal() {
@@ -943,8 +1327,6 @@ function actualizarScoreEnCentro(workCenterId, score, categoria) {
         scoreElement.style.cssText = `
             font-size: 12px;
             color: #666;
-            margin-top: 4px;
-            padding: 4px 8px;
             background-color: #f8f9fa;
             border-radius: 4px;
             border-left: 3px solid ${ERGOUtils.getScoreColor(parseFloat(score))};
@@ -963,6 +1345,7 @@ function actualizarScoreEnCentro(workCenterId, score, categoria) {
 // Función para cargar scores existentes al cargar la página
 function cargarScoresExistentes() {
     const evaluaciones = JSON.parse(localStorage.getItem('evaluaciones')) || [];
+    console.log('Debug evaluaciones:', evaluaciones.length, evaluaciones[0])
     
     evaluaciones.forEach(evaluacion => {
         if (evaluacion.workCenterId && evaluacion.scoreFinal) {
@@ -1178,3 +1561,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     ERGOAuth.applyPermissionControls();
 });
+
+function onEvaluationSaved(workCenterId, areaId) {
+    // Invalidar cachés relacionados
+    invalidatePictogramCache(areaId); // Cache del área específica
+    invalidatePictogramCache(null);   // Cache global
+    
+    // También invalidar otros cachés relacionados
+    localStorage.removeItem('areasCache');
+    localStorage.removeItem(`workCentersCache_${areaId}`);
+    localStorage.removeItem('workCentersCache_all');
+}

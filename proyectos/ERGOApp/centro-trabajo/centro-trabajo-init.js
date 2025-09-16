@@ -139,8 +139,10 @@
     });
 
     function setupEventListeners() {
+        document.getElementById('btn-comentarios').addEventListener('click', gestionarComentario);
         // Input de fotos (este es el original, no lo borres)
         document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
+        
 
         const factoresIds = ['iluminacion', 'temperatura', 'ruido', 'personal'];
 
@@ -226,34 +228,45 @@ window.location.href = url;
         });
     }
 
-    async function gestionarComentario() {
-        const btn = document.getElementById('btn-comentarios');
-        const textarea = document.getElementById('comentarios-generales');
+async function gestionarComentario() {
+    const btn = document.getElementById('btn-comentarios');
+    const textarea = document.getElementById('comentarios-generales');
 
-        isComentarioEnEdicion = !isComentarioEnEdicion;
+    isComentarioEnEdicion = !isComentarioEnEdicion;
 
-        if (isComentarioEnEdicion) {
-            // --- MODO EDICIÓN ---
-            textarea.readOnly = false;
-            textarea.classList.remove('is-readonly'); // Quita el estilo de "solo lectura"
-            btn.textContent = 'Guardar Cambios';
-            textarea.focus();
-        } else {
-            // --- MODO VISTA (y guardado) ---
-            textarea.readOnly = true;
-            textarea.classList.add('is-readonly'); // Añade el estilo de "solo lectura"
-            btn.textContent = 'Editar Comentario';
+    if (isComentarioEnEdicion) {
+        // --- MODO EDICIÓN ---
+        textarea.readOnly = false;
+        textarea.classList.remove('is-readonly');
+        btn.textContent = 'Guardar Cambios';
+        textarea.focus();
+    } else {
+        // --- MODO VISTA (y guardado) ---
+        textarea.readOnly = true;
+        textarea.classList.add('is-readonly');
+        btn.textContent = 'Editar Comentario';
 
-            try {
-                ERGOUtils.showToast('Guardando cambios...', 'info');
-                await dataClient.updateWorkCenterComments(workCenterId, textarea.value);
-                ERGOUtils.showToast('Comentario actualizado.', 'success');
-            } catch (error) {
-                console.error('Error al actualizar el comentario:', error);
-                ERGOUtils.showToast('No se pudo guardar el comentario.', 'error');
-            }
+        try {
+            ERGOUtils.showToast('Guardando cambios...', 'info');
+
+            // ======================= LOG PARA DIAGNÓSTICO =======================
+            console.log(`[DEBUG] Llamando a 'updateWorkCenterComments' con WorkCenterID: '${workCenterId}' y Comentario: '${textarea.value}'`);
+            // ====================================================================
+
+            await dataClient.updateWorkCenterComments(workCenterId, textarea.value);
+            ERGOUtils.showToast('Comentario actualizado.', 'success');
+        } catch (error) {
+            console.error('Error al actualizar el comentario:', error);
+            ERGOUtils.showToast('No se pudo guardar el comentario.', 'error');
         }
     }
+}
+
+// Asignamos el evento al botón una vez que el DOM está listo
+const commentButton = document.getElementById('btn-comentarios');
+if (commentButton) {
+    commentButton.addEventListener('click', gestionarComentario);
+}
 
     function volverACentros() {
         window.location.href = `../areas.html#area-${areaId}`;

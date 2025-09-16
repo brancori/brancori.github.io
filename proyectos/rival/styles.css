@@ -1,0 +1,298 @@
+/* styles.css */
+:root {
+  --bg: #0b0f17;
+  --card: #0f1720;
+  --accent: #2ce6ff;
+  --accent-2: #7b61ff;
+  --muted: #98a0b3;
+  --success: #28a745;
+  --danger: #e03e3e;
+  --warning: #ffc107;
+  --glass: rgba(255, 255, 255, 0.03);
+}
+
+body {
+  background: var(--bg);
+  color: #f5f5f5;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- Pantalla de Configuración --- */
+#setup-screen {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 25px;
+  background: var(--card);
+  border-radius: 14px;
+}
+#setup-screen h1 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+#setup-screen label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+#setup-screen input[type="number"],
+#setup-screen input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass);
+  background: var(--glass);
+  color: white;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+#setup-screen button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #021020;
+}
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+/* --- Pantalla de Juego --- */
+#game-screen {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#timer {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+#current-player {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+#round-info {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+#question-box {
+  background: linear-gradient(90deg, rgba(124,58,237,0.08), rgba(44,230,255,0.05));
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#categoria {
+  font-weight: bold;
+  color: var(--warning);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+#pregunta {
+  font-size: 1.4rem;
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+
+#respuesta {
+  font-size: 1.2rem;
+  color: var(--success);
+  font-weight: bold;
+  background: rgba(40, 167, 69, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+#chain, #bank {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+#controls-row {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.big-btn {
+  flex: 1;
+  padding: 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+.wrong { background: var(--danger); }
+.bank { background: var(--warning); color: black; }
+.correct { background: var(--success); }
+
+#ladder {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  margin: 20px auto;
+  max-width: 300px;
+}
+
+
+.ladder-step {
+  padding: 8px 20px;
+  border-radius: 999px; /* Forma de óvalo/píldora */
+  text-align: center;
+  width: 70%;
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  /* Efecto cristal azul */
+  background: linear-gradient(145deg, hsl(210, 100%, 65%), hsl(210, 100%, 50%));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 5px 20px rgba(0, 120, 255, 0.3);
+}
+
+.active-step {
+  color: white !important;
+  font-weight: bold;
+  /* Efecto cristal rojo */
+  background: linear-gradient(145deg, hsl(0, 100%, 65%), hsl(0, 100%, 50%));
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+  transform: scale(1.1);
+}
+
+#elimination {
+  margin-top: 20px;
+  padding: 15px;
+  background: var(--card);
+  border-radius: 12px;
+}
+#elimination button {
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 8px;
+    border: none;
+    background: var(--danger);
+    color: white;
+    cursor: pointer;
+}
+/* Añadir al final de styles.css */
+#question-box #current-player {
+  font-size: 1.6rem;
+  color: #ffffff;
+  margin-bottom: 15px;
+}
+.history-container {
+  margin-top: 25px;
+  color: var(--muted);
+}
+#round-history {
+  list-style: none;
+  padding: 0;
+}
+#round-history li {
+  background: var(--glass);
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.game-info-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#chain {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--warning); /* Color dorado */
+  margin: 0;
+}
+
+#bank {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+#game-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  max-height: 100vh;
+  box-sizing: border-box;
+}
+
+.game-header {
+  padding: 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--glass);
+  width: 100%;
+  box-sizing: border-box;
+}
+.game-header #timer {
+  font-size: 2.5rem; /* Ajustamos un poco el tamaño */
+}
+
+.game-main {
+  flex: 1; /* Ocupa todo el espacio restante */
+  overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+  padding: 15px;
+  /* Ya no necesitamos el padding gigante, lo dejamos en 15px */
+  padding-bottom: 15px;
+}
+
+/* Pie de página fijo */
+.game-footer {
+  /* position: fixed; <-- QUITAMOS ESTA LÍNEA Y LAS SIGUIENTES */
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(180deg, rgba(15, 23, 32, 0.85), rgba(15, 23, 32, 1));
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--glass);
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+
+.game-footer .game-info-container {
+  margin-bottom: 15px;
+}
+
+/* Ajustes menores */
+#ladder {
+  margin-bottom: 20px;
+}
+.history-container{
+  display:none; /* Ocultamos el historial de rondas que estaba al final */
+}

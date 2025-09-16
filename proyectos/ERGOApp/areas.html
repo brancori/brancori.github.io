@@ -26,6 +26,12 @@
             </header>
             
             <main class="main-content">
+             <div class="card chart-card">
+                <h2>Resumen Global de Riesgos Críticos</h2>
+                <div id="global-risk-chart" class="bar-chart-container">
+                    <p class="no-data-chart">Cargando datos...</p>
+                </div>
+            </div>               
             <div class="toolbar">
                 <div class="toolbar-left">
                     <h2>Áreas registradas</h2>
@@ -85,6 +91,12 @@
             </header>
             
             <main class="main-content">
+            <div class="card chart-card">
+                <h2>Resumen de Riesgos Críticos del Área</h2>
+                <div id="area-risk-chart" class="bar-chart-container">
+                     <p class="no-data-chart">Cargando datos...</p>
+                </div>
+            </div>
             <div class="toolbar">
                 <div class="toolbar-left">
                     <button class="btn btn-ghost" onclick="showAreasPage()">
@@ -238,6 +250,7 @@
     <script src="./componentes/auth-client.js"></script> <script src="./componentes/header-component.js"></script>
 
     <script src="./componentes/supabase-config.js"></script>
-    <script src="areas.js"></script>
+        <script src="areas.js"></script>
+
 </body>
 </html>

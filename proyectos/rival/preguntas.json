@@ -1,0 +1,957 @@
+[
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Cuál es la capital de Francia?",
+    "respuesta": "París"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Qué planeta es conocido como el planeta rojo?",
+    "respuesta": "Marte"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿En qué año llegó Cristóbal Colón a América?",
+    "respuesta": "1492"
+  },
+    {
+    "categoria": "Geografía",
+    "pregunta": "¿Capital de Japón?",
+    "respuesta": "Tokio"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuántos lados tiene un hexágono?",
+    "respuesta": "6"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Planeta más grande del sistema solar?",
+    "respuesta": "Júpiter"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Más vale pájaro en mano que ciento...",
+    "respuesta": "volando"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿En qué año cayó el muro de Berlín?",
+    "respuesta": "1989"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿Cuántos jugadores tiene un equipo de baloncesto en la cancha?",
+    "respuesta": "5"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuántos colores tiene el arcoíris?",
+    "respuesta": "7"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Camarón que se duerme se lo lleva la...",
+    "respuesta": "corriente"
+  },
+  {
+    "categoria": "Arte",
+    "pregunta": "¿Quién pintó la Capilla Sixtina?",
+    "respuesta": "Miguel Ángel"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuál es el símbolo químico del agua?",
+    "respuesta": "H2O"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Autor de 'Cien años de soledad'?",
+    "respuesta": "García Márquez"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 9 x 9?",
+    "respuesta": "81"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿En qué continente está Egipto?",
+    "respuesta": "África"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Al que madruga, Dios le...",
+    "respuesta": "ayuda"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Director de la película 'Pulp Fiction'?",
+    "respuesta": "Tarantino"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Cuántas sinfonías compuso Beethoven?",
+    "respuesta": "9"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Primer hombre en pisar la Luna?",
+    "respuesta": "Armstrong"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Número de planetas en nuestro sistema solar?",
+    "respuesta": "8"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "El que es perico, dondequiera es...",
+    "respuesta": "verde"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuántos días tiene un año bisiesto?",
+    "respuesta": "366"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿Cada cuántos años se celebra el Mundial de Fútbol?",
+    "respuesta": "4"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿País con forma de bota?",
+    "respuesta": "Italia"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Agua que no has de beber, déjala...",
+    "respuesta": "correr"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuántos minutos tiene una hora?",
+    "respuesta": "60"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿De qué color son los zapatos de Dorothy en 'El Mago de Oz'?",
+    "respuesta": "Rojos"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Vocalista principal de la banda Queen?",
+    "respuesta": "Mercury"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "De lengua me como un...",
+    "respuesta": "plato"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuántos huesos tiene un cuerpo humano adulto?",
+    "respuesta": "206"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿En qué país se originaron los Juegos Olímpicos?",
+    "respuesta": "Grecia"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Género literario de 'El principito'?",
+    "respuesta": "Fábula"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Océano más grande del mundo?",
+    "respuesta": "Pacífico"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Al nopal solo se le arriman cuando tiene...",
+    "respuesta": "tunas"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuál es la moneda oficial del Reino Unido?",
+    "respuesta": "Libra"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Número de grados en un círculo completo?",
+    "respuesta": "360"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿En qué deporte destacó Muhammad Ali?",
+    "respuesta": "Boxeo"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Componente principal del Sol?",
+    "respuesta": "Hidrógeno"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "El que nace para tamal, del cielo le caen las...",
+    "respuesta": "hojas"
+  },
+  {
+    "categoria": "Arte",
+    "pregunta": "¿Nacionalidad del pintor Salvador Dalí?",
+    "respuesta": "Española"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Cómo se llama el león protagonista de 'El Rey León'?",
+    "respuesta": "Simba"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Cuántos integrantes tenían The Beatles?",
+    "respuesta": "4"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Río más largo del mundo?",
+    "respuesta": "Nilo"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "A falta de pan, buenas son...",
+    "respuesta": "tortillas"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Cuántos años duró la Guerra de los Cien Años?",
+    "respuesta": "116"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Resultado de 2 elevado a la quinta potencia?",
+    "respuesta": "32"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuántas patas tiene una araña?",
+    "respuesta": "8"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuál es el metal más denso?",
+    "respuesta": "Osmio"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "No por mucho madrugar amanece más...",
+    "respuesta": "temprano"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿País que ha ganado más Mundiales de Fútbol?",
+    "respuesta": "Brasil"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Protagonista de 'La Odisea'?",
+    "respuesta": "Ulises"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Dime con quién andas y te diré quién...",
+    "respuesta": "eres"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "A darle que es mole de...",
+    "respuesta": "olla"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿País más poblado del mundo?",
+    "respuesta": "India"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cómo se le dice al miedo a las alturas?",
+    "respuesta": "Acrofobia"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Le echa mucha crema a sus...",
+    "respuesta": "tacos"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuál es el animal más rápido del mundo?",
+    "respuesta": "Guepardo"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿En qué año inició la Revolución Mexicana?",
+    "respuesta": "1910"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "El que con lobos anda, a aullar se...",
+    "respuesta": "enseña"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuántos segundos hay en una hora?",
+    "respuesta": "3600"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Quién dirigió la película 'Roma'?",
+    "respuesta": "Alfonso Cuarón"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Ya se armó la gorda de...",
+    "respuesta": "los tamales"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Capital de Canadá?",
+    "respuesta": "Ottawa"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿En qué país se inventó el voleibol?",
+    "respuesta": "Estados Unidos"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Para todo mal, mezcal; para todo bien...",
+    "respuesta": "también"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuántos corazones tiene un pulpo?",
+    "respuesta": "3"
+  },
+  {
+    "categoria": "Arte",
+    "pregunta": "¿Pintora mexicana famosa por sus autorretratos?",
+    "respuesta": "Frida Kahlo"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Le das la mano y se toma el...",
+    "respuesta": "pie"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Autor de 'Pedro Páramo'?",
+    "respuesta": "Juan Rulfo"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuántas estrellas tiene la bandera de Estados Unidos?",
+    "respuesta": "50"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Chocolate que no tiñe, claro...",
+    "respuesta": "está"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Qué civilización construyó Machu Picchu?",
+    "respuesta": "Inca"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Autor de 'El Huapango de Moncayo'?",
+    "respuesta": "José Pablo Moncayo"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Sepa la bola...",
+    "respuesta": "de gente"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿En qué estado mexicano se encuentra Chichén Itzá?",
+    "respuesta": "Yucatán"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuál es la velocidad de la luz (km/s)?",
+    "respuesta": "300,000"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Gorgojo, más chico que un piojo, así de chiquito produce...",
+    "respuesta": "enojo"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuántos centímetros cúbicos hay en un litro?",
+    "respuesta": "1000"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Personaje principal de la saga 'Harry Potter'?",
+    "respuesta": "Harry Potter"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "El que por su gusto es buey, hasta la coyunda...",
+    "respuesta": "lame"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿Quién es considerado el mejor basquetbolista de la historia?",
+    "respuesta": "Michael Jordan"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuál es la flor nacional de México?",
+    "respuesta": "Dalia"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Con la vara que midas serás...",
+    "respuesta": "medido"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Nombre del barco en el que Charles Darwin realizó su famoso viaje?",
+    "respuesta": "Beagle"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Desierto más grande del mundo?",
+    "respuesta": "Antártico"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Patitas, ¿para qué las...",
+    "respuesta": "quiero"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Qué estudia la entomología?",
+    "respuesta": "Insectos"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Quién escribió 'El laberinto de la soledad'?",
+    "respuesta": "Octavio Paz"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Del plato a la boca se cae la...",
+    "respuesta": "sopa"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿A quién se le conoce como 'El Rey del Rock and Roll'?",
+    "respuesta": "Elvis Presley"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "A chuchita la...",
+    "respuesta": "bolsearon"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es la raíz cuadrada de 144?",
+    "respuesta": "12"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Cuál es el animal nacional de México?",
+    "respuesta": "Águila Real"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "El muerto y el arrimado, a los tres días...",
+    "respuesta": "apestan"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Volcán más alto de México?",
+    "respuesta": "Pico de Orizaba"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Símbolo químico del oro?",
+    "respuesta": "Au"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Echarle los perros a...",
+    "respuesta": "alguien"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Emperador azteca a la llegada de los españoles?",
+    "respuesta": "Moctezuma"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿Cuántos metros tiene una carrera de maratón?",
+    "respuesta": "42,195"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Candil de la calle, oscuridad de su...",
+    "respuesta": "casa"
+  },
+  {
+    "categoria": "Arte",
+    "pregunta": "¿Autor de 'El Grito'?",
+    "respuesta": "Edvard Munch"
+  },
+  {
+    "categoria": "Cultura General",
+    "pregunta": "¿Qué significan las siglas 'IVA'?",
+    "respuesta": "Impuesto al Valor Agregado"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿En qué continente se encuentra el río Amazonas?",
+    "respuesta": "América del Sur"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Al mal tiempo, buena...",
+    "respuesta": "cara"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿El único mamífero capaz de volar?",
+    "respuesta": "Murciélago"
+  },
+  {
+    "categoria": "Dichos",
+    "pregunta": "Ya colgó los...",
+    "respuesta": "tenis"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿A quién se le conoce como 'El Divo de Juárez'?",
+    "respuesta": "Juan Gabriel"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Suma de los ángulos internos de un triángulo?",
+    "respuesta": "180"
+  },
+  {
+    "categoria": "Refranes",
+    "pregunta": "Tanto peca el que mata la vaca como el que le agarra la...",
+    "respuesta": "pata"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Criatura que protagoniza la película 'E.T.'?",
+    "respuesta": "Extraterrestre"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Qué dice Darth Vader a Luke después de 'Yo soy tu...'?",
+    "respuesta": "padre"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Qué banda canta la canción 'Bohemian Rhapsody'?",
+    "respuesta": "Queen"
+  },
+  {
+    "categoria": "Series",
+    "pregunta": "¿En qué ciudad vive la familia Simpson?",
+    "respuesta": "Springfield"
+  },
+  {
+    "categoria": "Videojuegos",
+    "pregunta": "¿Cómo se llama el hermano de Mario en los videojuegos?",
+    "respuesta": "Luigi"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Quién escribió 'El Señor de los Anillos'?",
+    "respuesta": "J.R.R. Tolkien"
+  },
+  {
+    "categoria": "Tecnología",
+    "pregunta": "¿Quién fue el co-fundador de Apple junto a Steve Wozniak?",
+    "respuesta": "Steve Jobs"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿De qué material son las garras de Wolverine?",
+    "respuesta": "Adamantium"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "'Adiós, amor, me voy de ti y esta vez para...' ¿qué sigue?",
+    "respuesta": "siempre"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuál es el planeta más cercano al Sol?",
+    "respuesta": "Mercurio"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Cuál es la capital de Australia?",
+    "respuesta": "Canberra"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿En qué país se encuentra la Gran Muralla?",
+    "respuesta": "China"
+  },
+  {
+    "categoria": "Series",
+    "pregunta": "¿Cómo se llama el protagonista de 'Breaking Bad'?",
+    "respuesta": "Walter White"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Qué frase dice Terminator comúnmente?",
+    "respuesta": "Hasta la vista, baby"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Qué artista es conocida como la 'Reina del Pop'?",
+    "respuesta": "Madonna"
+  },
+  {
+    "categoria": "Videojuegos",
+    "pregunta": "¿Cuál es el objetivo principal en Pokémon?",
+    "respuesta": "Atraparlos a todos"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿De qué escuela de magia es director Albus Dumbledore?",
+    "respuesta": "Hogwarts"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿En qué equipo jugó Lionel Messi la mayor parte de su carrera?",
+    "respuesta": "Barcelona"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Cómo se llama el auto de 'Volver al Futuro'?",
+    "respuesta": "DeLorean"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "'Ramito de violetas' es una canción famosa de...",
+    "respuesta": "Mi Banda El Mexicano"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuál es la fórmula química de la sal de mesa?",
+    "respuesta": "NaCl"
+  },
+  {
+    "categoria": "Cultura Pop",
+    "pregunta": "¿De qué color es Hulk?",
+    "respuesta": "Verde"
+  },
+  {
+    "categoria": "Series",
+    "pregunta": "¿Cuál es la frase icónica de la Casa Stark en 'Game of Thrones'?",
+    "respuesta": "Winter is coming"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Quién es el director de 'El Laberinto del Fauno'?",
+    "respuesta": "Guillermo del Toro"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿A qué grupo pertenecía Michael Jackson antes de ser solista?",
+    "respuesta": "The Jackson 5"
+  },
+  {
+    "categoria": "Videojuegos",
+    "pregunta": "¿Qué personaje debe rescatar a la princesa Peach?",
+    "respuesta": "Mario"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Cómo se llama el payaso de la novela 'It'?",
+    "respuesta": "Pennywise"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿En qué país se encuentran las pirámides de Giza?",
+    "respuesta": "Egipto"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Quién fue la última reina de Egipto?",
+    "respuesta": "Cleopatra"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Qué tipo de animal es 'Babe' en la película?",
+    "respuesta": "Cerdito"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿De qué país es originaria la banda Soda Stereo?",
+    "respuesta": "Argentina"
+  },
+  {
+    "categoria": "Series",
+    "pregunta": "¿En qué trabajan los amigos de la serie 'Friends'?",
+    "respuesta": "Cafetería"
+  },
+  {
+    "categoria": "Cultura Pop",
+    "pregunta": "¿Qué superhéroe es conocido como el 'Hombre de Acero'?",
+    "respuesta": "Superman"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Cuántas fases tiene la Luna?",
+    "respuesta": "Cuatro"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿Cuántos rounds tiene un combate de boxeo profesional por un título mundial?",
+    "respuesta": "12"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Cómo se llama el tigre en 'El libro de la selva'?",
+    "respuesta": "Shere Khan"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Quién canta la canción 'Querida'?",
+    "respuesta": "Juan Gabriel"
+  },
+  {
+    "categoria": "Videojuegos",
+    "pregunta": "¿Qué busca Link en la mayoría de los juegos de 'Zelda'?",
+    "respuesta": "La Trifuerza"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Cuál es el verdadero nombre de El Zorro?",
+    "respuesta": "Don Diego de la Vega"
+  },
+  {
+    "categoria": "Tecnología",
+    "pregunta": "¿Cómo se llama la red social de fotos propiedad de Meta?",
+    "respuesta": "Instagram"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Qué animal es el mejor amigo de Shrek?",
+    "respuesta": "Burro"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Cuál es el nombre real del cantante Bad Bunny?",
+    "respuesta": "Benito Martínez"
+  },
+  {
+    "categoria": "Series",
+    "pregunta": "¿Qué buscan los personajes en 'El Juego del Calamar'?",
+    "respuesta": "Ganar dinero"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Cuál es el país más pequeño del mundo?",
+    "respuesta": "El Vaticano"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Qué inventó Johannes Gutenberg?",
+    "respuesta": "La imprenta"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿De qué color es el sable de luz de Luke Skywalker en 'Return of the Jedi'?",
+    "respuesta": "Verde"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿Quién es el 'Rey del reguetón'?",
+    "respuesta": "Daddy Yankee"
+  },
+  {
+    "categoria": "Cultura Pop",
+    "pregunta": "¿Cuál es el nombre del mayordomo de Batman?",
+    "respuesta": "Alfred"
+  },
+  {
+    "categoria": "Ciencia",
+    "pregunta": "¿Qué gas necesitan las plantas para la fotosíntesis?",
+    "respuesta": "Dióxido de carbono"
+  },
+  {
+    "categoria": "Deportes",
+    "pregunta": "¿En qué deporte se destaca Tom Brady?",
+    "respuesta": "Fútbol americano"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Quién interpreta a Jack Sparrow en 'Piratas del Caribe'?",
+    "respuesta": "Johnny Depp"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "'Viento, dile a la lluvia que quiero...' ¿qué sigue en la canción de Caifanes?",
+    "respuesta": "volver a amar"
+  },
+  {
+    "categoria": "Videojuegos",
+    "pregunta": "¿Cómo se llama el fantasma naranja de Pac-Man?",
+    "respuesta": "Clyde"
+  },
+  {
+    "categoria": "Literatura",
+    "pregunta": "¿Quién es el autor de 'Don Quijote de la Mancha'?",
+    "respuesta": "Miguel de Cervantes"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿En qué año se estrenó 'Titanic'?",
+    "respuesta": "1997"
+  },
+  {
+    "categoria": "Series",
+    "pregunta": "¿Cuál es el nombre del bar que frecuentan en 'How I Met Your Mother'?",
+    "respuesta": "MacLaren's Pub"
+  },
+  {
+    "categoria": "Música",
+    "pregunta": "¿A qué banda pertenece la canción 'Hotel California'?",
+    "respuesta": "Eagles"
+  },
+  {
+    "categoria": "Geografía",
+    "pregunta": "¿Cuál es el océano más frío del mundo?",
+    "respuesta": "Ártico"
+  },
+  {
+    "categoria": "Historia",
+    "pregunta": "¿Qué presidente de México expropió el petróleo?",
+    "respuesta": "Lázaro Cárdenas"
+  },
+  {
+    "categoria": "Cine",
+    "pregunta": "¿Qué actor protagonizó la saga de 'Rocky'?",
+    "respuesta": "Sylvester Stallone"
+  },
+  {
+    "categoria": "Cultura Pop",
+    "pregunta": "¿Qué se colecciona en el anime 'Dragon Ball Z'?",
+    "respuesta": "Esferas del Dragón"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 15 + 25?",
+    "respuesta": "40"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 100 - 45?",
+    "respuesta": "55"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 8 x 8?",
+    "respuesta": "64"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 20 + 12 - 5?",
+    "respuesta": "27"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 72 + 18?",
+    "respuesta": "90"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 65 - 33?",
+    "respuesta": "32"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 9 x 7?",
+    "respuesta": "63"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 50 - 10 + 8?",
+    "respuesta": "48"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 150 + 50?",
+    "respuesta": "200"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 88 - 22?",
+    "respuesta": "66"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 12 x 5?",
+    "respuesta": "60"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 30 + 40 - 20?",
+    "respuesta": "50"
+  },
+    {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 43 + 17?",
+    "respuesta": "60"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 99 - 9?",
+    "respuesta": "90"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 11 x 11?",
+    "respuesta": "121"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 100 - 25 + 5?",
+    "respuesta": "80"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 205 + 95?",
+    "respuesta": "300"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 75 - 50?",
+    "respuesta": "25"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 25 x 4?",
+    "respuesta": "100"
+  },
+  {
+    "categoria": "Matemáticas",
+    "pregunta": "¿Cuánto es 18 + 12 - 10?",
+    "respuesta": "20"
+  }
+]

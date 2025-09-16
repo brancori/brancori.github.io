@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Rival Más Débil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="setup-screen">
+  <h1>El Rival Más Débil</h1>
+  <label for="numPlayers">Número de jugadores:</label>
+  <input type="number" id="numPlayers" min="2" max="9" value="3">
+  <div id="player-names"></div>
+  <div class="checkbox-container">
+    <input type="checkbox" id="useBots">
+    <label for="useBots">Completar con Bots</label>
+  </div>
+  <button id="btn-generate">🎮 Generar jugadores</button>
+  <button id="btn-start">🚀 Iniciar Juego</button>
+</div>
+
+<div id="game-screen" class="hidden">
+  
+  <header class="game-header">
+    <div id="timer">03:00</div>
+    <p id="round-info">Ronda 1 — Acumulado: $0</p>
+  </header>
+
+  <main class="game-main">
+    <div id="question-box">
+      <h2 id="current-player"></h2>
+      <p id="categoria"></p>
+      <p id="pregunta"></p>
+      <p id="respuesta"></p>
+    </div>
+    <div id="ladder"></div>
+  </main>
+  
+  <footer class="game-footer">
+    <div class="game-info-container">
+      <p id="chain">Cadena actual: $0</p>
+      <p id="bank">Banco total: $0</p>
+    </div>
+    <div id="controls-row">
+      <button id="btn-wrong" class="big-btn wrong">✖ Incorrecto</button>
+      <button id="btn-bank" class="big-btn bank">💰 Banco</button>
+      <button id="btn-correct" class="big-btn correct">✔ Correcto</button>
+    </div>
+  </footer>
+
+  <div id="elimination" class="hidden"></div>
+  <div class="history-container">
+    <h3>Historial de Rondas</h3>
+    <ul id="round-history"></ul>
+  </div>
+
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html>

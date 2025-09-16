@@ -70,23 +70,33 @@ class IndexApp {
         
     }
 
+
+renderGlobalRiskChart(summary) {
+    try {
+        renderRiskChart('global-risk-chart', summary); 
+    } catch (error) {
+        console.error("Error renderizando la gráfica global:", error);
+        const container = document.getElementById('global-risk-chart');
+        if (container) {
+            container.innerHTML = '<p class="no-data-chart">No se pudo renderizar la gráfica.</p>';
+        }
+    }
+}
     
 
     init() {
-        if (!window.dataClient || !window.dataClient.supabase) {
-    console.error("❌ Supabase client no está inicializado. Verifica supabase-config.js");
-    return;
-}
-        if (this.isInitialized) {
-            console.warn('⚠️ IndexApp ya está inicializado');
-            return;
-        }
+    console.log("🚀 Iniciando Sistema de Evaluación Ergonómica");
 
-        this.setupEventListeners(); 
-        this.checkExistingSession();
-        ERGOAuth.setupSessionMonitoring();
-        this.isInitialized = true;
+    // --- DETECTOR DE PÁGINA ---
+    if (document.getElementById("areas-page")) {
+        console.log("📄 Modo Áreas detectado → no se carga IndexApp completo");
+        return; // dejamos que areas.js maneje todo
     }
+
+    // --- Solo dashboard ---
+    this.setupEventListeners();
+    this.checkExistingSession();
+}
 showLoginForm() {
     // Puede reutilizar tu modal de login
     this.showLoginModal();
@@ -815,8 +825,8 @@ renderGlobalRiskChart(summary) {
         }
     }
 
-    updateUserInterface() {
-        if (!this.currentUser) return;
+updateUserInterface() {
+    if (!this.currentUser) return;
         document.getElementById('userName').textContent = this.currentUser.nombre || 'Usuario';
         document.getElementById('userRole').textContent = this.currentUser.puesto || 'Sin cargo definido';
 
@@ -824,7 +834,7 @@ renderGlobalRiskChart(summary) {
         if (this.currentUser.rango === 1) {
             document.getElementById('config-card').style.display = 'block';
         }
-    }
+}
 }
 
 

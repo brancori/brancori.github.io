@@ -520,3 +520,85 @@
 .card-list.is-closed {
     background-color: #e6f1e6;
 }
+
+.risk-chart-container_areas {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
+    height: 120px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+@keyframes growBar {
+  from { height: 0; }
+  to   { height: var(--target-height); }
+}
+
+.bar-chart-item_areas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+}
+
+.bar-value_areas {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+    min-height: 16px;
+}
+
+.bar-wrapper_areas {
+    height: 80px;
+    width: 24px;
+    display: flex;
+    align-items: flex-end;
+    background-color: #e9ecef;
+    border-radius: 3px 3px 0 0;
+    position: relative;
+}
+
+.bar_areas {
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: height 0.8s ease-out;
+    background: linear-gradient(to top, #dc3545, #e74c3c);
+}
+
+.bar_areas:hover {
+    background: linear-gradient(to top, #c82333, #dc3545) !important;
+}
+
+.bar-label_areas {
+    font-size: 10px;
+    font-weight: 500;
+    color: #666;
+    margin-top: 4px;
+    text-align: center;
+}
+
+.no-data-chart_areas {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+
+
+.risk-chart-container .bar_areas {
+  /* Asegura que la barra crezca desde la base hacia arriba */
+  transform-origin: bottom;
+  
+  /* Asigna la animación: nombre, duración, efecto y estado final */
+  animation: growBar 0.5s ease-out forwards;
+}
+

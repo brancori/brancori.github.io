@@ -677,21 +677,11 @@
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1.5rem;
     align-items: stretch;
-    padding: 0 2rem 1.5rem 2rem;
     background: var(--gray-50); /* Mismo fondo que el contenedor de KPIs */
     border-bottom: 1px solid var(--gray-200);
 }
 .nav_module .btn {
     background: white;
-    color: var(--gray-800);
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-align: center;
-    padding: 1.5rem 1rem;
-    box-shadow: var(--shadow-sm);
-    border: none;
-    height: auto;
-    flex-direction: column;
 }
 
 .nav_module .btn:hover {
