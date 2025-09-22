@@ -52,6 +52,7 @@
         document.getElementById('breadcrumb-centro').textContent = currentCenterData.name;
         document.getElementById('breadcrumb-area').href = `areas.html#area-${areaId}`;
 
+        loadAndRenderAssignedPuestos(workCenterId);
         try {
             // Se añade la carga del estado del centro (getScoreWorkCenter)
             const [_, fotos, notas, actividades, scoreSummary, workCenterData] = await Promise.all([
@@ -106,6 +107,7 @@
             renderFotosGrid();
             renderNotas();
             renderActividades();
+            loadAndRenderAssignedPuestos(workCenterId);
 
         } catch (error) {
             console.error('Error cargando datos iniciales:', error);
@@ -134,6 +136,7 @@
 
         setupEventListeners();
         ERGOAuth.applyPermissionControls();
+        setupModalAccessibility('modal-condiciones');
 
         console.log('✅ Aplicación inicializada correctamente');
     });
@@ -144,11 +147,13 @@
         document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
         
 
-        const factoresIds = ['iluminacion', 'temperatura', 'ruido', 'personal'];
+        const factoresIds = ['iluminacion', 'temperatura', 'ruido', 'personal', 'puestos'];
 
         factoresIds.forEach(id => {
             const checkbox = document.getElementById(`condiciones-${id}-na`);
             const input = document.getElementById(`condiciones-${id}-input`);
+            const puestosCheckbox = document.getElementById('condiciones-puestos-na');
+            const puestosSelect = document.getElementById('condiciones-puestos-input');
 
             checkbox.addEventListener('change', () => {
                 input.disabled = checkbox.checked;
@@ -271,3 +276,30 @@ if (commentButton) {
     function volverACentros() {
         window.location.href = `../areas.html#area-${areaId}`;
     }
+
+async function loadPuestosOptions() {
+    const select = document.getElementById('condiciones-puestos-input');
+    
+    // Placeholder - reemplazar con tu fuente de datos real
+    const puestos = [
+        'Operador de máquina',
+        'Supervisor de área',
+        'Técnico de mantenimiento',
+        'Auxiliar de producción',
+        'Jefe de turno'
+    ];
+    
+    // Limpiar opciones existentes (mantener la primera)
+    select.innerHTML = '<option value="">Seleccionar puesto...</option>';
+    
+    // Agregar opciones dinámicamente
+    puestos.forEach(puesto => {
+        const option = document.createElement('option');
+        option.value = puesto;
+        option.textContent = puesto;
+        select.appendChild(option);
+    });
+    
+    // TODO: Reemplazar con llamada real a tu API/base de datos
+    // const puestosFromDB = await dataClient.getPuestos();
+}

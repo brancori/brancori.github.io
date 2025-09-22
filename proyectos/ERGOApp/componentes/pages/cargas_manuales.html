@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluador de Riesgos Ergonómicos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Se diseñó una aplicación de una sola página con dos pestañas de navegación claras para separar las evaluaciones del Apéndice I y Apéndice II. Esta estructura de "dashboard" permite al usuario enfocarse en una evaluación a la vez sin distracciones, lo cual es crucial para una correcta captura de datos. Cada pestaña contiene un formulario interactivo a la izquierda y un panel de resultados a la derecha (que se apila verticalmente en móviles). Los resultados, incluyendo un puntaje numérico, un nivel de riesgo codificado por colores y un gráfico de radar, se actualizan en tiempo real. Esta retroalimentación instantánea mejora la usabilidad y permite al usuario comprender de inmediato cómo cada factor contribuye al riesgo total, facilitando el cumplimiento normativo. -->
+    <!-- Visualization & Content Choices: Para visualizar la contribución de cada factor de riesgo, se eligió un gráfico de radar de Chart.js (renderizado en Canvas), ya que muestra de forma muy efectiva desequilibrios y áreas problemáticas. El resultado final se presenta en una tarjeta destacada con un código de colores claro (verde, amarillo, naranja, rojo) para una interpretación rápida del nivel de riesgo. Los formularios utilizan una combinación de campos numéricos, menús desplegables y controles deslizantes para que la entrada de datos sea intuitiva y se ajuste a los criterios de la norma. Todo el contenido textual, como las descripciones de riesgo y las acciones recomendadas, se obtiene directamente de los documentos normativos para garantizar la precisión y el cumplimiento. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body {
+            background-color: #FDFBF7;
+            color: #333333;
+        }
+        .tab-active {
+            border-color: #F97316;
+            color: #F97316;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        
+        /* --- COLORES PARA NIVELES DE RIESGO (AP1 & AP2) --- */
+        .risk-color-bajo { background-color: #00BCD4; color: white; }
+        .risk-color-medio { background-color: #FFC107; color: #333; }
+        .risk-color-alto { background-color: #F44336; color: white; }
+        .risk-color-muy-alto { background-color: #E91E63; color: white; }
+        
+        /* --- ESTILOS PARA ICONO DE INFORMACIÓN --- */
+        .info-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .info-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #CBD5E0;
+            color: #4A5568;
+            font-weight: bold;
+            font-style: italic;
+            cursor: pointer;
+            user-select: none;
+            font-size: 12px;
+        }
+        .info-popup {
+            visibility: hidden;
+            width: 280px;
+            background-color: #2D3748;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            white-space: pre-line;
+        }
+        .info-popup::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2D3748 transparent transparent transparent;
+        }
+        .info-container:hover .info-popup,
+        .info-popup.show {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Evaluador de Riesgos Ergonómicos</h1>
+            <p class="text-md text-gray-600 mt-1">Herramienta de análisis basada en la normativa mexicana (Apéndices I y II)</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button id="tab-ap1" class="py-4 px-6 text-center border-b-2 tab-active" onclick="showTab('ap1')">Apéndice I: Manejo de Cargas</button>
+            <button id="tab-ap2" class="py-4 px-6 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="showTab('ap2')">Apéndice II: Empuje y Arrastre</button>
+        </nav>
+
+        <main>
+            <!-- =================================================================== -->
+            <!-- =================== INICIO ESTRUCTURA APÉNDICE I ================== -->
+            <!-- =================================================================== -->
+            <div id="content-ap1" class="evaluator-tab">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 space-y-6" id="form-ap1">
+                        
+                        <!-- Selector de Actividad AP1 -->
+                        <div id="form-ap1-selector">
+                             <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">Selección de Actividad (Apéndice I)</h2>
+                            <div class="flex items-center">
+                                <label for="tipo_evaluacion_ap1" class="block text-sm font-medium text-gray-700">Seleccione el tipo de operación:</label>
+                            </div>
+                            <select id="tipo_evaluacion_ap1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
+                                <option value="seleccionar" selected>-- Seleccione una opción --</option>
+                                <option value="levantamiento">Levantamiento / Descenso</option>
+                                <option value="transporte">Transporte de Cargas</option>
+                                <option value="equipo">Manejo en Equipo</option>
+                            </select>
+                        </div>
+
+                        <!-- Formulario: Levantamiento / Descenso -->
+                        <div id="form-ap1-levantamiento" class="hidden space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Evaluación de Levantamiento/Descenso</h3>
+                            
+                            <!-- Ejemplo de una pregunta -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="ap1_peso_lev" class="block text-sm font-medium text-gray-700">a) Peso de la Carga (kg)</label>
+                                    <input type="number" id="ap1_peso_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="25">
+                                </div>
+                                <div>
+                                    <label for="ap1_frecuencia_lev" class="block text-sm font-medium text-gray-700">a) Levantamientos por hora</label>
+                                    <input type="number" id="ap1_frecuencia_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="60">
+                                </div>
+                            </div>
+                            <!-- Fin de ejemplo de pregunta -->
+
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="distancia_horizontal_lev" class="block text-sm font-medium text-gray-700">b) Distancia horizontal</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Cerca del cuerpo, torso erguido.
+<strong>Naranja (3):</strong> Brazos alejados o torso inclinado.
+<strong>Rojo (6):</strong> Lejos, brazos y torso inclinados.</div></div>
+                                </div>
+                                <select id="distancia_horizontal_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Cerca</option>
+                                    <option value="3">Moderado</option>
+                                    <option value="6">Lejos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="altura_levantamiento_lev" class="block text-sm font-medium text-gray-700">c) Región de levantamiento vertical</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Por encima de la rodilla y/o por debajo de la altura del codo.
+<strong>Naranja (1):</strong> Por debajo de la rodilla y/o por encima de la altura del codo.
+<strong>Rojo (3):</strong> A nivel de suelo o inferior / A la altura de la cabeza o superior.</div></div>
+                                </div>
+                                <select id="altura_levantamiento_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Por encima de rodilla / por debajo de codo</option>
+                                    <option value="1">Por debajo de rodilla / por encima de codo</option>
+                                    <option value="3">Suelo o inferior / Cabeza o superior</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="torsion_torso_lev" class="block text-sm font-medium text-gray-700">d) Torsión y flexión lateral del torso</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Poca o ninguna.
+<strong>Naranja (1):</strong> Torsión O flexión lateral.
+<strong>Rojo (2):</strong> Torsión Y flexión lateral.</div></div>
+                                </div>
+                                <select id="torsion_torso_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Poca o ninguna</option>
+                                    <option value="1">Torsión o flexión</option>
+                                    <option value="2">Torsión y flexión</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="restriccion_postural_lev" class="block text-sm font-medium text-gray-700">e) Restricciones posturales</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Sin restricciones.
+<strong>Naranja (1):</strong> Postura restringida (espacio justo).
+<strong>Rojo (3):</strong> Postura severamente restringida (espacio confinado).</div></div>
+                                </div>
+                                <select id="restriccion_postural_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin restricciones</option>
+                                    <option value="1">Restringida</option>
+                                    <option value="3">Severamente restringida</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="acoplamiento_mano_lev" class="block text-sm font-medium text-gray-700">f) Acoplamiento mano-carga</label>
+                                     <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Buen agarre (asas bien diseñadas).
+<strong>Naranja (1):</strong> Agarre regular (asas mal diseñadas, agarre en pinza).
+<strong>Rojo (2):</strong> Mal agarre (sin asas, objetos irregulares).</div></div>
+                                </div>
+                                <select id="acoplamiento_mano_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Regular</option>
+                                    <option value="2">Malo</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="superficie_trabajo_lev" class="block text-sm font-medium text-gray-700">g) Superficie de trabajo</label>
+                                     <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Piso seco, limpio y en buenas condiciones.
+<strong>Naranja (1):</strong> Piso seco pero en malas condiciones (desgastado).
+<strong>Rojo (2):</strong> Piso contaminado, húmedo, desnivelado.</div></div>
+                                </div>
+                                <select id="superficie_trabajo_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Buena</option>
+                                    <option value="1">Regular</option>
+                                    <option value="2">Mala</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="otros_factores_ap1_lev" class="block text-sm font-medium text-gray-700">h) Otros factores ambientales</label>
+                                     <div class="info-container"><span class="info-icon">i</span><div class="info-popup">Evaluar si hay temperaturas extremas, fuerte circulación de aire o iluminación extrema.
+<strong>Verde (0):</strong> Sin factores de riesgo.
+<strong>Naranja (1):</strong> Un factor de riesgo presente.
+<strong>Rojo (2):</strong> Dos o más factores de riesgo.</div></div>
+                                </div>
+                                <select id="otros_factores_ap1_lev" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin factores</option>
+                                    <option value="1">Un factor</option>
+                                    <option value="2">Dos o más factores</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Formulario: Transporte de Cargas -->
+                        <div id="form-ap1-transporte" class="hidden space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Evaluación de Transporte de Cargas</h3>
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="ap1_peso_trans" class="block text-sm font-medium text-gray-700">a) Peso de la Carga (kg)</label>
+                                    <input type="number" id="ap1_peso_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="25">
+                                </div>
+                                <div>
+                                    <label for="ap1_frecuencia_trans" class="block text-sm font-medium text-gray-700">a) Traslados por hora</label>
+                                    <input type="number" id="ap1_frecuencia_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="60">
+                                </div>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="distancia_horizontal_trans" class="block text-sm font-medium text-gray-700">b) Distancia horizontal</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Cerca.
+<strong>Naranja (3):</strong> Moderado.
+<strong>Rojo (6):</strong> Lejos.</div></div>
+                                </div>
+                                <select id="distancia_horizontal_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Cerca</option>
+                                    <option value="3">Moderado</option>
+                                    <option value="6">Lejos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="carga_asimetrica_trans" class="block text-sm font-medium text-gray-700">c) Carga asimétrica</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Simétrica.
+<strong>Naranja (1):</strong> Asimétrica vertical.
+<strong>Rojo (2):</strong> Una mano.
+<strong>Morado (3):</strong> Sobre el hombro.</div></div>
+                                </div>
+                                <select id="carga_asimetrica_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Simétrica</option>
+                                    <option value="1">Asimétrica vertical</option>
+                                    <option value="2">Una mano</option>
+                                    <option value="3">Sobre el hombro</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="restriccion_postural_trans" class="block text-sm font-medium text-gray-700">d) Restricciones posturales</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Sin restricciones.
+<strong>Naranja (1):</strong> Restringida.
+<strong>Rojo (3):</strong> Severamente restringida.</div></div>
+                                </div>
+                                <select id="restriccion_postural_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin restricciones</option>
+                                    <option value="1">Restringida</option>
+                                    <option value="3">Severamente restringida</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="acoplamiento_mano_trans" class="block text-sm font-medium text-gray-700">e) Acoplamiento mano-carga</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Bueno.
+<strong>Naranja (1):</strong> Regular.
+<strong>Rojo (2):</strong> Malo.</div></div>
+                                </div>
+                                <select id="acoplamiento_mano_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Regular</option>
+                                    <option value="2">Malo</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="superficie_trabajo_trans" class="block text-sm font-medium text-gray-700">f) Superficie de trabajo</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Buena.
+<strong>Naranja (1):</strong> Regular.
+<strong>Rojo (2):</strong> Mala.</div></div>
+                                </div>
+                                <select id="superficie_trabajo_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Buena</option>
+                                    <option value="1">Regular</option>
+                                    <option value="2">Mala</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="otros_factores_ap1_trans" class="block text-sm font-medium text-gray-700">g) Otros factores ambientales</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Sin factores.
+<strong>Naranja (1):</strong> Un factor.
+<strong>Rojo (2):</strong> Dos o más factores.</div></div>
+                                </div>
+                                <select id="otros_factores_ap1_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin factores</option>
+                                    <option value="1">Un factor</option>
+                                    <option value="2">Dos o más factores</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="distancia_transporte_trans" class="block text-sm font-medium text-gray-700">h) Distancia de transporte</label>
+                                     <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> 2 a 4 m.
+<strong>Naranja (1):</strong> Más de 4 y menos de 10 m.
+<strong>Rojo (3):</strong> Más de 10 m.</div></div>
+                                </div>
+                                <select id="distancia_transporte_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">2 a 4 m</option>
+                                    <option value="1">Más de 4 y menos de 10 m</option>
+                                    <option value="3">Más de 10 m</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="obstaculos_ruta_trans" class="block text-sm font-medium text-gray-700">i) Obstáculos en la ruta</label>
+                                     <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Sin obstáculos, ruta plana.
+<strong>Naranja (1):</strong> Pendiente, puertas estrechas, tropiezos.
+<strong>Rojo (3):</strong> Subir escaleras, pendientes empinadas.</div></div>
+                                </div>
+                                <select id="obstaculos_ruta_trans" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin obstáculos, ruta plana</option>
+                                    <option value="1">Pendiente, puertas estrechas, tropiezos</option>
+                                    <option value="3">Subir escaleras, pendientes empinadas</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Formulario: Manejo en Equipo -->
+                        <div id="form-ap1-equipo" class="hidden space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Evaluación de Manejo en Equipo</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="ap1_num_personas_eq" class="block text-sm font-medium text-gray-700">a) Personas</label>
+                                    <select id="ap1_num_personas_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <option value="2">2 personas</option>
+                                        <option value="3">3 personas</option>
+                                        <option value="4">4 personas</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="ap1_peso_eq" class="block text-sm font-medium text-gray-700">a) Peso Total (kg)</label>
+                                    <input type="number" id="ap1_peso_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="50">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="distancia_horizontal_eq" class="block text-sm font-medium text-gray-700">b) Distancia horizontal</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Cerca.
+<strong>Naranja (3):</strong> Moderado.
+<strong>Rojo (6):</strong> Lejos.</div></div>
+                                </div>
+                                <select id="distancia_horizontal_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Cerca</option>
+                                    <option value="3">Moderado</option>
+                                    <option value="6">Lejos</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="altura_levantamiento_eq" class="block text-sm font-medium text-gray-700">c) Región de levantamiento vertical</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Por encima de rodilla / por debajo de codo.
+<strong>Naranja (1):</strong> Por debajo de rodilla / por encima de codo.
+<strong>Rojo (3):</strong> A nivel de piso / por arriba de cabeza.</div></div>
+                                </div>
+                                <select id="altura_levantamiento_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Por encima de rodilla / por debajo de codo</option>
+                                    <option value="1">Por debajo de rodilla / por encima de codo</option>
+                                    <option value="3">A nivel de piso / por arriba de cabeza</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="torsion_torso_eq" class="block text-sm font-medium text-gray-700">d) Torsión y flexión lateral del torso</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Poca o ninguna.
+<strong>Naranja (1):</strong> Torsión o flexión.
+<strong>Rojo (2):</strong> Torsión y flexión.</div></div>
+                                </div>
+                                <select id="torsion_torso_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Poca o ninguna</option>
+                                    <option value="1">Torsión o flexión</option>
+                                    <option value="2">Torsión y flexión</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="restriccion_postural_eq" class="block text-sm font-medium text-gray-700">e) Restricciones posturales</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Sin restricciones.
+<strong>Naranja (1):</strong> Restringida.
+<strong>Rojo (3):</strong> Severamente restringida.</div></div>
+                                </div>
+                                <select id="restriccion_postural_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin restricciones</option>
+                                    <option value="1">Restringida</option>
+                                    <option value="3">Severamente restringida</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="acoplamiento_mano_eq" class="block text-sm font-medium text-gray-700">f) Acoplamiento mano-carga</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Bueno.
+<strong>Naranja (1):</strong> Regular.
+<strong>Rojo (2):</strong> Malo.</div></div>
+                                </div>
+                                <select id="acoplamiento_mano_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Regular</option>
+                                    <option value="2">Malo</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="superficie_trabajo_eq" class="block text-sm font-medium text-gray-700">g) Superficie de trabajo</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Buena.
+<strong>Naranja (1):</strong> Regular.
+<strong>Rojo (2):</strong> Mala.</div></div>
+                                </div>
+                                <select id="superficie_trabajo_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Buena</option>
+                                    <option value="1">Regular</option>
+                                    <option value="2">Mala</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="otros_factores_ap1_eq" class="block text-sm font-medium text-gray-700">h) Otros factores ambientales</label>
+                                     <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Verde (0):</strong> Sin factores.
+<strong>Naranja (1):</strong> Un factor.
+<strong>Rojo (2):</strong> Dos o más factores.</div></div>
+                                </div>
+                                <select id="otros_factores_ap1_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Sin factores</option>
+                                    <option value="1">Un factor</option>
+                                    <option value="2">Dos o más factores</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="comunicacion_eq" class="block text-sm font-medium text-gray-700">i) Comunicación y coordinación</label>
+                                    <div class="info-container"><span class="info-icon">i</span><div class="info-popup">Evalúa la comunicación y sincronización del equipo al levantar la carga.
+<strong>Verde (0):</strong> Bien.
+<strong>Naranja (1):</strong> Regular.
+<strong>Rojo (3):</strong> Malo o deficiente.</div></div>
+                                </div>
+                                <select id="comunicacion_eq" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bien</option>
+                                    <option value="1">Regular</option>
+                                    <option value="3">Malo o deficiente</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="flex space-x-4 pt-4 border-t">
+                            <button onclick="resetForm('ap1')" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Reiniciar</button>
+                            <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition">Guardar Evaluación</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Resultado de la Evaluación</h2>
+                            <div id="result-card-ap1" class="text-center p-4 rounded-lg mb-4">
+                                <div class="text-5xl font-bold" id="score-ap1">0</div>
+                                <div class="text-xl font-semibold mt-1" id="level-ap1">Seleccione</div>
+                            </div>
+                            <div id="description-ap1" class="text-sm text-gray-600">Seleccione un tipo de operación para comenzar.</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="riskChart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ================================================================= -->
+            <!-- =================== FIN ESTRUCTURA APÉNDICE I =================== -->
+            <!-- ================================================================= -->
+
+
+            <!-- =================================================================== -->
+            <!-- =================== INICIO ESTRUCTURA APÉNDICE II ================= -->
+            <!-- =================================================================== -->
+            <div id="content-ap2" class="evaluator-tab hidden">
+                 <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">Esta sección evalúa el riesgo por empuje y arrastre de cargas. Primero, seleccione si la tarea se realiza con o sin equipo auxiliar para mostrar el cuestionario correspondiente.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 space-y-6">
+                        
+                        <!-- Selector de Actividad AP2 -->
+                        <div id="form-ap2-selector">
+                             <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">Selección de Método (Apéndice II)</h2>
+                            <div class="flex items-center">
+                                <label for="tipo_evaluacion_ap2" class="block text-sm font-medium text-gray-700">¿La tarea se realiza con equipo auxiliar?</label>
+                                <div class="info-container">
+                                    <span class="info-icon">i</span>
+                                    <div class="info-popup">La selección determina qué conjunto de criterios se utilizarán según la norma:
+- <strong>NO:</strong> Usa la guía AII.3.
+- <strong>SÍ:</strong> Usa la guía AII.5.</div>
+                                </div>
+                            </div>
+                            <select id="tipo_evaluacion_ap2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
+                                <option value="seleccionar" selected>-- Seleccione una opción --</option>
+                                <option value="sin_equipo">NO (evaluar con AII.3)</option>
+                                <option value="con_equipo">SÍ (evaluar con AII.5)</option>
+                            </select>
+                        </div>
+
+                        <!-- Formulario: SIN Equipo Auxiliar -->
+                        <div id="form-ap2-sin-equipo" class="hidden space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Evaluación SIN Equipo Auxiliar (AII.3)</h3>
+                            
+                            <!-- Ejemplo de una pregunta -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="flex items-center">
+                                        <label for="sin_accion" class="block text-sm font-medium text-gray-700">A) Tipo de Acción</label>
+                                        <div class="info-container"><span class="info-icon">i</span><div class="info-popup">Seleccione la acción principal para determinar el límite de peso aplicable.</div></div>
+                                    </div>
+                                    <select id="sin_accion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <option value="rodando">Rodando</option>
+                                        <option value="girando">Girando sobre la base</option>
+                                        <option value="arrastrando">Arrastrando / Jalando</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div class="flex items-center">
+                                        <label for="sin_peso_objeto" class="block text-sm font-medium text-gray-700">A) Peso (kg)</label>
+                                        <div class="info-container"><span class="info-icon">i</span><div class="info-popup"><strong>Límites (B/M/A/MA):</strong>
+- Rodando: <400 / <600 / <1000 / >1000
+- Girando: <80 / <120 / <150 / >150
+- Arrastrando: <25 / <50 / <80 / >80</div></div>
+                                    </div>
+                                    <input type="number" id="sin_peso_objeto" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="50">
+                                </div>
+                            </div>
+                            <!-- Fin de ejemplo de pregunta -->
+                            
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="sin_postura" class="block text-sm font-medium text-gray-700">B) Postura</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Observar la posición general de las manos y del cuerpo.
+II. Observe la posición general de las manos y del cuerpo.
+
+<strong>Buena:</strong> El torso es vertical, no está torcido y las manos están entre cadera y hombros.
+<strong>Razonable:</strong> El cuerpo está inclinado, o el torso flexionado/torcido, o las manos por debajo de la cadera.
+<strong>Pobre:</strong> Cuerpo muy inclinado, en cuclillas, o torso severamente flexionado/torcido, o manos detrás/lado del cuerpo o sobre hombros.</div>
+                                    </div>
+                                </div>
+                                <select id="sin_postura" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Buena</option>
+                                    <option value="3">Razonable</option>
+                                    <option value="6">Pobre o Deficiente</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="sin_acoplamiento" class="block text-sm font-medium text-gray-700">C) Acoplamiento Mano-Carga</label>
+                                     <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup">Evalúa la calidad del agarre.
+<strong>Puntuación:</strong>
+- Bueno: Bajo
+- Regular: Medio
+- Malo: Alto</div>
+                                    </div>
+                                </div>
+                                <select id="sin_acoplamiento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="2">Regular</option>
+                                    <option value="4">Malo</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="sin_patron_trabajo" class="block text-sm font-medium text-gray-700">D) Patrón de Trabajo</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Bueno:</strong> El trabajo no es repetitivo (menos de cinco traslados por minuto), y el ritmo de trabajo es fijado por el trabajador.
+<strong>Razonable:</strong> El trabajo es repetitivo, pero hay oportunidades para descansar o de recuperarse a través de descansos formales e informales o a través de la rotación del trabajo.
+<strong>Pobre o deficiente:</strong> El trabajo es repetitivo, y no hay descansos formales/informales u oportunidad de rotar los puestos de trabajo.</div>
+                                    </div>
+                                </div>
+                                <select id="sin_patron_trabajo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Razonable</option>
+                                    <option value="3">Pobre o deficiente</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="sin_distancia" class="block text-sm font-medium text-gray-700">E) Distancia por Viaje</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Determinar la distancia desde el principio hasta el final para un solo viaje.
+II. Hacer una evaluación para el viaje más largo, si la operación no es repetitiva.
+III. Determinar la distancia promedio para al menos cinco viajes, si la operación es repetitiva.</div>
+                                    </div>
+                                </div>
+                                <select id="sin_distancia" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Corta (2 m o menos)</option>
+                                    <option value="1">Media (Entre 2 m y 10 m)</option>
+                                    <option value="3">Pobre o deficiente (> 10 m)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="sin_superficie" class="block text-sm font-medium text-gray-700">F) Superficie de Trabajo</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Identificar la condición en que se encuentran las superficies de trabajo a lo largo de la ruta.
+
+<strong>Bueno:</strong> Seco y limpio, nivelado y en buen estado.
+<strong>Razonable:</strong> En mayor parte seco y limpio, o en pendiente (3°-5°), o razonablemente firme, o con daños menores.
+<strong>Pobre o deficiente:</strong> Contaminado, pendiente pronunciada (>5°), suave o inestable, o en muy mal estado.</div>
+                                    </div>
+                                </div>
+                                <select id="sin_superficie" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Razonable</option>
+                                    <option value="4">Pobre o deficiente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="sin_obstaculos" class="block text-sm font-medium text-gray-700">G) Obstáculos en la Ruta</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Verificar en la ruta si hay obstáculos.
+II. Contar cada tipo de obstáculo sólo una vez.
+
+<strong>Bueno:</strong> Sin obstáculos.
+<strong>Razonable:</strong> Un tipo de obstáculo pero sin escalones o rampas empinadas.
+<strong>Pobre o deficiente:</strong> Escalones, rampas empinadas o dos o más tipos de obstáculos.</div>
+                                    </div>
+                                </div>
+                                <select id="sin_obstaculos" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="2">Razonable</option>
+                                    <option value="3">Pobre o deficiente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="sin_otros_factores" class="block text-sm font-medium text-gray-700">H) Otros Factores</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+Identificar algún otro factor, como:
+I. La carga es inestable.
+II. La carga obstruye la vista.
+III. La carga presenta bordes filosos o está caliente.
+IV. Malas condiciones de iluminación.
+V. Temperaturas extremas.
+VI. Ráfagas de viento.
+VII. EPP o vestimenta complica la tarea.</div>
+                                    </div>
+                                </div>
+                                <select id="sin_otros_factores" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno (No hay otros factores)</option>
+                                    <option value="1">Razonable (Un factor presente)</option>
+                                    <option value="2">Deficiente (Dos o más presentes)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Formulario: CON Equipo Auxiliar -->
+                        <div id="form-ap2-con-equipo" class="hidden space-y-6">
+                             <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Evaluación CON Equipo Auxiliar (AII.5)</h3>
+                             <div>
+                                <div class="flex items-center">
+                                    <label class="block text-sm font-medium text-gray-700">A) Tipo de equipo y peso (kg)</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Evaluar la masa total movida.
+II. Determinar la carga total movida (equipo + carga).
+III. Evaluar el equipo con la carga de mayor masa.
+
+<strong>Pequeño (1-2 ruedas):</strong> carretillas, diablos de carga. El trabajador soporta parte de la carga.
+<strong>Mediano (3+ ruedas):</strong> jaulas con ruedas, contenedores.
+<strong>Grande (dirigible/rieles):</strong> patines o sistema de rieles.</div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
+                                    <select id="con_tipo_equipo" class="block w-full rounded-md border-gray-300 shadow-sm">
+                                        <option value="pequeno">Pequeño (1-2 ruedas)</option>
+                                        <option value="mediano">Mediano (3+ ruedas)</option>
+                                        <option value="grande">Grande (dirigible/rieles)</option>
+                                    </select>
+                                    <input type="number" id="con_peso_carga" class="block w-full rounded-md border-gray-300 shadow-sm" value="100">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_postura" class="block text-sm font-medium text-gray-700">B) Postura</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+Observar la posición general de las manos y del cuerpo.
+
+<strong>Buena:</strong> Torso vertical y no torcido, manos por debajo de la cadera.
+<strong>Razonable:</strong> Cuerpo inclinado, o torso flexionado/torcido, o manos entre cadera y hombros.
+<strong>Pobre o deficiente:</strong> Cuerpo muy inclinado, en cuclillas, o torso severamente flexionado/torcido, o manos detrás/lado del cuerpo o sobre hombros.</div>
+                                    </div>
+                                </div>
+                                <select id="con_postura" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Buena</option>
+                                    <option value="3">Razonable</option>
+                                    <option value="6">Pobre o deficiente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_agarre" class="block text-sm font-medium text-gray-700">C) Acoplamiento de la mano-carga</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Observar cómo es el agarre con las manos.
+
+<strong>Bueno:</strong> Hay manijas que permiten un cómodo agarre completo.
+<strong>Razonable:</strong> Hay zonas de agarre, pero sólo permiten un agarre parcial.
+<strong>Pobre o deficiente:</strong> No hay asas o el contacto de la mano es incómodo.</div>
+                                    </div>
+                                </div>
+                                <select id="con_agarre" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Razonable</option>
+                                    <option value="2">Pobre o deficiente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_patron_trabajo" class="block text-sm font-medium text-gray-700">D) Patrón de trabajo</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Observar si la operación es repetitiva (5+ traslados/min).
+II. Preguntar a los trabajadores sobre su patrón de descansos.
+
+<strong>Bueno:</strong> No es repetitivo y el trabajador fija el ritmo.
+<strong>Razonable:</strong> Es repetitivo, pero hay oportunidades para descansar/recuperarse.
+<strong>Pobre o deficiente:</strong> Es repetitivo y no hay descansos u oportunidad de rotar.</div>
+                                    </div>
+                                </div>
+                                 <select id="con_patron_trabajo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Razonable</option>
+                                    <option value="3">Pobre o deficiente</option>
+                                </select>
+                            </div>
+                             <div>
+                                <div class="flex items-center">
+                                    <label for="con_distancia" class="block text-sm font-medium text-gray-700">E) Distancia por viaje</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Determinar la distancia desde el principio hasta el final para un solo viaje.
+II. Hacer una evaluación para el viaje más largo, si la operación no es repetitiva.
+III. Determinar la distancia promedio para al menos cinco viajes, si la operación es repetitiva.</div>
+                                    </div>
+                                </div>
+                                <select id="con_distancia" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Corta (10 m o menos)</option>
+                                    <option value="1">Media (Entre 10 m y 30 m)</option>
+                                    <option value="3">Larga (Más de 30 m)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_equipo_condicion" class="block text-sm font-medium text-gray-700">F) Condición del equipo auxiliar</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Consultar el programa o manuales de mantenimiento y observar el estado general de conservación del equipo.
+
+<strong>Bueno:</strong> El mantenimiento está planificado y es preventivo, y el equipo está en buen estado.
+<strong>Razonable:</strong> El mantenimiento ocurre sólo cuando surgen problemas, o el equipo está en un estado razonable.
+<strong>Pobre:</strong> No hay mantenimiento planificado, o el equipo está en mal estado.</div>
+                                    </div>
+                                </div>
+                                <select id="con_equipo_condicion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="2">Razonable</option>
+                                    <option value="4">Pobre</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_superficie" class="block text-sm font-medium text-gray-700">I) Superficie de trabajo</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Identificar la condición en que se encuentran las superficies de trabajo a lo largo de la ruta.
+
+<strong>Bueno:</strong> Seco y limpio, nivelado, firme y en buen estado.
+<strong>Razonable:</strong> En mayor parte seco y limpio, o en pendiente (3°-5°), o razonablemente firme, o con daños menores.
+<strong>Deficiente:</strong> Contaminado, pendiente pronunciada (>5°), suave o inestable, o en muy mal estado.</div>
+                                    </div>
+                                </div>
+                                <select id="con_superficie" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="1">Razonable</option>
+                                    <option value="4">Deficiente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_obstaculos" class="block text-sm font-medium text-gray-700">J) Obstáculos a lo largo de la ruta</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+I. Verificar en la ruta si hay obstáculos.
+II. Contar cada tipo de obstáculo sólo una vez.
+
+<strong>Bueno:</strong> Sin obstáculos.
+<strong>Razonable:</strong> Un tipo de obstáculo pero sin escalones o rampas empinadas.
+<strong>Deficiente:</strong> Escalones, rampas empinadas o dos o más tipos de obstáculos.</div>
+                                    </div>
+                                </div>
+                                <select id="con_obstaculos" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno</option>
+                                    <option value="2">Razonable</option>
+                                    <option value="3">Deficiente</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <label for="con_otros_factores" class="block text-sm font-medium text-gray-700">K) Otros factores</label>
+                                    <div class="info-container">
+                                        <span class="info-icon">i</span>
+                                        <div class="info-popup"><strong>Instrucciones:</strong>
+Identificar algún otro factor, como:
+I. Equipo o carga inestable.
+II. Carga obstruye la vista.
+III. Equipo o carga con bordes filosos o caliente.
+IV. Malas condiciones de iluminación.
+V. Temperaturas extremas.
+VI. Ráfagas de viento.
+VII. EPP o vestimenta complica la tarea.</div>
+                                    </div>
+                                </div>
+                                <select id="con_otros_factores" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                    <option value="0">Bueno (No hay otros factores)</option>
+                                    <option value="1">Razonable (Un factor presente)</option>
+                                    <option value="2">Deficiente (Dos o más presentes)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="flex space-x-4 pt-4 border-t">
+                             <button onclick="resetForm('ap2')" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Reiniciar</button>
+                             <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition">Guardar Evaluación</button>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Resultado de la Evaluación</h2>
+                            <div id="result-card-ap2" class="text-center p-4 rounded-lg mb-4">
+                                <div class="text-5xl font-bold" id="score-ap2">0</div>
+                                <div class="text-xl font-semibold mt-1" id="level-ap2">Seleccione</div>
+                            </div>
+                            <div id="description-ap2" class="text-sm text-gray-600">Seleccione un método de evaluación para comenzar.</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="riskChart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ================================================================= -->
+            <!-- =================== FIN ESTRUCTURA APÉNDICE II ================== -->
+            <!-- ================================================================= -->
+        </main>
+    </div>
+
+    <script>
+        // =================================================================== //
+        // =================== INICIO LÓGICA GENERAL ========================= //
+        // =================================================================== //
+        document.addEventListener('DOMContentLoaded', () => {
+            const riskLevels = {
+                ap1: {
+                    limits: [4, 12, 20, 32],
+                    labels: ['Bajo Aceptable', 'Medio Posible', 'Alto - Significativo', 'Muy alto o inaceptable'],
+                    colors: ['risk-color-bajo', 'risk-color-medio', 'risk-color-alto', 'risk-color-muy-alto'],
+                    descriptions: [
+                        'No se requieren acciones correctivas. El riesgo es nulo o aunque es bajo, se considera aceptable.',
+                        'Se requieren acciones correctivas a corto plazo. Aunque no existe una situación de riesgo alto se deben examinar las actividades con mayor detalle.',
+                        'Se requieren acciones correctivas pronto. Se puede exponer a una proporción significativa de trabajadores a correr el riesgo de un trastorno músculo-esquelético laboral.',
+                        'Se requieren acciones correctivas inmediatamente. Dichas operaciones pueden representar un riesgo grave de lesiones, deben examinarse minuciosamente y ser mejoradas.'
+                    ]
+                },
+                ap2: {
+                    limits: [4, 12, 20, 32],
+                    labels: ['Bajo Aceptable', 'Medio Posible', 'Alto - Significativo', 'Muy alto o inaceptable'],
+                    colors: ['risk-color-bajo', 'risk-color-medio', 'risk-color-alto', 'risk-color-muy-alto'],
+                    descriptions: [
+                        'No se requieren acciones correctivas. El riesgo es nulo o aunque es bajo, se considera aceptable.',
+                        'Se requieren acciones correctivas a corto plazo. Aunque no existe una situación de riesgo alto se deben examinar las actividades con mayor detalle.',
+                        'Se requieren acciones correctivas pronto. Se puede exponer a una proporción significativa de trabajadores a correr el riesgo de un trastorno músculo-esquelético laboral.',
+                        'Se requieren acciones correctivas inmediatamente. Dichas operaciones pueden representar un riesgo grave de lesiones, deben examinarse minuciosamente y ser mejoradas.'
+                    ]
+                }
+            };
+
+            const chartConfigs = {
+                ap1: { ctx: document.getElementById('riskChart1').getContext('2d'), chart: null, labels: [] },
+                ap2: { ctx: document.getElementById('riskChart2').getContext('2d'), chart: null, labels: [] }
+            };
+
+            function createChart(configKey, data, labels) {
+                if (chartConfigs[configKey].chart) {
+                    chartConfigs[configKey].chart.destroy();
+                }
+                if (!labels || labels.length === 0 || !chartConfigs[configKey].ctx) return;
+
+                chartConfigs[configKey].labels = labels;
+                const maxScore = configKey === 'ap1' ? 10 : 8;
+
+                chartConfigs[configKey].chart = new Chart(chartConfigs[configKey].ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: chartConfigs[configKey].labels,
+                        datasets: [{
+                            label: 'Puntuación de Riesgo por Factor',
+                            data: data,
+                            backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                            borderColor: 'rgba(249, 115, 22, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(249, 115, 22, 1)',
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { display: true },
+                                suggestedMin: 0,
+                                suggestedMax: maxScore,
+                                pointLabels: { font: { size: 10 } }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            function getRiskLevel(score, configKey) {
+                const config = riskLevels[configKey];
+                const limits = config.limits;
+                if (score <= limits[0]) return { index: 0, label: config.labels[0], color: config.colors[0], desc: config.descriptions[0] };
+                if (score <= limits[1]) return { index: 1, label: config.labels[1], color: config.colors[1], desc: config.descriptions[1] };
+                if (score <= limits[2]) return { index: 2, label: config.labels[2], color: config.colors[2], desc: config.descriptions[2] };
+                return { index: 3, label: config.labels[3], color: config.colors[3], desc: config.descriptions[3] };
+            }
+
+             function updateResults(configKey, score, data, labels) {
+                const result = getRiskLevel(score, configKey);
+                document.getElementById(`score-${configKey}`).textContent = score;
+                document.getElementById(`level-${configKey}`).textContent = result.label;
+                document.getElementById(`description-${configKey}`).textContent = result.desc;
+                const resultCard = document.getElementById(`result-card-${configKey}`);
+                resultCard.className = 'text-center p-4 rounded-lg mb-4';
+                Object.values(riskLevels[configKey].colors).forEach(c => resultCard.classList.remove(c));
+                resultCard.classList.add(result.color);
+                createChart(configKey, data, labels);
+            }
+            
+            window.showTab = (tabKey) => {
+                document.querySelectorAll('.evaluator-tab').forEach(tab => tab.classList.add('hidden'));
+                document.getElementById(`content-${tabKey}`).classList.remove('hidden');
+                document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('tab-active'));
+                document.getElementById(`tab-${tabKey}`).classList.add('tab-active');
+            }
+
+            window.resetForm = (configKey) => {
+                if (configKey === 'ap1') {
+                    const selector = document.getElementById('tipo_evaluacion_ap1').value;
+                    if (selector !== 'seleccionar') {
+                        document.getElementById(`form-ap1-${selector}`).reset();
+                        calculateRiskAp1(selector);
+                    }
+                } else if (configKey === 'ap2') {
+                    const selector = document.getElementById('tipo_evaluacion_ap2').value;
+                     if (selector !== 'seleccionar') {
+                        document.getElementById(`form-ap2-${selector.replace('_', '-')}`).reset();
+                        if (selector === 'sin_equipo') calculateRiskAp2_SinEquipo();
+                        else if (selector === 'con_equipo') calculateRiskAp2_ConEquipo();
+                    }
+                }
+            };
+            
+            // Event Listeners for info popups
+            document.querySelectorAll('.info-container').forEach(container => {
+                const icon = container.querySelector('.info-icon');
+                const popup = container.querySelector('.info-popup');
+                if (icon && popup) {
+                    icon.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        document.querySelectorAll('.info-popup.show').forEach(p => {
+                            if (p !== popup) p.classList.remove('show');
+                        });
+                        popup.classList.toggle('show');
+                    });
+                }
+            });
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.info-popup.show').forEach(p => p.classList.remove('show'));
+            });
+
+            showTab('ap1');
+        
+            // =================================================================== //
+            // =================== FIN LÓGICA GENERAL ============================ //
+            // =================================================================== //
+
+
+            // =================================================================== //
+            // =================== INICIO LÓGICA APÉNDICE I ====================== //
+            // =================================================================== //
+            const ap1GraphData = {
+                levantamiento: {
+                    frecuencias: [0, 2, 12, 30, 60, 250, 400, 720],
+                    boundaries: {
+                        0:   { score4: 23, score6: 45, score10: 51 }, 2:   { score4: 21, score6: 42, score10: 50 },
+                        12:  { score4: 18, score6: 38, score10: 49 }, 30:  { score4: 16, score6: 35, score10: 48 },
+                        60:  { score4: 15, score6: 31, score10: 48 }, 250: { score4: 12, score6: 25, score10: 32 },
+                        400: { score4: 10, score6: 22, score10: 29 }, 720: { score4: 8,  score6: 18, score10: 25 }
+                    }
+                },
+                transporte: {
+                    frecuencias: [0, 2, 12, 30, 60, 300],
+                    boundaries: {
+                        0:   { score4: 25, score6: 45, score10: 51}, 2:   { score4: 20, score6: 40, score10: 50},
+                        12:  { score4: 18, score6: 35, score10: 49}, 30:  { score4: 16, score6: 32, score10: 45},
+                        60:  { score4: 15, score6: 30, score10: 42}, 300: { score4: 12, score6: 25, score10: 35}
+                    }
+                }
+            };
+            
+             const ap1EquipoWeightBoundaries = {
+                2: { score4: 35, score6: 50, score10: 85 },
+                3: { score4: 40, score6: 75, score10: 125 },
+                4: { score4: 40, score6: 100, score10: 170 }
+            };
+
+            function calculateRiskAp1(type) {
+                if (type === 'levantamiento') calculateRiskAp1_Levantamiento();
+                else if (type === 'transporte') calculateRiskAp1_Transporte();
+                else if (type === 'equipo') calculateRiskAp1_Equipo();
+            }
+
+            // --- Cálculo para Levantamiento/Descenso (AP1) --- //
+            function calculateRiskAp1_Levantamiento() {
+                const scores = {};
+                const labels = ['Peso/Frec', 'Dist. Horiz', 'Altura Vert', 'Torsión', 'Postura', 'Agarre', 'Superficie', 'Otros'];
+                const { peso, frecuencia, graphConfig } = {
+                    peso: parseFloat(document.getElementById('ap1_peso_lev').value) || 0,
+                    frecuencia: parseFloat(document.getElementById('ap1_frecuencia_lev').value) || 0,
+                    graphConfig: ap1GraphData.levantamiento
+                };
+                let closestFreq = graphConfig.frecuencias.reduce((p, c) => (Math.abs(c - frecuencia) < Math.abs(p - frecuencia) ? c : p));
+                const boundaries = graphConfig.boundaries[closestFreq];
+                if (peso < boundaries.score4) scores.graph = 0;
+                else if (peso < boundaries.score6) scores.graph = 4;
+                else if (peso < boundaries.score10) scores.graph = 6;
+                else scores.graph = 10;
+                scores.distancia = parseInt(document.getElementById('distancia_horizontal_lev').value, 10);
+                scores.altura = parseInt(document.getElementById('altura_levantamiento_lev').value, 10);
+                scores.torsion = parseInt(document.getElementById('torsion_torso_lev').value, 10);
+                scores.restriccion = parseInt(document.getElementById('restriccion_postural_lev').value, 10);
+                scores.acoplamiento = parseInt(document.getElementById('acoplamiento_mano_lev').value, 10);
+                scores.superficie = parseInt(document.getElementById('superficie_trabajo_lev').value, 10);
+                scores.otros = parseInt(document.getElementById('otros_factores_ap1_lev').value, 10);
+                updateResults('ap1', Object.values(scores).reduce((a, b) => a + b, 0), Object.values(scores), labels);
+            }
+
+            // --- Cálculo para Transporte (AP1) --- //
+            function calculateRiskAp1_Transporte() {
+                const scores = {};
+                const labels = ['Peso/Frec', 'Dist. Horiz', 'Asimetría', 'Postura', 'Agarre', 'Superficie', 'Otros', 'Dist. Transp', 'Obstáculos'];
+                const { peso, frecuencia, graphConfig } = {
+                    peso: parseFloat(document.getElementById('ap1_peso_trans').value) || 0,
+                    frecuencia: parseFloat(document.getElementById('ap1_frecuencia_trans').value) || 0,
+                    graphConfig: ap1GraphData.transporte
+                };
+                let closestFreq = graphConfig.frecuencias.reduce((p, c) => (Math.abs(c - frecuencia) < Math.abs(p - frecuencia) ? c : p));
+                const boundaries = graphConfig.boundaries[closestFreq];
+                if (peso < boundaries.score4) scores.graph = 0;
+                else if (peso < boundaries.score6) scores.graph = 4;
+                else if (peso < boundaries.score10) scores.graph = 6;
+                else scores.graph = 10;
+                scores.distancia_h = parseInt(document.getElementById('distancia_horizontal_trans').value, 10);
+                scores.asimetria = parseInt(document.getElementById('carga_asimetrica_trans').value, 10);
+                scores.restriccion = parseInt(document.getElementById('restriccion_postural_trans').value, 10);
+                scores.acoplamiento = parseInt(document.getElementById('acoplamiento_mano_trans').value, 10);
+                scores.superficie = parseInt(document.getElementById('superficie_trabajo_trans').value, 10);
+                scores.otros = parseInt(document.getElementById('otros_factores_ap1_trans').value, 10);
+                scores.distancia_t = parseInt(document.getElementById('distancia_transporte_trans').value, 10);
+                scores.obstaculos = parseInt(document.getElementById('obstaculos_ruta_trans').value, 10);
+                updateResults('ap1', Object.values(scores).reduce((a, b) => a + b, 0), Object.values(scores), labels);
+            }
+            
+            // --- Cálculo para Manejo en Equipo (AP1) --- //
+            function calculateRiskAp1_Equipo() {
+                const scores = {};
+                const labels = ['Peso/Equipo', 'Dist. Horiz', 'Altura Vert', 'Torsión', 'Postura', 'Agarre', 'Superficie', 'Otros', 'Comunicación'];
+                const numPersonas = document.getElementById('ap1_num_personas_eq').value;
+                const peso = parseFloat(document.getElementById('ap1_peso_eq').value) || 0;
+                const boundaries = ap1EquipoWeightBoundaries[numPersonas];
+                if (peso < boundaries.score4) scores.peso = 0;
+                else if (peso < boundaries.score6) scores.peso = 4;
+                else if (peso < boundaries.score10) scores.peso = 6;
+                else scores.peso = 10;
+                scores.distancia_h = parseInt(document.getElementById('distancia_horizontal_eq').value, 10);
+                scores.altura = parseInt(document.getElementById('altura_levantamiento_eq').value, 10);
+                scores.torsion = parseInt(document.getElementById('torsion_torso_eq').value, 10);
+                scores.restriccion = parseInt(document.getElementById('restriccion_postural_eq').value, 10);
+                scores.acoplamiento = parseInt(document.getElementById('acoplamiento_mano_eq').value, 10);
+                scores.superficie = parseInt(document.getElementById('superficie_trabajo_eq').value, 10);
+                scores.otros = parseInt(document.getElementById('otros_factores_ap1_eq').value, 10);
+                scores.comunicacion = parseInt(document.getElementById('comunicacion_eq').value, 10);
+                updateResults('ap1', Object.values(scores).reduce((a, b) => a + b, 0), Object.values(scores), labels);
+            }
+
+            // --- Listeners para AP1 --- //
+            ['form-ap1-levantamiento', 'form-ap1-transporte', 'form-ap1-equipo'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    const type = id.split('-')[2];
+                    calculateRiskAp1(type);
+                });
+            });
+            document.getElementById('tipo_evaluacion_ap1').addEventListener('change', (e) => {
+                const selection = e.target.value;
+                ['levantamiento', 'transporte', 'equipo'].forEach(type => {
+                    document.getElementById(`form-ap1-${type}`).classList.add('hidden');
+                });
+                if (selection !== 'seleccionar') {
+                    document.getElementById(`form-ap1-${selection}`).classList.remove('hidden');
+                    calculateRiskAp1(selection);
+                } else {
+                    if (chartConfigs.ap1.chart) chartConfigs.ap1.chart.destroy();
+                    document.getElementById('score-ap1').textContent = '0';
+                    document.getElementById('level-ap1').textContent = 'Seleccione';
+                    document.getElementById('description-ap1').textContent = 'Seleccione un tipo de operación para comenzar.';
+                    document.getElementById('result-card-ap1').className = 'text-center p-4 rounded-lg mb-4';
+                }
+            });
+            // =================================================================== //
+            // =================== FIN LÓGICA APÉNDICE I ========================= //
+            // =================================================================== //
+
+
+            // =================================================================== //
+            // =================== INICIO LÓGICA APÉNDICE II ===================== //
+            // =================================================================== //
+            const tablasFuerzaSinEquipo = {
+                rodando:     { bajo: 400, medio: 600, alto: 1000 },
+                girando:     { bajo: 80, medio: 120, alto: 150 },
+                arrastrando: { bajo: 25, medio: 50, alto: 80 }
+            };
+            const tablasFuerzaConEquipo = {
+                pequeno: { bajo: 50, medio: 100, alto: 200 },
+                mediano: { bajo: 250, medio: 500, alto: 750 },
+                grande:  { bajo: 600, medio: 1000, alto: 1500 }
+            };
+
+            // --- Cálculo para SIN Equipo Auxiliar (AP2) --- //
+            function calculateRiskAp2_SinEquipo() {
+                const scores = {};
+                const labels = ['Fuerza', 'Postura', 'Agarre', 'Patrón', 'Distancia', 'Superficie', 'Obstáculos', 'Otros'];
+                const accion = document.getElementById('sin_accion').value;
+                const peso = parseFloat(document.getElementById('sin_peso_objeto').value) || 0;
+                const limites = tablasFuerzaSinEquipo[accion];
+                if (peso < limites.bajo) scores.fuerza = 0;
+                else if (peso < limites.medio) scores.fuerza = 2;
+                else if (peso < limites.alto) scores.fuerza = 4;
+                else scores.fuerza = 8;
+                scores.postura = parseInt(document.getElementById('sin_postura').value, 10);
+                scores.acoplamiento = parseInt(document.getElementById('sin_acoplamiento').value, 10);
+                scores.patron = parseInt(document.getElementById('sin_patron_trabajo').value, 10);
+                scores.distancia = parseInt(document.getElementById('sin_distancia').value, 10);
+                scores.superficie = parseInt(document.getElementById('sin_superficie').value, 10);
+                scores.obstaculos = parseInt(document.getElementById('sin_obstaculos').value, 10);
+                scores.otros = parseInt(document.getElementById('sin_otros_factores').value, 10);
+                updateResults('ap2', Object.values(scores).reduce((a, b) => a + b, 0), Object.values(scores), labels);
+            }
+
+            // --- Cálculo para CON Equipo Auxiliar (AP2) --- //
+            function calculateRiskAp2_ConEquipo() {
+                const scores = {};
+                const labels = ['Equipo/Peso', 'Postura', 'Agarre', 'Patrón', 'Distancia', 'Cond. Equipo', 'Superficie', 'Obstáculos', 'Otros'];
+                const tipoEquipo = document.getElementById('con_tipo_equipo').value;
+                const peso = parseFloat(document.getElementById('con_peso_carga').value) || 0;
+                const limites = tablasFuerzaConEquipo[tipoEquipo];
+                if (peso < limites.bajo) scores.equipo_peso = 0;
+                else if (peso < limites.medio) scores.equipo_peso = 2;
+                else if (peso < limites.alto) scores.equipo_peso = 4;
+                else scores.equipo_peso = 8;
+                scores.postura = parseInt(document.getElementById('con_postura').value, 10);
+                scores.agarre = parseInt(document.getElementById('con_agarre').value, 10);
+                scores.patron = parseInt(document.getElementById('con_patron_trabajo').value, 10);
+                scores.distancia = parseInt(document.getElementById('con_distancia').value, 10);
+                scores.equipo_condicion = parseInt(document.getElementById('con_equipo_condicion').value, 10);
+                scores.superficie = parseInt(document.getElementById('con_superficie').value, 10);
+                scores.obstaculos = parseInt(document.getElementById('con_obstaculos').value, 10);
+                scores.otros = parseInt(document.getElementById('con_otros_factores').value, 10);
+                updateResults('ap2', Object.values(scores).reduce((a, b) => a + b, 0), Object.values(scores), labels);
+            }
+
+            // --- Listeners para AP2 --- //
+            document.getElementById('form-ap2-sin-equipo').addEventListener('input', calculateRiskAp2_SinEquipo);
+            document.getElementById('form-ap2-con-equipo').addEventListener('input', calculateRiskAp2_ConEquipo);
+            document.getElementById('tipo_evaluacion_ap2').addEventListener('change', (e) => {
+                const selection = e.target.value;
+                document.getElementById('form-ap2-sin-equipo').classList.add('hidden');
+                document.getElementById('form-ap2-con-equipo').classList.add('hidden');
+                if (selection === 'sin_equipo') {
+                    document.getElementById('form-ap2-sin-equipo').classList.remove('hidden');
+                    calculateRiskAp2_SinEquipo();
+                } else if (selection === 'con_equipo') {
+                    document.getElementById('form-ap2-con-equipo').classList.remove('hidden');
+                    calculateRiskAp2_ConEquipo();
+                } else {
+                    if (chartConfigs.ap2.chart) chartConfigs.ap2.chart.destroy();
+                    document.getElementById('score-ap2').textContent = '0';
+                    document.getElementById('level-ap2').textContent = 'Seleccione';
+                    document.getElementById('description-ap2').textContent = 'Seleccione un método de evaluación para comenzar.';
+                    document.getElementById(`result-card-ap2`).className = 'text-center p-4 rounded-lg mb-4';
+                }
+            });
+             // =================================================================== //
+            // =================== FIN LÓGICA APÉNDICE II ======================== //
+            // =================================================================== //
+
+        });
+    </script>
+</body>
+</html>

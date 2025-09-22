@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Usuarios - ERGOApp</title>
+    <title>Gestión de Usuarios y Puestos - ERGOApp</title>
     
     <!--
       RUTAS Y ORDEN DE CARGA CORREGIDOS
@@ -53,285 +53,604 @@
         .modal-actions { margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem; }
     </style>
 </head>
-<>
-    <div class="container mx-auto p-4">
-        <div class="card p-6 rounded-lg shadow-lg max-w-md w-full bg-white">
-            <h2 class="text-xl font-semibold mb-4">Crear Nuevo Usuario</h2>
-            <form id="registro-form">
-                <div class="mb-4">
-                    <label for="reg-email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="reg-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+
+<div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Gestión de Usuarios</h2>
+            </div>
+            <div class="card-content">
+                 <form id="registro-form">
+                    <h3 class="text-lg font-semibold mb-3">Crear Nuevo Usuario</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="reg-email">Email</label>
+                            <input type="email" id="reg-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">Contraseña</label>
+                            <input type="password" id="reg-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-nombre">Nombre</label>
+                            <input type="text" id="reg-nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-puesto">Puesto</label>
+                            <input type="text" id="reg-puesto">
+                        </div>
+                         <div class="form-group">
+                            <label for="reg-rango">Rango</label>
+                            <select id="reg-rango" required>
+                                <option value="1">Admin</option>
+                                <option value="2">Editor</option>
+                                <option value="3" selected>Visualizador</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-usuario">Usuario</label>
+                            <input type="text" id="reg-usuario">
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+                    </div>
+                </form>
+                <hr class="my-4">
+                <h3 class="text-lg font-semibold mb-3">Usuarios Registrados</h3>
+                <div class="table-wrapper">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Puesto</th>
+                                <th>Rango</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-list-tbody">
+                            </tbody>
+                    </table>
                 </div>
-                <div class="mb-4">
-                    <label for="reg-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                    <input type="password" id="reg-password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
-                </div>
-                <div class="mb-4">
-                    <label for="reg-nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                    <input type="text" id="reg-nombre" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
-                </div>
-                <div class="mb-4">
-                    <label for="reg-puesto" class="block text-sm font-medium text-gray-700">Puesto</label>
-                    <input type="text" id="reg-puesto" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                </div>
-                <div class="mb-4">
-                    <label for="reg-rango" class="block text-sm font-medium text-gray-700">Rango (1, 2 o 3)</label>
-                    <input type="number" id="reg-rango" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" min="1" max="3" required>
-                </div>
-                <div class="mb-4">
-                    <label for="reg-usuario" class="block text-sm font-medium text-gray-700">Usuario</label>
-                    <input type="text" id="reg-usuario" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
-                    Registrar Usuario
-                </button>
-            </form>
+
+            </div>
         </div>
-    </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Catálogo de Puestos</h2>
+            </div>
+            <div class="card-content">
+                <form id="puesto-form" class="mb-4">
+                    <input type="hidden" id="puesto-id">
+                    <h3 class="text-lg font-semibold mb-3">Crear o Editar Puesto</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="puesto-nombre">Nombre del Puesto</label>
+                            <input type="text" id="puesto-nombre" placeholder="Ej. Montacarguista" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="puesto-descripcion">Descripción</label>
+                            <textarea id="puesto-descripcion" rows="2" placeholder="Breve descripción del puesto"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetPuestoForm()">Limpiar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Puesto</button>
+                    </div>
+                </form>
+                <hr class="my-4">
+                <h3 class="text-lg font-semibold mb-3">Puestos Existentes</h3>
+                <div class="table-wrapper">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="puestos-list-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-header">
+                <h2 class="card-title">Asignación de Puestos a Centros y Áreas</h2>
+            </div>
+            <div class="card-content">
+                <form id="asignacion-form" class="mb-4">
+                    <h3 class="text-lg font-semibold mb-3">Asignar Puesto</h3>
+                    <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="form-group">
+                            <label for="asignacion-puesto">1. Puesto</label>
+                            <select id="asignacion-puesto" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="asignacion-area">2. Área</label>
+                            <select id="asignacion-area" required disabled></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="asignacion-centro">3. Centro de Trabajo</label>
+                            <select id="asignacion-centro" required disabled></select>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Asignar Puesto</button>
+                    </div>
+                </form>
+                 <hr class="my-4">
+                <h3 class="text-lg font-semibold mb-3">Puestos Asignados</h3>
+                 <div class="table-wrapper">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Centro de Trabajo</th>
+                                <th>Área</th>
+                                <th>Puesto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="centro-puestos-list-tbody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
 
-        <button 
-    id="btnReprocesar" 
-    style="background-color: #e74c3c; color: white; padding: 1rem; margin: 2rem; border-radius: 8px; cursor: pointer; border: none; font-size: 1rem;">
-    ⚙️ Reprocesar Evaluaciones Antiguas
-</button>
+    <button 
+        id="btnReprocesar" 
+        style="background-color: #e74c3c; color: white; padding: 1rem; margin: 2rem; border-radius: 8px; cursor: pointer; border: none; font-size: 1rem;">
+        ⚙️ Reprocesar Evaluaciones Antiguas
+    </button>
 
-    <script>
-        let allUsers = [];
+<script>
+    // --- VARIABLES GLOBALES ---
+    // Almacenan los datos cargados desde Supabase para evitar consultas repetidas.
+    let allUsers = [];
+    let allPuestos = [];
+    let allCentros = [];
+    let allAreas = [];
+    let allCentroPuestos = [];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!ERGOAuth.initializeAuthContext() || !ERGOAuth.hasPermission('update')) {
-                document.getElementById('admin-content').style.display = 'none';
-                document.getElementById('permission-denied').style.display = 'block';
-                return;
-            }
-            document.getElementById('admin-content').style.display = 'block';
-            loadUsers();
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-    const registroForm = document.getElementById('registro-form');
-    if (registroForm) {
-        registroForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const nombre = document.getElementById('reg-nombre').value;
-            const puesto = document.getElementById('reg-puesto').value;
-            const rango = document.getElementById('reg-rango').value;
-            const usuario = document.getElementById('reg-usuario').value;
-
-            // Llamada a la nueva función de registro
-            const { data, error } = await authClient.registerUser(email, password, {
-                nombre,
-                puesto,
-                rango: parseInt(rango),
-                usuario
-            });
-
-            if (error) {
-                console.error("❌ Error en el registro:", error.message);
-                ERGOUtils.showToast(`Error: ${error.message}`, 'error');
-            } else if (data && data.user) {
-                console.log("✅ Usuario creado con éxito:", data.user);
-                ERGOUtils.showToast("Usuario creado con éxito. Revisa el correo para confirmar.", 'success');
-                registroForm.reset();
-            } else {
-                // Este caso ocurre cuando email confirmations está activado.
-                ERGOUtils.showToast("Usuario creado con éxito. Revisa tu correo para confirmar.", 'success');
-                registroForm.reset();
-            }
-        });
-    }
-});
-
-        async function loadUsers() {
-            try {
-                allUsers = await dataClient.getUsers();
-                renderUsers();
-            } catch (error) {
-                ERGOUtils.showToast('Error al cargar usuarios', 'error');
-            }
-        }
-
-        function renderUsers() {
-            const tbody = document.getElementById('user-list-tbody');
-            tbody.innerHTML = '';
-            const currentUser = ERGOAuth.getCurrentUser();
-
-            allUsers.forEach(user => {
-                const tr = document.createElement('tr');
-                const canDelete = currentUser.rango === 1 && user.rango !== 1;
-
-                tr.innerHTML = `
-                    <td>${user.nombre}</td>
-                    <td>${user.puesto}</td>
-                    <td>${user.usuario}</td>
-                    <td><span class="rango rango-${user.rango}">${getRangoText(user.rango)}</span></td>
-                    <td class="actions">
-                        <button class="btn btn-sm btn-ghost" onclick="openUserModal('${user.id}')">Editar</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')" ${canDelete ? '' : 'disabled'}>Eliminar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+    // --- INICIALIZACIÓN DE LA PÁGINA ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Verificar permisos del usuario antes de mostrar cualquier cosa.
+        if (!ERGOAuth.initializeAuthContext() || !ERGOAuth.hasPermission('update')) {
+            document.body.innerHTML = '<h1>Acceso Denegado</h1><p>No tienes permisos para ver esta página.</p>';
+            return;
         }
         
-        function openUserModal(userId = null) {
-            const form = document.getElementById('user-form');
+        // 2. Si tiene permisos, cargar todos los datos necesarios.
+        loadInitialData();
+
+        // 3. Configurar todos los event listeners para los formularios y botones.
+        setupEventListeners();
+    });
+
+    /**
+     * Carga todos los datos iniciales de forma paralela para máxima eficiencia.
+     */
+    async function loadInitialData() {
+        try {
+            ERGOUtils.showToast('Cargando datos...', 'info');
+            
+            [allPuestos, allCentros, allAreas, allCentroPuestos, allUsers] = await Promise.all([
+                dataClient.query('puestos', 'GET'),
+                dataClient.getWorkCenters(),
+                dataClient.query('areas', 'GET'),
+                dataClient.query('centro_puestos', 'GET', null, '?select=*,puestos(nombre),work_centers(name),areas(name)'),
+                dataClient.getUsers()
+            ]);
+            
+            // Una vez cargados todos los datos, se "pintan" en sus respectivas tablas y selectores.
+            renderPuestos();
+            renderCentroPuestos();
+            populateAsignacionDropdowns();
+            renderUsers();
+
+            ERGOUtils.showToast('Datos cargados.', 'success', 1500);
+
+        } catch (error) {
+            console.error("❌ Error cargando datos iniciales:", error);
+            ERGOUtils.showToast('Error al cargar datos. Revisa la consola.', 'error');
+        }
+    }
+
+    /**
+     * Centraliza la asignación de todos los event listeners.
+     */
+    function setupEventListeners() {
+        document.getElementById('registro-form')?.addEventListener('submit', handleUserRegistration);
+        document.getElementById('user-form')?.addEventListener('submit', saveUser);
+        document.getElementById('puesto-form')?.addEventListener('submit', savePuesto);
+        document.getElementById('asignacion-form')?.addEventListener('submit', assignPuesto);
+        document.getElementById('btnReprocesar')?.addEventListener('click', reprocesarEvaluaciones);
+        document.getElementById('asignacion-puesto')?.addEventListener('change', handlePuestoChange);
+        document.getElementById('asignacion-area')?.addEventListener('change', handleAreaChange);
+    }
+
+    // --- SECCIÓN: GESTIÓN DE USUARIOS ---
+
+    /**
+     * Maneja el registro de un nuevo usuario desde el formulario principal.
+     */
+    async function handleUserRegistration(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const nombre = document.getElementById('reg-nombre').value;
+        const puesto = document.getElementById('reg-puesto').value;
+        const rango = document.getElementById('reg-rango').value;
+        const usuario = document.getElementById('reg-usuario').value;
+
+        const { error } = await authClient.registerUser(email, password, {
+            nombre, puesto, rango: parseInt(rango), usuario
+        });
+
+        if (error) {
+            ERGOUtils.showToast(`Error: ${error.message}`, 'error');
+        } else {
+            ERGOUtils.showToast("Usuario creado. Revisa el correo para confirmar.", 'success');
             form.reset();
-            document.getElementById('user-id').value = '';
-            
-            const modalTitle = document.getElementById('modal-title');
-            if (userId) {
-                modalTitle.textContent = 'Editar Usuario';
-                const user = allUsers.find(u => u.id === userId);
-                if (user) {
-                    document.getElementById('user-id').value = user.id;
-                    document.getElementById('user-nombre').value = user.nombre;
-                    document.getElementById('user-puesto').value = user.puesto;
-                    document.getElementById('user-usuario').value = user.usuario;
-                    document.getElementById('user-rango').value = user.rango;
-                    document.getElementById('user-usuario').disabled = true;
-                }
-            } else {
-                modalTitle.textContent = 'Crear Nuevo Usuario';
-                document.getElementById('user-usuario').disabled = false;
+            await loadInitialData(); // Recarga todo para mostrar el nuevo usuario.
+        }
+    }
+    
+    /**
+     * Renderiza la tabla de usuarios con datos actualizados.
+     */
+    function renderUsers() {
+        const tbody = document.getElementById('user-list-tbody');
+        tbody.innerHTML = '';
+        const currentUser = ERGOAuth.getCurrentUser();
+
+        allUsers.forEach(user => {
+            const tr = document.createElement('tr');
+            const canDelete = currentUser.rango === 1 && user.rango !== 1; // Solo un admin puede borrar a otros que no sean admin.
+
+            tr.innerHTML = `
+                <td>${user.nombre}</td>
+                <td>${user.puesto}</td>
+                <td>${user.usuario}</td>
+                <td><span class="rango rango-${user.rango}">${getRangoText(user.rango)}</span></td>
+                <td class="actions">
+                    <button class="btn btn-sm btn-ghost" onclick="openUserModal('${user.id}')">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')" ${canDelete ? '' : 'disabled'}>Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    /**
+     * Abre el modal para editar un usuario existente.
+     */
+    function openUserModal(userId) {
+        const form = document.getElementById('user-form');
+        form.reset();
+        
+        const modalTitle = document.getElementById('modal-title');
+        modalTitle.textContent = 'Editar Usuario';
+
+        const user = allUsers.find(u => u.id === userId);
+        if (user) {
+            document.getElementById('user-id').value = user.id;
+            document.getElementById('user-nombre').value = user.nombre;
+            document.getElementById('user-puesto').value = user.puesto;
+            document.getElementById('user-usuario').value = user.usuario;
+            document.getElementById('user-rango').value = user.rango;
+            document.getElementById('user-usuario').disabled = true; // El 'usuario' no se puede cambiar.
+        }
+        
+        document.getElementById('user-modal').style.display = 'flex';
+    }
+
+    function closeUserModal() {
+        document.getElementById('user-modal').style.display = 'none';
+    }
+
+    /**
+     * Guarda los cambios de un usuario desde el modal.
+     */
+    async function saveUser(event) {
+        event.preventDefault();
+        const userId = document.getElementById('user-id').value;
+        
+        const userData = {
+            nombre: document.getElementById('user-nombre').value,
+            puesto: document.getElementById('user-puesto').value,
+            rango: parseInt(document.getElementById('user-rango').value)
+        };
+
+        try {
+            await dataClient.updateUser(userId, userData);
+            ERGOUtils.showToast('Usuario actualizado con éxito', 'success');
+            closeUserModal();
+            await loadInitialData(); // Recarga para ver los cambios.
+        } catch (error) {
+            ERGOUtils.showToast(`Error: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Elimina un usuario.
+     */
+    async function deleteUser(userId) {
+        const userToDelete = allUsers.find(u => u.id === userId);
+        if (!userToDelete) return;
+
+        if (confirm(`¿Seguro que quieres eliminar al usuario "${userToDelete.nombre}"? Esta acción es irreversible.`)) {
+            try {
+                await dataClient.deleteUser(userToDelete.auth_user_id);
+                ERGOUtils.showToast('Usuario eliminado con éxito', 'success');
+                await loadInitialData(); // Recarga para quitar al usuario de la lista.
+            } catch (error) {
+                ERGOUtils.showToast(`Error al eliminar: ${error.message}`, 'error');
             }
-            
-            document.getElementById('user-modal').style.display = 'flex';
         }
+    }
 
-        function closeUserModal() {
-            document.getElementById('user-modal').style.display = 'none';
+    function getRangoText(rango) {
+        return { 1: 'Admin', 2: 'Editor', 3: 'Visualizador' }[rango] || 'Desconocido';
+    }
+
+    // --- SECCIÓN: GESTIÓN DE PUESTOS ---
+
+    function renderPuestos() {
+        const tbody = document.getElementById('puestos-list-tbody');
+        tbody.innerHTML = '';
+        allPuestos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        allPuestos.forEach(puesto => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${puesto.nombre}</td>
+                <td>${puesto.descripcion || 'N/A'}</td>
+                <td class="actions">
+                    <button class="btn btn-sm btn-ghost" onclick="editPuesto('${puesto.id}')">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="deletePuesto('${puesto.id}')">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function resetPuestoForm() {
+        document.getElementById('puesto-form').reset();
+        document.getElementById('puesto-id').value = '';
+    }
+
+    function editPuesto(puestoId) {
+        const puesto = allPuestos.find(p => p.id === puestoId);
+        if (puesto) {
+            document.getElementById('puesto-id').value = puesto.id;
+            document.getElementById('puesto-nombre').value = puesto.nombre;
+            document.getElementById('puesto-descripcion').value = puesto.descripcion;
+            document.getElementById('puesto-nombre').focus();
         }
+    }
 
-        async function saveUser(event) {
-            event.preventDefault();
-            const userId = document.getElementById('user-id').value;
-            
-            const userData = {
-                nombre: document.getElementById('user-nombre').value,
-                puesto: document.getElementById('user-puesto').value,
-                usuario: document.getElementById('user-usuario').value,
-                rango: parseInt(document.getElementById('user-rango').value)
+    async function savePuesto(event) {
+        event.preventDefault();
+            const puestoId = document.getElementById('puesto-id').value;
+            const puestoData = {
+                nombre: document.getElementById('puesto-nombre').value,
+                descripcion: document.getElementById('puesto-descripcion').value
             };
 
             try {
-                if (userId) {
-                    await dataClient.updateUser(userId, {
-                        nombre: userData.nombre,
-                        puesto: userData.puesto,
-                        rango: userData.rango
-                    });
-                    ERGOUtils.showToast('Usuario actualizado con éxito', 'success');
-                } else {
-                    const tempPassword = `ERGO_${Math.random().toString(36).slice(-8)}`;
-                    userData.password = tempPassword;
-                    
-                    const result = await dataClient.createUser(userData);
-                    if (result && result.error) {
-                       throw new Error(result.error);
-                    }
-                    alert(`Usuario creado con éxito.\nContraseña temporal: ${tempPassword}\nEl usuario deberá cambiarla en su primer inicio de sesión.`);
+                if (puestoId) { // Actualizar usando PATCH
+                    await dataClient.query('puestos', 'PATCH', puestoData, `?id=eq.${puestoId}`);
+                } else { // Crear usando POST
+                    await dataClient.query('puestos', 'POST', puestoData);
                 }
-                closeUserModal();
-                loadUsers();
+                ERGOUtils.showToast('Puesto guardado con éxito', 'success');
+                resetPuestoForm();
+                await loadInitialData(); // Recargar todo para actualizar listas.
             } catch (error) {
-                ERGOUtils.showToast(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        async function deleteUser(userId) {
-            const userToDelete = allUsers.find(u => u.id === userId);
-            if (!userToDelete) return;
-
-            if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${userToDelete.nombre}"? Esta acción es irreversible.`)) {
-                try {
-                    await dataClient.deleteUser(userToDelete.auth_user_id);
-                    ERGOUtils.showToast('Usuario eliminado con éxito', 'success');
-                    loadUsers();
-                } catch (error) {
-                    ERGOUtils.showToast(`Error al eliminar: ${error.message}`, 'error');
-                }
+                console.error("❌ Error en savePuesto:", error);
+                ERGOUtils.showToast(`Error al guardar puesto: ${error.message}`, 'error');
             }
         }
         
-        function getRangoText(rango) {
-            switch(rango) {
-                case 1: return 'Admin';
-                case 2: return 'Editor';
-                case 3: return 'Visualizador';
-                default: return 'Desconocido';
+        async function deletePuesto(puestoId) {
+            const puesto = allPuestos.find(p => p.id === puestoId);
+
+        if (confirm(`¿Seguro que quieres eliminar el puesto "${puesto.nombre}"?`)) {
+            try {
+// Eliminar usando DELETE y un query parameter para el ID
+                    await dataClient.query('puestos', 'DELETE', null, `?id=eq.${puestoId}`);
+                    ERGOUtils.showToast('Puesto eliminado', 'success');
+                    await loadInitialData();
+                } catch (error) {
+                    console.error("❌ Error en deletePuesto:", error);
+                    ERGOUtils.showToast(`Error al eliminar: ${error.message}`, 'error');
             }
         }
+    }
 
-         // 1. Pega aquí la función de index.js
-        async function reprocesarEvaluaciones() {
-            // La importación de 'data' se manejará automáticamente por el script que agregaste en el head
-            const { default: cuestionarioData } = await import('../cuestionario-data.js');
+    // --- SECCIÓN: ASIGNACIÓN DE PUESTOS ---
+    
+    function setupEventListeners() {
+        document.getElementById('registro-form')?.addEventListener('submit', handleUserRegistration);
+        document.getElementById('user-form')?.addEventListener('submit', saveUser);
+        document.getElementById('puesto-form')?.addEventListener('submit', savePuesto);
+        document.getElementById('asignacion-form')?.addEventListener('submit', assignPuesto);
+        document.getElementById('btnReprocesar')?.addEventListener('click', reprocesarEvaluaciones);
+        document.getElementById('asignacion-puesto')?.addEventListener('change', handlePuestoChange);
+        document.getElementById('asignacion-area')?.addEventListener('change', handleAreaChange);
+    }
+    function populateAsignacionDropdowns() {
+        const puestoSelect = document.getElementById('asignacion-puesto');
+        resetSelect(document.getElementById('asignacion-area'), 'Selecciona un área');
+        resetSelect(document.getElementById('asignacion-centro'), 'Selecciona un centro');
+        populateSelect(puestoSelect, allPuestos, 'Selecciona un puesto', 'id', 'nombre');
+    }
 
-            if (!confirm("Este proceso 're-guardará' todas las evaluaciones antiguas para calcular los nuevos campos. Es seguro, pero puede tardar. ¿Continuar?")) {
+    function resetSelect(selectEl, placeholder) {
+        selectEl.innerHTML = `<option value="">${placeholder}</option>`;
+        selectEl.disabled = true;
+    }
+
+function populateSelect(selectEl, items, placeholder, valueKey, textKey) {
+    selectEl.innerHTML = `<option value="">${placeholder}</option>`;
+    items.forEach(item => {
+        const option = document.createElement('option');
+        option.value = (item[valueKey] ?? item.id ?? '') + '';
+
+        // Buscar el texto en variantes comunes para evitar problemas de naming
+        let text = '';
+        if (Array.isArray(textKey)) {
+            text = textKey.map(key => (item[key] ?? item[key?.toLowerCase()] ?? '')).filter(Boolean).join(' - ');
+        } else {
+            text = item[textKey] ?? item.nombre ?? item.name ?? item.title ?? '';
+        }
+
+        option.textContent = text || String(option.value) || '—';
+        selectEl.appendChild(option);
+    });
+}
+    function handlePuestoChange() {
+        const areaSelect = document.getElementById('asignacion-area');
+        resetSelect(document.getElementById('asignacion-centro'), 'Selecciona un centro');
+        populateSelect(areaSelect, allAreas, 'Selecciona un área', 'id', 'name');
+        areaSelect.disabled = false;
+    }
+
+function handleAreaChange() {
+    const areaSelect = document.getElementById('asignacion-area');
+    const centroSelect = document.getElementById('asignacion-centro');
+    const selectedAreaId = areaSelect.value;
+
+    // Reset
+    resetSelect(centroSelect, 'Selecciona un centro');
+    if (!selectedAreaId) return;
+
+    // Filtramos los centros cuyo area_id == id del área seleccionada
+    const filteredCentros = allCentros.filter(
+        centro => String(centro.area_id) === String(selectedAreaId)
+    );
+
+    // Poblamos solo esos
+    populateSelect(centroSelect, filteredCentros, 'Selecciona un centro', 'id', ['name']);
+    centroSelect.disabled = false;
+}
+    async function assignPuesto(event) {
+        event.preventDefault();
+            const asignacionData = {
+                centro_id: document.getElementById('asignacion-centro').value,
+                area_id: document.getElementById('asignacion-area').value,
+                puesto_id: document.getElementById('asignacion-puesto').value,
+            };
+            
+            if (allCentroPuestos.some(cp => cp.centro_id === asignacionData.centro_id && cp.area_id === asignacionData.area_id && cp.puesto_id === asignacionData.puesto_id)) {
+                ERGOUtils.showToast('Esta asignación ya existe.', 'warning');
                 return;
             }
 
             try {
-                ERGOUtils.showToast('Iniciando reprocesamiento... Revisa la consola (F12).', 'info');
-                
-                const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
-                const evaluaciones = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
-
-                if (!evaluaciones || evaluaciones.length === 0) {
-                    ERGOUtils.showToast('¡Excelente! No se encontraron evaluaciones para reprocesar.', 'success');
-                    return;
-                }
-
-                ERGOUtils.showToast(`Se reprocesarán ${evaluaciones.length} evaluaciones.`, 'info');
-                
-                let procesadas = 0;
-                let errores = 0;
-
-                for (const evaluacion of evaluaciones) {
-                    try {
-                        let respuestasObj = (typeof evaluacion.respuestas === 'string') 
-                            ? JSON.parse(evaluacion.respuestas) 
-                            : evaluacion.respuestas;
-                        
-                        if (typeof respuestasObj !== 'object' || respuestasObj === null) {
-                            console.warn(`Saltando evaluación ${evaluacion.id}: 'respuestas' no es válido.`);
-                            continue;
-                        }
-                        
-                        const nuevosResultados = ERGOAnalytics.analizarRiesgosPorPictograma(respuestasObj, cuestionarioData);
-                        
-                        await dataClient.updateEvaluacion(evaluacion.id, { 
-                            riesgos_por_categoria: nuevosResultados 
-                        });
-                        
-                        procesadas++;
-                        console.log(`✅ (${procesadas}/${evaluaciones.length}) Evaluación ${evaluacion.id} reprocesada.`);
-
-                    } catch (error) {
-                        errores++;
-                        console.error(`❌ Error con la evaluación ${evaluacion.id}:`, error);
-                    }
-                }
-                
-                ERGOUtils.showToast(`Proceso finalizado. ${procesadas} actualizadas, ${errores} errores.`, 'success');
-
-            } catch (error) {
-                console.error("Error general en el script de reprocesamiento:", error);
-                ERGOUtils.showToast("Ocurrió un error. Revisa la consola.", 'error');
+                // Crear usando POST
+                await dataClient.query('centro_puestos', 'POST', asignacionData);
+                ERGOUtils.showToast('Puesto asignado correctamente', 'success');
+                document.getElementById('asignacion-form').reset();
+                await loadInitialData();
+            } catch(error) {
+                console.error("❌ Error en assignPuesto:", error);
+                ERGOUtils.showToast(`Error al asignar: ${error.message}`, 'error');
             }
         }
 
-        // 2. Conecta la función al botón cuando la página cargue
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnReprocesar = document.getElementById('btnReprocesar');
-            if (btnReprocesar) {
-                btnReprocesar.addEventListener('click', reprocesarEvaluaciones);
-            }
+        function renderCentroPuestos() {
+        const tbody = document.getElementById('centro-puestos-list-tbody');
+        tbody.innerHTML = '';
+        allCentroPuestos.sort((a,b) => (a.work_centers?.nombre || '').localeCompare(b.work_centers?.nombre || ''));
+
+        allCentroPuestos.forEach(cp => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${cp.work_centers?.nombre || 'N/A'}</td>
+                <td>${cp.areas?.nombre || 'N/A'}</td>
+                <td>${cp.puestos?.nombre || 'N/A'}</td>
+                <td class="actions">
+                    <button class="btn btn-sm btn-danger" onclick="unassignPuesto('${cp.id}')">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
-    </script>
+    }
+    
+    async function unassignPuesto(centroPuestoId) {
+         if (confirm(`¿Seguro que quieres eliminar esta asignación?`)) {
+            try {
+                await dataClient.delete('centro_puestos', centroPuestoId);
+                ERGOUtils.showToast('Asignación eliminada', 'success');
+                await loadInitialData();
+            } catch (error) {
+                ERGOUtils.showToast(`Error al eliminar: ${error.message}`, 'error');
+            }
+        }
+    }
+
+    // --- SECCIÓN: FUNCIONES ADICIONALES ---
+
+    async function reprocesarEvaluaciones() {
+        const { default: cuestionarioData } = await import('../cuestionario-data.js');
+
+        if (!confirm("Este proceso 're-guardará' las evaluaciones antiguas para calcular nuevos campos. Es seguro, pero puede tardar. ¿Continuar?")) {
+            return;
+        }
+
+        try {
+            ERGOUtils.showToast('Iniciando reprocesamiento... Revisa la consola (F12).', 'info');
+            
+            const queryFiltro = '?or=(riesgos_por_categoria.is.null,riesgos_por_categoria.eq.{})&select=id,respuestas';
+            const evaluaciones = await dataClient.query('evaluaciones', 'GET', null, queryFiltro);
+
+            if (!evaluaciones || evaluaciones.length === 0) {
+                ERGOUtils.showToast('¡Excelente! No hay evaluaciones para reprocesar.', 'success');
+                return;
+            }
+
+            ERGOUtils.showToast(`Se reprocesarán ${evaluaciones.length} evaluaciones.`, 'info');
+            
+            let procesadas = 0, errores = 0;
+
+            for (const evaluacion of evaluaciones) {
+                try {
+                    let respuestasObj = (typeof evaluacion.respuestas === 'string') 
+                        ? JSON.parse(evaluacion.respuestas) 
+                        : evaluacion.respuestas;
+                    
+                    if (typeof respuestasObj !== 'object' || respuestasObj === null) {
+                        console.warn(`Saltando evaluación ${evaluacion.id}: 'respuestas' no es un objeto válido.`);
+                        continue;
+                    }
+                    
+                    const nuevosResultados = ERGOAnalytics.analizarRiesgosPorPictograma(respuestasObj, cuestionarioData);
+                    
+                    await dataClient.updateEvaluacion(evaluacion.id, { 
+                        riesgos_por_categoria: nuevosResultados 
+                    });
+                    
+                    procesadas++;
+                    console.log(`✅ (${procesadas}/${evaluaciones.length}) Evaluación ${evaluacion.id} reprocesada.`);
+                } catch (error) {
+                    errores++;
+                    console.error(`❌ Error con la evaluación ${evaluacion.id}:`, error);
+                }
+            }
+            
+            ERGOUtils.showToast(`Proceso finalizado. ${procesadas} actualizadas, ${errores} errores.`, 'success');
+        } catch (error) {
+            console.error("Error general en el script de reprocesamiento:", error);
+            ERGOUtils.showToast("Ocurrió un error. Revisa la consola.", 'error');
+        }
+    }
+</script>
+
 </body>
 </html>

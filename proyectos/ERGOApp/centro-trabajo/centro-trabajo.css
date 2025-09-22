@@ -1716,3 +1716,110 @@ textarea.is-readonly:focus {
   object-fit: cover;
   display: block;
 }
+.radio-inline-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.help-text {
+    display: block;
+    text-align: center;
+    margin-top: 0.75rem;
+    color: var(--gray-500);
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+.puestos-asignados-title {
+    font-size: 1rem; /* 16px */
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 1rem;
+}
+
+.puestos-asignados-content {
+    margin-top: 1rem;
+}
+
+.area-group {
+    margin-bottom: 1.25rem;
+}
+.area-group:last-child {
+    margin-bottom: 0;
+}
+.area-group h4 {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.area-group ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+.area-group li {
+    color: var(--gray-600);
+    margin-bottom: 0.5rem;
+    padding-left: 1.25rem;
+    position: relative;
+}
+.area-group li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--primary-500);
+    font-weight: bold;
+}
+.puestos-asignados-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+    font-weight: normal; /* Asegura que no herede negritas del span .value */
+    text-align: left;
+}
+
+.puestos-asignados-list li {
+    margin-bottom: 0.25rem;
+}
+
+.puestos-asignados-list li:last-child {
+    margin-bottom: 0;
+}
+
+.puestos-asignados-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+    font-weight: normal;
+    text-align: left;
+}
+
+.puestos-asignados-list li {
+    margin-bottom: 0.25rem;
+}
+
+.puestos-asignados-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Estilos para el contenedor del botón de evaluación de cargas manuales */
+.evaluar-cargas-wrapper {
+    margin-top: 0.75rem; 
+}
+
+/* Modificador BEM para botones de ancho completo */
+.btn--full-width {
+    width: 100%;
+    display: block; /* Asegura que el botón ocupe el espacio como un bloque */
+}

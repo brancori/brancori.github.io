@@ -67,6 +67,14 @@
                 <span class="label">ART:</span>
                 <span class="value" id="condicion-art-valor">--</span>
             </div>
+            <div class="environmental-item hidden" id="display-condicion-cargas">
+                <span class="label">Manejo Cargas:</span>
+                <span class="value" id="condicion-cargas-valor">--</span>
+            </div>
+            <div class="environmental-item hidden" id="display-condicion-puestos">
+                <span class="label">Puestos:</span>
+                <span class="value" id="condicion-puestos-valor">--</span>
+            </div>
         </div>
             
         <div class="score-container info-card">
@@ -221,20 +229,36 @@
             <label for="actividad-nombre">Nombre de la actividad</label>
             <input type="text" id="actividad-nombre" class="input-field" required>
         </div>
-
-        <div class="form-group">
-            <label for="actividad-metodo">Método de Evaluación</label>
-            <div class="input-with-button">
-                <select id="actividad-metodo" class="input-field">
-                    <option value="" disabled selected>Selecciona un método...</option>
-                    <option value="REBA">REBA (Cuerpo completo)</option>
-                    <option value="RULA">RULA (Miembros superiores)</option>
-                    <option value="OCRA">OCRA (Movimientos repetitivos)</option>
-                    <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
-                </select>
-                <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
+        <div style="display: flex; gap: 1rem; justify-content: space-between;">
+            <div class="form-group" style="width: 400px;">
+                <label for="actividad-metodo">Método de Evaluación</label>
+                <div class="input-with-button">
+                    <select id="actividad-metodo" class="input-field">
+                        <option value="" disabled selected>Selecciona un método...</option>
+                        <option value="REBA">REBA (Cuerpo completo)</option>
+                        <option value="RULA">RULA (Miembros superiores)</option>
+                        <option value="OCRA">OCRA (Movimientos repetitivos)</option>
+                        <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
+                    </select>
+                    <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
+                </div>
             </div>
+                <div class="form-group">
+                    <label>Manejo de cargas manuales</label>
+                        <label class="radio-label">
+                            <input type="radio" name="cargas_manuales" value="si"> Sí
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="cargas_manuales" value="no"> No
+                        </label>
+                    </div>
+                    <small class="help-text">Marque sí, si las cargas son mayores a 3kg de forma repetitiva</small>
+                  <div id="evaluar-cargas-container" class="evaluar-cargas-wrapper" style="display: none;">
+                      <button type="button" class="btn btn-primary" onclick="window.location.href='../componentes/pages/cargas_manuales.html'">Evaluar</button>
+                  </div>
         </div>
+
+
     </div>
 
     <div>
@@ -328,7 +352,7 @@
             </div>
         </div>
 
-<div id="modal-condiciones" class="modal">
+<div id="modal-condiciones" class="modal" role="dialog" aria-modal="true">
     <div class="modal-overlay" onclick="cerrarModalCondiciones()"></div>
     <div class="modal-content">
         <div class="modal-header">
@@ -365,6 +389,27 @@
                         <input type="checkbox" id="condiciones-personal-na"> N/A
                     </label>
                 </div>
+                <div class="form-group-inline">
+                    <label>Manejo de cargas manuales</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="manejo_cargas" value="si" id="condiciones-cargas-si"> Sí
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="manejo_cargas" value="no" id="condiciones-cargas-no"> No
+                        </label>
+                    </div>
+                    <small style="color: var(--gray-500); font-size: 0.75rem;">Marque sí, si las cargas son mayores a 3kg de forma repetitiva</small>
+                </div>
+                <div class="form-group-inline">
+                    <label for="condiciones-puestos-input">Puestos involucrados</label>
+                    <select id="condiciones-puestos-input" class="input-field">
+                        <option value="">Seleccionar puesto...</option>
+                    </select>
+                    <label class="na-label">
+                        <input type="checkbox" id="condiciones-puestos-na"> N/A
+                    </label>
+                </div>
                  <div class="form-group">
                     <label for="condiciones-art-input">ART</label>
                     <input type="text" id="condiciones-art-input" class="input-field">
@@ -377,9 +422,6 @@
         </form>
     </div>
 </div>
-
-
-
 <script src="centro-trabajo.js" defer></script>
 <script src="centro-trabajo-init.js" defer></script>
 <script src="centro-trabajo-data.js" defer></script>

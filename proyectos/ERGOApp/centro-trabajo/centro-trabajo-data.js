@@ -185,13 +185,15 @@ async function loadActividades() {
 function renderCondicionesAmbientales(condiciones) {
     const data = condiciones || {};
     
-    const factores = [
-        { key: 'iluminacion', displayId: 'display-condicion-iluminacion', valueId: 'condicion-iluminacion-valor' },
-        { key: 'temperatura', displayId: 'display-condicion-temperatura', valueId: 'condicion-temperatura-valor' },
-        { key: 'ruido', displayId: 'display-condicion-ruido', valueId: 'condicion-ruido-valor' },
-        { key: 'personal_exp', displayId: 'display-condicion-personal', valueId: 'condicion-personal-valor' },
-        { key: 'art', displayId: 'display-condicion-art', valueId: 'condicion-art-valor' }
-    ];
+        const factores = [
+            { key: 'iluminacion', displayId: 'display-condicion-iluminacion', valueId: 'condicion-iluminacion-valor' },
+            { key: 'temperatura', displayId: 'display-condicion-temperatura', valueId: 'condicion-temperatura-valor' },
+            { key: 'ruido', displayId: 'display-condicion-ruido', valueId: 'condicion-ruido-valor' },
+            { key: 'personal_exp', displayId: 'display-condicion-personal', valueId: 'condicion-personal-valor' },
+            { key: 'manejo_cargas', displayId: 'display-condicion-cargas', valueId: 'condicion-cargas-valor' },
+            { key: 'puestos_involucrados', displayId: 'display-condicion-puestos', valueId: 'condicion-puestos-valor' },
+            { key: 'art', displayId: 'display-condicion-art', valueId: 'condicion-art-valor' }
+        ];
 
     factores.forEach(factor => {
         const item = data[factor.key] || { valor: '--', na: false };
@@ -223,11 +225,26 @@ function abrirModalCondiciones() {
     const condiciones = currentCenterData.scoreSummary?.condiciones_ambientales || {};
 
     const factores = [
-        { key: 'iluminacion', inputId: 'condiciones-iluminacion-input', checkId: 'condiciones-iluminacion-na' },
-        { key: 'temperatura', inputId: 'condiciones-temperatura-input', checkId: 'condiciones-temperatura-na' },
-        { key: 'ruido', inputId: 'condiciones-ruido-input', checkId: 'condiciones-ruido-na' },
-        { key: 'personal_exp', inputId: 'condiciones-personal-input', checkId: 'condiciones-personal-na' }
+    { key: 'iluminacion', inputId: 'condiciones-iluminacion-input', checkId: 'condiciones-iluminacion-na' },
+    { key: 'temperatura', inputId: 'condiciones-temperatura-input', checkId: 'condiciones-temperatura-na' },
+    { key: 'ruido', inputId: 'condiciones-ruido-input', checkId: 'condiciones-ruido-na' },
+    { key: 'personal_exp', inputId: 'condiciones-personal-input', checkId: 'condiciones-personal-na' },
+    { key: 'puestos_involucrados', inputId: 'condiciones-puestos-input', checkId: 'condiciones-puestos-na' }
     ];
+
+    // Manejar radio buttons de manejo de cargas
+    const cargasData = condiciones.manejo_cargas || {};
+    const radioSi = document.getElementById('condiciones-cargas-si');
+    const radioNo = document.getElementById('condiciones-cargas-no');
+
+    if (cargasData.valor === 'si') {
+        radioSi.checked = true;
+    } else if (cargasData.valor === 'no') {
+        radioNo.checked = true;
+    }
+
+    // Cargar opciones dinámicas de puestos (placeholder)
+    loadPuestosOptions();
 
     factores.forEach(factor => {
         const item = condiciones[factor.key] || {};
@@ -281,7 +298,15 @@ async function guardarCondicionesAmbientales() {
         art: {
             valor: document.getElementById('condiciones-art-input').value.trim(),
             na: false // El campo de texto no aplica para N/A
-        }
+        },
+        manejo_cargas: {
+            valor: document.querySelector('input[name="manejo_cargas"]:checked')?.value || null,
+            na: false
+        },
+        puestos_involucrados: {
+            valor: document.getElementById('condiciones-puestos-input').value.trim() || null,
+            na: document.getElementById('condiciones-puestos-na').checked
+        },
     };
 
     try {
@@ -528,7 +553,69 @@ async function loadAndRenderActividades() {
         container.innerHTML = '<p class="error-state">No se pudieron cargar las actividades.</p>';
     }
 }
+// aquí inicia
+/**
+ * Carga y renderiza los puestos asignados a un centro de trabajo específico.
+ * @param {string} workCenterId El UUID del centro de trabajo.
+ */
+async function loadAndRenderAssignedPuestos(workCenterId) {
+// aquí inicia
+    console.log("--- INICIANDO DEPURACIÓN: loadAndRenderAssignedPuestos ---");
+    const valueSpan = document.getElementById('condicion-puestos-valor');
 
+    if (!valueSpan) {
+        console.error("LOG: ❌ ERROR FATAL: El span con id 'condicion-puestos-valor' no se encontró en el HTML. La función se detendrá.");
+        return;
+    }
+    
+    console.log(`LOG: ✅ Paso 1: Span 'condicion-puestos-valor' encontrado. Buscando puestos para el workCenterId: ${workCenterId}`);
+
+    try {
+        const queryString = `?select=puestos(nombre),areas(name)&centro_id=eq.${workCenterId}`;
+        console.log(`LOG: ⚙️ Paso 2: Ejecutando consulta a Supabase en la tabla 'centro_puestos' con el filtro: ${queryString}`);
+        
+        const assignedPuestos = await dataClient.query(
+            'centro_puestos', 
+            'GET', 
+            null, 
+            queryString
+        );
+
+        console.log("LOG: 📥 Paso 3: Respuesta recibida de Supabase. Datos crudos:", assignedPuestos);
+
+        if (!assignedPuestos || assignedPuestos.length === 0) {
+            console.warn("LOG: ⚠️ Advertencia: La consulta no devolvió resultados. La lista está vacía. Verifique si hay datos en la tabla 'centro_puestos' para este centro o si las políticas RLS permiten la lectura.");
+            valueSpan.textContent = 'No asignados';
+            return;
+        }
+
+        console.log("LOG: 🔄 Paso 4: Procesando los datos recibidos...");
+        const uniquePuestosList = [...new Set(
+            assignedPuestos.map(item => {
+                const puesto = item.puestos?.nombre || 'Puesto Desconocido';
+                const area = item.areas?.name || 'Área General';
+                return `${puesto}`;
+            })
+        )];
+        
+        console.log("LOG: 📊 Paso 5: Lista de puestos procesada y sin duplicados:", uniquePuestosList);
+
+        let html = '<ul class="puestos-asignados-list">';
+        uniquePuestosList.sort().forEach(puestoTexto => {
+            html += `<li>${puestoTexto}</li>`;
+        });
+        html += '</ul>';
+
+        console.log("LOG: ✅ Paso 6: Renderizando el HTML final en el span.");
+        valueSpan.innerHTML = html;
+        console.log("--- FIN DEPURACIÓN ---");
+
+    } catch (error) {
+        console.error("LOG: ❌ ERROR CRÍTICO: Ocurrió un error durante la ejecución de la función.", error);
+        valueSpan.textContent = 'Error al cargar';
+        console.log("--- FIN DEPURACIÓN CON ERROR ---");
+    }
+}
 
         function getMetodosRecomendados(score) {
             if (score <= 25) return "Seguimiento rutinario";
@@ -536,3 +623,5 @@ async function loadAndRenderActividades() {
             else if (score <= 75) return "REBA, RULA, evaluación de cargas";
             else return "REBA, NIOSH, OCRA - Evaluación completa";
         }
+
+        

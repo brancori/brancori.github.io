@@ -409,3 +409,73 @@ if (!ERGOAuth.hasPermission('update')) {
             }
         }
 // Event listeners para el modal
+/**
+ * Gestiona la accesibilidad de un modal para el teclado.
+ * @param {string} modalId - El ID del elemento del modal.
+ */
+function setupModalAccessibility(modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+
+    const focusableElements = modalEl.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements.length === 0) return;
+    
+    const firstFocusableEl = focusableElements[0];
+    const lastFocusableEl = focusableElements[focusableElements.length - 1];
+
+    const handleKeyDown = (e) => {
+        // Cerrar con la tecla Escape
+        if (e.key === 'Escape') {
+            // Asumimos que la función se llama como en tu código
+            cerrarModalCondiciones();
+        }
+
+        // Atrapar el foco dentro del modal con la tecla Tab
+        if (e.key === 'Tab') {
+            if (e.shiftKey) { // Shift + Tab
+                if (document.activeElement === firstFocusableEl) {
+                    lastFocusableEl.focus();
+                    e.preventDefault();
+                }
+            } else { // Tab
+                if (document.activeElement === lastFocusableEl) {
+                    firstFocusableEl.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+    };
+
+    // Añade el listener al abrir y lo elimina al cerrar
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class' && modalEl.classList.contains('show')) {
+                // Modal abierto: añadir listener y poner foco
+                document.addEventListener('keydown', handleKeyDown);
+                setTimeout(() => firstFocusableEl.focus(), 100);
+            } else {
+                // Modal cerrado: eliminar listener
+                document.removeEventListener('keydown', handleKeyDown);
+            }
+        });
+    });
+
+    observer.observe(modalEl, { attributes: true });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const radiosCargas = document.querySelectorAll('input[name="cargas_manuales"]');
+    const containerEvaluar = document.getElementById('evaluar-cargas-container');
+
+    radiosCargas.forEach(radio => {
+        radio.addEventListener('change', (event) => {
+            if (event.target.value === 'si' && event.target.checked) {
+                containerEvaluar.style.display = 'block';
+            } else {
+                containerEvaluar.style.display = 'none';
+            }
+        });
+    });
+});
