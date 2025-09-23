@@ -14,8 +14,10 @@
     
     <script src="../globals.js"></script>
     <script src="../supabase-config.js"></script>
+    <script src="../realtime-client.js"></script>
     <script src="../auth-client.js"></script> 
     <script src="../header-component.js"></script>
+
 </head>
 <body>
     <div class="main-container">
@@ -165,7 +167,7 @@
     <script>
 
         let activeFilters = {};
-document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Inicialización y Autenticación
             if (!ERGOAuth.initializeAuthContext()) {
                 console.error("Fallo en la autenticación. Redirigiendo al login...");
@@ -824,6 +826,19 @@ document.addEventListener('click', function(event) {
             createDistributionChart();
             createActivitiesDashboard();
             createRiskCompositionChart();
+            if (window.realtimeClient) {
+                window.realtimeClient.subscribeAndCache(
+                    'sync_areas_reporte',
+                    'areas',
+                    (payload) => {
+                        console.log('🔄 Cambio detectado en "areas", recargando datos del reporte...');
+                        fetchAndProcessData();
+                    },
+                    'cache_key_areas'
+                );
+            } else {
+                console.warn("⚠️ realtimeClient no está disponible en window.");
+            }
         });
 
 
@@ -854,15 +869,16 @@ document.addEventListener('click', function(event) {
     };
 
     // Click en el KPI
-    totalAreasKPI.addEventListener('click', async (e) => {
+totalAreasKPI.addEventListener('click', async (e) => {
         e.stopPropagation();
         isOpen = !isOpen;
         detailPanel.classList.toggle('active', isOpen);
-        totalAreasKPI.classList.toggle('expanded', isOpen); // Añadido para rotar la flecha
+        totalAreasKPI.classList.toggle('expanded', isOpen);
 
         if (isOpen) {
             try {
-                const areas = await dataClient.getAreas();
+                // Ahora la llamada es mucho más limpia y usa la caché
+                const areas = await ERGOData.getAreas(); 
                 if (areas) {
                     updateAreasPanel(areas);
                 }

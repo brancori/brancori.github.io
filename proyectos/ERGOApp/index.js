@@ -665,9 +665,9 @@ async loadDashboardData() {
 
         const promGral = document.getElementById('promedio-general');
         if (promGral) {
-             const scoreGlobal = areas && areas.length > 0 
-                ? (areas.reduce((sum, area) => sum + parseFloat(area.promedio_calculo || 0), 0) / areas.length).toFixed(2)
-                : '0.00';
+            // Unificamos el cálculo para usar el score_global que ya viene del backend.
+            // Esto asegura que el KPI y esta tabla siempre muestren el mismo valor.
+            const scoreGlobal = (data.score_global || 0).toFixed(2);
             promGral.textContent = `${scoreGlobal}%`;
         }
     }

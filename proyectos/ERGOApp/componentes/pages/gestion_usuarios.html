@@ -25,6 +25,7 @@
     <!-- ../ sube un nivel a /componentes/ -->
     <script src="../auth-client.js"></script>
     <script type="module" src="../cuestionario-data.js"></script>
+    <script src="../localStorage-cache.js"></script>
 
     <style>
         body { background-color: var(--gray-50); font-family: 'Inter', sans-serif; }
@@ -233,10 +234,20 @@
     /**
      * Carga todos los datos iniciales de forma paralela para máxima eficiencia.
      */
-    async function loadInitialData() {
-        try {
-            ERGOUtils.showToast('Cargando datos...', 'info');
-            
+async function loadInitialData(forceRefresh = false) {
+    try {
+
+        // 1. Intentar cargar de caché
+        if (!forceRefresh) {
+            allPuestos = LocalStorageCache.loadCachedData('puestos') || [];
+            allCentros = LocalStorageCache.loadCachedData('centros') || [];
+            allAreas = LocalStorageCache.loadCachedData('areas') || [];
+            allCentroPuestos = LocalStorageCache.loadCachedData('centro_puestos') || [];
+            allUsers = LocalStorageCache.loadCachedData('usuarios') || [];
+        }
+
+        // 2. Si no hay datos en caché o se pidió refrescar, ir a Supabase
+        if (forceRefresh || !allPuestos.length || !allCentros.length || !allAreas.length || !allCentroPuestos.length || !allUsers.length) {
             [allPuestos, allCentros, allAreas, allCentroPuestos, allUsers] = await Promise.all([
                 dataClient.query('puestos', 'GET'),
                 dataClient.getWorkCenters(),
@@ -244,20 +255,26 @@
                 dataClient.query('centro_puestos', 'GET', null, '?select=*,puestos(nombre),work_centers(name),areas(name)'),
                 dataClient.getUsers()
             ]);
-            
-            // Una vez cargados todos los datos, se "pintan" en sus respectivas tablas y selectores.
-            renderPuestos();
-            renderCentroPuestos();
-            populateAsignacionDropdowns();
-            renderUsers();
 
-            ERGOUtils.showToast('Datos cargados.', 'success', 1500);
-
-        } catch (error) {
-            console.error("❌ Error cargando datos iniciales:", error);
-            ERGOUtils.showToast('Error al cargar datos. Revisa la consola.', 'error');
+            // 3. Guardar en caché
+            LocalStorageCache.cacheData('puestos', allPuestos);
+            LocalStorageCache.cacheData('centros', allCentros);
+            LocalStorageCache.cacheData('areas', allAreas);
+            LocalStorageCache.cacheData('centro_puestos', allCentroPuestos);
+            LocalStorageCache.cacheData('usuarios', allUsers);
         }
+
+        // 4. Pintar en la UI
+        renderPuestos();
+        renderCentroPuestos();
+        populateAsignacionDropdowns();
+        renderUsers();
+
+    } catch (error) {
+        console.error("❌ Error cargando datos iniciales:", error);
+        ERGOUtils.showToast('Error al cargar datos. Revisa la consola.', 'error');
     }
+}
 
     /**
      * Centraliza la asignación de todos los event listeners.
@@ -572,8 +589,8 @@ function handleAreaChange() {
         allCentroPuestos.forEach(cp => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${cp.work_centers?.nombre || 'N/A'}</td>
-                <td>${cp.areas?.nombre || 'N/A'}</td>
+                <td>${cp.work_centers?.name || 'N/A'}</td>
+                <td>${cp.areas?.name || 'N/A'}</td>
                 <td>${cp.puestos?.nombre || 'N/A'}</td>
                 <td class="actions">
                     <button class="btn btn-sm btn-danger" onclick="unassignPuesto('${cp.id}')">Eliminar</button>
@@ -583,17 +600,46 @@ function handleAreaChange() {
         });
     }
     
-    async function unassignPuesto(centroPuestoId) {
-         if (confirm(`¿Seguro que quieres eliminar esta asignación?`)) {
-            try {
-                await dataClient.delete('centro_puestos', centroPuestoId);
-                ERGOUtils.showToast('Asignación eliminada', 'success');
-                await loadInitialData();
-            } catch (error) {
-                ERGOUtils.showToast(`Error al eliminar: ${error.message}`, 'error');
-            }
-        }
+async function unassignPuesto(centroPuestoId) {
+    console.log(`[PASO 1 - CORRECTO] Iniciando unassignPuesto para el ID: ${centroPuestoId}`);
+
+    if (!confirm('¿Estás seguro de que deseas eliminar esta asignación?')) {
+        console.log('[PASO 2 - CANCELADO] Operación cancelada por el usuario.');
+        return;
     }
+
+    console.log('[PASO 2 - CORRECTO] Usuario confirmó la eliminación.');
+
+    try {
+        console.log('[PASO 3] Enviando petición DELETE a la tabla "centro_puestos"...');
+        
+        // --- CORRECCIÓN ---
+        // Se reemplaza la llamada a una función específica (posiblemente inexistente)
+        // por la llamada genérica que ya funciona en otras partes de la app.
+        const { error } = await dataClient.query('centro_puestos', 'DELETE', null, `?id=eq.${centroPuestoId}`);
+
+        if (error) {
+            // Este bloque ahora manejará los errores controlados que devuelva Supabase
+            console.error('[ERROR FATAL VERIFICADO] Supabase devolvió un error:', error);
+            ERGOUtils.showToast(`Error de Supabase: ${error.message}`, 'error');
+            return;
+        }
+
+        console.log('[PASO 4 - CORRECTO] ÉXITO. Supabase procesó la petición de borrado.');
+        ERGOUtils.showToast('Puesto desasignado correctamente.', 'success');
+
+        console.log('[PASO 5 - CORRECTO] Refrescando la vista con loadInitialData(true)...');
+        await loadInitialData(true);
+        console.log('[PASO 6 - CORRECTO] La vista de datos ha sido refrescada.');
+
+    } catch (err) {
+        // --- MEJORA DE LOGGING ---
+        // Se cambia el logging para que muestre el objeto de error completo en la consola,
+        // no solo su versión JSON que resultaba en "{}".
+        console.error('[ERROR INESPERADO VERIFICADO] Ocurrió un error en el bloque try/catch:', err);
+        ERGOUtils.showToast('Error inesperado. Revisa la consola para más detalles.', 'error');
+    }
+}
 
     // --- SECCIÓN: FUNCIONES ADICIONALES ---
 

@@ -621,7 +621,7 @@ async getDashboardData() {
             return {
                 ...area,
                 promedio_score: promedio.toFixed(2),
-                promedio_calculo: promedio,
+                promedio_calculo: parseFloat(promedio.toFixed(2)),
                 total_centros: centrosDeArea.length,
                 centros_evaluados: scoresEvaluados.length
             };

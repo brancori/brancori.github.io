@@ -104,6 +104,25 @@
         let workCenters = [];
         let currentView = 'grid'; // 'grid' o 'list'
         let filtersVisible = false;
+async function loadAreas() {
+    try {
+        console.log('📁 Cargando áreas desde Supabase...');
+        const areasData = await dataClient.getAreas();
+        if (areasData && areasData.length > 0) {
+            areas = areasData;
+            console.log('✅ Áreas cargadas:', areas.length);
+            return areas;
+        } else {
+            console.log('⚠️ No se encontraron áreas');
+            areas = [];
+            return areas;
+        }
+    } catch (error) {
+        console.error('❌ Error cargando áreas:', error);
+        areas = [];
+        return areas;
+    }
+}
 
     async function loadAllWorkCenters() {
     const CACHE_KEY = 'workCentersCache';
@@ -386,7 +405,7 @@ function sortCentros(centrosToSort) {
 
             // 2. Ahora sí, cargar los datos (dataClient ya tiene el token).
             try {
-                areas = await ERGOData.loadAreas(); // Esta función debería estar en globals.js o dataClient
+                areas = await loadAreas();
                 await loadAllWorkCenters();
                 
                 populateAreaFilter();

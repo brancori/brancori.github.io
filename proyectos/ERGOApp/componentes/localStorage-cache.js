@@ -35,6 +35,18 @@ const LocalStorageCache = {
             console.error('Error al cargar de localStorage:', e);
         }
         return null;
+    },
+        /**
+     * Invalida (elimina) una clave específica de la caché.
+     * @param {string} key La clave a eliminar.
+     */
+    invalidateCache(key) {
+        try {
+            localStorage.removeItem(key);
+            console.log(`🧹 Caché invalidada para la clave: ${key}`);
+        } catch (e) {
+            console.error('Error al invalidar la caché:', e);
+        }
     }
 };
 

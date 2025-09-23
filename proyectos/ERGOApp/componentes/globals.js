@@ -681,10 +681,93 @@ window.ERGOValidation = {
     }
 };
 
+const ERGOData = {
+    /**
+     * Obtiene datos siguiendo la estrategia cache-first.
+     * @param {string} key - La clave única para la caché (ej. 'areas', 'resumen_riesgos').
+     * @param {Function} fetchFunction - La función asíncrona que obtiene los datos del servidor (ej. () => dataClient.getAreas()).
+     * @returns {Promise<any>} Los datos solicitados.
+     */
+    async fetch(key, fetchFunction) {
+        // 1. Intentar cargar desde la caché
+        const cachedData = LocalStorageCache.loadCachedData(key);
+        if (cachedData) {
+            return cachedData;
+        }
+
+        // 2. Si no hay caché, obtener del servidor
+        console.log(`⏳ No hay caché para '${key}'. Obteniendo del servidor...`);
+        const serverData = await fetchFunction();
+
+        // 3. Guardar en caché si los datos son válidos
+        if (serverData) {
+            LocalStorageCache.cacheData(key, serverData);
+        }
+
+        return serverData;
+    },
+
+    /**
+     * Inicia las suscripciones de Realtime para invalidar la caché automáticamente.
+     * Debe llamarse una sola vez cuando la aplicación se carga.
+     */
+    initRealtimeInvalidation() {
+        console.log('🔄 Inicializando invalidación de caché por Realtime...');
+
+        if (!window.realtimeClient) {
+            console.warn("⚠️ realtimeClient no está inicializado");
+            return;
+        }
+
+        // Escucha cambios en la tabla 'areas'
+        window.realtimeClient.subscribeAndCache(
+            'realtime_areas',
+            'areas',
+            (payload) => {
+                console.log('Cambio detectado en "areas", invalidando caché.');
+                LocalStorageCache.invalidateCache('areas');
+                LocalStorageCache.invalidateCache('area_scores_summary'); // También invalida resúmenes dependientes
+            },
+            'areas'
+        );
+
+    window.realtimeClient.subscribeAndCache(
+        'realtime_actividades',
+        'actividades',
+        (payload) => {
+            console.log('Cambio detectado en "actividades", invalidando cachés relacionadas.');
+            LocalStorageCache.invalidateCache('areas');
+            LocalStorageCache.invalidateCache('area_scores_summary');
+        },
+        'actividades'
+    );
+},
+
+    // --- Métodos específicos para obtener datos ---
+
+    getAreas() {
+        return this.fetch('areas', () => dataClient.getAreas());
+    },
+
+    getAreaScoresSummary() {
+        return this.fetch('area_scores_summary', () => dataClient.getAreaScoresSummary());
+    }
+
+    // Añade aquí más funciones para otros tipos de datos que necesites...
+    // Ejemplo:
+    // getEvaluaciones() {
+    //     return this.fetch('evaluaciones', () => dataClient.getEvaluaciones());
+    // }
+};
+
+// Exponer el gestor de datos globalmente
+window.ERGOData = ERGOData;
+
 // ===== INICIALIZACIÓN GLOBAL =====
 window.ERGOGlobal = {
     init() {
         console.log('🌐 ERGOGlobal iniciado');
+        ERGOData.initRealtimeInvalidation();
 
         // El bloque "if (!isLoginPage)" ha sido eliminado.
 
