@@ -385,7 +385,6 @@ if (!ERGOAuth.hasPermission('update')) {
                 return;
             }
 
-            ERGOUtils.showToast('Verificando y actualizando...', 'info');
             const isPasswordCorrect = await verifyCurrentUserPassword(password);
 
             if (!isPasswordCorrect) {
@@ -396,7 +395,6 @@ if (!ERGOAuth.hasPermission('update')) {
             const newState = !isCenterClosed;
             try {
                 await dataClient.updateWorkCenterStatus(workCenterId, areaId, newState);
-                ERGOUtils.showToast(`Centro ${newState ? 'cerrado' : 'abierto'} correctamente. Recargando...`, 'success');
                 
                 // Forzamos un pequeño delay para que el usuario alcance a ver el mensaje de éxito
                 setTimeout(() => {
