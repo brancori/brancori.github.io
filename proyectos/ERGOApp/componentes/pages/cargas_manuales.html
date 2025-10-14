@@ -6,6 +6,9 @@
     <title>Evaluador de Riesgos Ergonómicos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.9.6/dist/dom-to-image-more.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Chosen Palette: Warm Neutrals -->
     <!-- Application Structure Plan: Se diseñó una aplicación de una sola página con dos pestañas de navegación claras para separar las evaluaciones del Apéndice I y Apéndice II. Esta estructura de "dashboard" permite al usuario enfocarse en una evaluación a la vez sin distracciones, lo cual es crucial para una correcta captura de datos. Cada pestaña contiene un formulario interactivo a la izquierda y un panel de resultados a la derecha (que se apila verticalmente en móviles). Los resultados, incluyendo un puntaje numérico, un nivel de riesgo codificado por colores y un gráfico de radar, se actualizan en tiempo real. Esta retroalimentación instantánea mejora la usabilidad y permite al usuario comprender de inmediato cómo cada factor contribuye al riesgo total, facilitando el cumplimiento normativo. -->
     <!-- Visualization & Content Choices: Para visualizar la contribución de cada factor de riesgo, se eligió un gráfico de radar de Chart.js (renderizado en Canvas), ya que muestra de forma muy efectiva desequilibrios y áreas problemáticas. El resultado final se presenta en una tarjeta destacada con un código de colores claro (verde, amarillo, naranja, rojo) para una interpretación rápida del nivel de riesgo. Los formularios utilizan una combinación de campos numéricos, menús desplegables y controles deslizantes para que la entrada de datos sea intuitiva y se ajuste a los criterios de la norma. Todo el contenido textual, como las descripciones de riesgo y las acciones recomendadas, se obtiene directamente de los documentos normativos para garantizar la precisión y el cumplimiento. -->
@@ -490,9 +493,11 @@
                         </div>
 
                         <!-- Botones de Acción -->
+
                         <div class="flex space-x-4 pt-4 border-t">
-                            <button onclick="resetForm('ap1')" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Reiniciar</button>
+                            <button onclick="resetForm('ap2')" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Reiniciar</button>
                             <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition">Guardar Evaluación</button>
+                            <button id="export-pdf-ap2" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">Exportar a PDF</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between">
@@ -505,7 +510,7 @@
                             <div id="description-ap1" class="text-sm text-gray-600">Seleccione un tipo de operación para comenzar.</div>
                         </div>
                         <div class="chart-container">
-                            <canvas id="riskChart1"></canvas>
+                            <canvas id="riskChart1" willReadFrequently="true"></canvas>
                         </div>
                     </div>
                 </div>
@@ -891,9 +896,11 @@ VII. EPP o vestimenta complica la tarea.</div>
                         </div>
 
                         <!-- Botones de Acción -->
+
                         <div class="flex space-x-4 pt-4 border-t">
-                             <button onclick="resetForm('ap2')" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Reiniciar</button>
-                             <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition">Guardar Evaluación</button>
+                            <button onclick="resetForm('ap1')" class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Reiniciar</button>
+                            <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition">Guardar Evaluación</button>
+                            <button id="export-pdf-ap1" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">Exportar a PDF</button>
                         </div>
                     </div>
                      <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between">
@@ -906,7 +913,7 @@ VII. EPP o vestimenta complica la tarea.</div>
                             <div id="description-ap2" class="text-sm text-gray-600">Seleccione un método de evaluación para comenzar.</div>
                         </div>
                         <div class="chart-container">
-                            <canvas id="riskChart2"></canvas>
+                            <canvas id="riskChart2" willReadFrequently="true"></canvas>
                         </div>
                     </div>
                 </div>
@@ -922,6 +929,29 @@ VII. EPP o vestimenta complica la tarea.</div>
         // =================== INICIO LÓGICA GENERAL ========================= //
         // =================================================================== //
         document.addEventListener('DOMContentLoaded', () => {
+
+            function logCurrentState(appendix) {
+    console.group(`[Diagnóstico] Reporte de Estado al Exportar`);
+    console.log(`Timestamp: ${new Date().toISOString()}`);
+    console.log(`Acción para Apéndice: '${appendix}'`);
+    
+    // Estado de la Interfaz de Usuario (UI)
+    const uiScore = document.getElementById(`score-${appendix}`).textContent;
+    const uiLevel = document.getElementById(`level-${appendix}`).textContent;
+    console.log(`Resultado en UI: Score = ${uiScore}, Nivel = "${uiLevel}"`);
+    
+    // Estado de las variables de JavaScript
+    const chartInstanceAp1 = chartConfigs.ap1.chart;
+    const chartInstanceAp2 = chartConfigs.ap2.chart;
+    
+    console.log(`%cEstado del Gráfico Apéndice I:`, 'font-weight: bold;', chartInstanceAp1 ? '✅ Creado' : '❌ Nulo');
+    console.log(chartInstanceAp1);
+    
+    console.log(`%cEstado del Gráfico Apéndice II:`, 'font-weight: bold;', chartInstanceAp2 ? '✅ Creado' : '❌ Nulo');
+    console.log(chartInstanceAp2);
+    
+    console.groupEnd();
+}
             const riskLevels = {
                 ap1: {
                     limits: [4, 12, 20, 32],
@@ -952,42 +982,45 @@ VII. EPP o vestimenta complica la tarea.</div>
                 ap2: { ctx: document.getElementById('riskChart2').getContext('2d'), chart: null, labels: [] }
             };
 
-            function createChart(configKey, data, labels) {
-                if (chartConfigs[configKey].chart) {
-                    chartConfigs[configKey].chart.destroy();
+function createChart(configKey, data, labels) {
+    // Si ya existe un gráfico, destrúyelo y limpia la variable
+    if (chartConfigs[configKey].chart) {
+        chartConfigs[configKey].chart.destroy();
+        chartConfigs[configKey].chart = null; // Línea clave agregada
+    }
+
+    if (!labels || labels.length === 0 || !chartConfigs[configKey].ctx) return;
+
+    chartConfigs[configKey].labels = labels;
+    const maxScore = configKey === 'ap1' ? 10 : 8;
+
+    chartConfigs[configKey].chart = new Chart(chartConfigs[configKey].ctx, {
+        type: 'radar',
+        data: {
+            labels: chartConfigs[configKey].labels,
+            datasets: [{
+                label: 'Puntuación de Riesgo por Factor',
+                data: data,
+                backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                borderColor: 'rgba(249, 115, 22, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(249, 115, 22, 1)',
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { display: true },
+                    suggestedMin: 0,
+                    suggestedMax: maxScore,
+                    pointLabels: { font: { size: 10 } }
                 }
-                if (!labels || labels.length === 0 || !chartConfigs[configKey].ctx) return;
-
-                chartConfigs[configKey].labels = labels;
-                const maxScore = configKey === 'ap1' ? 10 : 8;
-
-                chartConfigs[configKey].chart = new Chart(chartConfigs[configKey].ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: chartConfigs[configKey].labels,
-                        datasets: [{
-                            label: 'Puntuación de Riesgo por Factor',
-                            data: data,
-                            backgroundColor: 'rgba(249, 115, 22, 0.2)',
-                            borderColor: 'rgba(249, 115, 22, 1)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgba(249, 115, 22, 1)',
-                        }]
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        scales: {
-                            r: {
-                                angleLines: { display: true },
-                                suggestedMin: 0,
-                                suggestedMax: maxScore,
-                                pointLabels: { font: { size: 10 } }
-                            }
-                        },
-                        plugins: { legend: { display: false } }
-                    }
-                });
-            }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+}
 
             function getRiskLevel(score, configKey) {
                 const config = riskLevels[configKey];
@@ -1017,22 +1050,39 @@ VII. EPP o vestimenta complica la tarea.</div>
                 document.getElementById(`tab-${tabKey}`).classList.add('tab-active');
             }
 
-            window.resetForm = (configKey) => {
-                if (configKey === 'ap1') {
-                    const selector = document.getElementById('tipo_evaluacion_ap1').value;
-                    if (selector !== 'seleccionar') {
-                        document.getElementById(`form-ap1-${selector}`).reset();
-                        calculateRiskAp1(selector);
-                    }
-                } else if (configKey === 'ap2') {
-                    const selector = document.getElementById('tipo_evaluacion_ap2').value;
-                     if (selector !== 'seleccionar') {
-                        document.getElementById(`form-ap2-${selector.replace('_', '-')}`).reset();
-                        if (selector === 'sin_equipo') calculateRiskAp2_SinEquipo();
-                        else if (selector === 'con_equipo') calculateRiskAp2_ConEquipo();
-                    }
-                }
-            };
+window.resetForm = (configKey) => {
+    let formContainerId;
+    let selectorValue;
+
+    if (configKey === 'ap1') {
+        selectorValue = document.getElementById('tipo_evaluacion_ap1').value;
+        if (selectorValue === 'seleccionar') return;
+        formContainerId = `form-ap1-${selectorValue}`;
+    } else { // ap2
+        selectorValue = document.getElementById('tipo_evaluacion_ap2').value;
+        if (selectorValue === 'seleccionar') return;
+        formContainerId = `form-ap2-${selectorValue.replace('_', '-')}`;
+    }
+
+    const formContainer = document.getElementById(formContainerId);
+    if (formContainer) {
+        // Restablece los menús desplegables a su primera opción
+        formContainer.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        
+        // Restablece los campos numéricos a su valor inicial definido en el HTML
+        formContainer.querySelectorAll('input[type="number"]').forEach(input => {
+            input.value = input.getAttribute('value') || '0';
+        });
+        
+        // Vuelve a ejecutar el cálculo para que el puntaje y el gráfico se actualicen a cero
+        if (configKey === 'ap1') {
+            calculateRiskAp1(selectorValue);
+        } else {
+            if (selectorValue === 'sin_equipo') calculateRiskAp2_SinEquipo();
+            else if (selectorValue === 'con_equipo') calculateRiskAp2_ConEquipo();
+        }
+    }
+};
             
             // Event Listeners for info popups
             document.querySelectorAll('.info-container').forEach(container => {
@@ -1174,22 +1224,26 @@ VII. EPP o vestimenta complica la tarea.</div>
                     calculateRiskAp1(type);
                 });
             });
-            document.getElementById('tipo_evaluacion_ap1').addEventListener('change', (e) => {
-                const selection = e.target.value;
-                ['levantamiento', 'transporte', 'equipo'].forEach(type => {
-                    document.getElementById(`form-ap1-${type}`).classList.add('hidden');
-                });
-                if (selection !== 'seleccionar') {
-                    document.getElementById(`form-ap1-${selection}`).classList.remove('hidden');
-                    calculateRiskAp1(selection);
-                } else {
-                    if (chartConfigs.ap1.chart) chartConfigs.ap1.chart.destroy();
-                    document.getElementById('score-ap1').textContent = '0';
-                    document.getElementById('level-ap1').textContent = 'Seleccione';
-                    document.getElementById('description-ap1').textContent = 'Seleccione un tipo de operación para comenzar.';
-                    document.getElementById('result-card-ap1').className = 'text-center p-4 rounded-lg mb-4';
-                }
-            });
+document.getElementById('tipo_evaluacion_ap1').addEventListener('change', (e) => {
+    const selection = e.target.value;
+    ['levantamiento', 'transporte', 'equipo'].forEach(type => {
+        document.getElementById(`form-ap1-${type}`).classList.add('hidden');
+    });
+
+    if (selection !== 'seleccionar') {
+        document.getElementById(`form-ap1-${selection}`).classList.remove('hidden');
+        calculateRiskAp1(selection);
+    } else {
+        if (chartConfigs.ap1.chart) {
+            chartConfigs.ap1.chart.destroy();
+            chartConfigs.ap1.chart = null; // Línea clave agregada
+        }
+        document.getElementById('score-ap1').textContent = '0';
+        document.getElementById('level-ap1').textContent = 'Seleccione';
+        document.getElementById('description-ap1').textContent = 'Seleccione un tipo de operación para comenzar.';
+        document.getElementById('result-card-ap1').className = 'text-center p-4 rounded-lg mb-4';
+    }
+});
             // =================================================================== //
             // =================== FIN LÓGICA APÉNDICE I ========================= //
             // =================================================================== //
@@ -1276,8 +1330,75 @@ VII. EPP o vestimenta complica la tarea.</div>
              // =================================================================== //
             // =================== FIN LÓGICA APÉNDICE II ======================== //
             // =================================================================== //
+// REEMPLAZA tu función exportEvaluationToPDF con esta versión definitiva.
+
+// VERSIÓN CON SOLUCIÓN QUIRÚRGICA
+const domtoimage = window.domtoimage || window.domtoimageMore;
+
+function exportEvaluationToPDF(appendix) {
+    console.group(`[Diagnóstico] Exportación PDF - Inicio`);
+    console.log(`Timestamp: ${new Date().toISOString()}`);
+    console.log(`Apéndice objetivo: ${appendix}`);
+
+    // Validar librerías
+    console.log("¿Existe domtoimage?:", typeof window.domtoimage);
+    console.log("¿Existe domtoimageMore?:", typeof window.domtoimageMore);
+    console.log("¿Existe jsPDF?:", typeof window.jspdf);
+
+    // Definir fallback universal
+    const domImage = window.domtoimage || window.domtoimageMore;
+    if (!domImage || typeof domImage.toPng !== "function") {
+        console.error("❌ Error crítico: No se encontró ninguna instancia válida de domtoimage o domtoimageMore con método toPng.");
+        console.warn("⚠️ Posibles causas:");
+        console.warn("1️⃣ El script CDN no se cargó correctamente (verifica conexión o ruta).");
+        console.warn("2️⃣ Hay conflicto entre versiones (usa solo una librería dom-to-image).");
+        console.warn("3️⃣ El bloque exportEvaluationToPDF se ejecutó antes de que la librería se cargara.");
+        console.log("Contenido actual de window.domtoimage:", window.domtoimage);
+        console.log("Contenido actual de window.domtoimageMore:", window.domtoimageMore);
+        console.groupEnd();
+        return;
+    }
+
+    console.log("✅ domtoimage activo:", domImage);
+    console.log("🔍 Preparando elemento para exportar...");
+
+    const targetElement = document.getElementById(`content-${appendix}`);
+    if (!targetElement) {
+        console.error(`❌ No se encontró el contenedor 'content-${appendix}' para exportar.`);
+        console.groupEnd();
+        return;
+    }
+
+    console.log("🧩 Elemento encontrado:", targetElement);
+
+    // Aquí ya puedes continuar con tu código existente
+    // Ejemplo:
+    domImage.toPng(targetElement)
+        .then((dataUrl) => {
+            console.log("✅ Imagen generada correctamente, creando PDF...");
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: "a4" });
+            pdf.addImage(dataUrl, "PNG", 10, 10, 580, 820);
+            pdf.save(`evaluacion_${appendix}.pdf`);
+            console.log("✅ PDF exportado con éxito.");
+            console.groupEnd();
+        })
+        .catch((err) => {
+            console.error("❌ Error durante la conversión a imagen:", err);
+            console.groupEnd();
+        });
+}
+
+            document.getElementById('export-pdf-ap1').addEventListener('click', () => exportEvaluationToPDF('ap1'));
+            document.getElementById('export-pdf-ap2').addEventListener('click', () => exportEvaluationToPDF('ap2'));
+            // =================================================================== //
+            // =================== FIN LÓGICA EXPORTAR PDF ======================= //
+            // =================================================================== //
+
 
         });
+
+        
     </script>
 </body>
 </html>

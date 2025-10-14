@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Cumplimiento (V2) - ERGOApp</title>
+    <!-- Reutilizamos los estilos globales de la aplicación -->
+    <link rel="stylesheet" href="../../globals.css">
+    <style>
+        /* Estilos específicos para el Módulo de Compliance */
+        body {
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .compliance-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        h1 {
+            color: var(--primary-700);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Indicadores de Cumplimiento */
+        .compliance-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .indicator-card {
+            background-color: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            border-left: 5px solid var(--primary-500);
+        }
+        
+        .indicator-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-600);
+        }
+
+        .indicator-card .label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+        }
+        
+        #compliance-progress-bar {
+            width: 100%;
+            background-color: var(--gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+            height: 10px;
+            margin-top: 8px;
+        }
+
+        #compliance-progress {
+            height: 100%;
+            background-color: var(--green-500);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Filtros */
+        .compliance-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: transparent;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-600);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--primary-50);
+            border-color: var(--primary-500);
+            color: var(--primary-600);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-500);
+            border-color: var(--primary-500);
+            color: #fff;
+        }
+
+        /* Lista de Cumplimiento */
+        .compliance-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .compliance-item {
+            background-color: #fff;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--gray-300);
+        }
+        
+        /* === NUEVOS ESTILOS DE ESTADO === */
+        .compliance-item.status-cumple {
+            background-color: var(--green-50);
+            border-left-color: var(--green-500);
+        }
+        .compliance-item.status-nocumple {
+            border-color: var(--red-500);
+            border-left-width: 5px;
+        }
+        .compliance-item.status-na {
+            background-color: var(--gray-100);
+            opacity: 0.7;
+            pointer-events: none; /* Deshabilita interacciones con el item */
+        }
+        .compliance-item.status-na .item-actions button {
+            pointer-events: all; /* Pero permite click en los botones */
+        }
+        
+// aquí inicia
+        /* === NUEVO: SECCIÓN DE EVIDENCIA DESPLEGABLE === */
+        .compliance-item[data-status="cumple"], .compliance-item[data-status="no-cumple"] {
+            cursor: pointer;
+        }
+
+        .item-evidence {
+            display: none; /* Oculto por defecto */
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--gray-100);
+            border-radius: var(--border-radius-md);
+            border-top: 2px solid var(--gray-200);
+        }
+
+        .item-evidence.visible {
+            display: block; /* Se muestra al hacer clic */
+        }
+
+        .item-evidence h4 {
+            margin: 0 0 0.75rem 0;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .item-evidence p {
+            margin: 0.5rem 0;
+            color: var(--gray-600);
+        }
+
+        .btn-edit {
+            background-color: var(--primary-100);
+            color: var(--primary-700);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+        .btn-edit:hover {
+            background-color: var(--primary-300);
+        }
+// aquí termina
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-header h3 { margin: 0; color: var(--gray-800); font-size: 1.2rem; flex-grow: 1; }
+        .item-category-badge { background-color: var(--primary-100); color: var(--primary-700); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; margin-left: 1rem; }
+        .item-content { color: var(--gray-600); padding-left: 1rem; border-left: 3px solid var(--gray-200); }
+
+        /* === CONTENEDOR DE ACCIONES CENTRADO === */
+        .item-actions {
+            display: flex;
+            justify-content: center; /* Centrado */
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-btn { padding: 0.6rem 1.2rem; border-radius: var(--border-radius-sm); cursor: pointer; font-weight: 600; border: none; transition: all 0.2s ease; }
+        .status-btn.cumple { background-color: var(--green-100); color: var(--green-700); }
+        .status-btn.cumple:hover { background-color: var(--green-200); }
+        .status-btn.no-cumplido { background-color: var(--red-100); color: var(--red-700); }
+        .status-btn.no-cumplido:hover { background-color: var(--red-200); }
+        .status-btn.na { background-color: var(--gray-200); color: var(--gray-600); }
+        .status-btn.na:hover { background-color: var(--gray-300); }
+
+        /* Estilo para el botón activo */
+        .compliance-item.status-cumple .status-btn.cumple,
+        .compliance-item.status-nocumple .status-btn.no-cumplido,
+        .compliance-item.status-na .status-btn.na {
+            transform: scale(1.05);
+            font-weight: 700;
+        }
+
+        /* Modal (sin cambios) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; }
+        .modal-content { background-color: #fefefe; margin: auto; padding: 2rem; border: 1px solid #888; width: 90%; max-width: 600px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-xl); animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; margin-bottom: 1rem; }
+        .modal-header h2 { margin: 0; color: var(--gray-800); }
+        .close-btn { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover, .close-btn:focus { color: black; }
+        .modal-body label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700); }
+        .modal-body textarea, .modal-body input { width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: var(--border-radius-md); font-size: 1rem; margin-bottom: 1rem; }
+        .file-drop-area { border: 2px dashed var(--gray-300); border-radius: var(--border-radius-md); padding: 2rem; text-align: center; color: var(--gray-500); cursor: pointer; transition: all 0.2s ease; }
+        .file-drop-area:hover, .file-drop-area.dragover { border-color: var(--primary-500); background-color: var(--primary-50); }
+        #file-name { margin-top: 1rem; font-style: italic; color: var(--gray-600); }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+        .modal-btn { padding: 0.75rem 1.5rem; border-radius: var(--border-radius-sm); font-weight: 600; cursor: pointer; border: none; }
+        .btn-save { background-color: var(--primary-500); color: white; }
+        .btn-save:hover { background-color: var(--primary-600); }
+        .btn-cancel { background-color: var(--gray-200); color: var(--gray-700); }
+        .btn-cancel:hover { background-color: var(--gray-300); }
+        
+        /* === NUEVO: ESTILOS PARA NOTIFICACIÓN (TOAST) === */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background-color: #fff;
+            color: var(--gray-700);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-lg);
+            border-left: 5px solid var(--primary-500);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            min-width: 350px;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast h4 { margin: 0 0 0.5rem 0; color: var(--gray-800); }
+        .toast p { margin: 0.25rem 0; font-size: 0.9rem; }
+        .toast strong { color: var(--primary-600); }
+
+    </style>
+</head>
+<body>
+    <div class="compliance-container">
+        <h1>Compliance</h1>
+
+        <!-- Indicadores -->
+        <div id="compliance-indicators" class="compliance-indicators">
+             <div class="indicator-card">
+                <div id="total-items" class="value">0</div>
+                <div class="label">Total de Puntos</div>
+            </div>
+            <div class="indicator-card">
+                <div id="completed-items" class="value">0</div>
+                <div class="label">Cumplidos</div>
+            </div>
+            <div class="indicator-card">
+                <div id="non-completed-items" class="value">0</div>
+                <div class="label">No Cumplidos</div>
+            </div>
+            <div class="indicator-card">
+                <div id="na-items" class="value">0</div>
+                <div class="label">No Aplican</div>
+            </div>
+             <div class="indicator-card" style="grid-column: 1 / -1;">
+                <div id="compliance-percentage" class="value">0%</div>
+                <div class="label">Porcentaje de Cumplimiento</div>
+                <div id="compliance-progress-bar"><div id="compliance-progress"></div></div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div id="compliance-filters" class="compliance-filters">
+            <button class="filter-btn active" data-filter="todos">Todos</button>
+            <button class="filter-btn" data-filter="NOM's">NOM's</button>
+            <button class="filter-btn" data-filter="LFT">LFT</button>
+            <button class="filter-btn" data-filter="JNJ">JNJ</button>
+        </div>
+
+        <!-- Lista de Cumplimiento -->
+        <ul id="compliance-list" class="compliance-list"></ul>
+    </div>
+
+    <!-- Modal para 'Cumple' y 'No Cumplido' -->
+    <div id="compliance-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Registrar Evidencia</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="current-item-id">
+                <label for="evidence-text">Comentarios / Justificación:</label>
+                <textarea id="evidence-text" rows="5" placeholder="Añade aquí los detalles..."></textarea>
+                <div id="file-upload-section">
+                    <label>Archivo de Evidencia (opcional):</label>
+                    <input type="file" id="evidence-file-input" hidden accept="image/*,application/pdf">
+                    <div id="file-drop-area" class="file-drop-area">Arrastra y suelta un archivo aquí o haz clic para seleccionar.</div>
+                    <div id="file-name"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn btn-cancel">Cancelar</button>
+                <button class="modal-btn btn-save">Guardar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contenedor para las notificaciones -->
+    <div id="toast-container"></div>
+
+    <script type="module">
+        import { complianceData } from './compliance-data.js';
+
+        const ComplianceApp = {
+            data: [],
+            currentFilter: 'todos',
+            elements: { /* ... se definen en init ... */ },
+
+            init() {
+                this.cacheDOMElements();
+                this.data = complianceData.map(item => ({
+                    ...item,
+                    estado: 'pendiente', // 'cumple', 'no-cumple', 'na'
+                    evidenciaTexto: '',
+                    evidenciaArchivo: null
+                }));
+                this.addEventListeners();
+                this.render();
+            },
+
+            cacheDOMElements() {
+                this.elements = {
+                    list: document.getElementById('compliance-list'),
+                    indicators: { total: document.getElementById('total-items'), completed: document.getElementById('completed-items'), nonCompleted: document.getElementById('non-completed-items'), na: document.getElementById('na-items'), percentage: document.getElementById('compliance-percentage'), progress: document.getElementById('compliance-progress'), },
+                    filters: document.getElementById('compliance-filters'),
+                    modal: document.getElementById('compliance-modal'),
+                    modalTitle: document.getElementById('modal-title'),
+                    closeBtn: document.querySelector('.close-btn'),
+                    cancelBtn: document.querySelector('.modal-btn.btn-cancel'),
+                    saveBtn: document.querySelector('.modal-btn.btn-save'),
+                    currentItemId: document.getElementById('current-item-id'),
+                    evidenceText: document.getElementById('evidence-text'),
+                    fileUploadSection: document.getElementById('file-upload-section'),
+                    fileDropArea: document.getElementById('file-drop-area'),
+                    fileInput: document.getElementById('evidence-file-input'),
+                    fileName: document.getElementById('file-name'),
+                    toastContainer: document.getElementById('toast-container')
+                };
+            },
+
+            addEventListeners() {
+                this.elements.filters.addEventListener('click', e => {
+                    if (e.target.matches('.filter-btn')) {
+// aquí inicia
+                        this.currentFilter = e.target.dataset.filter;
+                        this.elements.filters.querySelector('.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        this.renderList();
+                    }
+                });
+                
+                // === MANEJADOR DE EVENTOS MEJORADO PARA LA LISTA ===
+                this.elements.list.addEventListener('click', e => {
+                    const target = e.target;
+                    
+                    // Caso 1: Clic en un botón de estado (Cumple, No Cumplido, N/A)
+                    const statusButton = target.closest('.status-btn');
+                    if (statusButton) {
+                        const id = parseInt(statusButton.dataset.id);
+                        const action = statusButton.dataset.action;
+                        if (action === 'na') {
+                            this.updateStatus(id, 'na');
+                        } else {
+                            this.openModal(id, action);
+                        }
+                        return; // Detenemos la ejecución para no propagar el clic
+                    }
+                    
+                    // Caso 2: Clic en el botón de Editar
+                    const editButton = target.closest('.btn-edit');
+                    if (editButton) {
+                        const id = parseInt(editButton.dataset.id);
+                        const action = editButton.dataset.action;
+                        this.openModal(id, action);
+                        return;
+                    }
+
+                    // Caso 3: Clic en el cuerpo del item para desplegar/ocultar evidencia
+                    const complianceItem = target.closest('.compliance-item[data-status="cumple"], .compliance-item[data-status="no-cumple"]');
+                    if (complianceItem) {
+                        const evidenceDiv = complianceItem.querySelector('.item-evidence');
+                        if (evidenceDiv) {
+                            evidenceDiv.classList.toggle('visible');
+                        }
+                    }
+                });
+
+                this.elements.closeBtn.addEventListener('click', () => this.closeModal());
+                this.elements.cancelBtn.addEventListener('click', () => this.closeModal());
+// aquí termina
+                this.elements.modal.addEventListener('click', e => { if (e.target === this.modal) this.closeModal(); });
+                this.elements.saveBtn.addEventListener('click', () => this.saveEvidence());
+                
+                this.elements.fileDropArea.addEventListener('click', () => this.elements.fileInput.click());
+                this.elements.fileInput.addEventListener('change', e => this.handleFileSelect(e.target.files));
+                
+                const dropArea = this.elements.fileDropArea;
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, this.preventDefaults, false));
+                ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false));
+                ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false));
+                dropArea.addEventListener('drop', this.handleDrop, false);
+            },
+            
+            preventDefaults(e) { e.preventDefault(); e.stopPropagation(); },
+            handleDrop(e) { ComplianceApp.handleFileSelect(e.dataTransfer.files); },
+            handleFileSelect(files) {
+                 if (files.length > 0) {
+                    const file = files[0];
+                    this.elements.fileName.textContent = `Archivo seleccionado: ${file.name}`;
+                    this.elements.fileInput.files = files;
+                }
+            },
+
+            render() {
+                this.renderList();
+                this.updateIndicators();
+            },
+
+            renderList() {
+                this.elements.list.innerHTML = '';
+                const filteredData = this.data.filter(item => this.currentFilter === 'todos' || item.categoria === this.currentFilter);
+
+                if (filteredData.length === 0) {
+                    this.elements.list.innerHTML = `<p style="text-align:center; color: var(--gray-500);">No hay elementos para este filtro.</p>`;
+                    return;
+                }
+
+                filteredData.forEach(item => {
+                    const li = document.createElement('li');
+                    // === APLICA CLASE DE ESTADO AL CONTENEDOR ===
+                    const statusClass = `status-${item.estado.replace('-', '')}`;
+// aquí inicia
+                    li.className = `compliance-item ${statusClass}`;
+                    li.dataset.status = item.estado; // Atributo para seleccionar con JS
+
+                    let evidenceHTML = '';
+                    if (item.estado === 'cumple' || item.estado === 'no-cumple') {
+                        const evidenceText = item.evidenciaTexto ? item.evidenciaTexto.replace(/\n/g, '<br>') : '<em>No se agregaron comentarios.</em>';
+                        const evidenceFile = item.evidenciaArchivo ? item.evidenciaArchivo.name : '<em>No se adjuntó archivo.</em>';
+
+                        evidenceHTML = `
+                        <div class="item-evidence">
+                            <h4>Evidencia Guardada</h4>
+                            <p><strong>Comentarios:</strong><br>${evidenceText}</p>
+                            <p><strong>Archivo:</strong> ${evidenceFile}</p>
+                            <button class="btn-edit" data-id="${item.id}" data-action="${item.estado}">✏️ Editar</button>
+                        </div>
+                        `;
+                    }
+
+                    li.innerHTML = `
+                        <div class="item-header">
+                            <h3>${item.nombre}</h3>
+                            <span class="item-category-badge">${item.categoria}</span>
+                        </div>
+                        <div class="item-content"><p>${item.contenido}</p></div>
+                        ${evidenceHTML}
+                        <div class="item-actions">
+                            <button class="status-btn cumple" data-id="${item.id}" data-action="cumple">Cumple</button>
+                            <button class="status-btn no-cumplido" data-id="${item.id}" data-action="no-cumplido">No Cumplido</button>
+                            <button class="status-btn na" data-id="${item.id}" data-action="na">N/A</button>
+                        </div>`;
+// aquí termina
+                    this.elements.list.appendChild(li);
+                });
+            },
+
+            updateIndicators() {
+                const total = this.data.length;
+                const cumplidos = this.data.filter(i => i.estado === 'cumple').length;
+                const noCumplidos = this.data.filter(i => i.estado === 'no-cumple').length;
+                const na = this.data.filter(i => i.estado === 'na').length;
+                const totalEvaluables = total - na;
+                const percentage = totalEvaluables > 0 ? ((cumplidos / totalEvaluables) * 100).toFixed(0) : 0;
+
+                this.elements.indicators.total.textContent = total;
+                this.elements.indicators.completed.textContent = cumplidos;
+                this.elements.indicators.nonCompleted.textContent = noCumplidos;
+                this.elements.indicators.na.textContent = na;
+                this.elements.indicators.percentage.textContent = `${percentage}%`;
+                this.elements.indicators.progress.style.width = `${percentage}%`;
+            },
+            
+            updateStatus(id, newStatus, evidence = {}) {
+                const item = this.data.find(i => i.id === id);
+                if (item) {
+                    item.estado = newStatus;
+                    item.evidenciaTexto = evidence.texto || ''; // Limpiar si no hay texto
+                    if (evidence.archivo !== undefined) {
+                        item.evidenciaArchivo = evidence.archivo;
+                    }
+                    // === LLAMAR A LA NOTIFICACIÓN ===
+                    this.showConfirmationToast(item);
+                }
+                this.render();
+            },
+
+            // === NUEVA FUNCIÓN PARA MOSTRAR NOTIFICACIÓN ===
+            showConfirmationToast(item) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                
+                let evidenceHTML = '';
+                if (item.evidenciaTexto) {
+                    evidenceHTML += `<p><strong>Comentario:</strong> ${item.evidenciaTexto}</p>`;
+                }
+                if (item.evidenciaArchivo) {
+                    evidenceHTML += `<p><strong>Archivo:</strong> ${item.evidenciaArchivo.name}</p>`;
+                }
+
+                toast.innerHTML = `
+                    <h4>✅ Estado Guardado</h4>
+                    <p><strong>Requisito:</strong> ${item.nombre}</p>
+                    <p><strong>Nuevo Estado:</strong> ${item.estado.toUpperCase()}</p>
+                    ${evidenceHTML}
+                `;
+                
+                this.elements.toastContainer.appendChild(toast);
+                
+                // Forzar el repintado para que la transición funcione
+                setTimeout(() => toast.classList.add('show'), 10);
+
+                // Ocultar y eliminar la notificación después de 5 segundos
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 5000);
+            },
+            
+            openModal(id, type) {
+                const item = this.data.find(i => i.id === id);
+                if (!item) return;
+                this.elements.currentItemId.value = id;
+                this.elements.modalTitle.textContent = type === 'cumple' ? `Evidencia de Cumplimiento: ${item.nombre}` : `Justificación de No Cumplimiento: ${item.nombre}`;
+                this.elements.evidenceText.value = item.evidenciaTexto || '';
+                this.elements.fileUploadSection.style.display = (type === 'cumple') ? 'block' : 'none';
+                this.elements.fileName.textContent = item.evidenciaArchivo ? `Archivo actual: ${item.evidenciaArchivo.name}` : '';
+                this.elements.modal.dataset.actionType = type;
+                this.elements.modal.style.display = 'flex';
+            },
+
+            closeModal() {
+                this.elements.modal.style.display = 'none';
+                this.elements.evidenceText.value = '';
+                this.elements.fileInput.value = '';
+                this.elements.fileName.textContent = '';
+                this.elements.currentItemId.value = '';
+            },
+
+            saveEvidence() {
+                const id = parseInt(this.elements.currentItemId.value);
+                const status = this.elements.modal.dataset.actionType === 'cumple' ? 'cumple' : 'no-cumple';
+                const texto = this.elements.evidenceText.value;
+                const archivo = this.elements.fileInput.files.length > 0 ? this.elements.fileInput.files[0] : null;
+                this.updateStatus(id, status, { texto, archivo });
+                this.closeModal();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => ComplianceApp.init());
+    </script>
+</body>
+</html>
+

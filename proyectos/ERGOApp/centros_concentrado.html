@@ -344,7 +344,6 @@ function sortCentros(centrosToSort) {
                         categoria_riesgo: center.categoria_riesgo || 'Sin datos',
                         color_riesgo: center.color_riesgo || '#a9a9a9' // Un color gris por defecto
                     };
-
                     // Pasamos el centro y el objeto de score con valores por defecto
                    return ERGOUtils.createWorkCenterCard(center, center, areaName, 'grid');
                 }).join('');
@@ -382,8 +381,7 @@ function sortCentros(centrosToSort) {
             };
             
             const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});           
             const link = document.createElement('a');
             link.href = URL.createObjectURL(dataBlob);
             link.download = `centros-concentrado-${new Date().toISOString().split('T')[0]}.json`;
@@ -391,7 +389,6 @@ function sortCentros(centrosToSort) {
             
             ERGOUtils.showToast('Datos exportados exitosamente');
         }
-
         // Event listeners e inicialización
         document.addEventListener('DOMContentLoaded', async function() {
             // 1. Inicializar y verificar el contexto de autenticación ANTES de hacer nada.
@@ -418,18 +415,14 @@ function sortCentros(centrosToSort) {
             
             // 3. Configurar el resto de la página.
             ERGOAuth.applyPermissionControls();
-
-
-            
-            
+           
             const setupFilters = () => {
                 const nameFilter = document.getElementById('filter-centro-name');
                 const areaFilter = document.getElementById('filter-centro-area');
                 const responsibleFilter = document.getElementById('filter-centro-responsible');
                 const scoreFilter = document.getElementById('filter-centro-score');
                 const statusFilter = document.getElementById('filter-centro-status');
-                const ordenFilter = document.getElementById('filter-centro-orden');
-                
+                const ordenFilter = document.getElementById('filter-centro-orden');             
                 if (nameFilter) nameFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
                 if (areaFilter) areaFilter.addEventListener('change', renderCentros);
                 if (responsibleFilter) responsibleFilter.addEventListener('input', ERGOUtils.debounce(renderCentros, 300));
@@ -437,10 +430,8 @@ function sortCentros(centrosToSort) {
                 if (statusFilter) statusFilter.addEventListener('change', renderCentros);
                 if (ordenFilter) ordenFilter.addEventListener('change', renderCentros);
             };
-
             setTimeout(setupFilters, 500);
         });
-
         // Manejar navegación de vuelta desde areas.html
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
