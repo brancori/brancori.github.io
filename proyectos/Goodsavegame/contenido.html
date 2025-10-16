@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Good Save</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="practica2_data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
+  <style>
+    body {
+      background-color: #f8fafc;
+    }
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+    <div class="border-b border-gray-200 pb-2 mb-4">
+        <div class="flex items-center text-sm text-gray-500">
+            <span class="font-semibold text-gray-700 mr-2">Good Save </span>
+        </div>
+        <div class="flex flex-wrap items-center text-xs text-gray-600 mt-2 space-x-6">
+            <div><span class="font-semibold text-gray-800">Etapa del flujo de trabajo:</span> Review and Assessment</div>
+            <div><span class="font-semibold text-gray-800">Estado del flujo de trabajo:</span> <span class="text-green-600 font-bold">Open</span></div>
+            <div><span class="font-semibold text-gray-800">Responsable:</span> </div>
+            <div><span class="font-semibold text-gray-800">Vencimiento:</span> </div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-start space-x-2 overflow-x-auto py-4">
+      <div class="flex-shrink-0 text-center text-xs font-semibold text-blue-700 border border-blue-600 rounded-md px-3 py-1.5 bg-blue-50">Initial Report - Draft</div>
+      <div class="flex-shrink-0"><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></div>
+      <div class="flex-shrink-0 text-center text-xs font-semibold text-white bg-blue-600 border border-blue-600 rounded-md px-3 py-1.5">Review & Assessment</div>
+      <div class="flex-shrink-0"><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></div>
+      <div class="flex-shrink-0 text-center text-xs font-semibold text-gray-600 border border-gray-300 rounded-md px-3 py-1.5 bg-gray-50">Investigation</div>
+      <div class="flex-shrink-0"><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></div>
+      <div class="flex-shrink-0 text-center text-xs font-semibold text-gray-600 border border-gray-300 rounded-md px-3 py-1.5 bg-gray-50">Approval</div>
+      </div>
+    
+    <div class="max-w-5xl mx-auto mt-6">
+        <div class="border border-gray-200 rounded-lg mb-6">
+            <div class="bg-gray-100 p-2 rounded-t-lg">
+                <h2 class="text-sm font-bold text-gray-800 flex items-center">
+                    <svg class="h-5 w-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    Informe inicial
+                </h2>
+            </div>
+            <div id="event-details" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                <p><strong class="text-gray-600 font-normal">N.º de registro:</strong> <span id="event-no" class="font-semibold text-gray-800"></span></p>
+                <p><strong class="text-gray-600 font-normal">Event Type:</strong> <span class="font-semibold text-gray-800">Good Save</span></p>
+                <p><strong class="text-gray-600 font-normal">At what site did this occur or what J&J site is responsible?</strong> <span id="event-site" class="font-semibold text-gray-800"></span></p>
+                <p><strong class="text-gray-600 font-normal">At what Company did this occur or what J&J Company is responsible?</strong> <span id="event-company" class="font-semibold text-gray-800"></span></p>
+                <p><strong class="text-gray-600 font-normal">EH&S Subdiv ID:</strong> <span class="font-semibold text-gray-800">15300 - 10278</span></p>
+                <p><strong class="text-gray-600 font-normal">Sector:</strong> <span class="font-semibold text-gray-800">Innovative Medicine</span></p>
+                <p><strong class="text-gray-600 font-normal">EH&S Business Unit:</strong> <span class="font-semibold text-gray-800">IM - Synthetics Manufacturing - Non API</span></p>
+            </div>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">What Happened</h2>
+          <p id="event-what" class="text-gray-700 leading-relaxed"></p>
+        </div>
+
+        <div class="border border-gray-200 rounded-lg p-4">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">Site Location</h2>
+          <p id="event-location" class="text-gray-700"></p>
+        </div>
+    </div>
+  </div>
+
+  <div class="mt-8 mb-6 border-t border-gray-200"></div>
+
+<div class="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
+    <div class="border-b border-gray-200 pb-2 mb-4">
+        <h2 class="text-base font-semibold text-gray-800">Categoría de programa</h2>
+        <p class="text-sm text-gray-600 mt-1">Please indicate the correct program category to which this incident is related to. You can assign more than 1 category, but please use the most obvious one and try to include no more than 3 per incident/good save.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
+        <div>
+            <div class="mb-4">
+                <p class="font-semibold text-gray-700 mb-2">Biological, Chemical, Physical Agents</p>
+                <div class="space-y-1">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Materiales y agentes biológicos" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Materiales y agentes biológicos</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Chemical Agents" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Chemical Agents</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Chemical Registration & Restriction" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Chemical Registration & Restriction</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Noise" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Noise</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <p class="font-semibold text-gray-700 mb-2">Environment</p>
+                <div class="space-y-1">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Air (outdoor)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Air (outdoor)</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Energy" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Energy</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Waste" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Waste</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Soil" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Soil</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Water: Storm water" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Water: Storm water</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <p class="font-semibold text-gray-700 mb-2">Ergonomics</p>
+                <div class="space-y-1">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Computer Worstation" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Computer Worstation</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Manual Handling (Lifting, Push/Pull, Carrying)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Manual Handling (Lifting, Push/Pull, Carrying) </span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Repetitive Motion" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Repetitive Motion</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Static Posture" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Static Posture</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="mb-4">
+                <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+                <div class="space-y-1"> 
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Controlled substances" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Controlled substances</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Hazard Communication" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Hazard Communication</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Industrial Hygiene" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Industrial Hygiene</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Transporte: Mercancías peligrosas" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Transporte: Mercancías peligrosas</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                 <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+                <div class="space-y-1"> <label class="flex items-center">
+                        <input type="checkbox" name="Noise (environment)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Noise (environment)</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Responsible Sourcing" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Responsible Sourcing</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Extended Producer Responsibility" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Extended Producer Responsibility</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Water: Waste water" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Water: Waste water</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="mb-4">
+                 <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+                <div class="space-y-1"> 
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Radiation Safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Radiation Safety</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="RoHS" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">RoHS</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Storage" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Storage</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Pesticides" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Pesticides</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                 <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+                <div class="space-y-1"> 
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Sustainable Design and Labeling" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Sustainable Design and Labeling</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Tank Systems (environment)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Tank Systems (environment)</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Water: Drinking water" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Water: Drinking water</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="Water" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        <span class="ml-2 text-gray-700">Water</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm mt-6">
+        <div>
+            <p class="font-semibold text-gray-700 mb-2">Seguridad ocupacional</p>
+            <div class="space-y-1">
+                <label class="flex items-center">
+                    <input type="checkbox" name="Animal Handling" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Animal Handling</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Boiler / Pressure Vessel" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Boiler / Pressure Vessel</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Confined space" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Confined space</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Crushing / Lagging" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Crushing / Lagging</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Electrical safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Electrical safety</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Elevator" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Elevator</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Excavation" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Excavation</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Explosion safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Explosion safety</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Process safety Management" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Process safety Management</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Prácticas de trabajo durante la COVID" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Prácticas de trabajo durante la COVID</span>
+                </label>
+            </div>
+        </div>
+        <div>
+             <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+            <div class="space-y-1"> <label class="flex items-center">
+                    <input type="checkbox" name="Fire safety (incl. life safety)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Fire safety (incl. life safety)</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Hot work" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Hot work</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Lock Out Tag Out" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Lock Out Tag Out</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Line breaking" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Line breaking</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Machine safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Machine safety</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Office safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Office safety</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Pedestrian Safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Pedestrian Safety</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Powered Industrial Vehicles" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Powered Industrial Vehicles</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Transporte: Sujeción de la carga" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Transporte: Sujeción de la carga</span>
+                </label>
+            </div>
+        </div>
+        <div>
+             <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+            <div class="space-y-1"> <label class="flex items-center">
+                    <input type="checkbox" name="Safety bypassing" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Safety bypassing</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Slips trips & falls" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Slips trips & falls</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Uncontrolled ignition sources" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Uncontrolled ignition sources</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Utilities" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Utilities</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Warehouse safety" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Warehouse safety</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Work at Heights" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Work at Heights</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Work permits" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Work permits</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Falling objects" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Falling objects</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Seguridad de transporte" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Seguridad de transporte</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm mt-6">
+        <div>
+            <p class="font-semibold text-gray-700 mb-2">General / Sistema de gestión de medio ambiente, salud y seguridad (environment, health and safety - EHS)</p>
+            <div class="space-y-1">
+                <label class="flex items-center">
+                    <input type="checkbox" name="Audits & Inspections" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Audits & Inspections</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Building permits" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Building permits</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Communication" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Communication</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Contractor Management" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Contractor Management</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Documentation" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Documentation</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="EHS&S Design (incl. pre-startup safety review)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">EHS&S Design (incl. pre-startup safety review)</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Emergency preparedness & response" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Emergency preparedness & response</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Operating procedures" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Operating procedures</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Competency" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Competency</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Maintenance" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Maintenance</span>
+                </label>
+            </div>
+        </div>
+        <div>
+             <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+            <div class="space-y-1"> 
+                <label class="flex items-center">
+                    <input type="checkbox" name="Food" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Food</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Hazard / Risk Assessment" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Hazard / Risk Assessment</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Human factors" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Human factors</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Management of Change" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Management of Change</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Mechanical or system failure" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Mechanical or system failure</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Non-routine work" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Non-routine work</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Occupational Health" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Occupational Health</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Magnets" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Magnets</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Procedures" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Procedures</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Other (specify)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Other (specify)</span>
+                </label>
+            </div>
+        </div>
+        <div>
+             <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+            <div class="space-y-1"> 
+                <label class="flex items-center">
+                    <input type="checkbox" name="Personal Protective Equipment" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Personal Protective Equipment</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Procurement" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Procurement</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Regulatory compliance / regulatory permits" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Regulatory compliance / regulatory permits</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Roles & responsibilities" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Roles & responsibilities</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Tank Systems" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Tank Systems</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Training" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Training</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Employee Wellbeing" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Employee Wellbeing</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Permit to Work" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Permit to Work</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="CAPA Management" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">CAPA Management</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm mt-6">
+        <div>
+            <p class="font-semibold text-gray-700 mb-2">Facilities Management</p>
+            <div class="space-y-1">
+                <label class="flex items-center">
+                    <input type="checkbox" name="Environmental Conditions/Monitoring" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Environmental Conditions/Monitoring</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Qualification/Validation" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Qualification/Validation</span>
+                </label>
+            </div>
+        </div>
+        <div>
+             <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+            <div class="space-y-1"> <label class="flex items-center">
+                    <input type="checkbox" name="Supplier" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Supplier</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Pest Control" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Pest Control</span>
+                </label>
+            </div>
+        </div>
+        <div>
+             <p class="font-semibold text-gray-700 mb-2 invisible">Placeholder</p> <!-- Para alineación -->
+            <div class="space-y-1"> 
+                <label class="flex items-center">
+                    <input type="checkbox" name="Calibration" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Calibration</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="Housekeeping" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                    <span class="ml-2 text-gray-700">Housekeeping</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
+    <div class="flex items-center space-x-2 border-b border-gray-200 pb-2 mb-4">
+        <svg class="h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2 class="text-base font-semibold text-gray-800">Evaluación del riesgo</h2>
+    </div>
+
+    <div class="p-2 space-y-4 text-sm">
+        <p class="text-gray-600">
+            To view the Risk Matrix click here - 
+            <a href="TV-eFRM-13226_v3.0 Matriz 5x5 -1.xlsx" class="text-blue-600 hover:underline" target="_blank" rel="noopener">LINK MATRIX</a>
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <label for="risk-severity" class="text-gray-700">
+                <span class="text-red-500">*</span> Potential Risk Severity
+                <span title="Información" class="inline-block bg-gray-300 text-white rounded-full text-xs w-4 h-4 text-center cursor-pointer">i</span>
+            </label>
+            <div class="md:col-span-1">
+                <select id="risk-severity" class="w-full border border-gray-300 rounded-sm p-1 text-gray-800">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <label for="risk-likelihood" class="text-gray-700">
+                <span class="text-red-500">*</span> Potential Risk Likelihood
+                <span title="Información" class="inline-block bg-gray-300 text-white rounded-full text-xs w-4 h-4 text-center cursor-pointer">i</span>
+            </label>
+            <div class="md:col-span-1">
+                <select id="risk-likelihood" class="w-full border border-gray-300 rounded-sm p-1 text-gray-800">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <label for="risk-score" class="text-gray-700">Potential Risk Score</label>
+            <div class="md:col-span-1 flex items-center">
+                <input type="text" id="risk-score" class="w-full border border-gray-300 bg-gray-100 rounded-sm p-1 font-bold" readonly />
+                <div id="risk-classification-result" class="ml-4 font-semibold text-sm"></div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+             <label class="text-gray-700">
+                Was this a SIF-P?
+                <span title="Información" class="inline-block bg-gray-300 text-white rounded-full text-xs w-4 h-4 text-center cursor-pointer">i</span>
+             </label>
+             <div class="md:col-span-1">
+                <span class="text-gray-800">No</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+    <div class="max-w-7xl mx-auto flex justify-center mt-6">
+        <button id="btn-guardar" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg border border-blue-600 hover:bg-blue-700 transition-colors">Guardar</button>
+    </div>
+<div id="team-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden">
+  <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="mt-3 text-center">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Identificar Equipo</h3>
+      <div class="mt-2 px-7 py-3">
+        <label for="team-name-input" class="block text-sm font-medium text-gray-700 text-left">Nombre del equipo:</label>
+        <input type="text" id="team-name-input" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ej: Equipo Alpha">
+      </div>
+      <div class="items-center px-4 py-3">
+        <button id="cancel-save" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 mr-2">Cancelar</button>
+        <button id="confirm-save" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Confirmar y Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // --- DATOS DE LA MATRIZ DEL DOCUMENTO PDF ---
+        const severityLevels = {
+            "Insignificante": 1,
+            "Leve": 2,
+            "Grave": 4,
+            "Importante": 6,
+            "Catastrófico": 10
+        };
+
+        const likelihoodLevels = {
+            "Probable": 10,
+            "Posible": 6,
+            "Improbable": 4,
+            "Muy improbable": 2,
+            "Extremadamente improbable": 1
+        };
+
+        // --- ELEMENTOS DEL DOM ---
+        const severitySelect = document.getElementById('risk-severity');
+        const likelihoodSelect = document.getElementById('risk-likelihood');
+        const scoreInput = document.getElementById('risk-score');
+        const classificationDiv = document.getElementById('risk-classification-result');
+
+        // --- FUNCIONES ---
+        function populateSelects() {
+            // Limpiar opciones previas si las hubiera
+            severitySelect.innerHTML = '<option value="">-- Seleccionar --</option>';
+            likelihoodSelect.innerHTML = '<option value="">-- Seleccionar --</option>';
+            
+            for (const level in severityLevels) {
+                const option = new Option(level, severityLevels[level]);
+                severitySelect.add(option);
+            }
+            for (const level in likelihoodLevels) {
+                const option = new Option(level, likelihoodLevels[level]);
+                likelihoodSelect.add(option);
+            }
+        }
+        
+        // ** LÓGICA DE CLASIFICACIÓN CORREGIDA SEGÚN LA IMAGEN **
+        function getRiskClassification(score) {
+            if (score >= 60) return { text: 'Riesgo Extremadamente Alto', style: 'color: white; background-color: black; padding: 2px 6px; border-radius: 4px;' };
+            if (score >= 36) return { text: 'Riesgo Alto', style: 'color: white; background-color: #EF4444; padding: 2px 6px; border-radius: 4px;' }; // Rojo
+            if (score >= 16) return { text: 'Riesgo Moderado-Alto', style: 'color: white; background-color: #F97316; padding: 2px 6px; border-radius: 4px;' }; // Naranja
+            if (score >= 10) return { text: 'Riesgo Moderado', style: 'color: black; background-color: #FBBF24; padding: 2px 6px; border-radius: 4px;' }; // Amarillo
+            if (score >= 1) return { text: 'Riesgo Bajo', style: 'color: black; background-color: #4ADE80; padding: 2px 6px; border-radius: 4px;' }; // Verde
+            return { text: '', style: '' };
+        }
+
+        function updateRiskAssessment() {
+            const severityValue = parseInt(severitySelect.value);
+            const likelihoodValue = parseInt(likelihoodSelect.value);
+
+            if (!isNaN(severityValue) && !isNaN(likelihoodValue)) {
+                const score = severityValue * likelihoodValue;
+                scoreInput.value = score;
+                
+                const classification = getRiskClassification(score);
+                classificationDiv.innerHTML = `<span style="${classification.style}">${classification.text}</span>`;
+            } else {
+                scoreInput.value = '';
+                classificationDiv.innerHTML = '';
+            }
+        }
+
+        // --- INICIALIZACIÓN ---
+        populateSelects();
+        severitySelect.addEventListener('change', updateRiskAssessment);
+        likelihoodSelect.addEventListener('change', updateRiskAssessment);
+    });
+</script>
+  <script>
+const selectedNo = localStorage.getItem('selectedEvent');
+    const event = inventoryData.find(e => e.masterEventNo === selectedNo);
+
+    if (event) {
+      document.getElementById('event-no').textContent = event.masterEventNo;
+      document.getElementById('event-site').textContent = event.site;
+      document.getElementById('event-company').textContent = event.company;
+      document.getElementById('event-what').textContent = event.whatHappened;
+      document.getElementById('event-location').textContent = event.siteLocation;
+    } else {
+      document.querySelector('body > .max-w-7xl').innerHTML = `
+        <div class="bg-white shadow-md rounded-xl p-10 text-center border border-gray-200">
+          <p class="text-red-600 font-semibold text-lg">No se encontró información del evento seleccionado.</p>
+          <button onclick="window.location.href='practica_.html'" 
+                  class="mt-6 bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+            Volver
+          </button>
+        </div>
+      `;
+    }
+
+    // --- Lógica del Modal y Guardado ---
+    const guardarBtn = document.getElementById('btn-guardar');
+    const teamModal = document.getElementById('team-modal');
+    const cancelBtn = document.getElementById('cancel-save');
+    const confirmBtn = document.getElementById('confirm-save');
+    const teamNameInput = document.getElementById('team-name-input');
+
+    // 1. El botón "Guardar" solo abre el modal.
+    guardarBtn.addEventListener('click', function() {
+        teamModal.classList.remove('hidden');
+    });
+
+    // 2. El botón "Cancelar" cierra el modal.
+    cancelBtn.addEventListener('click', function() {
+        teamModal.classList.add('hidden');
+    });
+
+    // 3. El botón "Confirmar" es el ÚNICO que guarda en la base de datos.
+    confirmBtn.addEventListener('click', async function() {
+        const teamName = teamNameInput.value.trim();
+        if (!teamName) {
+            alert("Por favor, ingresa el nombre del equipo para continuar.");
+            return;
+        }
+
+        const eventoCorrecto = inventoryData.find(e => e.masterEventNo === selectedNo);
+        if (!eventoCorrecto) {
+            alert("Error: No se pudo encontrar la información del evento para guardar.");
+            teamModal.classList.add('hidden');
+            return;
+        }
+
+        const categoriaSeleccionadaInput = document.querySelector('input[type="checkbox"]:checked');
+        const categoriaSeleccionada = categoriaSeleccionadaInput ? categoriaSeleccionadaInput.name : null;
+        const severidadSeleccionada = parseInt(document.getElementById('risk-severity').value, 10);
+        const probabilidadSeleccionada = parseInt(document.getElementById('risk-likelihood').value, 10);
+
+        const dataToInsert = {
+            event_no: eventoCorrecto.masterEventNo,
+            team_name: teamName,
+            selected_category: categoriaSeleccionada,
+            selected_severity: isNaN(severidadSeleccionada) ? null : severidadSeleccionada,
+            selected_likelihood: isNaN(probabilidadSeleccionada) ? null : probabilidadSeleccionada,
+            is_category_correct: categoriaSeleccionada === eventoCorrecto.categoria,
+            is_severity_correct: severidadSeleccionada === eventoCorrecto.severidad,
+            is_likelihood_correct: probabilidadSeleccionada === eventoCorrecto.probabilidad
+        };
+
+        console.log("Datos que se enviarán a Supabase:", dataToInsert);
+
+        const { data, error } = await supabaseClient
+            .from('evaluations')
+            .insert([dataToInsert]);
+
+        if (error) {
+            console.error("ERROR de Supabase:", error);
+            alert(`Hubo un error al guardar tus resultados: ${error.message}`);
+        } else {
+            console.log("ÉXITO - Datos guardados:", data);
+            alert("¡Tus resultados han sido guardados exitosamente!");
+        }
+
+        teamModal.classList.add('hidden');
+    });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Evaluaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Scripts requeridos -->
+    <script src="practica2_data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <style>
+        body { background-color: #f4f4f5; font-family: sans-serif; }
+        .toast {
+            animation: slide-in 0.5s forwards, slide-out 0.5s 4.5s forwards;
+        }
+        @keyframes slide-in {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slide-out {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Vista principal con las tarjetas -->
+    <div id="main-view">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Dashboard de Evaluaciones</h1>
+            <p class="text-gray-600">Respuestas recibidas en tiempo real.</p>
+        </header>
+        <main id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Las tarjetas de evaluación se insertarán aquí -->
+        </main>
+    </div>
+
+    <!-- Vista de detalles (oculta por defecto) -->
+    <div id="details-view" class="hidden">
+        <header class="mb-6">
+            <button id="back-button" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Regresar
+            </button>
+        </header>
+        <main id="details-content" class="bg-white p-6 rounded-lg shadow-md">
+            <!-- El contenido del detalle se insertará aquí -->
+        </main>
+    </div>
+
+    <!-- Contenedor para la alerta/toast -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- ELEMENTOS DEL DOM ---
+    const mainView = document.getElementById('main-view');
+    const detailsView = document.getElementById('details-view');
+    const cardsContainer = document.getElementById('cards-container');
+    const detailsContent = document.getElementById('details-content');
+    const backButton = document.getElementById('back-button');
+    const toastContainer = document.getElementById('toast-container');
+
+    let allEvaluations = [];
+
+    // --- FUNCIONES DE RENDERIZADO ---
+
+    function renderCards() {
+        cardsContainer.innerHTML = ''; // Limpiar contenedor
+        allEvaluations.forEach(evaluation => {
+            const correctCount = [evaluation.is_category_correct, evaluation.is_severity_correct, evaluation.is_likelihood_correct].filter(Boolean).length;
+            let borderColor = 'border-red-500'; // Rojo por defecto
+            if (correctCount === 3) {
+                borderColor = 'border-green-500'; // Verde si todo es correcto
+            } else if (correctCount > 0) {
+                borderColor = 'border-yellow-500'; // Amarillo si algo es correcto
+            }
+            
+            const cardHTML = `
+                <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-shadow border-l-4 ${borderColor}" data-id="${evaluation.id}">
+                    <h3 class="font-bold text-lg text-gray-800">${evaluation.team_name}</h3>
+                    <p class="text-sm text-gray-500">Evento: ${evaluation.event_no}</p>
+                    <p class="text-xs text-gray-400 mt-2">Recibido: ${new Date(evaluation.created_at).toLocaleString()}</p>
+                </div>
+            `;
+            cardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+        });
+    }
+
+    function renderDetails(evaluation) {
+        const eventData = inventoryData.find(e => e.masterEventNo === evaluation.event_no);
+        if (!eventData) {
+            detailsContent.innerHTML = '<p>Error: No se encontraron los datos del evento original.</p>';
+            return;
+        }
+
+        const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+        const xIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+
+        const detailsHTML = `
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Revisión de: ${evaluation.team_name}</h2>
+            <p class="text-sm text-gray-500 mb-4">Evento: ${evaluation.event_no}</p>
+            
+            <div class="mb-6">
+                <h3 class="font-semibold text-lg text-gray-700">Descripción del Evento</h3>
+                <p class="text-gray-600 mt-1 p-3 bg-gray-50 rounded-md">${eventData.whatHappened}</p>
+            </div>
+
+            <div>
+                <h3 class="font-semibold text-lg text-gray-700 mb-3">Comparativa de Respuestas</h3>
+                <div class="space-y-4">
+                    <!-- Categoría -->
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <span class="font-medium text-gray-600">Categoría</span>
+                        <div class="text-center">${evaluation.selected_category || '<em>No respondió</em>'}</div>
+                        <div class="flex items-center space-x-2">
+                            ${evaluation.is_category_correct ? checkIcon : xIcon}
+                            <span class="text-sm text-gray-500">(Correcto: ${eventData.categoria})</span>
+                        </div>
+                    </div>
+                    <!-- Severidad -->
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <span class="font-medium text-gray-600">Severidad</span>
+                        <div class="text-center">${evaluation.selected_severity || '<em>No respondió</em>'}</div>
+                        <div class="flex items-center space-x-2">
+                            ${evaluation.is_severity_correct ? checkIcon : xIcon}
+                            <span class="text-sm text-gray-500">(Correcto: ${eventData.severidad})</span>
+                        </div>
+                    </div>
+                    <!-- Probabilidad -->
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <span class="font-medium text-gray-600">Probabilidad</span>
+                        <div class="text-center">${evaluation.selected_likelihood || '<em>No respondió</em>'}</div>
+                        <div class="flex items-center space-x-2">
+                            ${evaluation.is_likelihood_correct ? checkIcon : xIcon}
+                             <span class="text-sm text-gray-500">(Correcto: ${eventData.probabilidad})</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        detailsContent.innerHTML = detailsHTML;
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg';
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000); // El toast desaparece después de 5 segundos
+    }
+
+    // --- LÓGICA DE DATOS Y EVENTOS ---
+    
+    async function fetchInitialEvaluations() {
+        const { data, error } = await supabaseClient
+            .from('evaluations')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error al cargar datos iniciales:', error);
+            cardsContainer.innerHTML = `<p class="text-red-500">No se pudieron cargar las evaluaciones.</p>`;
+        } else {
+            allEvaluations = data;
+            renderCards();
+        }
+    }
+
+    function handleRealtimeInsert(payload) {
+        console.log('Nueva evaluación recibida:', payload.new);
+        showToast(`¡Nueva evaluación de ${payload.new.team_name}!`);
+        allEvaluations.unshift(payload.new); // Añadir al principio del array
+        renderCards();
+    }
+
+    // --- EVENT LISTENERS ---
+
+    cardsContainer.addEventListener('click', (e) => {
+        const card = e.target.closest('div[data-id]');
+        if (card) {
+            const evaluationId = parseInt(card.dataset.id, 10);
+            const selectedEvaluation = allEvaluations.find(ev => ev.id === evaluationId);
+            if (selectedEvaluation) {
+                renderDetails(selectedEvaluation);
+                mainView.classList.add('hidden');
+                detailsView.classList.remove('hidden');
+            }
+        }
+    });
+
+    backButton.addEventListener('click', () => {
+        detailsView.classList.add('hidden');
+        mainView.classList.remove('hidden');
+    });
+    
+    // --- INICIALIZACIÓN ---
+
+    fetchInitialEvaluations();
+
+    supabaseClient
+        .channel('public:evaluations')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'evaluations' }, handleRealtimeInsert)
+        .subscribe();
+});
+</script>
+
+</body>
+</html>

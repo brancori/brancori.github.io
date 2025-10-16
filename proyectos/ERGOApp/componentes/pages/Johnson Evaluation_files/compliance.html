@@ -3,9 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo de Cumplimiento (V2) - ERGOApp</title>
+    <title>Módulo de Cumplimiento - ERGOApp</title>
     <!-- Reutilizamos los estilos globales de la aplicación -->
+    <script src="../../globals.js"></script>
     <link rel="stylesheet" href="../../globals.css">
+    <script>
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+        // PASO 3: INICIALIZACIÓN ÚNICA Y CORRECTA
+        let supabase; // Declara la variable en un ámbito más amplio.
+
+        if (window.ERGOConfig && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
+            
+            const SUPABASE_URL = window.ERGOConfig.SUPABASE_URL;
+            const SUPABASE_ANON_KEY = window.ERGOConfig.SUPABASE_ANON_KEY;
+
+            // Inicializa el cliente y ASÍGNALO a la variable 'supabase'.
+            // Esto sobrescribe el objeto global del CDN con la instancia real del cliente.
+            // Es una práctica común y simplifica el código posterior.
+
+            if (supabase) {
+                console.log('Cliente de Supabase inicializado exitosamente desde ERGOConfig.');
+            } else {
+                console.error('Falló la inicialización del cliente de Supabase.');
+            }
+
+        } else {
+            console.error('Error: El objeto de configuración `window.ERGOConfig` o las claves de Supabase no se encontraron.');
+        }
+    </script>
     <style>
         /* Estilos específicos para el Módulo de Compliance */
         body {
@@ -145,7 +170,6 @@
             pointer-events: all; /* Pero permite click en los botones */
         }
         
-// aquí inicia
         /* === NUEVO: SECCIÓN DE EVIDENCIA DESPLEGABLE === */
         .compliance-item[data-status="cumple"], .compliance-item[data-status="no-cumple"] {
             cursor: pointer;
@@ -191,7 +215,6 @@
         .btn-edit:hover {
             background-color: var(--primary-300);
         }
-// aquí termina
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .item-header h3 { margin: 0; color: var(--gray-800); font-size: 1.2rem; flex-grow: 1; }
         .item-category-badge { background-color: var(--primary-100); color: var(--primary-700); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; margin-left: 1rem; }
@@ -345,268 +368,362 @@
     
     <!-- Contenedor para las notificaciones -->
     <div id="toast-container"></div>
+    <script src="../../supabase-config.js"></script>
 
-    <script type="module">
-        import { complianceData } from './compliance-data.js';
+<script type="module">
+    // PASO 1: Importa la función 'createClient' desde un CDN compatible con módulos.
+    import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js'; // [1, 2]
 
-        const ComplianceApp = {
-            data: [],
-            currentFilter: 'todos',
-            elements: { /* ... se definen en init ... */ },
+    // PASO 2: Declara la variable del cliente de Supabase.
+    let supabase;
 
-            init() {
-                this.cacheDOMElements();
-                this.data = complianceData.map(item => ({
-                    ...item,
-                    estado: 'pendiente', // 'cumple', 'no-cumple', 'na'
-                    evidenciaTexto: '',
-                    evidenciaArchivo: null
+    // PASO 3: Inicializa el cliente de forma segura.
+    if (window.ERGOConfig && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
+        const SUPABASE_URL = window.ERGOConfig.SUPABASE_URL;
+        const SUPABASE_ANON_KEY = window.ERGOConfig.SUPABASE_ANON_KEY;
+
+        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // [3]
+        console.log('✅ Cliente de Supabase inicializado correctamente en el módulo.');
+
+    } else {
+        console.error('❌ Error Crítico: `window.ERGOConfig` o las claves de Supabase no se encontraron. Asegúrate de que `globals.js` se cargue ANTES de este script.');
+    }
+
+    // PASO 4: Tu objeto de aplicación.
+    const ComplianceApp = {
+        data: [],
+        currentFilter: 'todos',
+        elements: { /*... se definen en init... */ },
+
+        async init() {
+            if (!supabase) {
+                console.error("❌ La aplicación no puede iniciar porque Supabase no está inicializado.");
+                return;
+            }
+            
+            this.cacheDOMElements();
+            
+            try {
+                const { data, error } = await supabase
+                  .from('compliance_evaluations')
+                  .select(`
+                        id,
+                        status,
+                        comment,
+                        evidence_file_path,
+                        action_plan,
+                        due_date,
+                        requirement:compliance_requirements (
+                            id,
+                            name,
+                            content,
+                            category
+                        )
+                    `)
+                  .order('id');
+
+                if (error) throw error;
+
+                this.data = data.map(ev => ({
+                    id: ev.requirement.id,
+                    nombre: ev.requirement.name,
+                    contenido: ev.requirement.content,
+                    categoria: ev.requirement.category,
+                    estado: ev.status,
+                    evidenciaTexto: ev.comment || '', // CORREGIDO
+                    evidenciaArchivo: ev.evidence_file_path || null, // CORREGIDO
+                    evaluation_id: ev.id 
                 }));
+                
                 this.addEventListeners();
                 this.render();
-            },
 
-            cacheDOMElements() {
-                this.elements = {
-                    list: document.getElementById('compliance-list'),
-                    indicators: { total: document.getElementById('total-items'), completed: document.getElementById('completed-items'), nonCompleted: document.getElementById('non-completed-items'), na: document.getElementById('na-items'), percentage: document.getElementById('compliance-percentage'), progress: document.getElementById('compliance-progress'), },
-                    filters: document.getElementById('compliance-filters'),
-                    modal: document.getElementById('compliance-modal'),
-                    modalTitle: document.getElementById('modal-title'),
-                    closeBtn: document.querySelector('.close-btn'),
-                    cancelBtn: document.querySelector('.modal-btn.btn-cancel'),
-                    saveBtn: document.querySelector('.modal-btn.btn-save'),
-                    currentItemId: document.getElementById('current-item-id'),
-                    evidenceText: document.getElementById('evidence-text'),
-                    fileUploadSection: document.getElementById('file-upload-section'),
-                    fileDropArea: document.getElementById('file-drop-area'),
-                    fileInput: document.getElementById('evidence-file-input'),
-                    fileName: document.getElementById('file-name'),
-                    toastContainer: document.getElementById('toast-container')
-                };
-            },
+            } catch (error) {
+                console.error('Error al cargar los datos de cumplimiento:', error);
+            }
+        },
 
-            addEventListeners() {
-                this.elements.filters.addEventListener('click', e => {
-                    if (e.target.matches('.filter-btn')) {
-// aquí inicia
-                        this.currentFilter = e.target.dataset.filter;
-                        this.elements.filters.querySelector('.active').classList.remove('active');
-                        e.target.classList.add('active');
-                        this.renderList();
-                    }
-                });
-                
-                // === MANEJADOR DE EVENTOS MEJORADO PARA LA LISTA ===
-                this.elements.list.addEventListener('click', e => {
-                    const target = e.target;
-                    
-                    // Caso 1: Clic en un botón de estado (Cumple, No Cumplido, N/A)
-                    const statusButton = target.closest('.status-btn');
-                    if (statusButton) {
-                        const id = parseInt(statusButton.dataset.id);
-                        const action = statusButton.dataset.action;
-                        if (action === 'na') {
-                            this.updateStatus(id, 'na');
-                        } else {
-                            this.openModal(id, action);
-                        }
-                        return; // Detenemos la ejecución para no propagar el clic
-                    }
-                    
-                    // Caso 2: Clic en el botón de Editar
-                    const editButton = target.closest('.btn-edit');
-                    if (editButton) {
-                        const id = parseInt(editButton.dataset.id);
-                        const action = editButton.dataset.action;
-                        this.openModal(id, action);
-                        return;
-                    }
+        cacheDOMElements() {
+            this.elements = {
+                list: document.getElementById('compliance-list'),
+                indicators: { total: document.getElementById('total-items'), completed: document.getElementById('completed-items'), nonCompleted: document.getElementById('non-completed-items'), na: document.getElementById('na-items'), percentage: document.getElementById('compliance-percentage'), progress: document.getElementById('compliance-progress'), },
+                filters: document.getElementById('compliance-filters'),
+                modal: document.getElementById('compliance-modal'),
+                modalTitle: document.getElementById('modal-title'),
+                closeBtn: document.querySelector('.close-btn'),
+                cancelBtn: document.querySelector('.modal-btn.btn-cancel'),
+                saveBtn: document.querySelector('.modal-btn.btn-save'),
+                currentItemId: document.getElementById('current-item-id'),
+                evidenceText: document.getElementById('evidence-text'),
+                fileUploadSection: document.getElementById('file-upload-section'),
+                fileDropArea: document.getElementById('file-drop-area'),
+                fileInput: document.getElementById('evidence-file-input'),
+                fileName: document.getElementById('file-name'),
+                toastContainer: document.getElementById('toast-container')
+            };
+        },
 
-                    // Caso 3: Clic en el cuerpo del item para desplegar/ocultar evidencia
-                    const complianceItem = target.closest('.compliance-item[data-status="cumple"], .compliance-item[data-status="no-cumple"]');
-                    if (complianceItem) {
-                        const evidenceDiv = complianceItem.querySelector('.item-evidence');
-                        if (evidenceDiv) {
-                            evidenceDiv.classList.toggle('visible');
-                        }
-                    }
-                });
-
-                this.elements.closeBtn.addEventListener('click', () => this.closeModal());
-                this.elements.cancelBtn.addEventListener('click', () => this.closeModal());
-// aquí termina
-                this.elements.modal.addEventListener('click', e => { if (e.target === this.modal) this.closeModal(); });
-                this.elements.saveBtn.addEventListener('click', () => this.saveEvidence());
-                
-                this.elements.fileDropArea.addEventListener('click', () => this.elements.fileInput.click());
-                this.elements.fileInput.addEventListener('change', e => this.handleFileSelect(e.target.files));
-                
-                const dropArea = this.elements.fileDropArea;
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, this.preventDefaults, false));
-                ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false));
-                ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false));
-                dropArea.addEventListener('drop', this.handleDrop, false);
-            },
-            
-            preventDefaults(e) { e.preventDefault(); e.stopPropagation(); },
-            handleDrop(e) { ComplianceApp.handleFileSelect(e.dataTransfer.files); },
-            handleFileSelect(files) {
-                 if (files.length > 0) {
-                    const file = files[0];
-                    this.elements.fileName.textContent = `Archivo seleccionado: ${file.name}`;
-                    this.elements.fileInput.files = files;
+        addEventListeners() {
+            this.elements.filters.addEventListener('click', e => {
+                if (e.target.matches('.filter-btn')) {
+                    this.currentFilter = e.target.dataset.filter;
+                    this.elements.filters.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    this.renderList();
                 }
-            },
-
-            render() {
-                this.renderList();
-                this.updateIndicators();
-            },
-
-            renderList() {
-                this.elements.list.innerHTML = '';
-                const filteredData = this.data.filter(item => this.currentFilter === 'todos' || item.categoria === this.currentFilter);
-
-                if (filteredData.length === 0) {
-                    this.elements.list.innerHTML = `<p style="text-align:center; color: var(--gray-500);">No hay elementos para este filtro.</p>`;
+            });
+            
+            this.elements.list.addEventListener('click', e => {
+                const target = e.target;
+                
+                const statusButton = target.closest('.status-btn');
+                if (statusButton) {
+                    const id = parseInt(statusButton.dataset.id);
+                    const action = statusButton.dataset.action;
+                    const item = this.data.find(item => item.id === id);
+                    if (action === 'na') {
+                        this.updateStatus(item.evaluation_id, 'na');
+                    } else {
+                        this.openModal(id, action);
+                    }
+                    return;
+                }
+                
+                const editButton = target.closest('.btn-edit');
+                if (editButton) {
+                    const id = parseInt(editButton.dataset.id);
+                    const action = editButton.dataset.action;
+                    this.openModal(id, action);
                     return;
                 }
 
-                filteredData.forEach(item => {
-                    const li = document.createElement('li');
-                    // === APLICA CLASE DE ESTADO AL CONTENEDOR ===
-                    const statusClass = `status-${item.estado.replace('-', '')}`;
-// aquí inicia
-                    li.className = `compliance-item ${statusClass}`;
-                    li.dataset.status = item.estado; // Atributo para seleccionar con JS
-
-                    let evidenceHTML = '';
-                    if (item.estado === 'cumple' || item.estado === 'no-cumple') {
-                        const evidenceText = item.evidenciaTexto ? item.evidenciaTexto.replace(/\n/g, '<br>') : '<em>No se agregaron comentarios.</em>';
-                        const evidenceFile = item.evidenciaArchivo ? item.evidenciaArchivo.name : '<em>No se adjuntó archivo.</em>';
-
-                        evidenceHTML = `
-                        <div class="item-evidence">
-                            <h4>Evidencia Guardada</h4>
-                            <p><strong>Comentarios:</strong><br>${evidenceText}</p>
-                            <p><strong>Archivo:</strong> ${evidenceFile}</p>
-                            <button class="btn-edit" data-id="${item.id}" data-action="${item.estado}">✏️ Editar</button>
-                        </div>
-                        `;
+                const complianceItem = target.closest('.compliance-item[data-status="cumple"],.compliance-item[data-status="no-cumple"]');
+                if (complianceItem) {
+                    const evidenceDiv = complianceItem.querySelector('.item-evidence');
+                    if (evidenceDiv) {
+                        evidenceDiv.classList.toggle('visible');
                     }
+                }
+            });
 
-                    li.innerHTML = `
-                        <div class="item-header">
-                            <h3>${item.nombre}</h3>
-                            <span class="item-category-badge">${item.categoria}</span>
-                        </div>
-                        <div class="item-content"><p>${item.contenido}</p></div>
-                        ${evidenceHTML}
-                        <div class="item-actions">
-                            <button class="status-btn cumple" data-id="${item.id}" data-action="cumple">Cumple</button>
-                            <button class="status-btn no-cumplido" data-id="${item.id}" data-action="no-cumplido">No Cumplido</button>
-                            <button class="status-btn na" data-id="${item.id}" data-action="na">N/A</button>
-                        </div>`;
-// aquí termina
-                    this.elements.list.appendChild(li);
-                });
-            },
-
-            updateIndicators() {
-                const total = this.data.length;
-                const cumplidos = this.data.filter(i => i.estado === 'cumple').length;
-                const noCumplidos = this.data.filter(i => i.estado === 'no-cumple').length;
-                const na = this.data.filter(i => i.estado === 'na').length;
-                const totalEvaluables = total - na;
-                const percentage = totalEvaluables > 0 ? ((cumplidos / totalEvaluables) * 100).toFixed(0) : 0;
-
-                this.elements.indicators.total.textContent = total;
-                this.elements.indicators.completed.textContent = cumplidos;
-                this.elements.indicators.nonCompleted.textContent = noCumplidos;
-                this.elements.indicators.na.textContent = na;
-                this.elements.indicators.percentage.textContent = `${percentage}%`;
-                this.elements.indicators.progress.style.width = `${percentage}%`;
-            },
+            this.elements.closeBtn.addEventListener('click', () => this.closeModal());
+            this.elements.cancelBtn.addEventListener('click', () => this.closeModal());
+            this.elements.modal.addEventListener('click', e => { if (e.target === this.elements.modal) this.closeModal(); });
+            this.elements.saveBtn.addEventListener('click', () => this.saveEvidence());
             
-            updateStatus(id, newStatus, evidence = {}) {
-                const item = this.data.find(i => i.id === id);
-                if (item) {
-                    item.estado = newStatus;
-                    item.evidenciaTexto = evidence.texto || ''; // Limpiar si no hay texto
-                    if (evidence.archivo !== undefined) {
-                        item.evidenciaArchivo = evidence.archivo;
-                    }
-                    // === LLAMAR A LA NOTIFICACIÓN ===
-                    this.showConfirmationToast(item);
-                }
-                this.render();
-            },
-
-            // === NUEVA FUNCIÓN PARA MOSTRAR NOTIFICACIÓN ===
-            showConfirmationToast(item) {
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                
-                let evidenceHTML = '';
-                if (item.evidenciaTexto) {
-                    evidenceHTML += `<p><strong>Comentario:</strong> ${item.evidenciaTexto}</p>`;
-                }
-                if (item.evidenciaArchivo) {
-                    evidenceHTML += `<p><strong>Archivo:</strong> ${item.evidenciaArchivo.name}</p>`;
-                }
-
-                toast.innerHTML = `
-                    <h4>✅ Estado Guardado</h4>
-                    <p><strong>Requisito:</strong> ${item.nombre}</p>
-                    <p><strong>Nuevo Estado:</strong> ${item.estado.toUpperCase()}</p>
-                    ${evidenceHTML}
-                `;
-                
-                this.elements.toastContainer.appendChild(toast);
-                
-                // Forzar el repintado para que la transición funcione
-                setTimeout(() => toast.classList.add('show'), 10);
-
-                // Ocultar y eliminar la notificación después de 5 segundos
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    toast.addEventListener('transitionend', () => toast.remove());
-                }, 5000);
-            },
+            this.elements.fileDropArea.addEventListener('click', () => this.elements.fileInput.click());
+            this.elements.fileInput.addEventListener('change', e => this.handleFileSelect(e.target.files));
             
-            openModal(id, type) {
-                const item = this.data.find(i => i.id === id);
-                if (!item) return;
-                this.elements.currentItemId.value = id;
-                this.elements.modalTitle.textContent = type === 'cumple' ? `Evidencia de Cumplimiento: ${item.nombre}` : `Justificación de No Cumplimiento: ${item.nombre}`;
-                this.elements.evidenceText.value = item.evidenciaTexto || '';
-                this.elements.fileUploadSection.style.display = (type === 'cumple') ? 'block' : 'none';
-                this.elements.fileName.textContent = item.evidenciaArchivo ? `Archivo actual: ${item.evidenciaArchivo.name}` : '';
-                this.elements.modal.dataset.actionType = type;
-                this.elements.modal.style.display = 'flex';
-            },
+            const dropArea = this.elements.fileDropArea;
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, this.preventDefaults, false));
+            ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false));
+            ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false));
+            dropArea.addEventListener('drop', this.handleDrop.bind(this), false);
+        },
+        
+        preventDefaults(e) { e.preventDefault(); e.stopPropagation(); },
+        handleDrop(e) { this.handleFileSelect(e.dataTransfer.files); },
+        handleFileSelect(files) {
+             if (files.length > 0) {
+                 const file = files[0]; // CORREGIDO: Tomar el primer archivo
+                 this.elements.fileName.textContent = `Archivo seleccionado: ${file.name}`;
+                 this.elements.fileInput.files = files;
+             }
+        },
 
-            closeModal() {
-                this.elements.modal.style.display = 'none';
-                this.elements.evidenceText.value = '';
-                this.elements.fileInput.value = '';
-                this.elements.fileName.textContent = '';
-                this.elements.currentItemId.value = '';
-            },
+        render() {
+            this.renderList();
+            this.updateIndicators();
+        },
 
-            saveEvidence() {
-                const id = parseInt(this.elements.currentItemId.value);
-                const status = this.elements.modal.dataset.actionType === 'cumple' ? 'cumple' : 'no-cumple';
-                const texto = this.elements.evidenceText.value;
-                const archivo = this.elements.fileInput.files.length > 0 ? this.elements.fileInput.files[0] : null;
-                this.updateStatus(id, status, { texto, archivo });
-                this.closeModal();
+        renderList() {
+            this.elements.list.innerHTML = '';
+            const filteredData = this.data.filter(item => this.currentFilter === 'todos' || item.categoria === this.currentFilter); // CORREGIDO
+
+            if (filteredData.length === 0) {
+                this.elements.list.innerHTML = `<p style="text-align:center; color: var(--gray-500);">No hay elementos para este filtro.</p>`;
+                return;
             }
-        };
 
-        document.addEventListener('DOMContentLoaded', () => ComplianceApp.init());
-    </script>
+            filteredData.forEach(item => {
+                const li = document.createElement('li');
+                const statusClass = `status-${item.estado.replace(/ /g, '-')}`;
+                li.className = `compliance-item ${statusClass}`;
+                li.dataset.status = item.estado;
+
+                let evidenceHTML = '';
+                if (item.estado === 'cumple' || item.estado === 'no-cumple') { // CORREGIDO
+                    const evidenceText = item.evidenciaTexto? item.evidenciaTexto.replace(/\n/g, '<br>') : '<em>No se agregaron comentarios.</em>';
+                    const evidenceFile = item.evidenciaArchivo? item.evidenciaArchivo.split('-').pop() : '<em>No se adjuntó archivo.</em>';
+
+                    evidenceHTML = `
+                    <div class="item-evidence">
+                        <h4>Evidencia Guardada</h4>
+                        <p><strong>Comentarios:</strong><br>${evidenceText}</p>
+                        <p><strong>Archivo:</strong> ${evidenceFile}</p>
+                        <button class="btn-edit" data-id="${item.id}" data-action="${item.estado}">✏️ Editar</button>
+                    </div>
+                    `;
+                }
+
+                li.innerHTML = `
+                    <div class="item-header">
+                        <h3>${item.nombre}</h3>
+                        <span class="item-category-badge">${item.categoria}</span>
+                    </div>
+                    <div class="item-content"><p>${item.contenido}</p></div>
+                    ${evidenceHTML}
+                    <div class="item-actions">
+                        <button class="status-btn cumple" data-id="${item.id}" data-action="cumple">Cumple</button>
+                        <button class="status-btn no-cumplido" data-id="${item.id}" data-action="no-cumplido">No Cumplido</button>
+                        <button class="status-btn na" data-id="${item.id}" data-action="na">N/A</button>
+                    </div>`;
+                this.elements.list.appendChild(li);
+            });
+        },
+
+        updateIndicators() {
+            const total = this.data.length;
+            const cumplidos = this.data.filter(i => i.estado === 'cumple').length;
+            const noCumplidos = this.data.filter(i => i.estado === 'no-cumple').length;
+            const na = this.data.filter(i => i.estado === 'na').length;
+            const totalEvaluables = total - na;
+            const percentage = totalEvaluables > 0? ((cumplidos / totalEvaluables) * 100).toFixed(0) : 0;
+
+            this.elements.indicators.total.textContent = total;
+            this.elements.indicators.completed.textContent = cumplidos;
+            this.elements.indicators.nonCompleted.textContent = noCumplidos;
+            this.elements.indicators.na.textContent = na;
+            this.elements.indicators.percentage.textContent = `${percentage}%`;
+            this.elements.indicators.progress.style.width = `${percentage}%`;
+        },
+        
+        async updateStatus(evaluation_id, newStatus, evidence = {}) {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error('Usuario no autenticado.');
+
+                let evidencePath = null;
+                
+                if (evidence.archivo) {
+                    const filePath = `public/${user.id}/${evaluation_id}-${Date.now()}-${evidence.archivo.name}`;
+                    const { error: uploadError } = await supabase.storage
+                      .from('compliance-evidence')
+                      .upload(filePath, evidence.archivo);
+
+                    if (uploadError) throw uploadError;
+                    evidencePath = filePath;
+                }
+
+                const updates = {
+                    status: newStatus,
+                    comment: evidence.texto,
+                    updated_by: user.id,
+                    updated_at: new Date().toISOString(),
+                  ...(evidencePath && { evidence_file_path: evidencePath }),
+                };
+
+                const { data, error } = await supabase
+                  .from('compliance_evaluations')
+                  .update(updates)
+                  .eq('id', evaluation_id)
+                  .select()
+                  .single();
+
+                if (error) throw error;
+                
+                const itemIndex = this.data.findIndex(i => i.evaluation_id === evaluation_id);
+                if (itemIndex > -1) {
+                    this.data[itemIndex].estado = data.status;
+                    this.data[itemIndex].evidenciaTexto = data.comment;
+                    this.data[itemIndex].evidenciaArchivo = data.evidence_file_path;
+                    this.showConfirmationToast(this.data[itemIndex]);
+                }
+
+                this.render();
+
+            } catch (error) {
+                console.error('Error al guardar el estado:', error);
+                alert(`Error: ${error.message}`);
+            }
+        },
+
+        showConfirmationToast(item) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let evidenceHTML = '';
+            if (item.evidenciaTexto) {
+                evidenceHTML += `<p><strong>Comentario:</strong> ${item.evidenciaTexto}</p>`;
+            }
+            if (item.evidenciaArchivo) {
+                const fileName = item.evidenciaArchivo.split('-').pop();
+                evidenceHTML += `<p><strong>Archivo:</strong> ${fileName}</p>`;
+            }
+
+            toast.innerHTML = `
+                <h4>✅ Estado Guardado</h4>
+                <p><strong>Requisito:</strong> ${item.nombre}</p>
+                <p><strong>Nuevo Estado:</strong> ${item.estado.toUpperCase()}</p>
+                ${evidenceHTML}
+            `;
+            
+            this.elements.toastContainer.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 5000);
+        },
+        
+        openModal(id, type) {
+            const item = this.data.find(i => i.id === id);
+            if (!item) return;
+            this.elements.currentItemId.value = id;
+            this.elements.modalTitle.textContent = type === 'cumple'? `Evidencia de Cumplimiento: ${item.nombre}` : `Justificación de No Cumplimiento: ${item.nombre}`;
+            this.elements.evidenceText.value = item.evidenciaTexto || ''; // CORREGIDO
+            this.elements.fileUploadSection.style.display = (type === 'cumple')? 'block' : 'none';
+            const fileName = item.evidenciaArchivo? `Archivo actual: ${item.evidenciaArchivo.split('-').pop()}` : '';
+            this.elements.fileName.textContent = fileName;
+            this.elements.modal.dataset.actionType = type;
+            this.elements.modal.style.display = 'flex';
+        },
+
+        closeModal() {
+            this.elements.modal.style.display = 'none';
+            this.elements.evidenceText.value = '';
+            this.elements.fileInput.value = '';
+            this.elements.fileName.textContent = '';
+            this.elements.currentItemId.value = '';
+        },
+
+        async saveEvidence() {
+            const requirementId = parseInt(this.elements.currentItemId.value);
+            const item = this.data.find(i => i.id === requirementId);
+            if (!item) return;
+
+            const status = this.elements.modal.dataset.actionType;
+            const texto = this.elements.evidenceText.value;
+            const archivoInput = this.elements.fileInput.files[0]; // CORREGIDO: Tomar el primer archivo
+
+            this.elements.saveBtn.textContent = 'Guardando...';
+            this.elements.saveBtn.disabled = true;
+
+            await this.updateStatus(item.evaluation_id, status, { texto, archivo: archivoInput });
+
+            this.elements.saveBtn.textContent = 'Guardar';
+            this.elements.saveBtn.disabled = false;
+            this.closeModal();
+        }
+    };
+
+    // PASO 5: Inicia la aplicación cuando el DOM esté listo.
+    document.addEventListener('DOMContentLoaded', () => {
+        ComplianceApp.init();
+    });
+</script>
 </body>
 </html>
 
