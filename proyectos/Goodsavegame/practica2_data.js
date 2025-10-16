@@ -17,9 +17,9 @@ const inventoryData = [
         "company": "Jen-CI Mexico",
         "siteLocation": "Laboratory / Laboratorio - Control de Calidad",
         "categoria": "Housekeeping",
-        "severidad": 2,
-        "probabilidad": 10,
-        "ponderacion": 20
+        "severidad": 4,
+        "probabilidad": 4,
+        "ponderacion": 16
     },
     {
         "masterEventNo": "11933534",
@@ -51,8 +51,8 @@ const inventoryData = [
         "siteLocation": "Laboratory / Laboratorio - Control de Calidad",
         "categoria": "Mechanical or system failure",
         "severidad": 2,
-        "probabilidad": 10,
-        "ponderacion": 20
+        "probabilidad": 4,
+        "ponderacion": 8
     },
     {
         "masterEventNo": "49488392",
@@ -95,8 +95,8 @@ const inventoryData = [
         "siteLocation": "Cafeteria / Comedor",
         "categoria": "Slips trips & falls",
         "severidad": 2,
-        "probabilidad": 10,
-        "ponderacion": 20
+        "probabilidad": 4,
+        "ponderacion": 8
     },
     {
         "masterEventNo": "56363671",
@@ -122,14 +122,14 @@ const inventoryData = [
     },
     {
         "masterEventNo": "10052952",
-        "whatHappened": "Se obstruyo la puerta con un carro de transporte de materiales el cual no permite abrir la puerta",
+        "whatHappened": "Se obstruyo la puerta con un carro de transporte de materiales el cual no permite abrir la puerta de emergencia",
         "site": "Carretera Federal Mexico-Puebla, Km 81.5, Huejotzingo, Puebla, Mexico",
         "company": "Jen-CI Mexico",
         "siteLocation": "Manufacturing/Operations / Fabricacin",
         "categoria": "Emergency preparedness & response",
-        "severidad": 4,
-        "probabilidad": 6,
-        "ponderacion": 24
+        "severidad": 2,
+        "probabilidad": 4,
+        "ponderacion": 12
     },
     {
         "masterEventNo": "15340409",
@@ -189,9 +189,9 @@ const inventoryData = [
         "company": "Jen-CI Mexico",
         "siteLocation": "Manufacturing/Operations / Fabricacin",
         "categoria": "Office safety",
-        "severidad": 2,
-        "probabilidad": 10,
-        "ponderacion": 20
+        "severidad": 4,
+        "probabilidad": 4,
+        "ponderacion": 16
     },
     {
         "masterEventNo": "75731674",
@@ -245,8 +245,8 @@ const inventoryData = [
         "siteLocation": "Manufacturing/Operations / Fabricacin",
         "categoria": "Personal Protective Equipment",
         "severidad": 4,
-        "probabilidad": 10,
-        "ponderacion": 40
+        "probabilidad": 4,
+        "ponderacion": 16
     },
     {
         "masterEventNo": "40890184",
@@ -255,9 +255,9 @@ const inventoryData = [
         "company": "Jen-CI Mexico",
         "siteLocation": "Manufacturing/Operations / Acondicionado",
         "categoria": "Slips trips & falls",
-        "severidad": 2,
-        "probabilidad": 10,
-        "ponderacion": 20
+        "severidad": 4,
+        "probabilidad": 4,
+        "ponderacion": 16
     },
     {
         "masterEventNo": "97439433",
