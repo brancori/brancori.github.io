@@ -1,0 +1,340 @@
+/* === main.css === */
+/* Arquitectura CSS unificada para la app de capacitación */
+
+/* 1. Variables globales (:root) */
+:root {
+    /* Paleta de colores principal (tema oscuro) */
+    --color-background-primary: #0a192f;
+    --color-background-secondary: #112240;
+    --color-accent-primary: #64ffda; /* Verde menta, ideal para acciones principales */
+    --color-accent-secondary: #01c38d; /* Verde más oscuro para complementos */
+
+    /* Colores de texto */
+    --color-text-primary: #ccd6f6;
+    --color-text-secondary: #a8b2d1;
+    --color-text-inverse: #0a192f;
+
+    /* Colores semánticos */
+    --color-success: #28a745;
+    --color-error: #ff6b6b;
+    --color-warning: #ffc107;
+
+    /* Superficies y bordes */
+    --color-border: #233554;
+    --color-surface-glass: rgba(255, 255, 255, 0.07);
+    --color-input-background: rgba(255, 255, 255, 0.05);
+
+    /* Tipografía */
+    --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-base: 16px;
+    --font-size-sm: 0.875rem; /* 14px */
+    --font-size-md: 1rem;    /* 16px */
+    --font-size-lg: 1.25rem; /* 20px */
+    --font-size-xl: 1.8rem;  /* 28.8px */
+
+    /* Espaciado */
+    --spacing-xs: 0.25rem; /* 4px */
+    --spacing-sm: 0.5rem;  /* 8px */
+    --spacing-md: 1rem;    /* 16px */
+    --spacing-lg: 1.5rem;  /* 24px */
+    --spacing-xl: 2.5rem;  /* 40px */
+
+    /* Radios y Sombras */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 16px;
+    --shadow-sm: 0 4px 8px rgba(2, 12, 27, 0.4);
+    --shadow-md: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
+
+    /* Transiciones */
+    --transition-fast: all 0.2s ease-in-out;
+    --transition-smooth: all 0.3s ease;
+}
+
+/* 2. Reset y normalización ligera */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img, picture, svg, video {
+    display: block;
+    max-width: 100%;
+}
+
+/* 3. Tipografía y colores base */
+h1, h2, h3, h4, h5 {
+    color: var(--color-text-primary);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-md);
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1rem; }
+
+a {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+a:hover {
+    filter: brightness(1.2);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-secondary);
+}
+
+/* 4. Utilidades */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+.w-100 { width: 100%; }
+.m-auto { margin: auto; }
+
+.mt-1 { margin-top: var(--spacing-sm); }
+.mb-1 { margin-bottom: var(--spacing-sm); }
+.mt-2 { margin-top: var(--spacing-md); }
+.mb-2 { margin-bottom: var(--spacing-md); }
+
+/* 5. Componentes reutilizables */
+
+/* Botones */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    border: 1px solid transparent;
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: var(--transition-fast);
+}
+
+.btn-primary {
+    background-color: var(--color-accent-primary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-accent-primary);
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--color-accent-primary);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-accent-primary);
+    color: var(--color-text-inverse);
+}
+
+.btn-danger {
+    background-color: var(--color-error);
+    color: var(--color-text-primary);
+    border-color: var(--color-error);
+}
+.btn-danger:hover {
+    filter: brightness(1.2);
+}
+
+
+/* Tarjetas (Cards) */
+.card {
+    background-color: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-fast);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px -15px rgba(2, 12, 27, 0.8);
+}
+
+.card-glass {
+    background: var(--color-surface-glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Formularios */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-md);
+    transition: var(--transition-fast);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Modales */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.is-visible {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* 6. Layouts generales */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-lg);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.main-content {
+    flex: 1;
+    padding: var(--spacing-xl);
+    overflow-y: auto;
+}
+
+/* 7. Animaciones y transiciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* 8. Adaptabilidad (media queries) */
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .main-content {
+        padding: var(--spacing-lg);
+    }
+    
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .card, .modal-content {
+        padding: var(--spacing-md);
+    }
+}

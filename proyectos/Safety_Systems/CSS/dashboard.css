@@ -1,3 +1,61 @@
+/*
+================================================================================
+GUÍA DE USO Y ARQUITECTURA DE MAIN.CSS
+================================================================================
+
+Este archivo es el núcleo del sistema de estilos de la aplicación.
+Sigue estas recomendaciones para mantener un código limpio, escalable y consistente.
+
+--------------------------------------------------------------------------------
+1. ORDEN DE CARGA DE ARCHIVOS
+--------------------------------------------------------------------------------
+`main.css` siempre debe cargarse primero en el <head> de tu HTML para
+establecer la base de estilos y las variables globales.
+
+<head>
+  <!-- Fuentes (Ej. Google Fonts) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- 1. Archivo maestro (ESTE ARCHIVO) -->
+  <link rel="stylesheet" href="path/to/main.css">
+
+  <!-- 2. (Opcional) CSS específico de la página -->
+  <!-- <link rel="stylesheet" href="path/to/dashboard-specific.css"> -->
+</head>
+
+--------------------------------------------------------------------------------
+2. CÓMO INTEGRAR Y REFACTORIZAR
+--------------------------------------------------------------------------------
+El objetivo es eliminar la redundancia de los archivos CSS antiguos
+(login.css, dashboard.css, etc.).
+
+- ELIMINA las declaraciones `:root`, `*` (reset) y `body` de los archivos antiguos.
+- REEMPLAZA clases antiguas en tu HTML por las nuevas clases de componentes:
+  - Botones: `.login-button` -> `.btn .btn-primary`
+  - Inputs: Usa la clase `.form-control` para todos los inputs, textareas y selects.
+  - Contenedores: `.login-container` -> `.card .card-glass`
+
+--------------------------------------------------------------------------------
+3. CSS ESPECÍFICO POR PÁGINA
+--------------------------------------------------------------------------------
+Este archivo debe cubrir ~90% de los estilos. Si una página necesita un layout
+muy específico, crea un archivo separado (ej. `dashboard-specific.css`) y
+cárgalo DESPUÉS de `main.css`. Este archivo específico solo debe contener
+los estilos que no se pueden lograr con las utilidades y componentes de aquí.
+
+--------------------------------------------------------------------------------
+4. MANTENIMIENTO Y ESCALABILIDAD
+--------------------------------------------------------------------------------
+- PIENSA EN COMPONENTES, NO EN PÁGINAS: Si un estilo se puede reutilizar,
+  añádelo a la sección de componentes de este archivo.
+- USA LAS VARIABLES CSS: No uses valores "mágicos" (ej. `#fff`). Utiliza
+  siempre `var(--nombre-variable)`.
+- DOCUMENTA: Si añades un nuevo componente, añade un comentario breve
+  explicando su propósito.
+
+================================================================================
+*/
+
 :root {
     --primary-color: #0d1f23;
     --secondary-color: #132e35;

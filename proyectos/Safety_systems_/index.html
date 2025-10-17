@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safety Systems - Dashboard</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<style>
+    /* ======= LOGIN MODAL PARA INDEX ======= */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 47, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transition-smooth);
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeInScale 0.4s ease;
+}
+
+@keyframes fadeInScale {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-content h2 {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.modal-content p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-content input.form-control {
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-content .btn {
+  width: 100%;
+}
+
+/* ======= DASHBOARD ======= */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+}
+
+.dashboard .card h2 {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.btn-light {
+  background-color: var(--color-input-background);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-light:hover {
+  background-color: var(--color-accent-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-accent-primary);
+}
+
+/* ======= PERFIL LATERAL ======= */
+.profile-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-primary);
+  margin: 0 auto var(--spacing-md);
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.menu-item {
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  transition: var(--transition-fast);
+}
+
+.menu-item:hover {
+  background-color: var(--color-surface-glass);
+  color: var(--color-accent-primary);
+}
+
+/* ======= NOTIFICACIONES (MISMA LÓGICA DE dashboard.js) ======= */
+.notification-popup {
+  position: fixed;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  border-left: 4px solid var(--color-accent-primary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: var(--transition-smooth);
+  z-index: 3000;
+}
+
+.notification-popup.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.notification-popup.success { border-left-color: var(--color-success); }
+.notification-popup.error { border-left-color: var(--color-error); }
+.notification-popup.warning { border-left-color: var(--color-warning); }
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.safety-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.day {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  transition: var(--transition-fast);
+}
+
+.day.safe {
+  background-color: var(--color-accent-primary);
+  color: var(--color-text-inverse);
+}
+
+.day.current {
+  border: 2px solid var(--color-accent-secondary);
+}
+
+.day.selected {
+  outline: 2px solid var(--color-accent-primary);
+}
+
+.safety-controls {
+  margin-top: var(--spacing-md);
+}
+
+.stat-card {
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  flex: 1;
+  margin: 0 var(--spacing-sm);
+}
+
+/* ======= CRUZ DE SEGURIDAD EXPANDIBLE ======= */
+.safety-cross-wrapper {
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.safety-cross {
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  max-height: 150px;
+  transition: max-height 0.4s ease, box-shadow 0.3s ease;
+}
+
+.safety-cross.expanded {
+  max-height: 100vh;
+  box-shadow: var(--shadow-md);
+}
+
+.safety-cross::after {
+  content: "Haz clic para expandir";
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-sm);
+}
+
+.safety-cross.expanded::after {
+  content: "Haz clic fuera para contraer";
+  color: var(--color-accent-primary);
+}
+
+.calendar-header, .safety-grid, .safety-controls, .safety-stats {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.safety-cross.expanded .calendar-header,
+.safety-cross.expanded .safety-grid,
+.safety-cross.expanded .safety-controls,
+.safety-cross.expanded .safety-stats {
+  opacity: 1;
+  pointer-events: all;
+}
+
+</style>
+<body class="main-layout">
+
+  <aside class="sidebar">
+    <div class="text-center mt-1">
+      <img src="#" alt="Foto de Perfil" class="profile-img">
+      <h3 class="text-bold">ADMIN</h3>
+      <p class="text-muted">Administrador</p>
+    </div>
+    <nav class="sidebar-menu mt-2">
+      <a href="#" class="menu-item">Mi Perfil</a>
+      <a href="#" class="menu-item">Administrador de Usuarios</a>
+      <a href="#" class="menu-item">Gestor de Trabajadores</a>
+      <a href="#" class="menu-item">Gestor de Trabajos</a>
+      <a href="#" class="menu-item">Ver Registros</a>
+    </nav>
+    <button class="btn btn-primary mt-auto" id="logoutBtn">Cerrar Sesión</button>
+  </aside>
+
+<main class="dashboard container">
+
+  <!-- === CRUZ DE SEGURIDAD (MODULAR Y EXPANDIBLE) === -->
+  <div class="safety-cross-wrapper">
+    <div class="safety-cross">
+      <h2 class="text-center">CRUZ DE SEGURIDAD</h2>
+
+      <div class="month-navigator"></div>
+      <div class="calendar-header"></div>
+      <div class="safety-grid"></div>
+
+      <div class="safety-controls text-center mt-2">
+        <button id="markSafeDay" class="btn btn-primary">Marcar Día Seguro</button>
+      </div>
+
+      <div class="safety-stats d-flex justify-between mt-2">
+        <div class="stat-card text-center">
+          <h3>Días sin Accidentes</h3>
+          <span id="accident-free-days" class="font-lg text-accent">0</span>
+        </div>
+        <div class="stat-card text-center">
+          <h3>Horas Hombre</h3>
+          <span id="man-hours" class="font-lg text-accent">12,400</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === ACCIONES === -->
+  <div class="card mt-2">
+    <h2 class="text-center">ACCIONES</h2>
+    <div class="d-flex flex-wrap gap-1 justify-center">
+      <button class="btn btn-light">Permisos Vigentes</button>
+      <button class="btn btn-light">Accidentes</button>
+      <button class="btn btn-light">Incidentes</button>
+      <button class="btn btn-light">Near Miss</button>
+      <button class="btn btn-light">Análisis de Riesgo</button>
+      <button class="btn btn-light">Maquinaria y Equipo</button>
+      <button class="btn btn-light">Reporte de Incidentes</button>
+      <button class="btn btn-light">Permisos de Trabajo</button>
+      <button class="btn btn-light">Organigrama</button>
+    </div>
+  </div>
+
+</main>
+
+
+  <!-- Modal de Login -->
+  <div id="loginModal" class="modal active">
+    <div class="modal-content text-center p-3">
+      <h2>Acceso al Sistema</h2>
+      <p class="text-muted mb-2">Ingresa tus credenciales para continuar</p>
+      <input type="text" id="username" class="form-control mb-1" placeholder="Usuario">
+      <input type="password" id="password" class="form-control mb-2" placeholder="Contraseña">
+      <button class="btn btn-primary w-100" id="loginBtn">Iniciar Sesión</button>
+      <small class="text-muted">Versión Demo - Safety Systems</small>
+    </div>
+  </div>
+
+  <script>
+    // JS embebido de Login básico
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('loginModal');
+      const loginBtn = document.getElementById('loginBtn');
+
+      loginBtn.addEventListener('click', () => {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+
+        if (user === 'admin' && pass === '123') {
+          modal.classList.remove('active');
+          modal.style.display = 'none';
+        } else {
+          alert('Credenciales incorrectas. Inténtalo nuevamente.');
+        }
+      });
+    });
+  </script>
+    <script src="index.js"></script>
+</body>
+</html>

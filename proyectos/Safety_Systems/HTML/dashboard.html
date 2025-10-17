@@ -6,7 +6,7 @@
     <title>Dashboard - Safety Systems</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
 </head>
-<body style="visibility: hidden;">
+<body>
     <main id="main_container">
         <section id="nav_bar_lateral">
             <label for="" id="date"></label>
@@ -152,39 +152,6 @@
             </div>
         </div>
     </main>
-    <script type="module">
-        import { auth } from '../js/auth.js';
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            if (auth.protectRoute()) {
-                document.body.style.visibility = 'visible';
-            }
-            
-            const session = JSON.parse(localStorage.getItem('userSession') || '{}');
-            document.getElementById('userName').textContent = session.username?.toUpperCase() || '';
-            document.getElementById('userRole').textContent = session.role || '';
-            document.getElementById('date').textContent = new Date().toLocaleDateString();
-            
-            // Mostrar enlace de gestión de usuarios solo para administradores
-            if (session.role === 'admin') {
-                document.getElementById('adminUsersLink').style.display = 'block';
-            }
-
-            // Show menu items based on permissions
-            const blocks = document.getElementById('blocks');
-            if (hasPermission('create')) {
-                blocks.innerHTML += '<a href="#create">Crear Registro</a>';
-            }
-            if (hasPermission('read')) {
-                blocks.innerHTML += '<a href="#view">Ver Registros</a>';
-            }
-            if (hasPermission('update')) {
-                blocks.innerHTML += '<a href="#edit">Editar Registros</a>';
-            }
-            if (hasPermission('delete')) {
-                blocks.innerHTML += '<a href="#delete">Eliminar Registros</a>';
-            }
-        });
-    </script>
+    <script src="../js/dashboard.js"></script>
 </body>
 </html>

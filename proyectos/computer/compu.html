@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Ergonómica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Agregamos un estilo para evitar que el botón de exportación aparezca en el PDF */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+
+    <div id="form-container" class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Evaluación Ergonómica para Puestos de Trabajo</h1>
+            <p class="text-gray-600 mt-2">Formulario para identificar y corregir riesgos ergonómicos en el uso de computadoras.</p>
+        </div>
+
+        <!-- SECCIÓN 1: INFORMACIÓN GENERAL -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 border-b-2 border-blue-500 pb-2 mb-4">Sección 1: Información General</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Empleado</label>
+                    <input type="text" id="nombre" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="puesto" class="block text-sm font-medium text-gray-700">Puesto de Trabajo</label>
+                    <input type="text" id="puesto" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="departamento" class="block text-sm font-medium text-gray-700">Departamento</label>
+                    <input type="text" id="departamento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha de Evaluación</label>
+                    <input type="date" id="fecha" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: EVALUACIÓN DE MOLESTIAS -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-700 border-b-2 border-blue-500 pb-2 mb-4">Sección 2: Evaluación de Molestias</h2>
+            <p class="text-sm text-gray-600 mb-4">En una escala de 0 (sin molestia) a 10 (molestia máxima), califica cualquier incomodidad.</p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zona del Cuerpo</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nivel de Molestia (0-10)</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frecuencia</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <!-- Filas de la tabla -->
+                        <tr id="molestia-ojos"><td>Ojos</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-cuello"><td>Cuello</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-hombros"><td>Hombros</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-espalda-alta"><td>Espalda (Alta/Media)</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-espalda-baja"><td>Espalda (Baja)</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-codos"><td>Codos / Antebrazos</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-munecas"><td>Muñecas / Manos</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                        <tr id="molestia-piernas"><td>Piernas / Pies</td><td><select class="w-24 text-center rounded-md border-gray-300"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td><td><select class="w-full rounded-md border-gray-300"><option>Nunca</option><option>Ocasional</option><option>Semanal</option><option>Diario</option></select></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: LISTA DE VERIFICACIÓN -->
+        <div class="mb-8">
+             <h2 class="text-2xl font-semibold text-gray-700 border-b-2 border-blue-500 pb-2 mb-4">Sección 3: Lista de Verificación Ergonómica</h2>
+             <div class="space-y-4">
+                <!-- Preguntas -->
+                <div class="p-4 rounded-md bg-gray-50"><b>Asiento y Postura General</b>
+                    <div class="flex items-center justify-between mt-2"><p>¿Tus pies descansan planos sobre el suelo o reposapiés?</p><div><label><input type="radio" name="q1" value="si"> Sí</label> <label><input type="radio" name="q1" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>¿Tus rodillas forman un ángulo de 90 grados?</p><div><label><input type="radio" name="q2" value="si"> Sí</label> <label><input type="radio" name="q2" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>¿Tu espalda baja tiene apoyo firme y cómodo?</p><div><label><input type="radio" name="q3" value="si"> Sí</label> <label><input type="radio" name="q3" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>¿Tus hombros están relajados al usar los reposabrazos?</p><div><label><input type="radio" name="q4" value="si"> Sí</label> <label><input type="radio" name="q4" value="no"> No</label></div></div>
+                </div>
+                <div class="p-4 rounded-md bg-gray-50"><b>Monitor y Salud Visual</b>
+                    <div class="flex items-center justify-between mt-2"><p>¿El monitor está directamente frente a ti?</p><div><label><input type="radio" name="q5" value="si"> Sí</label> <label><input type="radio" name="q5" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>Al mirar al centro, ¿tu cuello está recto y la vista va hacia abajo?</p><div><label><input type="radio" name="q6" value="si"> Sí</label> <label><input type="radio" name="q6" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>¿Tu pantalla está libre de reflejos?</p><div><label><input type="radio" name="q7" value="si"> Sí</label> <label><input type="radio" name="q7" value="no"> No</label></div></div>
+                </div>
+                <div class="p-4 rounded-md bg-gray-50"><b>Teclado, Ratón y Muñecas</b>
+                    <div class="flex items-center justify-between mt-2"><p>Al escribir, ¿tus codos se mantienen cerca del cuerpo?</p><div><label><input type="radio" name="q8" value="si"> Sí</label> <label><input type="radio" name="q8" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>¿Tus muñecas permanecen rectas y alineadas?</p><div><label><input type="radio" name="q9" value="si"> Sí</label> <label><input type="radio" name="q9" value="no"> No</label></div></div>
+                    <div class="flex items-center justify-between mt-2"><p>¿Usas el ratón sin estirar el brazo?</p><div><label><input type="radio" name="q10" value="si"> Sí</label> <label><input type="radio" name="q10" value="no"> No</label></div></div>
+                </div>
+             </div>
+        </div>
+
+
+    </div>
+
+    <div class="text-center mt-8 no-print">
+        <button id="export-pdf" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
+            Exportar a PDF
+        </button>
+    </div>
+
+    <script>
+        // Lógica para exportar a PDF
+        document.getElementById('export-pdf').addEventListener('click', () => {
+            const formContainer = document.getElementById('form-container');
+            const { jsPDF } = window.jspdf;
+
+            html2canvas(formContainer, { scale: 2, useCORS: true }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                
+                const ratio = canvasWidth / canvasHeight;
+                const imgWidth = pageWidth - 20; // Dejamos un margen
+                const imgHeight = imgWidth / ratio;
+
+                let heightLeft = imgHeight;
+                let position = 10; // Margen superior
+
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= (pageHeight - 20); // Restamos el área visible de la primera página
+
+                while (heightLeft > 0) {
+                    position = position - pageHeight + 20; // Movemos la imagen "hacia arriba"
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= (pageHeight - 20);
+                }
+
+                const nombreEmpleado = document.getElementById('nombre').value || 'empleado';
+                pdf.save(`Evaluacion_Ergonomica_${nombreEmpleado.replace(/ /g, '_')}.pdf`);
+            }).catch(err => {
+                console.error("Error al generar el PDF:", err);
+                alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
+            });
+        });
+    </script>
+</body>
+</html>
+

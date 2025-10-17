@@ -16,7 +16,6 @@
             filter: blur(8px) brightness(0.8);
             transition: filter 0.3s ease-in-out;
             pointer-events: none; /* Bloquea clics y selección */
-            user-select: none; /* Evita selección de texto */
         }
 
         /* Contenedor del overlay (inicialmente oculto) */
@@ -27,7 +26,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(10, 25, 47, 0.7);
-            backdrop-filter: blur(2px); /* Efecto cristalino adicional */
             z-index: 1000;
 
             display: flex;

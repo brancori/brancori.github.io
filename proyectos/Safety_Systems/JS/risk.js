@@ -10,15 +10,12 @@ function addNewStep(button) {
     const template = container.querySelector('.risk-step');
     if (!template) return;
     
-    // Capturar los valores de los selects antes de clonar
     const potInicial = template.querySelector('[name="potencial_inicial"]');
     const potFinal = template.querySelector('[name="potencial_final"]');
     
-    // Obtener los valores y clases correspondientes
     const potInicialValue = potInicial ? potInicial.value : '';
     const potFinalValue = potFinal ? potFinal.value : '';
     
-    // Determinar las clases de color basadas en los valores
     const getColorClass = (value) => {
         if (value === '1') return 'select-green';
         if (value === '2') return 'select-yellow';
@@ -29,15 +26,12 @@ function addNewStep(button) {
     const potInicialClass = getColorClass(potInicialValue);
     const potFinalClass = getColorClass(potFinalValue);
     
-    // Clonar el template
     const clone = template.cloneNode(true);
     
-    // Convertir los elementos a texto plano
     clone.querySelectorAll('input, textarea, select').forEach(el => {
         const span = document.createElement('span');
         span.className = 'plain';
         if (el.tagName.toLowerCase() === 'select') {
-            // Para los selects, usar el valor capturado
             if (el.name === 'potencial_inicial') {
                 span.textContent = potInicialValue || 'N/D';
                 if (potInicialClass) span.classList.add(potInicialClass);
@@ -51,12 +45,10 @@ function addNewStep(button) {
         el.parentNode.replaceChild(span, el);
     });
     
-    // Simplificar el encabezado para mostrar solo el número de paso
     const headerDiv = document.createElement('div');
     headerDiv.className = 'risk-step-header';
     headerDiv.innerHTML = `<strong>Paso ${riskStepCounter}</strong>`;
     
-    // Agregar los botones de control
     const btnContainer = document.createElement('div');
     btnContainer.className = 'risk-step-buttons';
     btnContainer.innerHTML = `
@@ -67,7 +59,6 @@ function addNewStep(button) {
     clone.prepend(headerDiv);
     clone.appendChild(btnContainer);
     
-    // Almacenar los valores en el dataset para referencia futura
     clone.dataset.potencialInicial = potInicialValue;
     clone.dataset.potencialFinal = potFinalValue;
     clone.dataset.potencialInicialClass = potInicialClass;
@@ -83,39 +74,31 @@ function addNewStep(button) {
 
 function editStep(button) {
     const riskStep = button.closest('.risk-step');
-    // Toggle: if in edit mode, then save changes; otherwise, enable editing.
     if (button.textContent.trim() === "Editar") {
-        // Convert each span to an input for editing.
         riskStep.querySelectorAll('span.plain').forEach(span => {
             const input = document.createElement('input');
             input.value = span.textContent;
             span.parentNode.replaceChild(input, span);
         });
-        // Change button text to "Guardar"
         button.textContent = "Guardar";
-        // Optionally, disable the delete button during editing.
         const deleteBtn = riskStep.querySelector('.delete-step-btn');
         if (deleteBtn) deleteBtn.disabled = true;
     } else {
-        // Already in edit mode: save changes.
         saveStep(button);
     }
 }
 
 function saveStep(button) {
     const riskStep = button.closest('.risk-step');
-    // Convert inputs back to spans with updated values.
     riskStep.querySelectorAll('input').forEach(input => {
         const span = document.createElement('span');
         span.className = 'plain';
         span.textContent = input.value;
         input.parentNode.replaceChild(span, input);
     });
-    // Revert the button text to "Editar" and re-enable delete button.
     button.textContent = "Editar";
     const deleteBtn = riskStep.querySelector('.delete-step-btn');
     if (deleteBtn) deleteBtn.disabled = false;
-    // Optionally update the header if needed.
 }
 
 function deleteStep(button) {

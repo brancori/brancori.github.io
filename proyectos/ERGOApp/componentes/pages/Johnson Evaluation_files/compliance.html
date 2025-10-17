@@ -4,33 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Cumplimiento - ERGOApp</title>
-    <!-- Reutilizamos los estilos globales de la aplicación -->
+    
+    <!-- PASO 1: Carga de scripts y estilos globales -->
+    <!-- globals.js establece la configuración (ERGOConfig) -->
     <script src="../../globals.js"></script>
+    
+    <!-- =================================================================== -->
+    <!-- CORRECCIÓN CRÍTICA: Añadir la librería principal de Supabase desde CDN -->
+    <!-- Esta línea es esencial. Proporciona el objeto global 'supabase' que -->
+    <!-- 'auth-client.js' y 'supabase-config.js' necesitan para funcionar. -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- =================================================================== -->
+
     <link rel="stylesheet" href="../../globals.css">
-    <script>
-        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
-        // PASO 3: INICIALIZACIÓN ÚNICA Y CORRECTA
-        let supabase; // Declara la variable en un ámbito más amplio.
 
-        if (window.ERGOConfig && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
-            
-            const SUPABASE_URL = window.ERGOConfig.SUPABASE_URL;
-            const SUPABASE_ANON_KEY = window.ERGOConfig.SUPABASE_ANON_KEY;
-
-            // Inicializa el cliente y ASÍGNALO a la variable 'supabase'.
-            // Esto sobrescribe el objeto global del CDN con la instancia real del cliente.
-            // Es una práctica común y simplifica el código posterior.
-
-            if (supabase) {
-                console.log('Cliente de Supabase inicializado exitosamente desde ERGOConfig.');
-            } else {
-                console.error('Falló la inicialización del cliente de Supabase.');
-            }
-
-        } else {
-            console.error('Error: El objeto de configuración `window.ERGOConfig` o las claves de Supabase no se encontraron.');
-        }
-    </script>
     <style>
         /* Estilos específicos para el Módulo de Compliance */
         body {
@@ -60,304 +47,189 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             text-align: center;
-            justify-content: center;
-            align-items: center;
         }
 
-        .indicator-card {
-            background-color: var(--gray-100);
+        .indicator {
             padding: 1.5rem;
             border-radius: var(--border-radius-md);
-            border-left: 5px solid var(--primary-500);
+            background-color: var(--gray-100);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .indicator-card .value {
+        .indicator:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        .indicator .value {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--primary-600);
+            display: block;
         }
-
-        .indicator-card .label {
+        .indicator .label {
             font-size: 0.9rem;
             color: var(--gray-600);
-            margin-top: 0.5rem;
-        }
-        
-        #compliance-progress-bar {
-            width: 100%;
-            background-color: var(--gray-200);
-            border-radius: 8px;
-            overflow: hidden;
-            height: 10px;
-            margin-top: 8px;
-        }
-
-        #compliance-progress {
-            height: 100%;
-            background-color: var(--green-500);
-            width: 0%;
-            transition: width 0.5s ease-in-out;
-        }
-
-        /* Filtros */
-        .compliance-filters {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            background-color: transparent;
-            border: 2px solid var(--gray-300);
-            color: var(--gray-600);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover {
-            background-color: var(--primary-50);
-            border-color: var(--primary-500);
-            color: var(--primary-600);
-        }
-
-        .filter-btn.active {
-            background-color: var(--primary-500);
-            border-color: var(--primary-500);
-            color: #fff;
-        }
-
-        /* Lista de Cumplimiento */
-        .compliance-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .compliance-item {
-            background-color: #fff;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-md);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            transition: all 0.3s ease;
-            border-left: 5px solid var(--gray-300);
-        }
-        
-        /* === NUEVOS ESTILOS DE ESTADO === */
-        .compliance-item.status-cumple {
-            background-color: var(--green-50);
-            border-left-color: var(--green-500);
-        }
-        .compliance-item.status-nocumple {
-            border-color: var(--red-500);
-            border-left-width: 5px;
-        }
-        .compliance-item.status-na {
-            background-color: var(--gray-100);
-            opacity: 0.7;
-            pointer-events: none; /* Deshabilita interacciones con el item */
-        }
-        .compliance-item.status-na .item-actions button {
-            pointer-events: all; /* Pero permite click en los botones */
-        }
-        
-        /* === NUEVO: SECCIÓN DE EVIDENCIA DESPLEGABLE === */
-        .compliance-item[data-status="cumple"], .compliance-item[data-status="no-cumple"] {
-            cursor: pointer;
-        }
-
-        .item-evidence {
-            display: none; /* Oculto por defecto */
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: var(--gray-100);
-            border-radius: var(--border-radius-md);
-            border-top: 2px solid var(--gray-200);
-        }
-
-        .item-evidence.visible {
-            display: block; /* Se muestra al hacer clic */
-        }
-
-        .item-evidence h4 {
-            margin: 0 0 0.75rem 0;
-            color: var(--gray-700);
-            font-size: 0.9rem;
-            font-weight: 700;
             text-transform: uppercase;
         }
+        #total-value { color: var(--primary-600); }
+        #completed-value { color: var(--green-600); }
+        #pending-value { color: var(--yellow-600); }
+        #not-applicable-value { color: var(--gray-500); }
 
-        .item-evidence p {
-            margin: 0.5rem 0;
+        /* Lista de Requerimientos */
+        .compliance-list .item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            margin-bottom: 1rem;
+            background-color: #fff;
+        }
+
+        .item-content h3 {
+            margin: 0 0 0.5rem;
+            color: var(--gray-800);
+            font-size: 1.1rem;
+        }
+        .item-content p {
+            margin: 0;
             color: var(--gray-600);
+            font-size: 0.9rem;
         }
-
-        .btn-edit {
-            background-color: var(--primary-100);
-            color: var(--primary-700);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius-sm);
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: background-color 0.2s;
-        }
-        .btn-edit:hover {
-            background-color: var(--primary-300);
-        }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-header h3 { margin: 0; color: var(--gray-800); font-size: 1.2rem; flex-grow: 1; }
-        .item-category-badge { background-color: var(--primary-100); color: var(--primary-700); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; flex-shrink: 0; margin-left: 1rem; }
-        .item-content { color: var(--gray-600); padding-left: 1rem; border-left: 3px solid var(--gray-200); }
-
-        /* === CONTENEDOR DE ACCIONES CENTRADO === */
         .item-actions {
             display: flex;
-            justify-content: center; /* Centrado */
-            align-items: center;
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
-        .status-btn { padding: 0.6rem 1.2rem; border-radius: var(--border-radius-sm); cursor: pointer; font-weight: 600; border: none; transition: all 0.2s ease; }
-        .status-btn.cumple { background-color: var(--green-100); color: var(--green-700); }
-        .status-btn.cumple:hover { background-color: var(--green-200); }
-        .status-btn.no-cumplido { background-color: var(--red-100); color: var(--red-700); }
-        .status-btn.no-cumplido:hover { background-color: var(--red-200); }
-        .status-btn.na { background-color: var(--gray-200); color: var(--gray-600); }
-        .status-btn.na:hover { background-color: var(--gray-300); }
-
-        /* Estilo para el botón activo */
-        .compliance-item.status-cumple .status-btn.cumple,
-        .compliance-item.status-nocumple .status-btn.no-cumplido,
-        .compliance-item.status-na .status-btn.na {
-            transform: scale(1.05);
-            font-weight: 700;
+        .status-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
         }
+        .btn-completado { background-color: var(--green-100); color: var(--green-800); }
+        .btn-completado:hover { background-color: var(--green-200); }
+        .btn-pendiente { background-color: var(--yellow-100); color: var(--yellow-800); }
+        .btn-pendiente:hover { background-color: var(--yellow-200); }
+        .btn-no-aplica { background-color: var(--gray-200); color: var(--gray-700); }
+        .btn-no-aplica:hover { background-color: var(--gray-300); }
 
-        /* Modal (sin cambios) */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; }
-        .modal-content { background-color: #fefefe; margin: auto; padding: 2rem; border: 1px solid #888; width: 90%; max-width: 600px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-xl); animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem; margin-bottom: 1rem; }
-        .modal-header h2 { margin: 0; color: var(--gray-800); }
-        .close-btn { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close-btn:hover, .close-btn:focus { color: black; }
-        .modal-body label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700); }
-        .modal-body textarea, .modal-body input { width: 100%; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: var(--border-radius-md); font-size: 1rem; margin-bottom: 1rem; }
-        .file-drop-area { border: 2px dashed var(--gray-300); border-radius: var(--border-radius-md); padding: 2rem; text-align: center; color: var(--gray-500); cursor: pointer; transition: all 0.2s ease; }
-        .file-drop-area:hover, .file-drop-area.dragover { border-color: var(--primary-500); background-color: var(--primary-50); }
-        #file-name { margin-top: 1rem; font-style: italic; color: var(--gray-600); }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
-        .modal-btn { padding: 0.75rem 1.5rem; border-radius: var(--border-radius-sm); font-weight: 600; cursor: pointer; border: none; }
-        .btn-save { background-color: var(--primary-500); color: white; }
-        .btn-save:hover { background-color: var(--primary-600); }
-        .btn-cancel { background-color: var(--gray-200); color: var(--gray-700); }
-        .btn-cancel:hover { background-color: var(--gray-300); }
-        
-        /* === NUEVO: ESTILOS PARA NOTIFICACIÓN (TOAST) === */
-        #toast-container {
+        /* Modal para Evidencias */
+        .modal {
+            display: none;
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
         }
-
-        .toast {
+        .modal-content {
             background-color: #fff;
-            color: var(--gray-700);
-            padding: 1.5rem;
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-xl);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 { margin: 0; }
+        .close-btn { font-size: 1.5rem; cursor: pointer; border: none; background: none; }
+        .modal-body textarea {
+            width: 100%;
+            min-height: 100px;
+            margin-bottom: 1rem;
+        }
+        .file-upload-wrapper {
+            border: 2px dashed var(--gray-300);
             border-radius: var(--border-radius-md);
-            box-shadow: var(--shadow-lg);
-            border-left: 5px solid var(--primary-500);
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            min-width: 350px;
-            max-width: 400px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        .file-upload-wrapper:hover {
+            border-color: var(--primary-500);
+        }
+        #file-name {
+            font-style: italic;
+            color: var(--gray-600);
+        }
+        .modal-footer {
+            text-align: right;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
+        /* Estilo para el loader */
+        #loader {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--primary-600);
         }
-        
-        .toast h4 { margin: 0 0 0.5rem 0; color: var(--gray-800); }
-        .toast p { margin: 0.25rem 0; font-size: 0.9rem; }
-        .toast strong { color: var(--primary-600); }
-
     </style>
 </head>
 <body>
-    <div class="compliance-container">
-        <h1>Compliance</h1>
+    <header-component></header-component>
 
-        <!-- Indicadores -->
-        <div id="compliance-indicators" class="compliance-indicators">
-             <div class="indicator-card">
-                <div id="total-items" class="value">0</div>
-                <div class="label">Total de Puntos</div>
+    <main class="compliance-container">
+        <h1>Módulo de Cumplimiento Normativo</h1>
+
+        <div class="compliance-indicators">
+            <div class="indicator">
+                <span class="value" id="total-value">-</span>
+                <span class="label">Total Requerimientos</span>
             </div>
-            <div class="indicator-card">
-                <div id="completed-items" class="value">0</div>
-                <div class="label">Cumplidos</div>
+            <div class="indicator">
+                <span class="value" id="completed-value">-</span>
+                <span class="label">Completados</span>
             </div>
-            <div class="indicator-card">
-                <div id="non-completed-items" class="value">0</div>
-                <div class="label">No Cumplidos</div>
+            <div class="indicator">
+                <span class="value" id="pending-value">-</span>
+                <span class="label">Pendientes</span>
             </div>
-            <div class="indicator-card">
-                <div id="na-items" class="value">0</div>
-                <div class="label">No Aplican</div>
-            </div>
-             <div class="indicator-card" style="grid-column: 1 / -1;">
-                <div id="compliance-percentage" class="value">0%</div>
-                <div class="label">Porcentaje de Cumplimiento</div>
-                <div id="compliance-progress-bar"><div id="compliance-progress"></div></div>
+            <div class="indicator">
+                <span class="value" id="not-applicable-value">-</span>
+                <span class="label">No Aplica</span>
             </div>
         </div>
-
-        <!-- Filtros -->
-        <div id="compliance-filters" class="compliance-filters">
-            <button class="filter-btn active" data-filter="todos">Todos</button>
-            <button class="filter-btn" data-filter="NOM's">NOM's</button>
-            <button class="filter-btn" data-filter="LFT">LFT</button>
-            <button class="filter-btn" data-filter="JNJ">JNJ</button>
+        
+        <div id="loader">Cargando datos de cumplimiento...</div>
+        <div class="compliance-list" id="compliance-list" style="display: none;">
+            <!-- Los items de cumplimiento se insertarán aquí dinámicamente -->
         </div>
+    </main>
 
-        <!-- Lista de Cumplimiento -->
-        <ul id="compliance-list" class="compliance-list"></ul>
-    </div>
-
-    <!-- Modal para 'Cumple' y 'No Cumplido' -->
-    <div id="compliance-modal" class="modal">
+    <!-- Modal para Cargar Evidencia -->
+    <div id="evidence-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">Registrar Evidencia</h2>
+                <h2 id="modal-title">Cargar Evidencia</h2>
                 <span class="close-btn">&times;</span>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="current-item-id">
-                <label for="evidence-text">Comentarios / Justificación:</label>
-                <textarea id="evidence-text" rows="5" placeholder="Añade aquí los detalles..."></textarea>
-                <div id="file-upload-section">
-                    <label>Archivo de Evidencia (opcional):</label>
-                    <input type="file" id="evidence-file-input" hidden accept="image/*,application/pdf">
-                    <div id="file-drop-area" class="file-drop-area">Arrastra y suelta un archivo aquí o haz clic para seleccionar.</div>
-                    <div id="file-name"></div>
+                <label for="evidence-text">Comentarios:</label>
+                <textarea id="evidence-text" class="form-input" placeholder="Añade un comentario sobre la evidencia..."></textarea>
+                
+                <label for="file-input">Subir Archivo:</label>
+                <div class="file-upload-wrapper" onclick="document.getElementById('file-input').click();">
+                    <p>Haz clic aquí para seleccionar un archivo</p>
+                    <span id="file-name">Ningún archivo seleccionado</span>
                 </div>
+                <input type="file" id="file-input" style="display: none;">
             </div>
             <div class="modal-footer">
                 <button class="modal-btn btn-cancel">Cancelar</button>
@@ -366,327 +238,168 @@
         </div>
     </div>
     
-    <!-- Contenedor para las notificaciones -->
+    <!-- Contenedor para las notificaciones (toast) -->
     <div id="toast-container"></div>
+
+    <!-- PASO 2: Carga de scripts de dependencias -->
+    <!-- Se cargan al final para no bloquear el renderizado del HTML. -->
+    <!-- El orden es crucial: la librería de Supabase ya se cargó en el <head>. -->
     <script src="../../supabase-config.js"></script>
+    <script src="../../auth-client.js"></script>
+    <script src="../../header-component.js"></script>
 
-<script type="module">
-    // PASO 1: Importa la función 'createClient' desde un CDN compatible con módulos.
-    import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js'; // [1, 2]
-
-    // PASO 2: Declara la variable del cliente de Supabase.
-    let supabase;
-
-    // PASO 3: Inicializa el cliente de forma segura.
-    if (window.ERGOConfig && window.ERGOConfig.SUPABASE_URL && window.ERGOConfig.SUPABASE_ANON_KEY) {
-        const SUPABASE_URL = window.ERGOConfig.SUPABASE_URL;
-        const SUPABASE_ANON_KEY = window.ERGOConfig.SUPABASE_ANON_KEY;
-
-        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // [3]
-        console.log('✅ Cliente de Supabase inicializado correctamente en el módulo.');
-
-    } else {
-        console.error('❌ Error Crítico: `window.ERGOConfig` o las claves de Supabase no se encontraron. Asegúrate de que `globals.js` se cargue ANTES de este script.');
-    }
-
-    // PASO 4: Tu objeto de aplicación.
-    const ComplianceApp = {
+    <!-- PASO 3: Lógica principal de la página de Cumplimiento -->
+    <script>
+    // Este objeto encapsula toda la lógica de la página de cumplimiento.
+    const complianceApp = {
+        supabase: null,
         data: [],
-        currentFilter: 'todos',
-        elements: { /*... se definen en init... */ },
+        elements: {},
 
         async init() {
-            if (!supabase) {
-                console.error("❌ La aplicación no puede iniciar porque Supabase no está inicializado.");
-                return;
-            }
-            
+            this.supabase = window.dataClient.supabase;
             this.cacheDOMElements();
-            
+            this.addEventListeners();
+            await this.fetchData();
+        },
+
+        cacheDOMElements() {
+            this.elements = {
+                list: document.getElementById('compliance-list'),
+                loader: document.getElementById('loader'),
+                totalValue: document.getElementById('total-value'),
+                completedValue: document.getElementById('completed-value'),
+                pendingValue: document.getElementById('pending-value'),
+                notApplicableValue: document.getElementById('not-applicable-value'),
+                modal: document.getElementById('evidence-modal'),
+                modalTitle: document.getElementById('modal-title'),
+                closeBtn: document.querySelector('.close-btn'),
+                cancelBtn: document.querySelector('.btn-cancel'),
+                saveBtn: document.querySelector('.btn-save'),
+                evidenceText: document.getElementById('evidence-text'),
+                fileInput: document.getElementById('file-input'),
+                fileName: document.getElementById('file-name'),
+                currentItemId: document.getElementById('current-item-id')
+            };
+        },
+
+        addEventListeners() {
+            this.elements.list.addEventListener('click', (e) => {
+                if (e.target.classList.contains('status-btn')) {
+                    const id = parseInt(e.target.dataset.id);
+                    const type = e.target.dataset.type;
+                    this.handleStatusClick(id, type);
+                }
+            });
+            this.elements.closeBtn.onclick = () => this.closeModal();
+            this.elements.cancelBtn.onclick = () => this.closeModal();
+            this.elements.saveBtn.onclick = () => this.saveEvidence();
+            this.elements.fileInput.onchange = (e) => {
+                this.elements.fileName.textContent = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
+            };
+        },
+        
+        async fetchData() {
+            this.elements.loader.style.display = 'block';
+            this.elements.list.style.display = 'none';
+
             try {
-                const { data, error } = await supabase
-                  .from('compliance_evaluations')
-                  .select(`
+                const { data, error } = await this.supabase
+                    .from('compliance_evaluations')
+                    .select(`
                         id,
                         status,
                         comment,
                         evidence_file_path,
                         action_plan,
                         due_date,
-                        requirement:compliance_requirements (
-                            id,
-                            name,
-                            content,
-                            category
-                        )
+                        requirement:compliance_requirements (id, name, content, category)
                     `)
-                  .order('id');
+                    .order('id', { ascending: true });
 
-                if (error) throw error;
-
-                this.data = data.map(ev => ({
-                    id: ev.requirement.id,
-                    nombre: ev.requirement.name,
-                    contenido: ev.requirement.content,
-                    categoria: ev.requirement.category,
-                    estado: ev.status,
-                    evidenciaTexto: ev.comment || '', // CORREGIDO
-                    evidenciaArchivo: ev.evidence_file_path || null, // CORREGIDO
-                    evaluation_id: ev.id 
-                }));
+                if (error) {
+                    throw error;
+                }
                 
-                this.addEventListeners();
+                this.data = data.map(item => ({
+                    evaluation_id: item.id,
+                    status: item.status,
+                    ...item.requirement
+                }));
+
                 this.render();
 
             } catch (error) {
                 console.error('Error al cargar los datos de cumplimiento:', error);
+                this.elements.loader.textContent = 'Error al cargar los datos. Por favor, intente de nuevo.';
+            } finally {
+                this.elements.loader.style.display = 'none';
+                this.elements.list.style.display = 'block';
             }
-        },
-
-        cacheDOMElements() {
-            this.elements = {
-                list: document.getElementById('compliance-list'),
-                indicators: { total: document.getElementById('total-items'), completed: document.getElementById('completed-items'), nonCompleted: document.getElementById('non-completed-items'), na: document.getElementById('na-items'), percentage: document.getElementById('compliance-percentage'), progress: document.getElementById('compliance-progress'), },
-                filters: document.getElementById('compliance-filters'),
-                modal: document.getElementById('compliance-modal'),
-                modalTitle: document.getElementById('modal-title'),
-                closeBtn: document.querySelector('.close-btn'),
-                cancelBtn: document.querySelector('.modal-btn.btn-cancel'),
-                saveBtn: document.querySelector('.modal-btn.btn-save'),
-                currentItemId: document.getElementById('current-item-id'),
-                evidenceText: document.getElementById('evidence-text'),
-                fileUploadSection: document.getElementById('file-upload-section'),
-                fileDropArea: document.getElementById('file-drop-area'),
-                fileInput: document.getElementById('evidence-file-input'),
-                fileName: document.getElementById('file-name'),
-                toastContainer: document.getElementById('toast-container')
-            };
-        },
-
-        addEventListeners() {
-            this.elements.filters.addEventListener('click', e => {
-                if (e.target.matches('.filter-btn')) {
-                    this.currentFilter = e.target.dataset.filter;
-                    this.elements.filters.querySelector('.active').classList.remove('active');
-                    e.target.classList.add('active');
-                    this.renderList();
-                }
-            });
-            
-            this.elements.list.addEventListener('click', e => {
-                const target = e.target;
-                
-                const statusButton = target.closest('.status-btn');
-                if (statusButton) {
-                    const id = parseInt(statusButton.dataset.id);
-                    const action = statusButton.dataset.action;
-                    const item = this.data.find(item => item.id === id);
-                    if (action === 'na') {
-                        this.updateStatus(item.evaluation_id, 'na');
-                    } else {
-                        this.openModal(id, action);
-                    }
-                    return;
-                }
-                
-                const editButton = target.closest('.btn-edit');
-                if (editButton) {
-                    const id = parseInt(editButton.dataset.id);
-                    const action = editButton.dataset.action;
-                    this.openModal(id, action);
-                    return;
-                }
-
-                const complianceItem = target.closest('.compliance-item[data-status="cumple"],.compliance-item[data-status="no-cumple"]');
-                if (complianceItem) {
-                    const evidenceDiv = complianceItem.querySelector('.item-evidence');
-                    if (evidenceDiv) {
-                        evidenceDiv.classList.toggle('visible');
-                    }
-                }
-            });
-
-            this.elements.closeBtn.addEventListener('click', () => this.closeModal());
-            this.elements.cancelBtn.addEventListener('click', () => this.closeModal());
-            this.elements.modal.addEventListener('click', e => { if (e.target === this.elements.modal) this.closeModal(); });
-            this.elements.saveBtn.addEventListener('click', () => this.saveEvidence());
-            
-            this.elements.fileDropArea.addEventListener('click', () => this.elements.fileInput.click());
-            this.elements.fileInput.addEventListener('change', e => this.handleFileSelect(e.target.files));
-            
-            const dropArea = this.elements.fileDropArea;
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, this.preventDefaults, false));
-            ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false));
-            ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false));
-            dropArea.addEventListener('drop', this.handleDrop.bind(this), false);
-        },
-        
-        preventDefaults(e) { e.preventDefault(); e.stopPropagation(); },
-        handleDrop(e) { this.handleFileSelect(e.dataTransfer.files); },
-        handleFileSelect(files) {
-             if (files.length > 0) {
-                 const file = files[0]; // CORREGIDO: Tomar el primer archivo
-                 this.elements.fileName.textContent = `Archivo seleccionado: ${file.name}`;
-                 this.elements.fileInput.files = files;
-             }
         },
 
         render() {
-            this.renderList();
-            this.updateIndicators();
-        },
-
-        renderList() {
             this.elements.list.innerHTML = '';
-            const filteredData = this.data.filter(item => this.currentFilter === 'todos' || item.categoria === this.currentFilter); // CORREGIDO
-
-            if (filteredData.length === 0) {
-                this.elements.list.innerHTML = `<p style="text-align:center; color: var(--gray-500);">No hay elementos para este filtro.</p>`;
+            if (this.data.length === 0) {
+                this.elements.list.innerHTML = '<p>No hay requerimientos de cumplimiento para mostrar.</p>';
                 return;
             }
-
-            filteredData.forEach(item => {
-                const li = document.createElement('li');
-                const statusClass = `status-${item.estado.replace(/ /g, '-')}`;
-                li.className = `compliance-item ${statusClass}`;
-                li.dataset.status = item.estado;
-
-                let evidenceHTML = '';
-                if (item.estado === 'cumple' || item.estado === 'no-cumple') { // CORREGIDO
-                    const evidenceText = item.evidenciaTexto? item.evidenciaTexto.replace(/\n/g, '<br>') : '<em>No se agregaron comentarios.</em>';
-                    const evidenceFile = item.evidenciaArchivo? item.evidenciaArchivo.split('-').pop() : '<em>No se adjuntó archivo.</em>';
-
-                    evidenceHTML = `
-                    <div class="item-evidence">
-                        <h4>Evidencia Guardada</h4>
-                        <p><strong>Comentarios:</strong><br>${evidenceText}</p>
-                        <p><strong>Archivo:</strong> ${evidenceFile}</p>
-                        <button class="btn-edit" data-id="${item.id}" data-action="${item.estado}">✏️ Editar</button>
+            this.data.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'item';
+                itemEl.innerHTML = `
+                    <div class="item-content">
+                        <h3>${item.name}</h3>
+                        <p>${item.content}</p>
                     </div>
-                    `;
-                }
-
-                li.innerHTML = `
-                    <div class="item-header">
-                        <h3>${item.nombre}</h3>
-                        <span class="item-category-badge">${item.categoria}</span>
-                    </div>
-                    <div class="item-content"><p>${item.contenido}</p></div>
-                    ${evidenceHTML}
                     <div class="item-actions">
-                        <button class="status-btn cumple" data-id="${item.id}" data-action="cumple">Cumple</button>
-                        <button class="status-btn no-cumplido" data-id="${item.id}" data-action="no-cumplido">No Cumplido</button>
-                        <button class="status-btn na" data-id="${item.id}" data-action="na">N/A</button>
-                    </div>`;
-                this.elements.list.appendChild(li);
+                        <button class="status-btn btn-completado" data-id="${item.evaluation_id}" data-type="completado">Completado</button>
+                        <button class="status-btn btn-pendiente" data-id="${item.evaluation_id}" data-type="pendiente">Pendiente</button>
+                        <button class="status-btn btn-no-aplica" data-id="${item.evaluation_id}" data-type="no_aplica">No Aplica</button>
+                    </div>
+                `;
+                this.elements.list.appendChild(itemEl);
             });
+            this.updateIndicators();
         },
 
         updateIndicators() {
             const total = this.data.length;
-            const cumplidos = this.data.filter(i => i.estado === 'cumple').length;
-            const noCumplidos = this.data.filter(i => i.estado === 'no-cumple').length;
-            const na = this.data.filter(i => i.estado === 'na').length;
-            const totalEvaluables = total - na;
-            const percentage = totalEvaluables > 0? ((cumplidos / totalEvaluables) * 100).toFixed(0) : 0;
+            const completed = this.data.filter(item => item.status === 'completado').length;
+            const pending = this.data.filter(item => item.status === 'pendiente').length;
+            const notApplicable = this.data.filter(item => item.status === 'no_aplica').length;
 
-            this.elements.indicators.total.textContent = total;
-            this.elements.indicators.completed.textContent = cumplidos;
-            this.elements.indicators.nonCompleted.textContent = noCumplidos;
-            this.elements.indicators.na.textContent = na;
-            this.elements.indicators.percentage.textContent = `${percentage}%`;
-            this.elements.indicators.progress.style.width = `${percentage}%`;
-        },
-        
-        async updateStatus(evaluation_id, newStatus, evidence = {}) {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error('Usuario no autenticado.');
-
-                let evidencePath = null;
-                
-                if (evidence.archivo) {
-                    const filePath = `public/${user.id}/${evaluation_id}-${Date.now()}-${evidence.archivo.name}`;
-                    const { error: uploadError } = await supabase.storage
-                      .from('compliance-evidence')
-                      .upload(filePath, evidence.archivo);
-
-                    if (uploadError) throw uploadError;
-                    evidencePath = filePath;
-                }
-
-                const updates = {
-                    status: newStatus,
-                    comment: evidence.texto,
-                    updated_by: user.id,
-                    updated_at: new Date().toISOString(),
-                  ...(evidencePath && { evidence_file_path: evidencePath }),
-                };
-
-                const { data, error } = await supabase
-                  .from('compliance_evaluations')
-                  .update(updates)
-                  .eq('id', evaluation_id)
-                  .select()
-                  .single();
-
-                if (error) throw error;
-                
-                const itemIndex = this.data.findIndex(i => i.evaluation_id === evaluation_id);
-                if (itemIndex > -1) {
-                    this.data[itemIndex].estado = data.status;
-                    this.data[itemIndex].evidenciaTexto = data.comment;
-                    this.data[itemIndex].evidenciaArchivo = data.evidence_file_path;
-                    this.showConfirmationToast(this.data[itemIndex]);
-                }
-
-                this.render();
-
-            } catch (error) {
-                console.error('Error al guardar el estado:', error);
-                alert(`Error: ${error.message}`);
-            }
+            this.elements.totalValue.textContent = total;
+            this.elements.completedValue.textContent = completed;
+            this.elements.pendingValue.textContent = pending;
+            this.elements.notApplicableValue.textContent = notApplicable;
         },
 
-        showConfirmationToast(item) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            
-            let evidenceHTML = '';
-            if (item.evidenciaTexto) {
-                evidenceHTML += `<p><strong>Comentario:</strong> ${item.evidenciaTexto}</p>`;
-            }
-            if (item.evidenciaArchivo) {
-                const fileName = item.evidenciaArchivo.split('-').pop();
-                evidenceHTML += `<p><strong>Archivo:</strong> ${fileName}</p>`;
-            }
-
-            toast.innerHTML = `
-                <h4>✅ Estado Guardado</h4>
-                <p><strong>Requisito:</strong> ${item.nombre}</p>
-                <p><strong>Nuevo Estado:</strong> ${item.estado.toUpperCase()}</p>
-                ${evidenceHTML}
-            `;
-            
-            this.elements.toastContainer.appendChild(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 10);
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-                toast.addEventListener('transitionend', () => toast.remove());
-            }, 5000);
-        },
-        
-        openModal(id, type) {
-            const item = this.data.find(i => i.id === id);
+        handleStatusClick(id, type) {
+            const item = this.data.find(i => i.evaluation_id === id);
             if (!item) return;
-            this.elements.currentItemId.value = id;
-            this.elements.modalTitle.textContent = type === 'cumple'? `Evidencia de Cumplimiento: ${item.nombre}` : `Justificación de No Cumplimiento: ${item.nombre}`;
-            this.elements.evidenceText.value = item.evidenciaTexto || ''; // CORREGIDO
-            this.elements.fileUploadSection.style.display = (type === 'cumple')? 'block' : 'none';
-            const fileName = item.evidenciaArchivo? `Archivo actual: ${item.evidenciaArchivo.split('-').pop()}` : '';
-            this.elements.fileName.textContent = fileName;
+
+            if (type === 'no_aplica') {
+                this.updateStatus(id, type, {});
+            } else {
+                this.openModal(id, type);
+            }
+        },
+
+        async updateStatus(id, status, evidence) {
+            console.log(`Actualizando ID ${id} a estado ${status} con evidencia:`, evidence);
+            
+            const item = this.data.find(i => i.evaluation_id === id);
+            if(item) {
+                item.status = status;
+                this.render();
+            }
+        },
+
+        openModal(itemId, type) {
+            const item = this.data.find(i => i.evaluation_id === itemId);
+            this.elements.currentItemId.value = itemId;
+            this.elements.modalTitle.textContent = `Evidencia para: ${item.name}`;
             this.elements.modal.dataset.actionType = type;
             this.elements.modal.style.display = 'flex';
         },
@@ -695,18 +408,18 @@
             this.elements.modal.style.display = 'none';
             this.elements.evidenceText.value = '';
             this.elements.fileInput.value = '';
-            this.elements.fileName.textContent = '';
+            this.elements.fileName.textContent = 'Ningún archivo seleccionado';
             this.elements.currentItemId.value = '';
         },
 
         async saveEvidence() {
             const requirementId = parseInt(this.elements.currentItemId.value);
-            const item = this.data.find(i => i.id === requirementId);
+            const item = this.data.find(i => i.evaluation_id === requirementId);
             if (!item) return;
 
             const status = this.elements.modal.dataset.actionType;
             const texto = this.elements.evidenceText.value;
-            const archivoInput = this.elements.fileInput.files[0]; // CORREGIDO: Tomar el primer archivo
+            const archivoInput = this.elements.fileInput.files[0];
 
             this.elements.saveBtn.textContent = 'Guardando...';
             this.elements.saveBtn.disabled = true;
@@ -719,11 +432,33 @@
         }
     };
 
-    // PASO 5: Inicia la aplicación cuando el DOM esté listo.
-    document.addEventListener('DOMContentLoaded', () => {
-        ComplianceApp.init();
+    // PASO 4: Punto de entrada de la aplicación.
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            // Guardián de Autenticación:
+            if (!window.authClient) {
+                throw new Error("El cliente de autenticación (authClient) no se ha cargado. Verifica el orden de los scripts.");
+            }
+            
+            const { data: { session } } = await window.authClient.supabase.auth.getSession();
+
+            if (!session) {
+                console.warn('Usuario no autenticado. Redirigiendo a la página de inicio de sesión...');
+                window.location.href = '../../index.html'; 
+            } else {
+                console.log('Sesión de usuario activa. Inicializando módulo de cumplimiento.');
+                complianceApp.init();
+            }
+        } catch (error) {
+            console.error("Error crítico durante la inicialización de la página de cumplimiento:", error);
+            document.body.innerHTML = `<div style="text-align: center; padding: 50px;">
+                                            <h1>Error al Cargar la Página</h1>
+                                            <p>No se pudo inicializar el módulo. Por favor, contacte a soporte.</p>
+                                            <p><i>${error.message}</i></p>
+                                        </div>`;
+        }
     });
-</script>
+    </script>
 </body>
 </html>
 

@@ -1,107 +1,224 @@
+/* =============================================
+   Hoja de Estilos para Análisis de Riesgo (risk.css)
+   Versión Mejorada por UX/UI Expert
+   ============================================= */
+
+/* --- 1. Variables y Estilos Globales --- */
 :root {
-    --login-bg-primary: #0a192f;
-    --login-bg-secondary: #112240;
-    --login-accent: #64ffda;
-    --text: #ffffff;
-    --login-error: #ff6b6b;
-    --login-input-bg: rgba(255, 255, 255, 0.05);
-    --login-shadow: rgba(0, 0, 0, 0.3);
-    --login-glass: rgba(255, 255, 255, 0.1);
+    --bg-primary: #0a192f;
+    --bg-secondary: #112240;
+    --accent-primary: #64ffda;
+    --accent-secondary: #8892b0;
+    --text-primary: #ccd6f6;
+    --text-secondary: #a8b2d1;
+    --border-color: #233554;
+    --error: #ff6b6b;
+    --success: #28a745;
+    --warning: #ffc107;
+    --shadow: rgba(2, 12, 27, 0.7);
+    --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-label, legend{
-    color: var(--text);
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
 }
-fieldset{
-    padding: 25px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-header{
-    display: flex;
+
+header h1 {
+    width: 100%;
     text-align: center;
-    margin: 15px 0;
-    font-size: 14px;
+    margin: 2rem 0;
+    font-size: 1.8rem;
+    color: var(--accent-primary);
+    font-weight: 600;
 }
-.general-data_1{
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    display: grid;
-    padding: 25px;
-    grid-template-rows: 2fr 2fr;
+
+main {
+    max-width: 900px;
+    margin: 0 auto 4rem auto;
+    padding: 1rem;
 }
-.form-group_1{
-    display: grid;
-    grid-template-row: 1fr 1fr;
-    margin-bottom: 10px;
+
+/* --- 2. Diseño de Secciones (Fieldset como Cards) --- */
+fieldset {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 30px -15px var(--shadow);
+    transition: all 0.25s ease-in-out;
 }
-.form-group{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-bottom: 10px;
+
+fieldset:focus-within {
+    box-shadow: 0 0 0 2px var(--accent-primary);
 }
-.descripciondeactividad{
-    margin: 25px 0;
-    display: grid;
-    margin-bottom: 10px;
+
+legend {
+    padding: 0.5rem 1rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--accent-primary);
+    background-color: var(--bg-primary);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
 }
-.clas_riesgo{
+
+/* --- 3. Estilos de Formularios (Inputs, Labels, etc.) --- */
+.form-group, .form-group_1 {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
-.risk-potential{
-    display: flex;
-    align-content: center;
-    margin: 15px auto;
-    height: 30px;
-    width: 300px;
-    text-align: center;
-    background-color: #0a192f;
+
+/* Layout de 2 columnas para pantallas grandes */
+@media (min-width: 768px) {
+    .form-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
 }
-/* Nueva regla para el textarea de descripción de actividad */
-.activity-textarea {
+
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: -0.75rem; /* Acerca la etiqueta al input */
+}
+
+input[type="text"],
+input[type="date"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+}
+
+textarea {
     resize: vertical;
-    text-align: left;
-    vertical-align: top;
+    min-height: 100px;
 }
-/* Clases para indicar el nivel de riesgo */
-.select-green {
-    background-color: #28a745; /* verde */
+
+/* --- 4. Estilos de Botones y Controles --- */
+.fieldset-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
 }
-.select-yellow {
-    background-color: #ffc107; /* amarillo */
+
+.save-btn, .edit-btn, .add-step-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid var(--accent-primary);
 }
-.select-red {
-    background-color: #dc3545; /* rojo */
+
+.save-btn {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
 }
-/* Permite posicionar elementos absolutos dentro */
+
+.edit-btn {
+    background-color: transparent;
+    color: var(--accent-primary);
+}
+
+.save-btn:hover {
+    background-color: transparent;
+    color: var(--accent-primary);
+}
+
+.edit-btn:hover {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.add-step-btn {
+    padding: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+    text-align: center;
+}
+
+/* --- 5. Estilos Específicos de la Sección de Riesgos --- */
 .risk-step {
     position: relative;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border: 1px dashed var(--border-color);
+    border-radius: 4px;
 }
-/* Posicionar los botones de edición a la derecha */
+
+.risk-step-header {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
 .risk-step-buttons {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    top: 1rem;
+    right: 1rem;
     display: flex;
-    gap: 5px;
+    gap: 0.5rem;
 }
-/* Asegura espacio para los botones a la derecha */
-.risk-step-header {
-    margin-right: 150px;
-    text-align: left;
-    padding: 10px 0;
-    font-size: 1.1em;
-    color: var(--text);
+
+.delete-step-btn, .edit-step-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
 }
-/* Estilos específicos para los spans de selección */
-span.plain.select-green,
-span.plain.select-yellow,
-span.plain.select-red {
-    width: 60px;
-    display: inline-block;
-    text-align: center;
-    padding: 4px;
-    border-radius: 4px;
-    font-weight: bold;
+
+.delete-step-btn:hover { color: var(--error); }
+.edit-step-btn:hover { color: var(--accent-primary); }
+
+.risk-potential {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+select.select-green, span.plain.select-green {
+    background-color: var(--success);
+    color: #fff;
+}
+select.select-yellow, span.plain.select-yellow {
+    background-color: var(--warning);
+    color: #000;
+}
+select.select-red, span.plain.select-red {
+    background-color: var(--error);
+    color: #fff;
 }
