@@ -503,7 +503,7 @@ function checkAnswer(selectedOption, question) {
         function initDemoProtection() {
             const lockKey = 'demoLockTimestamp';
             const storedTimestamp = localStorage.getItem(lockKey);
-            const activationTime = 20000; // 90 segundos
+            const activationTime = 90000; // 90 segundos
             const lockDuration = 24 * 60 * 60 * 1000; // 24 horas
 
             if (storedTimestamp) {
