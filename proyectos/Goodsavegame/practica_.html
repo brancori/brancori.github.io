@@ -135,7 +135,7 @@
 </head>
 <body class="text-gray-800 p-4">
 
-    <div id="game-container" class="game-container">
+    <div id="main-content" data-container-id="game-container" class="game-container">        
         <div id="practice2-screen" class="hidden p-4 sm:p-6 md:p-8 bg-gray-50">
             <div class="flex justify-between items-center mb-4">
     <h2 class="text-xl font-semibold text-gray-800">Inventario personalizado</h2>
@@ -452,7 +452,7 @@ function checkAnswer(selectedOption, question) {
         }
 
         function startPractice2() {
-            const gameContainer = document.getElementById('game-container');
+            const gameContainer = document.getElementById('main-content');
             gameContainer.style.maxWidth = '100%';
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('practice2-screen').classList.remove('hidden');
@@ -460,76 +460,16 @@ function checkAnswer(selectedOption, question) {
         }
 
         function showStartScreen() {
-            const gameContainer = document.getElementById('game-container');
+            const gameContainer = document.getElementById('main-content');
             gameContainer.style.maxWidth = '';
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('end-screen').classList.add('hidden');
             document.getElementById('practice2-screen').classList.add('hidden');
             document.getElementById('start-screen').classList.remove('hidden');
         }
-        let demoTimerId = null;
 
-        function activateLicenseLock() {
-            const overlay = document.getElementById('license-overlay');
-            const gameContainer = document.getElementById('game-container');
-            const lockKey = 'demoLockTimestamp';
-
-            if (overlay && gameContainer) {
-                overlay.classList.add('active');
-                gameContainer.classList.add('content-blurred');
-                document.body.style.overflow = 'hidden';
-
-                // Guarda el timestamp para persistir el bloqueo en futuras visitas.
-                // Esto solo ocurre CUANDO el bloqueo se activa.
-                localStorage.setItem(lockKey, Date.now().toString());
-            }
-        }
-
-        function checkLockState() {
-            const lockKey = 'demoLockTimestamp';
-            const overlay = document.getElementById('license-overlay');
-
-            // Si la interfaz muestra el bloqueo...
-            if (overlay.classList.contains('active')) {
-                // ...pero la clave fue eliminada de localStorage...
-                if (!localStorage.getItem(lockKey)) {
-                    // ...la restauramos inmediatamente.
-                    console.warn('Tampering detected. Re-enforcing lock.');
-                    localStorage.setItem(lockKey, Date.now().toString());
-                }
-            }
-        }
-
-        function initDemoProtection() {
-            const lockKey = 'demoLockTimestamp';
-            const storedTimestamp = localStorage.getItem(lockKey);
-            const activationTime = 90000; // 90 segundos
-            const lockDuration = 24 * 60 * 60 * 1000; // 24 horas
-
-            if (storedTimestamp) {
-                const lockTime = parseInt(storedTimestamp, 10);
-                const currentTime = Date.now();
-
-                // Comprueba si el bloqueo sigue vigente (menos de 24h)
-                if (currentTime - lockTime < lockDuration) {
-                    // Si el bloqueo está activo, muéstralo inmediatamente.
-                    activateLicenseLock();
-                } else {
-                    // Si ya pasaron 24h, el "castigo" terminó. Limpia la clave...
-                    localStorage.removeItem(lockKey);
-                    // ...y empieza el conteo de nuevo.
-                    setTimeout(activateLicenseLock, activationTime);
-                }
-            } else {
-                // Si no hay timestamp (porque es la primera vez o se borraron los datos),
-                // simplemente inicia el temporizador.
-                setTimeout(activateLicenseLock, activationTime);
-            }
-        }
-
-        // Iniciar el sistema de protección cuando el DOM esté listo.
-        document.addEventListener('DOMContentLoaded', initDemoProtection);
     </script>
+    <script src="demoProtection.js"></script>
 </body>
 </html>
 

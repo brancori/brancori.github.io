@@ -12,11 +12,77 @@
     body {
       background-color: #f8fafc;
     }
+            .content-blurred {
+            filter: blur(8px) brightness(0.8);
+            transition: filter 0.3s ease-in-out;
+            pointer-events: none; /* Bloquea clics y selección */
+            user-select: none; /* Evita selección de texto */
+        }
+
+        /* Contenedor del overlay (inicialmente oculto) */
+        #license-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 47, 0.7);
+            backdrop-filter: blur(2px); /* Efecto cristalino adicional */
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* Estado activo del overlay */
+        #license-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal con el mensaje */
+        .license-modal {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            border-top: 5px solid var(--primary-color, #0d9488); /* Usa tu color primario */
+        }
+
+        .license-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #1e293b; /* slate-800 */
+            margin-bottom: 1rem;
+        }
+
+        .license-text {
+            font-size: 1.1rem;
+            color: #475569; /* slate-600 */
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .license-contact {
+            font-size: 1rem;
+            color: #64748b; /* slate-500 */
+            background-color: #f8fafc; /* slate-50 */
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0; /* slate-200 */
+        }
   </style>
 </head>
 <body class="p-6">
-  <div class="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-    <div class="border-b border-gray-200 pb-2 mb-4">
+        <div id="main-content" class="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-4">    <div class="border-b border-gray-200 pb-2 mb-4">
         <div class="flex items-center text-sm text-gray-500">
             <span class="font-semibold text-gray-700 mr-2">Good Save </span>
         </div>
@@ -625,6 +691,18 @@
     </div>
   </div>
 </div>
+<div id="license-overlay" class="license-overlay-hidden">
+    <div class="license-modal">
+        <h2 class="license-title">Acceso Limitado</h2>
+        <p class="license-text">
+            El tiempo de evaluación para esta aplicación ha finalizado.
+        </p>
+        <p class="license-contact">
+            Para obtener una licencia de uso y acceso completo, por favor contacta a:
+            <br><strong>Brandon Cortes</strong>
+        </p>
+    </div>
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         
@@ -787,5 +865,6 @@ const selectedNo = localStorage.getItem('selectedEvent');
     });
 
   </script>
+  <script src="demoProtection.js"></script>
 </body>
 </html>
