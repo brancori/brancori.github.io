@@ -106,7 +106,6 @@ body{
     /* display: block; */
     position: relative;
     width: min(580px, 100%);
-    height: min(480px, 90vh);
     margin: 0 auto;
     padding: 1.25rem;
     background: #fff;

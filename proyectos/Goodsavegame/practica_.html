@@ -64,6 +64,73 @@
             background-color: var(--primary-color);
             transition: width 0.3s ease-out;
         }
+        .content-blurred {
+            filter: blur(8px) brightness(0.8);
+            transition: filter 0.3s ease-in-out;
+            pointer-events: none; /* Bloquea clics y selección */
+            user-select: none; /* Evita selección de texto */
+        }
+
+        /* Contenedor del overlay (inicialmente oculto) */
+        #license-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 47, 0.7);
+            backdrop-filter: blur(2px); /* Efecto cristalino adicional */
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* Estado activo del overlay */
+        #license-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal con el mensaje */
+        .license-modal {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            border-top: 5px solid var(--primary-color, #0d9488); /* Usa tu color primario */
+        }
+
+        .license-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #1e293b; /* slate-800 */
+            margin-bottom: 1rem;
+        }
+
+        .license-text {
+            font-size: 1.1rem;
+            color: #475569; /* slate-600 */
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .license-contact {
+            font-size: 1rem;
+            color: #64748b; /* slate-500 */
+            background-color: #f8fafc; /* slate-50 */
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0; /* slate-200 */
+        }
     </style>
 </head>
 <body class="text-gray-800 p-4">
@@ -187,6 +254,18 @@
                 Continuar
             </button>
         </div>
+    </div>
+</div>
+<div id="license-overlay" class="license-overlay-hidden">
+    <div class="license-modal">
+        <h2 class="license-title">Acceso Limitado</h2>
+        <p class="license-text">
+            El tiempo de evaluación para esta aplicación ha finalizado.
+        </p>
+        <p class="license-contact">
+            Para obtener una licencia de uso y acceso completo, por favor contacta a:
+            <br><strong>Brandon Cortes</strong>
+        </p>
     </div>
 </div>
     <script>
@@ -388,6 +467,68 @@ function checkAnswer(selectedOption, question) {
             document.getElementById('practice2-screen').classList.add('hidden');
             document.getElementById('start-screen').classList.remove('hidden');
         }
+        let demoTimerId = null;
+
+        function activateLicenseLock() {
+            const overlay = document.getElementById('license-overlay');
+            const gameContainer = document.getElementById('game-container');
+            const lockKey = 'demoLockTimestamp';
+
+            if (overlay && gameContainer) {
+                overlay.classList.add('active');
+                gameContainer.classList.add('content-blurred');
+                document.body.style.overflow = 'hidden';
+
+                // Guarda el timestamp para persistir el bloqueo en futuras visitas.
+                // Esto solo ocurre CUANDO el bloqueo se activa.
+                localStorage.setItem(lockKey, Date.now().toString());
+            }
+        }
+
+        function checkLockState() {
+            const lockKey = 'demoLockTimestamp';
+            const overlay = document.getElementById('license-overlay');
+
+            // Si la interfaz muestra el bloqueo...
+            if (overlay.classList.contains('active')) {
+                // ...pero la clave fue eliminada de localStorage...
+                if (!localStorage.getItem(lockKey)) {
+                    // ...la restauramos inmediatamente.
+                    console.warn('Tampering detected. Re-enforcing lock.');
+                    localStorage.setItem(lockKey, Date.now().toString());
+                }
+            }
+        }
+
+        function initDemoProtection() {
+            const lockKey = 'demoLockTimestamp';
+            const storedTimestamp = localStorage.getItem(lockKey);
+            const activationTime = 20000; // 90 segundos
+            const lockDuration = 24 * 60 * 60 * 1000; // 24 horas
+
+            if (storedTimestamp) {
+                const lockTime = parseInt(storedTimestamp, 10);
+                const currentTime = Date.now();
+
+                // Comprueba si el bloqueo sigue vigente (menos de 24h)
+                if (currentTime - lockTime < lockDuration) {
+                    // Si el bloqueo está activo, muéstralo inmediatamente.
+                    activateLicenseLock();
+                } else {
+                    // Si ya pasaron 24h, el "castigo" terminó. Limpia la clave...
+                    localStorage.removeItem(lockKey);
+                    // ...y empieza el conteo de nuevo.
+                    setTimeout(activateLicenseLock, activationTime);
+                }
+            } else {
+                // Si no hay timestamp (porque es la primera vez o se borraron los datos),
+                // simplemente inicia el temporizador.
+                setTimeout(activateLicenseLock, activationTime);
+            }
+        }
+
+        // Iniciar el sistema de protección cuando el DOM esté listo.
+        document.addEventListener('DOMContentLoaded', initDemoProtection);
     </script>
 </body>
 </html>

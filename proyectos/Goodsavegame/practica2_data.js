@@ -82,7 +82,7 @@ const inventoryData = [
         "site": "Carretera Federal Mexico-Puebla, Km 81.5, Huejotzingo, Puebla, Mexico",
         "company": "Jen-CI Mexico",
         "siteLocation": "Manufacturing/Operations / Acondicionado",
-        "categoria": "Warehouse safety",
+        "categoria": "Housekeeping",
         "severidad": 2,
         "probabilidad": 6,
         "ponderacion": 12
