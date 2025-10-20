@@ -121,18 +121,44 @@
 
             // 1. Cargar el comentario si existe
             if (workCenterData && workCenterData.comentarios_generales) {
-                textarea.value = workCenterData.comentarios_generales;
             }
 
             // 2. Establecer el estado inicial a "solo lectura"
             isComentarioEnEdicion = false;
-            textarea.readOnly = true;
             textarea.classList.add('is-readonly');
             btn.textContent = 'Editar Comentario';
 
         } catch (error) {
             console.error("Error al cargar comentarios generales:", error);
         }
+
+        const quillOptions = {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            }
+        };
+
+        const workCenterData = await dataClient.getWorkCenter(workCenterId);
+        
+        // Inicializar quillComentariosGenerales
+        quillComentariosGenerales = new Quill('#comentarios-generales', {
+            readOnly: true,
+            theme: 'bubble'
+        });
+
+        if (workCenterData && workCenterData.comentarios_generales) {
+            quillComentariosGenerales.root.innerHTML = workCenterData.comentarios_generales;
+        }
+
+        // Inicializar todos los editores Quill
+        quillActividadComentarios = new Quill('#actividad-comentarios', quillOptions);
+        quillActividadRecomendaciones = new Quill('#actividad-recomendaciones', quillOptions);
+        quillNotaTexto = new Quill('#nota-texto', quillOptions);
 
         setupEventListeners();
         ERGOAuth.applyPermissionControls();
@@ -143,10 +169,8 @@
 
     function setupEventListeners() {
         document.getElementById('btn-comentarios').addEventListener('click', gestionarComentario);
-        // Input de fotos (este es el original, no lo borres)
         document.getElementById('foto-input').addEventListener('change', handleFotoUpload);
         
-
         const factoresIds = ['iluminacion', 'temperatura', 'ruido', 'personal', 'puestos'];
 
         factoresIds.forEach(id => {
@@ -234,39 +258,56 @@ window.location.href = url;
     }
 
 async function gestionarComentario() {
-    const btn = document.getElementById('btn-comentarios');
-    const textarea = document.getElementById('comentarios-generales');
+  const modal = document.getElementById('modal-comentarios');
+  const btnGuardar = document.getElementById('btn-guardar-comentarios-modal');
 
-    isComentarioEnEdicion = !isComentarioEnEdicion;
+  // Si aún no existe el editor del modal, créalo
+  if (!window.quillEditorModal) {
+    window.quillEditorModal = new Quill('#comentarios-editor-modal', {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['clean']
+        ]
+      }
+    });
+  }
 
-    if (isComentarioEnEdicion) {
-        // --- MODO EDICIÓN ---
-        textarea.readOnly = false;
-        textarea.classList.remove('is-readonly');
-        btn.textContent = 'Guardar Cambios';
-        textarea.focus();
-    } else {
-        // --- MODO VISTA (y guardado) ---
-        textarea.readOnly = true;
-        textarea.classList.add('is-readonly');
-        btn.textContent = 'Editar Comentario';
+  // Copiar el contenido actual al modal
+  window.quillEditorModal.root.innerHTML = quillComentariosGenerales.root.innerHTML;
 
-        try {
-            ERGOUtils.showToast('Guardando cambios...', 'info');
+  // Mostrar modal
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
 
-            // ======================= LOG PARA DIAGNÓSTICO =======================
-            console.log(`[DEBUG] Llamando a 'updateWorkCenterComments' con WorkCenterID: '${workCenterId}' y Comentario: '${textarea.value}'`);
-            // ====================================================================
+  // Guardar cambios
+  btnGuardar.onclick = async () => {
+    try {
+      const nuevoContenido = window.quillEditorModal.root.innerHTML;
 
-            await dataClient.updateWorkCenterComments(workCenterId, textarea.value);
-            ERGOUtils.showToast('Comentario actualizado.', 'success');
-        } catch (error) {
-            console.error('Error al actualizar el comentario:', error);
-            ERGOUtils.showToast('No se pudo guardar el comentario.', 'error');
-        }
+      // Actualiza la vista principal (sin toolbar)
+      quillComentariosGenerales.root.innerHTML = nuevoContenido;
+
+      // Guarda en Supabase
+      ERGOUtils.showToast('Guardando comentario...', 'info');
+      await dataClient.updateWorkCenterComments(workCenterId, nuevoContenido);
+      ERGOUtils.showToast('Comentario actualizado.', 'success');
+
+      cerrarModalComentarios();
+    } catch (err) {
+      console.error('Error al guardar el comentario:', err);
+      ERGOUtils.showToast('No se pudo guardar el comentario.', 'error');
     }
+  };
 }
 
+function cerrarModalComentarios() {
+    const modal = document.getElementById('modal-comentarios');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
 // Asignamos el evento al botón una vez que el DOM está listo
 const commentButton = document.getElementById('btn-comentarios');
 if (commentButton) {
@@ -302,4 +343,26 @@ async function loadPuestosOptions() {
     
     // TODO: Reemplazar con llamada real a tu API/base de datos
     // const puestosFromDB = await dataClient.getPuestos();
+}
+
+function sincronizarContenidoDiv() {
+    // 1. Obtener el elemento del div editable
+    var editorDiv = document.getElementById('editor-div');
+
+    // 2. Obtener el elemento del textarea oculto
+    var hiddenTextarea = document.getElementById('hidden-textarea');
+
+    // 3. Copiar el contenido HTML del div al valor del textarea
+    // Se usa.innerHTML para preservar cualquier formato (negritas, enlaces, etc.)
+    // Si solo quieres texto plano, puedes usar.innerText en su lugar.
+    hiddenTextarea.value = editorDiv.innerHTML;
+
+    // Opcional: puedes añadir una validación para no enviar contenido vacío
+    if (editorDiv.innerHTML.trim() === '') {
+        alert('El contenido no puede estar vacío.');
+        return false; // Esto detiene el envío del formulario
+    }
+
+    // Al no devolver 'false', el formulario continuará con su envío normal.
+    return true; 
 }

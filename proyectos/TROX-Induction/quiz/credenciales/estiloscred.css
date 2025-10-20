@@ -1,25 +1,14 @@
-@font-face {
-    font-family: Helvetica;
-    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Heavy.ttf);
-    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Regular.ttf);
-    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.eot);
-    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff);
-    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
-}
 body{
-    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
-    font-size: 18px;
-    color: #00375F;
-    font-weight: 900;
     max-width: 80vw;
     padding: 20px;
-}  
+}
 #vigencia{
     display: flex;
     position: relative;
     top: 7px;
     left: 10px;
 }
+
 #Congrats{
     text-align: justify;
     display: flex;

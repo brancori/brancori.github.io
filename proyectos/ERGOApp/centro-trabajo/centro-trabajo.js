@@ -9,6 +9,7 @@
         let notasActuales = [];
         let evaluacionesEspecificas = [];
         let isComentarioEnEdicion = false;
+        let quillComentariosGenerales, quillActividadComentarios, quillActividadRecomendaciones, quillNotaTexto;
 
         // Obtener parámetros de URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -247,7 +248,8 @@ function abrirModalActividad(actividadId = null) {
         document.getElementById('actividad-id').value = actividad.id;
         document.getElementById('actividad-nombre').value = actividad.nombre;
         document.getElementById('actividad-metodo').value = actividad.metodo;
-        document.getElementById('actividad-comentarios').value = actividad.comentarios || '';
+        quillActividadComentarios.root.innerHTML = actividad.comentarios || '';
+        quillActividadRecomendaciones.root.innerHTML = actividad.recomendaciones || '';
         document.getElementById('actividad-recomendaciones').value = actividad.recomendaciones || '';
 
         const tipoAnalisis = actividad.tipo_analisis || 'EJA';
@@ -292,7 +294,7 @@ async function guardarActividad() {
         area_id: areaId,
         nombre: document.getElementById('actividad-nombre').value.trim(),
         metodo: document.getElementById('actividad-metodo').value,
-        comentarios: document.getElementById('actividad-comentarios').value.trim(),
+        comentarios: quillActividadComentarios.root.innerHTML,
         recomendaciones: document.getElementById('actividad-recomendaciones').value.trim(), // Guardar recomendaciones
         tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
         user_id: ERGOAuth.getCurrentUser()?.id

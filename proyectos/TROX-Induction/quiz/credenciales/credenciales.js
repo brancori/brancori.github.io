@@ -219,8 +219,3 @@ async function sendCredential() {
         }
     }
 }
-
-
-
-
-

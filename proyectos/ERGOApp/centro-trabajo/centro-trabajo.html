@@ -6,7 +6,9 @@
     <title>Centro de Trabajo</title>
     <link rel="stylesheet" href="../componentes/globals.css">
     <link rel="stylesheet" href="./centro-trabajo.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.min.js" defer></script>
     <script src="../componentes/globals.js" defer></script>
     <script src="../componentes/auth-client.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
@@ -126,7 +128,7 @@
         <h2 class="section-title">💬 Comentarios Generales</h2>
     </div>
     <div class="comentarios-container">
-        <textarea id="comentarios-generales" class="input-field" placeholder="Añade comentarios sobre el centro de trabajo en general..." rows="4"></textarea>
+        <div id="comentarios-generales" style="height: 150px;" placeholder="Añade comentarios sobre el centro de trabajo en general..." rows="4"></div>
         <div class="comentarios-actions">
 <button id="btn-comentarios" class="btn btn-secondary">Editar Comentario</button>    </div>
 </section>
@@ -182,6 +184,24 @@
             </section>
             
         </main>
+    </div>
+
+        <div id="modal-comentarios" class="modal">
+        <div class="modal-overlay" onclick="cerrarModalComentarios()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Comentarios Generales</h3>
+                <button class="modal-close" onclick="cerrarModalComentarios()"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <!-- El editor Quill vivirá aquí dentro -->
+                <div id="comentarios-editor-modal" style="height: 250px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="cerrarModalComentarios()">Cancelar</button>
+                <button type="button" id="btn-guardar-comentarios-modal" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal para agregar nota -->
@@ -344,7 +364,7 @@
         <div id="modal-nota" class="modal-nota">
             <div class="modal-nota-content">
                 <h3 style="margin-bottom: 1rem;">Agregar Nueva Nota</h3>
-                <textarea id="nota-texto" placeholder="Escribe tus observaciones aquí..."></textarea>
+                <div name="note_content" id="nota-texto" placeholder="Escribe tus observaciones aquí..."></div>
                 <div style="display: flex; gap: 1rem; margin-top: 1rem; justify-content: flex-end;">
                     <button class="btn btn-ghost" onclick="closeNotaModal()">Cancelar</button>
                     <button class="btn btn-primary" onclick="guardarNota()">Guardar Nota</button>

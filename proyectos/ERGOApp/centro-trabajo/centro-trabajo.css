@@ -1823,3 +1823,101 @@ textarea.is-readonly:focus {
     width: 100%;
     display: block; /* Asegura que el botón ocupe el espacio como un bloque */
 }
+
+
+#comentarios-generales.is-readonly .ql-container.ql-snow {
+    background-color: var(--gray-50);
+    border-color: transparent;
+    border-left: 4px solid var(--primary-500);
+    color: var(--gray-700);
+    cursor: default;
+}
+
+#comentarios-generales.is-readonly .ql-toolbar.ql-snow {
+    display: none; /* Oculta la barra de herramientas en modo lectura */
+}
+
+.modal-nota-content {
+    display: flex;
+    flex-direction: column; /* Organiza el contenido verticalmente */
+    max-height: 80vh;      /* Evita que el modal sea demasiado alto */
+}
+
+/* El div que contiene el editor de Quill */
+#nota-texto {
+    flex-grow: 1; /* Permite que el editor ocupe el espacio disponible */
+    display: flex;
+    flex-direction: column;
+}
+
+#nota-texto .ql-container {
+    flex-grow: 1;
+    font-size: 1rem;
+}
+
+.comentarios-display-box {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-md); /* Bordes redondeados */
+    padding: 1rem 1.5rem;
+    min-height: 150px;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.6;
+}
+
+/* Oculta la barra de herramientas de Quill cuando no está en un modal */
+.comentarios-display-box .ql-toolbar {
+    display: none;
+}
+
+/* Asegura que el contenido dentro de la caja de display no tenga bordes extra */
+.comentarios-display-box .ql-container.ql-snow {
+    border: none;
+}
+
+/* Ajustes para el editor Quill dentro del modal de comentarios */
+#modal-comentarios .modal-body {
+    padding: 1rem;
+}
+
+#comentarios-editor-modal .ql-container {
+    font-size: 1rem;
+    height: calc(100% - 42px); /* Ajusta la altura del área de texto */
+}
+#comentarios-generales {
+  border: 1px solid #d1d5db;              /* gris claro */
+  background-color: #f9fafb;              /* gris casi blanco */
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 120px;
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.6;
+  transition: box-shadow 0.2s ease-in-out, border-color 0.2s;
+  cursor: default;
+  overflow-wrap: break-word;
+}
+
+/* Al pasar el mouse (solo visual, no editable) */
+#comentarios-generales:hover {
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+}
+
+/* Si el centro está cerrado (opcional, para reforzar modo lectura) */
+.container.is-locked #comentarios-generales {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border-style: dashed;
+}
+
+/* --- Estilos del modal de edición --- */
+#modal-comentarios .ql-toolbar {
+  border-radius: 8px 8px 0 0;
+  background-color: #f3f4f6;
+}
+
+#modal-comentarios .ql-container {
+  border: 1px solid #d1d5db;
+  border-radius: 0 0 8px 8px;
+  background-color: white;
+}

@@ -6,11 +6,43 @@
     src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff);
     src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
 }
-body{
+body {
     font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-size: 18px;
     font-weight: 900;
+    color: #00375F; /* Color base para texto */
 }
+
+h1, h2, h3 {
+    color: #00375F;
+    text-align: center;
+}
+
+p {
+    color: #6e7883;
+    text-align: center;
+}
+
+/* ----- Estilo para el nombre de usuario (usado en quiz y credencial) ----- */
+#username {
+    font-size: 20px;
+    color: #00375F;
+    font-family: helvetica;
+    font-weight: 900;
+    margin: 25px;
+}
+
+/* Aquí mantienes los estilos que ya eran únicos de tu index.html */
+header {
+    display: flex;
+    margin: 0 20px;
+}
+
+.Bienvenido {
+    display: grid;
+    place-items: center;
+}
+
 header{
     display: flex;
     margin: 0 20px;
@@ -19,18 +51,7 @@ img {
     margin: 25px;
     width: 200px;
 }
-p{
-    color: #6e7883;
-    text-align: center;
-}
-h1, h2, h3{
-    color: #00375F;
-    text-align: center;
-}
-.Bienvenido{
-    display: grid;
-    place-items: center;
-}
+
 .Bienvenido p{
     text-align:justify ;
     width: 88vw;

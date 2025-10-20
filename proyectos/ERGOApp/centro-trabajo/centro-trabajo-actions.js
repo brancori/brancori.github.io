@@ -244,45 +244,46 @@ async function deleteFotoActividad(fotoId, storagePath) {
             if (isCenterClosed) return;
             notaEnEdicion = null; // Resetea la variable de edición
             document.getElementById('modal-nota').classList.remove('show');
-            document.getElementById('nota-texto').value = '';
+            quillNotaTexto.setText('');
         }
 
-            async function guardarNota() {
-            const notaText = document.getElementById('nota-texto').value.trim();
-            if (!notaText) {
-                ERGOUtils.showToast('La nota no puede estar vacía.', 'error');
-                return;
-            }
+async function guardarNota() {
+    const notaText = quillNotaTexto.root.innerHTML;
+    
+    console.log('📝 Contenido de nota:', notaText);
 
-            try {
-                if (notaEnEdicion) {
-                    // --- Lógica de ACTUALIZACIÓN ---
-                    await dataClient.updateNota(notaEnEdicion.id, { texto: notaText });
-                    ERGOUtils.showToast('Nota actualizada.', 'success');
-                } else {
-                    // --- Lógica de CREACIÓN (la que ya tenías) ---
-                    const notaData = {
-                        work_center_id: workCenterId,
-                        texto: notaText,
-                        user_id: ERGOAuth.getCurrentUser()?.id
-                    };
-                    await dataClient.createNota(notaData);
-                    ERGOUtils.showToast('Nota guardada.', 'success');
-                }
-                closeNotaModal();
-                await loadNotas();
-            } catch (error) {
-                console.error('Error guardando la nota:', error);
-                ERGOUtils.showToast('Error al guardar la nota.', 'error');
-            }
+    if (!notaText || notaText.trim() === '<p></p>' || notaText.trim() === '') {
+        ERGOUtils.showToast('La nota no puede estar vacía.', 'error');
+        return;
+    }
+
+    try {
+        if (notaEnEdicion) {
+            await dataClient.updateNota(notaEnEdicion.id, { texto: notaText });
+            ERGOUtils.showToast('Nota actualizada.', 'success');
+        } else {
+            const notaData = {
+                work_center_id: workCenterId,
+                texto: notaText,
+                user_id: ERGOAuth.getCurrentUser()?.id
+            };
+            await dataClient.createNota(notaData);
+            ERGOUtils.showToast('Nota guardada.', 'success');
         }
+        closeNotaModal();
+        await loadNotas();
+    } catch (error) {
+        console.error('Error guardando la nota:', error);
+        ERGOUtils.showToast('Error al guardar la nota.', 'error');
+    }
+}
 
     function editarNota(nota) {
         if (isCenterClosed) return;
             if (!ERGOAuth.checkPermissionAndShowError('create')) return; // Reutilizamos el permiso de 'crear' para editar
             notaEnEdicion = nota;
             document.querySelector('#modal-nota h3').textContent = 'Editar Nota';
-            document.getElementById('nota-texto').value = nota.texto;
+            quillNotaTexto.root.innerHTML = nota.texto;
             document.querySelector('#modal-nota .btn-primary').textContent = 'Guardar Cambios';
             openNotaModal();
         }

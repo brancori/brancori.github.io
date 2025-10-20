@@ -215,4 +215,3 @@ let loadData = () => {
 function cambio(){
     // ... (esta función no se modifica)
 }
-

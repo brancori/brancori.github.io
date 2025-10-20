@@ -37,7 +37,7 @@
         console.log('🔍 Evaluaciones encontradas para este centro:', evaluaciones.length);
 
          if (evaluaciones.length > 0) {
-            const eval = evaluaciones[0];
+            const eval_ = evaluaciones[0];
             console.log('🔍 DEBUG: Estructura de la evaluación:', eval);
             console.log('🔍 DEBUG: Campos disponibles:', Object.keys(eval));
             const score = eval.score_final || eval.scoreFinal || '0';
@@ -120,6 +120,8 @@
                 renderNotas();
             }
         }
+
+        
 
 async function loadActividades() {
     const evaluacionesContainer = document.getElementById('evaluaciones-container');
