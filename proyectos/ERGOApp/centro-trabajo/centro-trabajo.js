@@ -45,18 +45,23 @@
                 }
             }
         }
-
+function decodeHTML(html) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+}
         // Funciones de interacción
 
         /**
  * Dibuja la estructura HTML inicial para la vista de detalles de una actividad.
  * @param {object} actividad - El objeto de la actividad con los datos.
  * @param {HTMLElement} detailsContainer - El div donde se renderizará el contenido.
+ * @param {string} dirtyHtmlString La cadena de HTML no confiable.
  */
 function renderActividadDetails(actividad, detailsContainer) {
-    // Escapamos el contenido de texto para prevenir problemas de XSS si los datos vinieran de fuentes no confiables.
-    const comentarios = actividad.comentarios ? actividad.comentarios.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<i>Sin comentarios.</i>';
-    const recomendaciones = actividad.recomendaciones ? actividad.recomendaciones.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<i>Sin recomendaciones.</i>';
+    // ✅ Decodificar el HTML escapado
+    const comentarios = actividad.comentarios ? decodeHTML(actividad.comentarios) : '<i>Sin comentarios.</i>';
+    const recomendaciones = actividad.recomendaciones ? decodeHTML(actividad.recomendaciones) : '<i>Sin recomendaciones.</i>';
 
     detailsContainer.innerHTML = `
         <div class="details-section">
@@ -280,6 +285,8 @@ function cerrarModalActividad() {
 /**
  * Guarda o actualiza una actividad.
  */
+
+
 async function guardarActividad() {
     if (!ERGOAuth.checkPermissionAndShowError('create')) return;
 
@@ -289,16 +296,17 @@ async function guardarActividad() {
     // Obtener el valor del botón activo
     const tipoAnalisisActivo = document.querySelector('#tipo-analisis-group .btn-toggle.active');
     
-    const data = {
-        work_center_id: workCenterId,
-        area_id: areaId,
-        nombre: document.getElementById('actividad-nombre').value.trim(),
-        metodo: document.getElementById('actividad-metodo').value,
-        comentarios: quillActividadComentarios.root.innerHTML,
-        recomendaciones: document.getElementById('actividad-recomendaciones').value.trim(), // Guardar recomendaciones
-        tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
-        user_id: ERGOAuth.getCurrentUser()?.id
-    };
+const data = {
+    work_center_id: workCenterId,
+    area_id: areaId,
+    nombre: document.getElementById('actividad-nombre').value.trim(),
+    metodo: document.getElementById('actividad-metodo').value,
+    // ✅ SIN .value, SIN .trim()
+    comentarios: quillActividadComentarios.root.innerHTML,
+    recomendaciones: quillActividadRecomendaciones.root.innerHTML,
+    tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
+    user_id: ERGOAuth.getCurrentUser()?.id
+};
 
     if (!data.nombre) {
         ERGOUtils.showToast('El nombre de la actividad es obligatorio.', 'error');

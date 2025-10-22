@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matriz de Hallazgos</title>
+    <!-- Ruta de CSS corregida para usar globals.css -->
+    <link rel="stylesheet" href="../globals.css">
+
+    <!-- Estilos específicos para esta página -->
+    <style>
+        /* Estilos de la tabla usando variables de globals.css */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            /* Sombra y borde de globals.css */
+            border: 1px solid var(--gray-200, #e2e8f0);
+            border-radius: var(--border-radius-lg, 12px);
+            box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.04));
+            background-color: #ffffff;
+            /* Asegura que el contenedor no colapse */
+            min-height: 200px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1800px; /* Ancho mínimo para forzar scroll horizontal si es necesario */
+            border-collapse: collapse;
+            font-size: var(--text-sm, 0.75rem);
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem; /* Espaciado interno */
+            border-bottom: 1px solid var(--gray-200, #e2e8f0);
+            text-align: left;
+            white-space: nowrap; /* Evita que el texto se rompa */
+        }
+
+        /* Encabezados de la tabla */
+        thead th {
+            background-color: var(--gray-50, #f8fafc);
+            color: var(--gray-600, #475569);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Celdas del cuerpo */
+        tbody tr:hover {
+            background-color: var(--gray-100, #f1f5f9);
+        }
+
+        td {
+            color: var(--gray-700, #334155);
+        }
+
+        /* Estilos para descripciones (permitir que se rompan) */
+        td.wrap-text {
+            white-space: normal; /* Permitir que este texto se ajuste */
+            min-width: 250px; /* Ancho mínimo para descripciones */
+        }
+
+        /* Contenedor de filtros */
+        .filter-container {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            /* Estilos de globals.css */
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        @media (min-width: 768px) {
+            .filter-container {
+                grid-template-columns: repeat(4, 1fr);
+                align-items: end;
+            }
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-size: var(--text-sm, 0.75rem);
+            font-weight: 500;
+            color: var(--gray-700, #334155);
+        }
+        
+        /* Layout del header */
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        @media (min-width: 640px) {
+            .page-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        /* --- Estilos del Modal Específico --- */
+
+        /* Clase renombrada para evitar conflictos con globals.css */
+        .matriz-modal-content {
+            position: relative;
+            background: white;
+            border-radius: var(--border-radius-lg, 12px);
+            box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.05));
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden; /* Oculta el overflow principal */
+            display: flex; /* Para layout de header/body/footer */
+            flex-direction: column;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        /* Animación copiada de globals.css */
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Permitir scroll solo en el body del modal */
+        .matriz-modal-content .modal-body {
+             overflow-y: auto;
+             padding: 2rem;
+        }
+        
+        /* Ocultar scrollbar */
+        .matriz-modal-content .modal-body::-webkit-scrollbar { display: none; }
+        .matriz-modal-content .modal-body { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Grid para el formulario del modal */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .md-col-span-2 {
+                grid-column: span 2 / span 2;
+            }
+        }
+
+        /* Inputs específicos para este modal */
+        .modal-form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300, #cbd5e1);
+            border-radius: var(--border-radius-md, 8px);
+            font-size: var(--text-base, 0.875rem);
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .modal-form-input:focus {
+            outline: none;
+            border-color: var(--primary-500, #14b8a6);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Contenedor Principal -->
+    <div class="main-content">
+
+        <!-- Encabezado de la Página -->
+        <header class="page-header">
+            <h1>Matriz de Hallazgos</h1>
+            <!-- Botón de globals.css -->
+            <button id="openModalBtn" type="button" class="btn btn-primary">
+                <!-- Icono SVG simple para 'agregar' -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Agregar Hallazgo
+            </button>
+        </header>
+
+        <!-- Filtros -->
+        <div class="filter-container">
+            <div class="filter-group">
+                <label for="filterCentro">Centro de Trabajo</label>
+                <!-- Input de globals.css -->
+                <select id="filterCentro" class="input-field">
+                    <option value="">Todos los Centros</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterAreaTopLevel">Área</label>
+                <select id="filterAreaTopLevel" class="input-field">
+                    <option value="">Todas las Áreas</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filterTarea">Tarea Específica</label>
+                <select id="filterTarea" class="input-field">
+                    <option value="">Todas las Tareas</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>&nbsp;</label> <!-- Espaciador para alinear botón -->
+                <!-- Botón de globals.css -->
+                <button id="clearFiltersBtn" type="button" class="btn btn-ghost">Limpiar Filtros</button>
+            </div>
+        </div>
+
+        <!-- Contenedor de la Tabla -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Área</th> <!-- Nueva Columna -->
+                        <th>Centro de Trabajo</th>
+                        <th>Descripción Detallada del Hallazgo</th>
+                        <th>Descripción del Riesgo</th>
+                        <th>Grupo de Riesgo</th>
+                        <th>Puesto Involucrado</th>
+                        <th>Tarea Específica</th> <!-- Columna Renombrada -->
+                        <th>Nivel de Riesgo Identificado</th>
+                        <th>Evaluación Específica</th>
+                        <th>Cumplimiento</th>
+                        <th>Medida de Control Propuesta</th>
+                        <th>Nuevo Nivel de Riesgo</th>
+                        <th>Tipo de Control</th>
+                        <th>Comentarios</th>
+                        <th>ART</th>
+                        <th>Acción</th>
+                        <th>Responsable</th>
+                    </tr>
+                </thead>
+                <tbody id="hallazgosTableBody">
+                    <!-- Filas se insertarán con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Hallazgo (usa clases de globals.css para 'modal' y 'modal-overlay') -->
+    <div id="addEntryModal" class="modal">
+        <div class="modal-overlay"></div>
+        
+        <!-- Contenedor de contenido del modal con clase específica -->
+        <div class="matriz-modal-content">
+            
+            <!-- Encabezado del Modal (usa clases de globals.css) -->
+            <div class="modal-header">
+                <h3>Agregar Nuevo Hallazgo</h3>
+                <button id="closeModalBtn" type="button" class="modal-close">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <!-- Cuerpo del Modal -->
+            <form id="addEntryForm" class="modal-body">
+                <div class="form-grid">
+                    
+                    <!-- Columna 1 -->
+                    <div class="form-group">
+                        <label for="modalCentro">Centro de Trabajo</label>
+                        <select id="modalCentro" required class="modal-form-input">
+                            <!-- Opciones se agregarán con JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalAreaTopLevelInput">Área</label>
+                        <input type="text" id="modalAreaTopLevelInput" list="areaTopLevelDatalist" class="modal-form-input" required placeholder="Seleccione o escriba un área...">
+                        <datalist id="areaTopLevelDatalist">
+                            <!-- Opciones se agregarán con JS -->
+                        </datalist>
+                    </div>
+
+                    <div class="form-group md-col-span-2">
+                        <label for="modalTareaInput">Tarea Específica</label>
+                        <input type="text" id="modalTareaInput" list="tareaDatalist" class="modal-form-input" required placeholder="Seleccione o escriba una tarea...">
+                        <datalist id="tareaDatalist">
+                            <!-- Opciones se agregarán con JS -->
+                        </datalist>
+                    </div>
+                    
+                    <div class="form-group md-col-span-2">
+                        <label for="modalDescripcion">Descripción Detallada del Hallazgo</label>
+                        <textarea id="modalDescripcion" rows="3" class="modal-form-input"></textarea>
+                    </div>
+                    
+                    <div class="form-group md-col-span-2">
+                        <label for="modalRiesgo">Descripción del Riesgo</label>
+                        <textarea id="modalRiesgo" rows="3" class="modal-form-input"></textarea>
+                    </div>
+
+                    <!-- Columna 1 -->
+                    <div class="form-group">
+                        <label for="modalGrupoRiesgo">Grupo de Riesgo</label>
+                        <input type="text" id="modalGrupoRiesgo" class="modal-form-input">
+                    </div>
+
+                    <!-- Columna 2 -->
+                    <div class="form-group">
+                        <label for="modalPuesto">Puesto Involucrado</label>
+                        <input type="text" id="modalPuesto" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalNivelRiesgo">Nivel de Riesgo Identificado</label>
+                        <input type="text" id="modalNivelRiesgo" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalEvaluacion">Evaluación Específica</label>
+                        <input type="text" id="modalEvaluacion" class="modal-form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modalCumplimiento">Cumplimiento</label>
+                        <input type="text" id="modalCumplimiento" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalNuevoNivelRiesgo">Nuevo Nivel de Riesgo</label>
+                        <input type="text" id="modalNuevoNivelRiesgo" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group md-col-span-2">
+                        <label for="modalMedidaControl">Medida de Control Propuesta</label>
+                        <textarea id="modalMedidaControl" rows="3" class="modal-form-input"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalTipoControl">Tipo de Control</label>
+                        <input type="text" id="modalTipoControl" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalResponsable">Responsable</label>
+                        <input type="text" id="modalResponsable" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group md-col-span-2">
+                        <label for="modalComentarios">Comentarios</label>
+                        <textarea id="modalComentarios" rows="3" class="modal-form-input"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalART">ART</label>
+                        <input type="text" id="modalART" class="modal-form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modalAccion">Acción</label>
+                        <input type="text" id="modalAccion" class="modal-form-input">
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- Footer del Modal (usa clases de globals.css) -->
+            <div class="modal-footer">
+                <button id="cancelModalBtn" type="button" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" form="addEntryForm" class="btn btn-primary">Guardar Hallazgo</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- DATOS INICIALES (MOCK) ---
+            let nextId = 10; // Siguiente ID para nuevos registros
+            const hallazgosData = [
+                {
+                    id: 1,
+                    centro: "MIC",
+                    areaTopLevel: "INFRAESTRUCTURA",
+                    tarea: "Filtración de agua",
+                    descripcion: "Mobiliario de campana altura fija. Menor a 2 horas de...",
+                    riesgo: "Riesgo de posturas forzadas de Cuello, hombro y espalda",
+                    grupoRiesgo: "R02-Posturas Forzadas",
+                    puesto: "Analyst Quality Control",
+                    nivelRiesgo: "32.79%",
+                    evaluacion: "MODERADO",
+                    cumplimiento: "SEMVAS",
+                    medidaControl: "Colocación de un frame o marco ajustable manual",
+                    nuevoNivelRiesgo: "BAJO",
+                    tipoControl: "Ingeniería",
+                    comentarios: "Una vez implementado los cambios se debe generar un plan de capacitación...",
+                    art: "0280 Análisis de agua/no contiene nada",
+                    accion: "",
+                    responsable: ""
+                },
+                {
+                    id: 2,
+                    centro: "MIC",
+                    areaTopLevel: "OPERACIONES",
+                    tarea: "Horno de ultra congelador",
+                    descripcion: "Posturas estáticas prolongadas sin opción de alternancia",
+                    riesgo: "Riesgo de fatiga muscular.",
+                    grupoRiesgo: "R08-Postura Estática",
+                    puesto: "Analyst Quality Control",
+                    nivelRiesgo: "21.43%",
+                    evaluacion: "BAJO",
+                    cumplimiento: "NOM-021-STPS",
+                    medidaControl: "Colocación un tapete antifatiga",
+                    nuevoNivelRiesgo: "BAJO",
+                    tipoControl: "Ingeniería",
+                    comentarios: "Validar la compatibilidad por el particulado no viable",
+                    art: "0282 ART MANEJO DE MICROORGANISMOS",
+                    accion: "",
+                    responsable: ""
+                },
+                {
+                    id: 3,
+                    centro: "MIC",
+                    areaTopLevel: "OFICINA PRINCIPAL",
+                    tarea: "Trabajo de computadora",
+                    descripcion: "Mobiliario no ajustable",
+                    riesgo: "Riesgo alto de TME cuello, hombros y espalda",
+                    grupoRiesgo: "R02-Postura Forzada",
+                    puesto: "Analyst Quality Control",
+                    nivelRiesgo: "",
+                    evaluacion: "ALTO",
+                    cumplimiento: "SEMVAS",
+                    medidaControl: "Colocación de un frame o marco ajustable manual",
+                    nuevoNivelRiesgo: "BAJO",
+                    tipoControl: "Ingeniería",
+                    comentarios: "N/A",
+                    art: "",
+                    accion: "",
+                    responsable: ""
+                }
+            ];
+
+            // Listas para poblar filtros y datalists
+            // Usamos Set para obtener valores únicos y luego convertimos a array
+            let centrosList = [...new Set(hallazgosData.map(h => h.centro))];
+            let areasTopLevelList = [...new Set(hallazgosData.map(h => h.areaTopLevel))];
+            let tareasList = [...new Set(hallazgosData.map(h => h.tarea))];
+
+            // --- REFERENCIAS AL DOM ---
+            const hallazgosTableBody = document.getElementById('hallazgosTableBody');
+            
+            // Filtros
+            const filterCentro = document.getElementById('filterCentro');
+            const filterAreaTopLevel = document.getElementById('filterAreaTopLevel');
+            const filterTarea = document.getElementById('filterTarea');
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+            // Modal
+            const addEntryModal = document.getElementById('addEntryModal');
+            const openModalBtn = document.getElementById('openModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalBtn = document.getElementById('cancelModalBtn');
+            const addEntryForm = document.getElementById('addEntryForm');
+
+            // Campos del Modal
+            const modalCentro = document.getElementById('modalCentro');
+            const modalAreaTopLevelInput = document.getElementById('modalAreaTopLevelInput');
+            const areaTopLevelDatalist = document.getElementById('areaTopLevelDatalist');
+            const modalTareaInput = document.getElementById('modalTareaInput');
+            const tareaDatalist = document.getElementById('tareaDatalist');
+            
+            const modalDescripcion = document.getElementById('modalDescripcion');
+            const modalRiesgo = document.getElementById('modalRiesgo');
+            const modalGrupoRiesgo = document.getElementById('modalGrupoRiesgo');
+            const modalPuesto = document.getElementById('modalPuesto');
+            const modalNivelRiesgo = document.getElementById('modalNivelRiesgo');
+            const modalEvaluacion = document.getElementById('modalEvaluacion');
+            const modalCumplimiento = document.getElementById('modalCumplimiento');
+            const modalMedidaControl = document.getElementById('modalMedidaControl');
+            const modalNuevoNivelRiesgo = document.getElementById('modalNuevoNivelRiesgo');
+            const modalTipoControl = document.getElementById('modalTipoControl');
+            const modalComentarios = document.getElementById('modalComentarios');
+            const modalART = document.getElementById('modalART');
+            const modalAccion = document.getElementById('modalAccion');
+            const modalResponsable = document.getElementById('modalResponsable');
+
+
+            // --- FUNCIONES ---
+
+            /**
+             * Puebla un elemento <select> con opciones
+             * @param {HTMLSelectElement} selectEl - El elemento select a poblar
+             * @param {string[]} optionsList - El array de strings para las opciones
+             * @param {string} defaultOptionText - Texto para la opción por defecto (ej. "Todos")
+             */
+            function populateSelect(selectEl, optionsList, defaultOptionText) {
+                const currentValue = selectEl.value;
+                selectEl.innerHTML = ''; // Limpiar opciones existentes
+                
+                // Agregar opción por defecto
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = defaultOptionText;
+                selectEl.appendChild(defaultOption);
+
+                // Agregar opciones de la lista
+                const uniqueOptions = [...new Set(optionsList)].sort();
+                uniqueOptions.forEach(optionText => {
+                    const option = document.createElement('option');
+                    option.value = optionText;
+                    option.textContent = optionText;
+                    selectEl.appendChild(option);
+                });
+
+                // Restaurar valor previo si aún existe
+                if (Array.from(selectEl.options).some(opt => opt.value === currentValue)) {
+                    selectEl.value = currentValue;
+                }
+            }
+            
+            /**
+             * Puebla un elemento <datalist> con opciones
+             * @param {HTMLDataListElement} datalistEl - El elemento datalist a poblar
+             * @param {string[]} optionsList - El array de strings para las opciones
+             */
+            function populateDatalist(datalistEl, optionsList) {
+                datalistEl.innerHTML = '';
+                const uniqueOptions = [...new Set(optionsList)].sort();
+                uniqueOptions.forEach(optionText => {
+                    const option = document.createElement('option');
+                    option.value = optionText;
+                    datalistEl.appendChild(option);
+                });
+            }
+
+            /**
+             * Renderiza la tabla de hallazgos con los datos proporcionados
+             * @param {object[]} data - Array de objetos de hallazgos
+             */
+            function renderTable(data) {
+                hallazgosTableBody.innerHTML = ''; // Limpiar tabla
+
+                if (data.length === 0) {
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="18" style="text-align: center; color: var(--gray-500); padding: 2rem;">No se encontraron hallazgos.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.id}</td>
+                        <td>${entry.areaTopLevel}</td>
+                        <td>${entry.centro || ''}</td>
+                        <td class="wrap-text">${entry.descripcion || ''}</td>
+                        <td class="wrap-text">${entry.riesgo || ''}</td>
+                        <td>${entry.grupoRiesgo || ''}</td>
+                        <td>${entry.puesto || ''}</td>
+                        <td>${entry.tarea || ''}</td>
+                        <td>${entry.nivelRiesgo || ''}</td>
+                        <td>${entry.evaluacion || ''}</td>
+                        <td>${entry.cumplimiento || ''}</td>
+                        <td class="wrap-text">${entry.medidaControl || ''}</td>
+                        <td>${entry.nuevoNivelRiesgo || ''}</td>
+                        <td>${entry.tipoControl || ''}</td>
+                        <td class="wrap-text">${entry.comentarios || ''}</td>
+                        <td>${entry.art || ''}</td>
+                        <td>${entry.accion || ''}</td>
+                        <td>${entry.responsable || ''}</td>
+                    `;
+                    hallazgosTableBody.appendChild(row);
+                });
+            }
+
+            /**
+             * Aplica los filtros seleccionados a los datos y vuelve a renderizar la tabla
+             */
+            function applyFilters() {
+                const selectedCentro = filterCentro.value;
+                const selectedAreaTopLevel = filterAreaTopLevel.value;
+                const selectedTarea = filterTarea.value;
+
+                const filteredData = hallazgosData.filter(entry => {
+                    const matchCentro = !selectedCentro || entry.centro === selectedCentro;
+                    const matchAreaTopLevel = !selectedAreaTopLevel || entry.areaTopLevel === selectedAreaTopLevel;
+                    const matchTarea = !selectedTarea || entry.tarea === selectedTarea;
+                    return matchCentro && matchAreaTopLevel && matchTarea;
+                });
+
+                renderTable(filteredData);
+            }
+
+            /**
+             * Maneja el envío del formulario del modal
+             */
+            function handleFormSubmit(event) {
+                event.preventDefault();
+
+                // Obtener valores (y normalizarlos con trim)
+                const centroValue = modalCentro.value;
+                const areaTopLevelValue = modalAreaTopLevelInput.value.trim();
+                const tareaValue = modalTareaInput.value.trim();
+                
+                // Agregar nueva Área si no existe
+                if (areaTopLevelValue && !areasTopLevelList.includes(areaTopLevelValue)) {
+                    areasTopLevelList.push(areaTopLevelValue);
+                    // Re-poblar el filtro y el datalist
+                    populateSelect(filterAreaTopLevel, areasTopLevelList, 'Todas las Áreas');
+                    populateDatalist(areaTopLevelDatalist, areasTopLevelList);
+                }
+                
+                // Agregar nueva Tarea si no existe
+                if (tareaValue && !tareasList.includes(tareaValue)) {
+                    tareasList.push(tareaValue);
+                    // Re-poblar el filtro y el datalist
+                    populateSelect(filterTarea, tareasList, 'Todas las Tareas');
+                    populateDatalist(tareaDatalist, tareasList);
+                }
+
+                // Crear nuevo objeto de hallazgo
+                const newEntry = {
+                    id: nextId++,
+                    centro: centroValue,
+                    tarea: tareaValue,
+                    descripcion: modalDescripcion.value,
+                    riesgo: modalRiesgo.value,
+                    grupoRiesgo: modalGrupoRiesgo.value,
+                    puesto: modalPuesto.value,
+                    nivelRiesgo: modalNivelRiesgo.value,
+                    evaluacion: modalEvaluacion.value,
+                    cumplimiento: modalCumplimiento.value,
+                    medidaControl: modalMedidaControl.value,
+                    nuevoNivelRiesgo: modalNuevoNivelRiesgo.value,
+                    tipoControl: modalTipoControl.value,
+                    comentarios: modalComentarios.value,
+                    art: modalART.value,
+                    accion: modalAccion.value,
+                    responsable: modalResponsable.value
+                };
+
+                // Agregar a los datos, aplicar filtros y cerrar modal
+                hallazgosData.push(newEntry);
+                applyFilters(); // Vuelve a renderizar la tabla con los filtros actuales
+                closeModal();
+            }
+            
+            /**
+             * Limpia todos los filtros y vuelve a renderizar
+             */
+            function clearFilters() {
+                filterCentro.value = "";
+                filterAreaTopLevel.value = "";
+                filterTarea.value = "";
+                applyFilters();
+            }
+
+            /**
+             * Abre el modal
+             */
+            function openModal() {
+                // Asegurarse de que las listas del modal estén actualizadas
+                populateSelect(modalCentro, centrosList, 'Seleccione un Centro');
+                populateDatalist(areaTopLevelDatalist, areasTopLevelList);
+                populateDatalist(tareaDatalist, tareasList);
+                addEntryModal.classList.add('show');
+            }
+
+            /**
+             * Cierra el modal y resetea el formulario
+             */
+            function closeModal() {
+                addEntryModal.classList.remove('show');
+                addEntryForm.reset();
+            }
+
+            // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+
+            // Poblar filtros iniciales
+            populateSelect(filterCentro, centrosList, 'Todos los Centros');
+            populateSelect(filterAreaTopLevel, areasTopLevelList, 'Todas las Áreas');
+            populateSelect(filterTarea, tareasList, 'Todas las Tareas');
+            
+            // Renderizar tabla inicial
+            renderTable(hallazgosData);
+
+            // Listeners para filtros
+            filterCentro.addEventListener('change', applyFilters);
+            filterAreaTopLevel.addEventListener('change', applyFilters);
+            filterTarea.addEventListener('change', applyFilters);
+            clearFiltersBtn.addEventListener('click', clearFilters);
+
+            // Listeners para modal
+            openModalBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            // CORRECCIÓN: Se eliminó el guion bajo (_) que causaba el error
+            cancelModalBtn.addEventListener('click', closeModal);
+            addEntryForm.addEventListener('submit', handleFormSubmit);
+            
+            // Cerrar modal al hacer clic en el overlay
+            addEntryModal.querySelector('.modal-overlay').addEventListener('click', closeModal);
+        });
+    </script>
+</body>
+
+</html>
+

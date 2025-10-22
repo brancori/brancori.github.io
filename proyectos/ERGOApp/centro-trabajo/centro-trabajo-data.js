@@ -38,11 +38,11 @@
 
          if (evaluaciones.length > 0) {
             const eval_ = evaluaciones[0];
-            console.log('🔍 DEBUG: Estructura de la evaluación:', eval);
-            console.log('🔍 DEBUG: Campos disponibles:', Object.keys(eval));
-            const score = eval.score_final || eval.scoreFinal || '0';
-            const categoria = eval.categoria_riesgo || eval.categoriaRiesgo || 'Sin evaluar';
-            const fecha = eval.fecha_evaluacion || eval.fechaEvaluacion || 'No especificada';
+            console.log('🔍 DEBUG: Estructura de la evaluación:', eval_);
+            console.log('🔍 DEBUG: Campos disponibles:', Object.keys(eval_));
+            const score = eval_.score_final || eval_.scoreFinal || '0';
+            const categoria = eval_.categoria_riesgo || eval_.categoriaRiesgo || 'Sin evaluar';
+            const fecha = eval_.fecha_evaluacion || eval_.fechaEvaluacion || 'No especificada';
 
             // Actualizar score principal
             document.getElementById('score-value').textContent = `${score}%`;
@@ -88,7 +88,6 @@
     }
 }
 
-
         async function loadFotos() {
             try {
                 if (window.ERGOConfig.USE_SUPABASE) {
@@ -121,16 +120,19 @@
             }
         }
 
-        
+        function decodeHTML(html) {
+    if (!html) return '';
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+}
 
 async function loadActividades() {
     const evaluacionesContainer = document.getElementById('evaluaciones-container');
     evaluacionesContainer.innerHTML = '<div class="empty-evaluations"><p>Cargando actividades...</p></div>';
 
     try {
-        // aquí inicia
-        evaluacionesEspecificas = await dataClient.getWorkCenterSummary(workCenterId);
-        // aquí termina
+        evaluacionesEspecificas = await dataClient.getActividades(workCenterId);
 
         if (evaluacionesEspecificas && evaluacionesEspecificas.length > 0) {
             evaluacionesContainer.innerHTML = '';
@@ -138,35 +140,58 @@ async function loadActividades() {
                 const item = document.createElement('div');
                 item.className = `actividad-item`;
                 item.setAttribute('data-id', actividad.id);
-                item.onclick = (e) => toggleActividadDetails(actividad, item);
 
-                // Determina la clase del score
-                let scoreClass = '';
-                if (actividad.score_final > 60) {
-                    scoreClass = 'score-high';
-                } else if (actividad.score_final > 25) {
-                    scoreClass = 'score-medium';
-                }
+                // ✅ CREAR DIVS SEPARADOS PARA EVITAR ESCAPE
+const comentariosDiv = document.createElement('div');
+                comentariosDiv.className = 'content';
+                // REVISIÓN: Usar DOMPurify si existe, si no, usar el HTML directo.
+                comentariosDiv.innerHTML = (typeof DOMPurify !== 'undefined') 
+                    ? DOMPurify.sanitize(actividad.comentarios || '<i>Sin comentarios.</i>') 
+                    : (actividad.comentarios || '<i>Sin comentarios.</i>');
+
+
+                const recomendacionesDiv = document.createElement('div');
+                recomendacionesDiv.className = 'content';
+                // REVISIÓN: Usar DOMPurify si existe, si no, usar el HTML directo.
+                recomendacionesDiv.innerHTML = (typeof DOMPurify !== 'undefined')
+                    ? DOMPurify.sanitize(actividad.recomendaciones || '<i>Sin recomendaciones.</i>')
+                    : (actividad.recomendaciones || '<i>Sin recomendaciones.</i>');
 
                 item.innerHTML = `
-                    <div class="actividad-header">
+                    <div class="actividad-header" onclick="toggleActividadDetails(this.parentElement, '${actividad.id}')">
+                        <div class="chevron">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
                         <div class="actividad-info">
-                            <span class="nombre">${actividad.nombre}</span>
-                            <span class="meta">${actividad.tipo} - ${new Date(actividad.created_at).toLocaleDateString()}</span>
+                            <div class="nombre">${actividad.nombre}</div>
+                            <div class="meta">Método: ${actividad.metodo || 'No definido'} • Creada: ${new Date(actividad.created_at).toLocaleDateString()}</div>
                         </div>
-                        <div class="actividad-status">
-                            ${actividad.metodo ? 'Evaluada' : 'Pendiente'}
+                        <div class="actividad-status">${actividad.score_final ? actividad.score_final.toFixed(1) : 'Pendiente'}</div>
+                        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); abrirModalActividad('${actividad.id}')">Editar</button>
+                    </div>
+                    <div class="actividad-details">
+                        <div class="details-section">
+                            <h4>Fotos</h4>
+                            <div class="fotos-info">No hay fotos para esta actividad.</div>
                         </div>
-                        <div class="actividad-actions">
-                            <button class="btn btn-ghost btn-sm" onclick="eliminarEvaluacionEspecifica(event, '${actividad.id}', '${actividad.tipo}')">Eliminar</button>
-                            <button class="btn btn-ghost btn-sm" onclick="abrirModalActividad('${actividad.id}')">Editar</button>
+                        <div class="details-section">
+                            <h4>Comentarios</h4>
+                            <div id="comentarios-${actividad.id}"></div>
                         </div>
-                        <span class="chevron">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </span>
+                        <div class="details-section">
+                            <h4>Recomendaciones</h4>
+                            <div id="recomendaciones-${actividad.id}"></div>
+                        </div>
                     </div>
                 `;
+                
                 evaluacionesContainer.appendChild(item);
+                
+                // ✅ AHORA INSERTAR EL CONTENIDO SIN ESCAPE
+                document.getElementById(`comentarios-${actividad.id}`).appendChild(comentariosDiv);
+                document.getElementById(`recomendaciones-${actividad.id}`).appendChild(recomendacionesDiv);
             });
         } else {
             evaluacionesContainer.innerHTML = `
@@ -181,6 +206,8 @@ async function loadActividades() {
         evaluacionesContainer.innerHTML = '<p class="error-message">Error al cargar datos.</p>';
     }
 }
+
+
 
 // Render
 
@@ -474,9 +501,13 @@ async function toggleActividadDetails(itemElement, actividadId) {
                 '</div>';
         }
         // Escape de texto para comentarios y recomendaciones
-        const escapeHTML = (str) => str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const comentarios = actividad.comentarios ? escapeHTML(actividad.comentarios) : '<i>Sin comentarios.</i>';
-        const recomendaciones = actividad.recomendaciones ? escapeHTML(actividad.recomendaciones) : '<i>Sin recomendaciones.</i>';
+const comentarios = (typeof DOMPurify !== 'undefined')
+            ? DOMPurify.sanitize(actividad.comentarios || '<i>Sin comentarios.</i>')
+            : (actividad.comentarios || '<i>Sin comentarios.</i>');
+            
+        const recomendaciones = (typeof DOMPurify !== 'undefined')
+            ? DOMPurify.sanitize(actividad.recomendaciones || '<i>Sin recomendaciones.</i>')
+            : (actividad.recomendaciones || '<i>Sin recomendaciones.</i>');
         // Insertar el contenido completo en el contenedor de detalles
         detailsContainer.innerHTML = `
             <div class="details-section">

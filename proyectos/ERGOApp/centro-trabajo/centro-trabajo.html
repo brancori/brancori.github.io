@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="../componentes/globals.css">
     <link rel="stylesheet" href="./centro-trabajo.css">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.11/purify.min.js" 
+        integrity="sha512-7VVGl2bh7eYo6iZo5deNVxT3wLGRjGFHpN5eLPbfGdvqNGJiJMhZzMBiLTz6qy5F4FYdRdqG0OdSqQQfXCMxA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.min.js" defer></script>
     <script src="../componentes/globals.js" defer></script>
@@ -306,12 +310,12 @@
 
                 <div class="form-group full-width">
                     <label for="actividad-comentarios">Comentarios</label>
-                    <textarea id="actividad-comentarios" class="input-field" rows="4"></textarea>
+                    <div id="actividad-comentarios" class="input-field" rows="4"></div>
                 </div>
 
                 <div class="form-group full-width">
                     <label for="actividad-recomendaciones">Recomendaciones</label>
-                    <textarea id="actividad-recomendaciones" class="input-field" rows="4"></textarea>
+                    <div id="actividad-recomendaciones" class="input-field" rows="4"></div>
                 </div>
             </div> <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="cerrarModalActividad()">Cancelar</button>
