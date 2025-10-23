@@ -83,7 +83,48 @@ renderGlobalRiskChart(summary) {
     }
 }
     
+updateDueDatesTable(capas) {
+    const tbody = document.getElementById('due-dates-table-body');
+    if (!tbody) return;
 
+    tbody.innerHTML = ''; // Limpiar
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Para comparar solo fechas
+
+    if (!capas || capas.length === 0) {
+        tbody.innerHTML = '<div class="table-row placeholder"><div class="cell" colspan="3">No hay CAPAs con vencimiento.</div></div>';
+        return;
+    }
+
+    // Ordenar por fecha de vencimiento (más cercanos primero)
+    capas.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+
+    capas.forEach(capa => {
+        const dueDate = new Date(capa.due_date);
+        const isOverdue = dueDate < now;
+
+        const row = document.createElement('div');
+        row.className = 'table-row'; // Quitamos 'clickable' por ahora
+        if (isOverdue) {
+            row.classList.add('overdue'); // <-- Clase para items vencidos
+        }
+
+        // Formatear la fecha
+        const dateString = dueDate.toLocaleDateString('es-ES', { 
+            year: 'numeric', month: 'short', day: 'numeric' 
+        });
+
+        row.innerHTML = `
+            <div class="cell">${capa.requirement.name || 'N/A'}</div>
+            <div class="cell">${capa.action_plan || 'Sin plan'}</div>
+            <div class="cell" title="${isOverdue ? 'Vencido' : 'Pendiente'}">
+                ${isOverdue ? '❗️' : ''} ${dateString}
+            </div>
+        `;
+        tbody.appendChild(row);
+    });
+}
     init() {
     console.log("🚀 Iniciando Sistema de Evaluación Ergonómica");
 
@@ -508,28 +549,26 @@ async loadDashboardData() {
         console.log("📦 Dashboard cargado desde cache");
         this.updateDashboardTables(cached);
         this.updateTopKPIs(cached);
-        if (this.mapInstances?.length > 0) {
-            this.mapInstances.forEach(mapInstance => {
-                if (mapInstance?.updateRiskData) {
-                    mapInstance.updateRiskData(cached.areas || []);
-                }
-            });
-        }
+        // ... (código de cache de mapas existente) ...
     }
 
     while (currentRetry < maxRetries) {
         try {
             console.log(`📊 Cargando datos del dashboard (intento ${currentRetry + 1}/${maxRetries})`);
 
-            // Verificar cliente
             if (!window.dataClient) {
                 throw new Error("dataClient no está inicializado");
             }
 
             // Consultar Supabase
-            const [dashboardData, pictogramSummary] = await Promise.all([
+            const [dashboardData, pictogramSummary, capasData] = await Promise.all([
                 window.dataClient.getDashboardData(),
-                window.dataClient.getGlobalPictogramSummary()
+                window.dataClient.getGlobalPictogramSummary(),
+                // NUEVA CONSULTA: Obtener CAPAs pendientes
+                window.dataClient.query(
+                    'compliance_evaluations', 'GET', null, 
+                    '?status=eq.no-cumple&due_date=not.is.null&select=*,requirement:compliance_requirements(name)'
+                ) 
             ]);
 
             if (!dashboardData) throw new Error("No se recibieron datos del dashboard");
@@ -538,26 +577,11 @@ async loadDashboardData() {
             this.updateDashboardTables(dashboardData);
             this.updateTopKPIs(dashboardData);
             this.renderGlobalRiskChart(pictogramSummary);
+            this.updateDueDatesTable(capasData); // <-- LLAMAR A LA NUEVA FUNCIÓN
 
             // 3. Guardar cache
             ERGOStorage.setItem("dashboardData", dashboardData);
-
-            // Actualizar mapas
-            if (this.mapInstances?.length > 0) {
-                this.mapInstances.forEach(mapInstance => {
-                    if (mapInstance?.updateRiskData) {
-                        mapInstance.updateRiskData(dashboardData.areas || []);
-                    }
-                });
-            } else {
-                console.log("🔄 No hay mapas disponibles, reintentando inicialización...");
-                setTimeout(() => {
-                    this.setupMapCarousel();
-                    if (this.mapInstances.length > 0) {
-                        this.loadDashboardData();
-                    }
-                }, 1000);
-            }
+            // ... (código de actualización de mapas existente) ...
 
             console.log("✅ Datos del dashboard cargados correctamente");
             return;

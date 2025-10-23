@@ -228,8 +228,8 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
             margin-left: 0;  /* Clave: Asegura que no haya margen que cause el efecto */
         }
         .foto-slot__delete-btn:hover {
-    background: var(--red-600);
-}
+         background: var(--red-600);
+        }
 
         .nota-item {
             border-left: 4px solid var(--primary-500);
@@ -313,171 +313,171 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     .details-grid {
         grid-template-columns: 1fr; /* 1 columna en dispositivos muy pequeños */
     }
-}
+    }
 
         /* Modal para vista completa de fotos */
-.foto-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-}
-
-.foto-modal.show {
-    display: flex;
-    opacity: 1;
-}
-
-#fotos-grid-actividad {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Miniaturas más pequeñas */
-    gap: 0.75rem;
-}
-
-.foto-modal-content {
-    position: relative;
-    max-width: 95vw;
-    max-height: 95vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: modalZoomIn 0.3s ease-out;
-}
-
-@keyframes modalZoomIn {
-    from {
-        transform: scale(0.7);
+    .foto-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
         opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
     }
-    to {
-        transform: scale(1);
+
+    .foto-modal.show {
+        display: flex;
         opacity: 1;
     }
-}
 
-.foto-modal-image {
-    max-width: 100%;
-    max-height: 80vh;
-    object-fit: contain;
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    #fotos-grid-actividad {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Miniaturas más pequeñas */
+        gap: 0.75rem;
+    }
 
-}
+    .foto-modal-content {
+        position: relative;
+        max-width: 95vw;
+        max-height: 95vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: modalZoomIn 0.3s ease-out;
+    }
 
-.foto-modal-info {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 1rem 1.5rem;
-    border-radius: var(--border-radius-lg);
-    margin-top: 1rem;
-    text-align: center;
-    color: var(--gray-800);
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
-}
-
-.nota-header {
-            margin-bottom: 0.5rem;
+    @keyframes modalZoomIn {
+        from {
+            transform: scale(0.7);
+            opacity: 0;
         }
-
-        .nota-actions {
-            display: flex;
-            align-items: center;
+        to {
+            transform: scale(1);
+            opacity: 1;
         }
+    }
 
-.foto-modal-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--gray-700);
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    z-index: 10;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-lg);
-}
+    .foto-modal-image {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: var(--border-radius-lg);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-.foto-modal-close:hover {
-    background: rgba(239, 68, 68, 0.9);
-    color: white;
-    transform: scale(1.1);
-}
+    }
 
-.foto-modal-controls {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    z-index: 10;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-lg);
-    color: var(--gray-700);
-}
+    .foto-modal-info {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 1rem 1.5rem;
+        border-radius: var(--border-radius-lg);
+        margin-top: 1rem;
+        text-align: center;
+        color: var(--gray-800);
+        font-weight: 500;
+        box-shadow: var(--shadow-lg);
+    }
 
-.foto-modal-controls:hover {
-    background: rgba(59, 130, 246, 0.9);
-    color: white;
-    transform: translateY(-50%) scale(1.1);
-}
+    .nota-header {
+                margin-bottom: 0.5rem;
+            }
 
-.foto-modal-prev {
-    left: 20px;
-}
+            .nota-actions {
+                display: flex;
+                align-items: center;
+            }
 
-.foto-modal-next {
-    right: 20px;
-}
+    .foto-modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--gray-700);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        z-index: 10;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-lg);
+    }
 
-.foto-modal-counter {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-md);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--gray-700);
-    box-shadow: var(--shadow-lg);
-}
+    .foto-modal-close:hover {
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        transform: scale(1.1);
+    }
 
-/* Zoom functionality */
-.foto-modal-image.zoomed {
-    cursor: zoom-out;
-    transform: scale(1.5);
-}
+    .foto-modal-controls {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        z-index: 10;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-lg);
+        color: var(--gray-700);
+    }
 
-.foto-modal-image:not(.zoomed) {
-    cursor: zoom-in;
-}
+    .foto-modal-controls:hover {
+        background: rgba(59, 130, 246, 0.9);
+        color: white;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .foto-modal-prev {
+        left: 20px;
+    }
+
+    .foto-modal-next {
+        right: 20px;
+    }
+
+    .foto-modal-counter {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius-md);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Zoom functionality */
+    .foto-modal-image.zoomed {
+        cursor: zoom-out;
+        transform: scale(1.5);
+    }
+
+    .foto-modal-image:not(.zoomed) {
+        cursor: zoom-in;
+    }
 
 /* Responsive para móviles */
 @media (max-width: 768px) {
@@ -1373,14 +1373,14 @@ textarea.is-readonly:focus {
 }
 
 
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .foto-slot img,
-    .foto-modal-image {
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-        image-rendering: pixelated; /* Mejor soporte para Edge y otros navegadores */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .foto-slot img,
+        .foto-modal-image {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated; /* Mejor soporte para Edge y otros navegadores */
+        }
     }
-}
 
 /* Mejoras para modo landscape en móviles */
 @media (max-width: 768px) and (orientation: landscape) {

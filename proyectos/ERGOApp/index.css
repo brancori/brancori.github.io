@@ -1178,3 +1178,24 @@ puedes reemplazar el ::after por esto:
   flex: 1;
   overflow: hidden;
 }
+
+/* ... (después de #top-risk-table-container .cell:nth-child(3)) ... */
+
+/* Tabla 3: Alertas de Vencimiento */
+#due-dates-table-container .header-cell:nth-child(1) { flex: 2; } /* Requerimiento */
+#due-dates-table-container .header-cell:nth-child(2) { flex: 3; } /* Plan de Acción */
+#due-dates-table-container .header-cell:nth-child(3) { text-align: right; flex: 1.5; } /* Vencimiento */
+
+#due-dates-table-container .cell:nth-child(1) { justify-content: flex-start; flex: 2; font-weight: 500; }
+#due-dates-table-container .cell:nth-child(2) { justify-content: flex-start; flex: 3; font-style: italic; color: var(--gray-600); }
+#due-dates-table-container .cell:nth-child(3) { justify-content: flex-end; flex: 1.5; font-weight: 600; }
+
+/* Estilo para CAPAs vencidas */
+#due-dates-table-container .table-row.overdue .cell:nth-child(3) {
+    color: var(--red-600) !important;
+    animation: pulse-red 2s infinite; /* Reutilizar animación de riesgo crítico */
+}
+
+#due-dates-table-container .table-row.overdue:hover {
+    background: var(--red-50) !important;
+}

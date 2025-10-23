@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Cumplimiento - ERGOApp</title>
+    <script src="../../globals.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../../localStorage-cache.js" defer></script>
+    <script src="../../supabase-config.js" defer></script>
+    <script src="../../realtime-client.js" defer></script>
+    <script src="../../auth-client.js" defer></script>
+    <script src="../../header-component.js" defer></script>
     
-    <!-- PASO 1: Carga de scripts y estilos globales -->
-    <!-- globals.js establece la configuración (ERGOConfig) -->
-    <script src="../../globals.js"></script>
-    
-    <!-- =================================================================== -->
-    <!-- CORRECCIÓN CRÍTICA: Añadir la librería principal de Supabase desde CDN -->
-    <!-- Esta línea es esencial. Proporciona el objeto global 'supabase' que -->
-    <!-- 'auth-client.js' y 'supabase-config.js' necesitan para funcionar. -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- =================================================================== -->
-
     <link rel="stylesheet" href="../../globals.css">
 
     <style>
@@ -117,7 +113,15 @@
         .btn-pendiente:hover { background-color: var(--yellow-200); }
         .btn-no-aplica { background-color: var(--gray-200); color: var(--gray-700); }
         .btn-no-aplica:hover { background-color: var(--gray-300); }
+            .btn-no-cumple { background-color: var(--red-100); color: var(--red-800); }
+        .btn-no-cumple:hover { background-color: var(--red-200); }
 
+        /* Estilo para el botón activo */
+        .status-btn.active {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 2px var(--primary-600);
+            font-weight: 700;
+            transform: scale(1.05);
+        }
         /* Modal para Evidencias */
         .modal {
             display: none;
@@ -131,6 +135,40 @@
             background-color: rgba(0,0,0,0.5);
             align-items: center;
             justify-content: center;
+        }
+        .history-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        .history-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        .history-status {
+            font-weight: 600;
+            color: var(--gray-800);
+            text-transform: capitalize;
+        }
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        .history-comment {
+            margin: 0;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            padding-left: 0.5rem;
         }
         .modal-content {
             background-color: #fff;
@@ -179,6 +217,37 @@
             font-size: 1.2rem;
             color: var(--primary-600);
         }
+
+        .item-details {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding: 0 1rem; /* Padding horizontal para alinear con el contenido */
+            margin-top: 0;
+            border-top: 1px solid transparent; /* Borde sutil */
+        }
+
+        /* Estilo cuando el item está expandido */
+        .item.expanded .item-details {
+            max-height: 500px; /* Un valor alto para permitir contenido */
+            padding: 1rem; /* Padding completo al expandirse */
+            margin-top: 0.5rem;
+            border-top-color: var(--gray-200);
+        }
+
+        .item-details p {
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-700);
+        }
+        .item-details .detail-label {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        /* Cursor para indicar que el contenido es clickeable */
+        .item-content {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -221,11 +290,21 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="current-item-id">
-                <label for="evidence-text">Comentarios:</label>
-                <textarea id="evidence-text" class="form-input" placeholder="Añade un comentario sobre la evidencia..."></textarea>
-                
-                <label for="file-input">Subir Archivo:</label>
-                <div class="file-upload-wrapper" onclick="document.getElementById('file-input').click();">
+<label for="evidence-text">Comentarios:</label>
+<textarea id="evidence-text" ...></textarea>
+
+<div id="capa-fields" style="display: none;">
+    <div class="form-group">
+        <label for="action-plan">Plan de Acción (CAPA):</label>
+        <textarea id="action-plan" class="form-input" placeholder="Describe la acción correctiva..."></textarea>
+    </div>
+    <div class="form-group">
+        <label for="due-date">Fecha de Vencimiento:</label>
+        <input type="date" id="due-date" class="form-input">
+    </div>
+</div>
+<label for="file-input">Subir Archivo:</label>
+<div class="file-upload-wrapper" ...>
                     <p>Haz clic aquí para seleccionar un archivo</p>
                     <span id="file-name">Ningún archivo seleccionado</span>
                 </div>
@@ -240,13 +319,6 @@
     
     <!-- Contenedor para las notificaciones (toast) -->
     <div id="toast-container"></div>
-
-    <!-- PASO 2: Carga de scripts de dependencias -->
-    <!-- Se cargan al final para no bloquear el renderizado del HTML. -->
-    <!-- El orden es crucial: la librería de Supabase ya se cargó en el <head>. -->
-    <script src="../../supabase-config.js"></script>
-    <script src="../../auth-client.js"></script>
-    <script src="../../header-component.js"></script>
 
     <!-- PASO 3: Lógica principal de la página de Cumplimiento -->
     <script>
@@ -279,16 +351,28 @@
                 evidenceText: document.getElementById('evidence-text'),
                 fileInput: document.getElementById('file-input'),
                 fileName: document.getElementById('file-name'),
-                currentItemId: document.getElementById('current-item-id')
+                currentItemId: document.getElementById('current-item-id'),
+                fileUploadWrapper: document.querySelector('.file-upload-wrapper'),
+                actionPlan: document.getElementById('action-plan'),
+                dueDate: document.getElementById('due-date')
             };
         },
 
-        addEventListeners() {
+            addEventListeners() {
             this.elements.list.addEventListener('click', (e) => {
-                if (e.target.classList.contains('status-btn')) {
-                    const id = parseInt(e.target.dataset.id);
-                    const type = e.target.dataset.type;
-                    this.handleStatusClick(id, type);
+                const statusButton = e.target.closest('.status-btn');
+                const contentArea = e.target.closest('.item-content');
+
+                if (statusButton) {
+                    // Clic en un BOTÓN: Abrir modal de edición
+                    const id = parseInt(statusButton.dataset.id);
+                    const type = statusButton.dataset.type;
+                    this.handleStatusClick(id, type); // Esto llama a openModal
+
+                } else if (contentArea) {
+                    // Clic en el CONTENIDO: Expandir/Colapsar
+                    const item = contentArea.closest('.item');
+                    item.classList.toggle('expanded');
                 }
             });
             this.elements.closeBtn.onclick = () => this.closeModal();
@@ -299,33 +383,47 @@
             };
         },
         
-        async fetchData() {
+async fetchData() {
             this.elements.loader.style.display = 'block';
             this.elements.list.style.display = 'none';
 
             try {
-                const { data, error } = await this.supabase
-                    .from('compliance_evaluations')
-                    .select(`
-                        id,
-                        status,
-                        comment,
-                        evidence_file_path,
-                        action_plan,
-                        due_date,
-                        requirement:compliance_requirements (id, name, content, category)
-                    `)
-                    .order('id', { ascending: true });
+                // 1. Traer evaluaciones e historial en paralelo
+                const [evalsResponse, historyResponse] = await Promise.all([
+                    this.supabase
+                        .from('compliance_evaluations')
+                        .select(`
+                            id,
+                            status,
+                            comment,
+                            evidence_file_path,
+                            requirement:compliance_requirements (id, name, content)
+                        `)
+                        .order('id', { ascending: true }),
+                    this.supabase
+                        .from('compliance_history')
+                        .select('*')
+                        .order('changed_at', { ascending: false })
+                ]);
 
-                if (error) {
-                    throw error;
-                }
-                
-                this.data = data.map(item => ({
-                    evaluation_id: item.id,
-                    status: item.status,
-                    ...item.requirement
-                }));
+                if (evalsResponse.error) throw evalsResponse.error;
+                if (historyResponse.error) throw historyResponse.error;
+
+                const evaluations = evalsResponse.data;
+                const history = historyResponse.data;
+
+                // 2. Unir el historial con sus evaluaciones correspondientes
+                this.data = evaluations.map(item => {
+                    const itemHistory = history.filter(h => h.evaluation_id === item.id);
+                    return {
+                        evaluation_id: item.id,
+                        status: item.status,
+                        comment: item.comment, // El último comentario
+                        evidence_file_path: item.evidence_file_path, // El último archivo
+                        ...item.requirement,
+                        history: itemHistory // <-- El historial completo anidado
+                    };
+                });
 
                 this.render();
 
@@ -338,7 +436,7 @@
             }
         },
 
-        render() {
+            render() {
             this.elements.list.innerHTML = '';
             if (this.data.length === 0) {
                 this.elements.list.innerHTML = '<p>No hay requerimientos de cumplimiento para mostrar.</p>';
@@ -347,15 +445,37 @@
             this.data.forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'item';
+                
+                // Generar el HTML para la lista del historial
+                const historyHtml = item.history.length > 0
+                    ? '<ul class="history-list">' + item.history.map(log => `
+                        <li class="history-item">
+                            <div class="history-header">
+                                <span class="history-status">${log.new_status || 'N/A'}</span>
+                                <span class="history-date">
+                                    ${ERGOUtils.formatDateTime(log.changed_at)}
+                                </span>
+                            </div>
+                            <p class="history-comment">${log.comment || 'Sin comentario'}</p>
+                        </li>
+                    `).join('') + '</ul>'
+                    : '<div class="item-details"><p>No hay historial de cambios.</p></div>';
+
                 itemEl.innerHTML = `
-                    <div class="item-content">
+                    <div class="item-content" title="Ver/Ocultar historial">
                         <h3>${item.name}</h3>
                         <p>${item.content}</p>
                     </div>
+
+                    <div class="item-details">
+                        ${historyHtml}
+                    </div>
+
                     <div class="item-actions">
-                        <button class="status-btn btn-completado" data-id="${item.evaluation_id}" data-type="completado">Completado</button>
-                        <button class="status-btn btn-pendiente" data-id="${item.evaluation_id}" data-type="pendiente">Pendiente</button>
-                        <button class="status-btn btn-no-aplica" data-id="${item.evaluation_id}" data-type="no_aplica">No Aplica</button>
+                        <button class="status-btn btn-completado ${item.status === 'cumple' ? 'active' : ''}" data-id="${item.evaluation_id}" data-type="cumple">Cumple</button>
+                        <button class="status-btn btn-pendiente ${item.status === 'pendiente' ? 'active' : ''}" data-id="${item.evaluation_id}" data-type="pendiente">Pendiente</button>
+                        <button class="status-btn btn-no-cumple ${item.status === 'no-cumple' ? 'active' : ''}" data-id="${item.evaluation_id}" data-type="no-cumple">No Cumple</button>
+                        <button class="status-btn btn-no-aplica ${item.status === 'na' ? 'active' : ''}" data-id="${item.evaluation_id}" data-type="na">No Aplica</button>
                     </div>
                 `;
                 this.elements.list.appendChild(itemEl);
@@ -363,11 +483,15 @@
             this.updateIndicators();
         },
 
-        updateIndicators() {
+            updateIndicators() {
             const total = this.data.length;
-            const completed = this.data.filter(item => item.status === 'completado').length;
+            
+            // CORRECCIÓN AQUÍ:
+            const completed = this.data.filter(item => item.status === 'cumple').length;
             const pending = this.data.filter(item => item.status === 'pendiente').length;
-            const notApplicable = this.data.filter(item => item.status === 'no_aplica').length;
+            
+            // CORRECCIÓN AQUÍ:
+            const notApplicable = this.data.filter(item => item.status === 'na').length;
 
             this.elements.totalValue.textContent = total;
             this.elements.completedValue.textContent = completed;
@@ -386,33 +510,168 @@
             }
         },
 
-        async updateStatus(id, status, evidence) {
-            console.log(`Actualizando ID ${id} a estado ${status} con evidencia:`, evidence);
+            async updateStatus(id, newStatus, evidence) {
+            console.log(`Actualizando ID ${id} a estado ${newStatus} con evidencia:`, evidence);
             
             const item = this.data.find(i => i.evaluation_id === id);
-            if(item) {
-                item.status = status;
-                this.render();
+            if (!item) return;
+
+            // Obtener datos que necesitamos para el historial
+            const oldStatus = item.status;
+            const currentUser = ERGOAuth.getCurrentUser();
+            const userId = currentUser ? currentUser.id : null;
+            
+            try {
+                let filePath = item.evidence_file_path; // Mantener el anterior si no se sube uno nuevo
+
+                // 1. Manejar la subida de archivos (si existe)
+                if (evidence.archivo) {
+                    const file = evidence.archivo;
+                    filePath = `compliance/${id}/${Date.now()}_${file.name}`;
+
+                    const { error: uploadError } = await this.supabase.storage
+                        .from('fotos')
+                        .upload(filePath, file);
+
+                    if (uploadError) {
+                        if (window.ERGOUtils) ERGOUtils.showToast('Error al subir el archivo.', 'error');
+                        throw uploadError;
+                    }
+                }
+
+                // 2. Preparar los datos para ambas tablas
+                const evalData = {
+                        status: newStatus,
+                        comment: evidence.texto || null,
+                        evidence_file_path: filePath,
+                        updated_at: new Date().toISOString(),
+                        updated_by: userId,
+                        
+                        // AÑADIR DATOS DEL CAPA
+                        action_plan: evidence.action_plan || null,
+                        due_date: evidence.due_date || null
+                    };
+if (newStatus !== 'no-cumple') {
+        evalData.action_plan = null;
+        evalData.due_date = null;
+    }
+                const historyData = {
+                    evaluation_id: id,
+                    old_status: oldStatus,
+                    new_status: newStatus,
+                    comment: evidence.texto || null,
+                    changed_by: userId
+                    // changed_at se pone por defecto en la DB
+                };
+
+                // 3. Ejecutar ambas operaciones en paralelo
+                const [updateResponse, historyResponse] = await Promise.all([
+                    this.supabase
+                        .from('compliance_evaluations')
+                        .update(evalData)
+                        .eq('id', id)
+                        .select()
+                        .single(), // Pedimos el registro actualizado
+                    
+                    this.supabase
+                        .from('compliance_history')
+                        .insert(historyData)
+                        .select()
+                        .single() // Pedimos el registro del historial creado
+                ]);
+
+                if (updateResponse.error) throw updateResponse.error;
+                if (historyResponse.error) throw historyResponse.error;
+
+                // 4. (ÉXITO) Actualizar la UI local
+                if (window.ERGOUtils) ERGOUtils.showToast('Estado actualizado.', 'success');
+                
+                // Actualizar los datos locales del item
+                const updatedItem = updateResponse.data;
+                const newHistoryLog = historyResponse.data;
+
+                item.status = updatedItem.status;
+                item.comment = updatedItem.comment;
+                item.evidence_file_path = updatedItem.evidence_file_path;
+                // Añadir el nuevo historial al principio de la lista
+                item.history.unshift(newHistoryLog); 
+                
+                this.render(); // Actualiza la lista y los indicadores
+
+            } catch (error) {
+                console.error('Fallo en el proceso de updateStatus:', error);
+                if (window.ERGOUtils) ERGOUtils.showToast(`Error al guardar: ${error.message}`, 'error');
+                throw error;
             }
         },
 
-        openModal(itemId, type) {
-            const item = this.data.find(i => i.evaluation_id === itemId);
-            this.elements.currentItemId.value = itemId;
-            this.elements.modalTitle.textContent = `Evidencia para: ${item.name}`;
-            this.elements.modal.dataset.actionType = type;
+            openModal(itemId, type) {
+                const item = this.data.find(i => i.evaluation_id === itemId);
+                this.elements.currentItemId.value = itemId;
+                this.elements.modalTitle.textContent = `Evidencia para: ${item.name}`;
+
+                // ... (código existente para resetear campos) ...
+
+                // Precargar datos existentes
+                this.elements.evidenceText.value = item.comment || '';
+                
+                // Cargar datos del CAPA si existen
+                this.elements.actionPlan.value = item.action_plan || '';
+                this.elements.dueDate.value = item.due_date || '';
+
+                // MOSTRAR/OCULTAR CAMPOS DE CAPA
+                const capaFields = document.getElementById('capa-fields');
+                if (type === 'no-cumple') {
+                    capaFields.style.display = 'block';
+                } else {
+                    capaFields.style.display = 'none';
+                }
+                
+                // ... (código existente para precargar archivo y mostrar modal) ...
+                this.elements.modal.dataset.actionType = type;
+                this.elements.modal.style.display = 'flex';
+            },
+            openDetailsModal(id) {
+            const item = this.data.find(i => i.evaluation_id === id);
+            if (!item) return;
+
+            this.elements.modalTitle.textContent = `Detalles: ${item.name}`;
+            
+            // Poner en modo solo lectura
+            this.elements.evidenceText.value = item.comment || 'No hay comentarios.';
+            this.elements.evidenceText.readOnly = true; 
+            
+            // Mostrar archivo
+            if (item.evidence_file_path) {
+                // Extraer nombre de archivo de la ruta (quitando el timestamp)
+                const fileName = item.evidence_file_path.split('/').pop().substring(14); // Asume timestamp
+                this.elements.fileName.textContent = fileName || item.evidence_file_path;
+            } else {
+                this.elements.fileName.textContent = 'No se adjuntó archivo.';
+            }
+            
+            // Ocultar campos de subida y botón de guardar
+            this.elements.fileUploadWrapper.style.display = 'none';
+            this.elements.saveBtn.style.display = 'none';
+            this.elements.cancelBtn.textContent = 'Cerrar'; // Cambiar texto del botón
+            
+            this.elements.modal.dataset.actionType = 'view';
             this.elements.modal.style.display = 'flex';
         },
 
-        closeModal() {
+            closeModal() {
             this.elements.modal.style.display = 'none';
+            
+            // Resetear campos
             this.elements.evidenceText.value = '';
+            // No necesitamos resetear readOnly porque siempre está en false
             this.elements.fileInput.value = '';
             this.elements.fileName.textContent = 'Ningún archivo seleccionado';
             this.elements.currentItemId.value = '';
+            // No necesitamos resetear los botones, ya que siempre están visibles
         },
 
-        async saveEvidence() {
+async saveEvidence() {
             const requirementId = parseInt(this.elements.currentItemId.value);
             const item = this.data.find(i => i.evaluation_id === requirementId);
             if (!item) return;
@@ -420,15 +679,37 @@
             const status = this.elements.modal.dataset.actionType;
             const texto = this.elements.evidenceText.value;
             const archivoInput = this.elements.fileInput.files[0];
+            
+            // --- INICIO DE LA CORRECCIÓN ---
+            // Faltaba leer estos dos valores del formulario
+            const actionPlan = this.elements.actionPlan.value;
+            const dueDate = this.elements.dueDate.value;
+            // --- FIN DE LA CORRECCIÓN ---
 
             this.elements.saveBtn.textContent = 'Guardando...';
             this.elements.saveBtn.disabled = true;
 
-            await this.updateStatus(item.evaluation_id, status, { texto, archivo: archivoInput });
+            try {
+                // 2. Llamar a la función 'updateStatus' con los datos completos
+                await this.updateStatus(item.evaluation_id, status, { 
+                    texto, 
+                    archivo: archivoInput,
+                    action_plan: actionPlan, // <-- AÑADIDO
+                    due_date: dueDate        // <-- AÑADIDO
+                });
+                
+                // 3. Si todo va bien, cerrar el modal
+                this.closeModal();
 
-            this.elements.saveBtn.textContent = 'Guardar';
-            this.elements.saveBtn.disabled = false;
-            this.closeModal();
+            } catch (error) {
+                // 4. Si hay un error, el modal se mantiene abierto
+                console.error('Fallo al guardar evidencia (capturado en saveEvidence):', error);
+            
+            } finally {
+                // 5. Esto se ejecuta siempre
+                this.elements.saveBtn.textContent = 'Guardar';
+                this.elements.saveBtn.disabled = false;
+            }
         }
     };
 

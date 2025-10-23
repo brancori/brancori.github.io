@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Evaluación Ergonómica</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg:#0f1724; --card:#071022; --accent:#06b6d4; --muted:#93a3b3; --glass: rgba(255,255,255,0.03);
@@ -43,6 +44,58 @@
   select option{
     color:#021226
   }
+  /* --- Estilos del Modal --- */
+.modal-overlay {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  /* Fondo oscuro semitransparente */
+  background-color: rgba(0,0,0,0.7);
+  
+  /* Para centrar el contenido */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.05);
+  margin: auto;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: var(--accent); /* Color cian */
+}
+
+.modal-content p {
+  color: var(--text); /* Color de texto normal */
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.modal-subtle {
+  font-size: 14px;
+  color: var(--muted); /* El gris medio tenue */
+  font-style: italic;
+  margin-top: 16px;
+}
+
+.modal-content .btn {
+  margin-top: 20px;
+}
 </style>
 </head>
 <body>
@@ -116,19 +169,18 @@
             <label class="small" style="margin-top:8px">¿Cuánto tiempo caminó aproximadamente?</label>
             <input id="walking" type="number" min="0" max="24" step="0.5" value="0">
           </div>
-
-          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn" onclick="computeScore()">Calcular Score</button>
-            <button class="btn ghost" onclick="resetForm()">Limpiar</button>
-            <button class="btn" id="exportPdfBtn" onclick="exportPDF()">Exportar a PDF</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
+                <div class="card" style="margin-top:12px">
         <div class="caps">DOCUMENTACIÓN / COMENTARIOS</div>
         <textarea id="comments" rows="5" placeholder="Comentarios abiertos..."></textarea>
       </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="saveBtn" onclick="computeScore()">Guardar</button>
+        </div>
+        </div>
+      </div>
+
+
     </div>
 
     <aside class="card">
@@ -154,14 +206,21 @@ Classification: —</pre>
 
     </aside>
   </div>
-
+<div id="successModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>¡Gracias por participar!</h2>
+    <p>Tu opinión es muy importante para nosotros.</p>
+    <p class="modal-subtle">La seguridad es una responsabilidad compartida</p>
+    <button class="btn" onclick="hideSuccessModal()">Cerrar</button>
+  </div>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   // Init visuals
-  function updateVAS(v){ document.getElementById('vasValue').textContent = v; document.getElementById('vasFill').style.width = (v*10)+'%'; }
+  function updateVAS(v){ document.getElementById('vasValue').textContent = v; }
   function updateBorg(v){ document.getElementById('borgValue').textContent = v; }
   updateVAS(document.getElementById('vas').value);
   updateBorg(document.getElementById('borg').value);
@@ -303,6 +362,171 @@ Classification: ${classification}`;
     pdf.save(fn);
     el.style.width = originalWidth;
   }
+
+  function showSuccessModal() {
+  document.getElementById('successModal').style.display = 'flex';
+}
+
+function hideSuccessModal() {
+  document.getElementById('successModal').style.display = 'none';
+  resetForm(); // Limpiamos el formulario al cerrar el modal
+}
+
+  // --- 1. Inicializa el cliente de Supabase ---
+const supabaseUrl = 'https://hvwygpnuunuuylzondxt.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2d3lncG51dW51dXlsem9uZHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NDUzMTEsImV4cCI6MjA3NjEyMTMxMX0.FxjCX9epT_6LgWGdzdPhRUTP2vn4CLdixRqpFMRZK70';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// --- 2. REEMPLAZA tu función computeScore() con esta ---
+async function computeScore(){
+  const name = document.getElementById('name').value || '—';
+  const area = document.getElementById('area').value || '—';
+  const vas = parseInt(document.getElementById('vas').value);
+  const borg = parseInt(document.getElementById('borg').value);
+  let nmq = Array.from(document.querySelectorAll('.nmq:checked')).map(i=>i.value);
+  const nmqOther = document.getElementById('nmqOther').value.trim();
+  if(nmq.includes('otro') && nmqOther) nmq.push(nmqOther);
+  const comfortable = document.getElementById('comfortable').value;
+  const usedInsole = document.getElementById('usedInsole').value;
+  const insolesEffect = document.getElementById('insolesEffect').value;
+  const canSit = document.getElementById('canSit').value;
+  const hours = parseFloat(document.getElementById('hours').value) || 0;
+  const stance = document.getElementById('stance').value;
+  const walking = parseFloat(document.getElementById('walking').value) || 0;
+  const comments = document.getElementById('comments').value || '';
+
+  // Calculations per spec
+  const P_vas = Math.round((vas/10)*27);
+  const P_borg = Math.round((borg/10)*10);
+
+  let P_hours = 0;
+  if(hours >=2 && hours <4) P_hours = 10;
+  else if(hours >=4 && hours <6) P_hours = 20;
+  else if(hours >=6) P_hours = 28;
+
+  let symptomCount = nmq.length;
+  let P_symptoms = 0;
+  if(symptomCount === 1) P_symptoms = 15;
+  else if(symptomCount === 2) P_symptoms = 25;
+  else if(symptomCount >= 3) P_symptoms = 35;
+
+  const P_sit = (canSit === 'no') ? 20 : 0;
+
+  let P_stance = 0;
+  if(stance === 'static') P_stance = 15;
+  else if(stance === 'dynamic') P_stance = 10;
+  else P_stance = 0;
+
+  const P_walking = (walking >= 2) ? -10 : 0;
+
+  let raw = P_vas + P_borg + P_hours + P_symptoms + P_sit + P_stance + P_walking;
+
+  let riskIndex = Math.max(0, Math.min(100, raw));
+
+  if(symptomCount >=2 && riskIndex < 40) riskIndex = 40;
+
+  let classification = 'Bajo';
+  if(riskIndex >= 70) classification = 'Alto';
+  else if(riskIndex >= 40) classification = 'Medio';
+
+  // --- INICIO: Guardar en Supabase ---
+  const dataToInsert = {
+    trabajador_id: name,
+    area_puesto: area,
+    vas: vas,
+    borg: borg,
+    sintomas_nmq: nmq,
+    sintomas_otro: (nmq.includes('otro') && nmqOther) ? nmqOther : null,
+    calzado_comodo: comfortable,
+    uso_plantillas: usedInsole,
+    efecto_plantillas: insolesEffect,
+    pudo_sentarse: canSit,
+    horas_pie: hours,
+    tipo_postura: stance,
+    horas_caminando: walking,
+    comentarios: comments,
+    puntos_vas: P_vas,
+    puntos_borg: P_borg,
+    puntos_horas: P_hours,
+    puntos_sintomas: P_symptoms,
+    puntos_sentarse: P_sit,
+    puntos_postura: P_stance,
+    puntos_caminar: P_walking,
+    puntos_brutos: raw,
+    indice_riesgo: riskIndex,
+    clasificacion: classification
+  };
+
+try {
+    const { data, error } = await supabase
+      .from('evaluaciones_bipedestacion')
+      .insert([dataToInsert]);
+    
+    if (error) {
+      throw error;
+    }
+    
+    console.log('Evaluación guardada en Supabase:', data);
+    
+    // Tu pop-up personalizado
+showSuccessModal();
+
+  } catch (error) {
+    console.error('Error al guardar en Supabase:', error.message);
+    alert('Error al guardar la evaluación. Revisa la consola.');
+  }
+  // --- FIN: Guardar en Supabase ---
+
+
+  // Build result box HTML
+  const resultHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:800;color:var(--accent);font-size:15px">Evaluación — ${name}</div>
+        <div class="muted" style="margin-top:6px">Área: ${area} · Fecha: ${new Date().toLocaleString()}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:20px;font-weight:800;color:${riskIndex>=70? '#ff6b6b': riskIndex>=40? '#f59e0b': '#10b981'}">${riskIndex} / 100</div>
+        <div style="margin-top:4px;font-weight:700;color:var(--strong)">${classification}</div>
+      </div>
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:10px 0">
+    <div style="color:var(--muted)"><strong>Desglose de puntos:</strong>
+      <ul>
+        <li>VAS (27 max): ${P_vas}</li>
+        <li>Borg (10 max): ${P_borg}</li>
+        <li>Horas de pie: ${P_hours}</li>
+        <li>Síntomas: ${P_symptoms} (${symptomCount})</li>
+        <li>No pudo sentarse: ${P_sit}</li>
+        <li>Tipo postura: ${P_stance}</li>
+        <li>Caminar (protector): ${P_walking}</li>
+      </ul>
+    </div>
+    <div style="margin-top:8px;color:var(--muted)"><strong>Recomendación:</strong> ${classification === 'Alto' ? 'Intervención prioritaria: tapete antifatiga + plantillas personalizadas + rotación + revisar mandiles' : classification === 'Medio' ? 'Plantillas + considerar tapete en áreas fijas; seguimiento 1 mes' : 'Monitorizar; medidas de confort opcionales'}</div>
+    <div style="margin-top:8px;color:var(--muted)"><strong>Comentarios:</strong><div>${comments || '—'}</div></div>
+  `;
+
+  document.getElementById('resultBox').innerHTML = resultHTML;
+
+  // update points pre
+  document.getElementById('pointsPre').textContent = `vas: ${P_vas}
+borg: ${P_borg}
+hours: ${P_hours}
+symptoms: ${P_symptoms}
+sit: ${P_sit}
+stance: ${P_stance}
+walking: ${P_walking}
+TOTAL (raw): ${raw}
+RiskIndex: ${riskIndex}
+Classification: ${classification}`;
+
+  // Save last record
+  window._lastRecord = {
+    name, area, date: new Date().toISOString(), vas, borg, P_vas, P_borg, hours, P_hours,
+    symptoms: nmq, P_symptoms, canSit, P_sit, stance, P_stance, walking, P_walking,
+    raw, riskIndex, classification, comfortable, usedInsole, insolesEffect, comments
+  };
+}
 </script>
 </body>
 </html>
