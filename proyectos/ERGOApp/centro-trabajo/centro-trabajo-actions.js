@@ -641,3 +641,135 @@ function agregarImagenConAspecto(doc, imageData, x, y, maxWidth, maxHeight) {
         console.error("No se pudo agregar una imagen al PDF:", error);
     }
 }
+
+/**
+ * Puebla un elemento <datalist> con opciones
+ * (Función auxiliar tomada de matriz.html)
+ * @param {HTMLDataListElement} datalistEl - El elemento datalist a poblar
+ * @param {string[]} optionsList - El array de strings para las opciones
+ */
+function populateDatalist(datalistEl, optionsList) {
+    if (!datalistEl) return;
+    datalistEl.innerHTML = '';
+    const uniqueOptions = [...new Set(optionsList)].sort();
+    uniqueOptions.forEach(optionText => {
+        const option = document.createElement('option');
+        option.value = optionText;
+        datalistEl.appendChild(option);
+    });
+}
+
+/**
+ * Abre el modal para agregar un nuevo hallazgo.
+ * Carga los datos necesarios para los selectores.
+ */
+async function abrirModalHallazgo() {
+    if (isCenterClosed) {
+        ERGOUtils.showToast('El centro está cerrado y no se puede editar.', 'warning');
+        return;
+    }
+    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
+
+    try {
+        // --- Poblar datos del modal ---
+        
+        // 1. Centro de Trabajo (Selector)
+        const modalCentroSelect = document.getElementById('modalCentro');
+        if (modalCentroSelect) {
+            // Asumimos que el único centro relevante aquí es el actual.
+            modalCentroSelect.innerHTML = `<option value="${workCenterId}" selected>${currentCenterData.name}</option>`;
+        }
+
+        // 2. Área (Input)
+        const modalAreaInput = document.getElementById('modalAreaTopLevelInput');
+        if (modalAreaInput) {
+            modalAreaInput.value = decodeURIComponent(areaName || ''); // Pre-llenar con el área actual
+        }
+
+        // 3. Tareas (Datalist)
+        // Usamos las actividades (evaluacionesEspecificas) ya cargadas en la página
+        const tareaDatalist = document.getElementById('tareaDatalist');
+        if (tareaDatalist && evaluacionesEspecificas && evaluacionesEspecificas.length > 0) {
+            const tareas = [...new Set(evaluacionesEspecificas.map(e => e.nombre))];
+            populateDatalist(tareaDatalist, tareas);
+        }
+        
+        // Abrir el modal usando el sistema global
+        ERGOModal.open('addEntryModal');
+
+    } catch (error) {
+        console.error("Error al preparar modal de hallazgo:", error);
+        ERGOUtils.showToast('Error al abrir el modal.', 'error');
+    }
+}
+
+/**
+ * Cierra el modal de hallazgo y resetea el formulario.
+ */
+function cerrarModalHallazgo() {
+    const form = document.getElementById('addEntryForm');
+    if (form) form.reset();
+    ERGOModal.close('addEntryModal');
+    
+    // Repoblar los campos pre-llenados que se borraron con reset()
+    try {
+        const modalCentroSelect = document.getElementById('modalCentro');
+        if (modalCentroSelect) {
+            modalCentroSelect.innerHTML = `<option value="${workCenterId}" selected>${currentCenterData.name}</option>`;
+        }
+        const modalAreaInput = document.getElementById('modalAreaTopLevelInput');
+        if (modalAreaInput) {
+            modalAreaInput.value = decodeURIComponent(areaName || '');
+        }
+    } catch(e) { /* Ignorar error si los elementos no existen */ }
+}
+
+/**
+ * Guarda el nuevo hallazgo en la base de datos.
+ */
+async function guardarHallazgo() {
+    if (!ERGOAuth.checkPermissionAndShowError('create')) return;
+
+    // Extraer datos del formulario
+    const hallazgoData = {
+        centro_id: document.getElementById('modalCentro')?.value,
+        area_top_level: document.getElementById('modalAreaTopLevelInput')?.value.trim(),
+        tarea: document.getElementById('modalTareaInput')?.value.trim(),
+        descripcion: document.getElementById('modalDescripcion')?.value.trim(),
+        riesgo: document.getElementById('modalRiesgo')?.value.trim(),
+        grupo_riesgo: document.getElementById('modalGrupoRiesgo')?.value.trim(),
+        puesto: document.getElementById('modalPuesto')?.value.trim(),
+        nivel_riesgo: document.getElementById('modalNivelRiesgo')?.value.trim(),
+        evaluacion: document.getElementById('modalEvaluacion')?.value.trim(),
+        cumplimiento: document.getElementById('modalCumplimiento')?.value.trim(),
+        medida_control: document.getElementById('modalMedidaControl')?.value.trim(),
+        nuevo_nivel_riesgo: document.getElementById('modalNuevoNivelRiesgo')?.value.trim(),
+        tipo_control: document.getElementById('modalTipoControl')?.value.trim(),
+        responsable: document.getElementById('modalResponsable')?.value.trim(),
+        comentarios: document.getElementById('modalComentarios')?.value.trim(),
+        art: document.getElementById('modalART')?.value.trim(),
+        accion: document.getElementById('modalAccion')?.value.trim(),
+        user_id: ERGOAuth.getCurrentUser()?.id
+    };
+
+    // Validación
+    if (!hallazgoData.centro_id || !hallazgoData.area_top_level || !hallazgoData.tarea) {
+        ERGOUtils.showToast('Centro, Área y Tarea son campos obligatorios.', 'error');
+        return;
+    }
+
+    try {
+        ERGOUtils.showToast('Guardando hallazgo...', 'info');
+        
+        // Asumo que tienes (o crearás) un método 'createHallazgo' en tu dataClient
+        // que inserta en una tabla como 'matriz_hallazgos'.
+        await dataClient.createHallazgo(hallazgoData);
+
+        ERGOUtils.showToast('Hallazgo guardado correctamente.', 'success');
+        cerrarModalHallazgo();
+        
+    } catch (error) {
+        console.error('Error al guardar el hallazgo:', error);
+        ERGOUtils.showToast(`No se pudo guardar el hallazgo. ${error.message}`, 'error');
+    }
+}

@@ -67,6 +67,16 @@
             notasActuales = notas || [];
             evaluacionesEspecificas = actividades || [];
 
+              await loadActividades(); // 🔥 Esto pinta y habilita el botón PDF Consolidado
+
+
+            try {
+                await loadActividades();
+                console.log("✅ Actividades cargadas y botón PDF Consolidado habilitado correctamente.");
+            } catch (error) {
+                console.error("❌ Error al ejecutar loadActividades:", error);
+            }
+
             currentCenterData.scoreSummary = scoreSummary;
             // Guardamos y aplicamos el estado de cierre
             isCenterClosed = scoreSummary ? scoreSummary.is_closed : false;

@@ -83,21 +83,33 @@
             </div>
         </div>
             
-        <div class="score-container info-card">
-            <div>
+<div class="score-container info-card">
+                <div>
                 <div id="score-value" class="score-value" style="color: rgb(107, 114, 128);">--</div>
                 <div id="score-category" class="score-category">Sin evaluar</div>
             </div>
-            
-            <button id="btn-toggle-status" class="btn btn-status-toggle" onclick="toggleCenterStatus()">Cerrar Centro</button>
+<button id="btn-toggle-status" class="btn btn-status-toggle" onclick="toggleCenterStatus()">Cerrar Centro</button>
+<div class="evaluacion-link-container">
+    <span class="evaluacion-link-title">📊 Evaluación Inicial</span>
 
-            <div class="evaluacion-link-container">
-                <span class="evaluacion-link-title">📊 Evaluación Inicial</span>
-                
-                <button class="btn btn-ghost btn-sm" onclick="abrirEvaluacion()">Ver Evaluación</button>
-                <button class="btn btn-ghost btn-sm" onclick="exportarPDFCompleto()" style="background-color: rgba(33, 49, 139, 0.779); color: aliceblue; font-weight: 600;">PDF</button>
-            </div>
-        </div>
+    <button class="btn btn-ghost btn-sm" onclick="abrirEvaluacion()">Ver Evaluación</button>
+
+    <!-- Botón 1: PDF Evaluación Inicial (SIN inline styles) -->
+    <button class="btn btn-ghost btn-sm"
+            onclick="exportarPDFCompleto()"> 
+        PDF Eval. Inicial 
+    </button>
+
+    <!-- Botón 2: PDF Reporte Consolidado (CON ID y clase correcta, SIN inline styles) -->
+<button id="btn-ver-reporte-principal" type="button"
+        class="btn btn-primary btn-sm" 
+        style="margin-top: 5px;"
+        disabled>
+    PDF Consolidado
+</button>
+
+</div>
+</div>
     </div>
 </header>
 
@@ -130,11 +142,13 @@
 <section class="section-card">
     <div class="section-header">
         <h2 class="section-title">💬 Comentarios Generales</h2>
+
     </div>
     <div class="comentarios-container">
         <div id="comentarios-generales" style="height: 150px;" placeholder="Añade comentarios sobre el centro de trabajo en general..." rows="4"></div>
         <div class="comentarios-actions">
 <button id="btn-comentarios" class="btn btn-secondary">Editar Comentario</button>    </div>
+
 </section>
 <section class="section-card">
 
@@ -142,8 +156,7 @@
             <section class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Actividades</h2>
-                <button class="btn btn-primary" onclick="abrirModalActividad()">+ AGREGAR ACTIVIDAD</button>
-                </div>
+                    <button class="btn btn-primary" onclick="abrirModalActividad()">+ AGREGAR ACTIVIDAD</button>                </div>
                 
                 <div id="evaluaciones-container" class="evaluaciones-list">
                     <div class="empty-evaluations">
@@ -234,93 +247,118 @@
 </div>
 
 
-<!-- Modal para agregar Actividades -->
 <div id="modal-actividad" class="modal">
     <div class="modal-overlay" onclick="cerrarModalActividad()"></div>
     <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modal-actividad-titulo">Nueva Actividad</h3>
-            <button class="modal-close" onclick="cerrarModalActividad()"><span>&times;</span></button>
-        </div>
-        
         <form id="form-actividad" onsubmit="event.preventDefault(); guardarActividad();">
+
+            <div class="modal-header">
+                <h3 id="modal-actividad-titulo">Nuevo Hallazgo</h3>
+                <button type="button" class="modal-close" onclick="cerrarModalActividad()"><span>&times;</span></button>
+            </div>
+
             <div class="modal-body">
                 <input type="hidden" id="actividad-id">
 
-<div class="form-grid">
-    <div>
-        <div class="form-group">
-            <label for="actividad-nombre">Nombre de la actividad</label>
-            <input type="text" id="actividad-nombre" class="input-field" required>
-        </div>
-        <div >
-            <div class="form-group" style="width: 400px;">
-                <label for="actividad-metodo">Método de Evaluación</label>
-                <div class="input-with-button">
-                    <select id="actividad-metodo" class="input-field">
-                        <option value="" disabled selected>Selecciona un método...</option>
-                        <option value="REBA">REBA (Cuerpo completo)</option>
-                        <option value="RULA">RULA (Miembros superiores)</option>
-                        <option value="OCRA">OCRA (Movimientos repetitivos)</option>
-                        <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
-                    </select>
-                    <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
+                <div class="form-grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="actividad-nombre">Tarea Específica (Hallazgo)</label>
+                            <input type="text" id="actividad-nombre" class="input-field" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="puesto_involucrado">Puesto Involucrado</label>
+                            <input type="text" id="puesto_involucrado" class="input-field">
+                        </div>
+                        <div class="form-group">
+                            <label for="grupo_riesgo">Grupo de Riesgo</label>
+                            <input type="text" id="grupo_riesgo" class="input-field">
+                        </div>
+                        <div class="form-group" style="width: 400px;">
+                            <label for="actividad-metodo">Evaluación Específica</label>
+                            <div class="input-with-button">
+                                <select id="actividad-metodo" class="input-field">
+                                    <option value="" disabled selected>Selecciona un método...</option>
+                                    <option value="REBA">REBA (Cuerpo completo)</option>
+                                    <option value="RULA">RULA (Miembros superiores)</option>
+                                    <option value="OCRA">OCRA (Movimientos repetitivos)</option>
+                                    <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
+                                    <option value="NOM036">NOM-036 (Cargas Manuales)</option>
+                                    <option value="EJA">EJA (Johnson)</option>
+                                </select>
+                                <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo_control">Tipo de Control</label>
+                            <input type="text" id="tipo_control" class="input-field" placeholder="Ej. Ingeniería, Administrativo...">
+                        </div>
+                        <div class="form-group">
+                            <label for="art">ART (Análisis de Riesgo)</label>
+                            <input type="text" id="art" class="input-field">
+                        </div>
+                        <div class="form-group">
+                            <label for="responsable">Responsable</label>
+                            <input type="text" id="responsable" class="input-field">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="descripcion_riesgo">Descripción del Riesgo</label>
+                            <textarea id="descripcion_riesgo" class="input-field" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="cumplimiento">Cumplimiento</label>
+                            <input type="text" id="cumplimiento" class="input-field" placeholder="Ej. NOM-036, NOM-001...">
+                        </div>
+                        <div class="form-group">
+                            <label for="nivel_riesgo">Nivel de Riesgo Identificado</label>
+                            <input type="text" id="nivel_riesgo" class="input-field" placeholder="Este campo se llenará con la evaluación">
+                        </div>
+                        <div class="form-group">
+                            <label for="nuevo_nivel_riesgo">Nuevo Nivel de Riesgo (Esperado)</label>
+                            <input type="text" id="nuevo_nivel_riesgo" class="input-field">
+                        </div>
+                        <div class="form-group">
+                            <label for="accion">Acción</label>
+                            <input type="text" id="accion" class="input-field">
+                        </div>
+                        <div class="form-group">
+                            <label id="tipo-analisis-label">Tipo de Análisis</label>
+                            <div class="input-with-button">
+                                <div class="btn-group" id="tipo-analisis-group" role="group" aria-labelledby="tipo-analisis-label">
+                                    <button type="button" class="btn-toggle" data-value="EJA">EJA</button>
+                                    <button type="button" class="btn-toggle" data-value="WS">WS</button>
+                                </div>
+                                <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <div class="form-group full-width">
+                    <label for="descripcion_detallada">Descripción Detallada del Hallazgo</label>
+                    <textarea id="descripcion_detallada" class="input-field" rows="3"></textarea>
                 </div>
-            </div>
-                <div class="form-group">
-                    <label>Manejo de cargas manuales</label>
-                        <label class="radio-label">
-                            <input type="radio" name="cargas_manuales" value="si"> Sí
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="cargas_manuales" value="no"> No
-                        </label>
-                    </div>
-                    <small class="help-text">Marque sí, si las cargas son mayores a 3kg de forma repetitiva</small>
-                  <div id="evaluar-cargas-container" class="evaluar-cargas-wrapper" style="display: none;">
-                      <button type="button" class="btn btn-primary" onclick="window.location.href='../componentes/pages/cargas_manuales.html'">Evaluar</button>
-                  </div>
-        </div>
-
-
-    </div>
-
-    <div>
-         <div class="form-group">
-            <label id="tipo-analisis-label">Tipo de Análisis</label>
-            <div class="input-with-button">
-                <div class="btn-group" id="tipo-analisis-group" role="group" aria-labelledby="tipo-analisis-label">
-                    <button type="button" class="btn-toggle" data-value="EJA">EJA</button>
-                    <button type="button" class="btn-toggle" data-value="WS">WS</button>
-                </div>
-                <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
-            </div>
-        </div>
-    </div>
-</div> 
                 <div id="seccion-fotos-actividad" class="form-group full-width" style="display: none;">
                     <label>Fotos de la Actividad</label>
-                    <div class="fotos-grid" id="fotos-grid-actividad">
-                        </div>
+                    <div class="fotos-grid" id="fotos-grid-actividad"></div>
                     <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="document.getElementById('foto-input-actividad').click();">
                         + Cargar Fotos
                     </button>
                 </div>
                 <input type="file" id="foto-input-actividad" accept="image/*" style="display: none;" multiple>
-
                 <div class="form-group full-width">
                     <label for="actividad-comentarios">Comentarios</label>
                     <div id="actividad-comentarios" class="input-field" rows="4"></div>
                 </div>
-
                 <div class="form-group full-width">
-                    <label for="actividad-recomendaciones">Recomendaciones</label>
+                    <label for="actividad-recomendaciones">Medida de Control Propuesta</label>
                     <div id="actividad-recomendaciones" class="input-field" rows="4"></div>
                 </div>
             </div> <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="cerrarModalActividad()">Cancelar</button>
-                <button type="submit" id="modal-actividad-btn-guardar" class="btn btn-primary">Guardar</button>
+                <button type="submit" id="modal-actividad-btn-guardar" class="btn btn-primary">Crear Hallazgo</button>
             </div>
+
         </form>
     </div>
 </div>
@@ -446,6 +484,7 @@
         </form>
     </div>
 </div>
+
 <script src="centro-trabajo.js" defer></script>
 <script src="centro-trabajo-init.js" defer></script>
 <script src="centro-trabajo-data.js" defer></script>

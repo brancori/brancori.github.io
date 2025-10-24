@@ -232,10 +232,14 @@ function abrirModalActividad(actividadId = null) {
 
     const esEdicion = actividad !== null;
 
-    document.getElementById('modal-actividad-titulo').textContent = esEdicion ? 'Editar Actividad' : 'Nueva Actividad';
+    // Renombrar el modal y el botón
+    document.getElementById('modal-actividad-titulo').textContent = esEdicion ? 'Editar Hallazgo' : 'Nuevo Hallazgo';
+    document.getElementById('modal-actividad-btn-guardar').textContent = esEdicion ? 'Guardar Cambios' : 'Crear Hallazgo';
+    
     document.getElementById('form-actividad').reset();
     document.getElementById('fotos-grid-actividad').innerHTML = '';
     
+    // ... (Tu lógica existente para los botones EJA/WS)
     const tipoGroup = document.getElementById('tipo-analisis-group');
     const btns = tipoGroup.querySelectorAll('.btn-toggle');
     btns.forEach(btn => {
@@ -245,29 +249,49 @@ function abrirModalActividad(actividadId = null) {
             btn.classList.add('active');
         };
     });
-
-    // Apuntamos al ID del botón correcto
     const btnEvaluarMetodo = document.getElementById('btn-evaluar-metodo');
+    // ... (Fin de lógica EJA/WS)
+
 
     if (esEdicion) {
+        // --- CAMPOS REUTILIZADOS ---
         document.getElementById('actividad-id').value = actividad.id;
-        document.getElementById('actividad-nombre').value = actividad.nombre;
-        document.getElementById('actividad-metodo').value = actividad.metodo;
-        quillActividadComentarios.root.innerHTML = actividad.comentarios || '';
-        quillActividadRecomendaciones.root.innerHTML = actividad.recomendaciones || '';
-        document.getElementById('actividad-recomendaciones').value = actividad.recomendaciones || '';
-
+        document.getElementById('actividad-nombre').value = actividad.nombre; // Tarea Específica
+        document.getElementById('actividad-metodo').value = actividad.metodo; // Evaluación Específica
+        quillActividadComentarios.root.innerHTML = actividad.comentarios || ''; // Comentarios
+        quillActividadRecomendaciones.root.innerHTML = actividad.recomendaciones || ''; // Medida de Control
+        document.getElementById('nivel_riesgo').value = actividad.nivel_riesgo || ''; // Nivel de Riesgo
+        
         const tipoAnalisis = actividad.tipo_analisis || 'EJA';
         const activeBtn = tipoGroup.querySelector(`[data-value="${tipoAnalisis}"]`);
         if (activeBtn) activeBtn.classList.add('active');
         
-        // Usamos la referencia correcta al botón
         btnEvaluarMetodo.disabled = !actividad.metodo;
+
+        // --- NUEVOS CAMPOS ---
+        document.getElementById('descripcion_detallada').value = actividad.descripcion_detallada || '';
+        document.getElementById('descripcion_riesgo').value = actividad.descripcion_riesgo || '';
+        document.getElementById('grupo_riesgo').value = actividad.grupo_riesgo || '';
+        document.getElementById('puesto_involucrado').value = actividad.puesto_involucrado || '';
+        document.getElementById('cumplimiento').value = actividad.cumplimiento || '';
+        document.getElementById('nuevo_nivel_riesgo').value = actividad.nuevo_nivel_riesgo || '';
+        document.getElementById('tipo_control').value = actividad.tipo_control || '';
+        document.getElementById('art').value = actividad.art || '';
+        document.getElementById('accion').value = actividad.accion || '';
+        document.getElementById('responsable').value = actividad.responsable || '';
+
+        // Cargar fotos
         loadFotosActividad(actividad.id);
+
     } else {
-        // Usamos la referencia correcta al botón
+        // Modo Creación
         btnEvaluarMetodo.disabled = true;
         tipoGroup.querySelector('[data-value="EJA"]').classList.add('active');
+        
+        // Limpiar campos (aunque reset() ya lo hace, es bueno ser explícito)
+        quillActividadComentarios.root.innerHTML = '';
+        quillActividadRecomendaciones.root.innerHTML = '';
+        document.getElementById('actividad-id').value = '';
     }
     
     ERGOModal.open('modal-actividad');
@@ -293,51 +317,65 @@ async function guardarActividad() {
     const id = document.getElementById('actividad-id').value;
     const esModoEdicion = !!id;
 
-    // Obtener el valor del botón activo
     const tipoAnalisisActivo = document.querySelector('#tipo-analisis-group .btn-toggle.active');
     
-const data = {
-    work_center_id: workCenterId,
-    area_id: areaId,
-    nombre: document.getElementById('actividad-nombre').value.trim(),
-    metodo: document.getElementById('actividad-metodo').value,
-    // ✅ SIN .value, SIN .trim()
-    comentarios: quillActividadComentarios.root.innerHTML,
-    recomendaciones: quillActividadRecomendaciones.root.innerHTML,
-    tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
-    user_id: ERGOAuth.getCurrentUser()?.id
-};
+    const data = {
+        work_center_id: workCenterId,
+        area_id: areaId,
+        user_id: ERGOAuth.getCurrentUser()?.id,
+        
+        // --- CAMPOS REUTILIZADOS ---
+        nombre: document.getElementById('actividad-nombre').value.trim(), // Tarea Específica
+        metodo: document.getElementById('actividad-metodo').value, // Evaluación Específica
+        comentarios: quillActividadComentarios.root.innerHTML, // Comentarios
+        recomendaciones: quillActividadRecomendaciones.root.innerHTML, // Medida de Control
+        nivel_riesgo: document.getElementById('nivel_riesgo').value.trim(), // Nivel de Riesgo
+        tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
+
+        // --- NUEVOS CAMPOS ---
+        descripcion_detallada: document.getElementById('descripcion_detallada').value.trim(),
+        descripcion_riesgo: document.getElementById('descripcion_riesgo').value.trim(),
+        grupo_riesgo: document.getElementById('grupo_riesgo').value.trim(),
+        puesto_involucrado: document.getElementById('puesto_involucrado').value.trim(),
+        cumplimiento: document.getElementById('cumplimiento').value.trim(),
+        nuevo_nivel_riesgo: document.getElementById('nuevo_nivel_riesgo').value.trim(),
+        tipo_control: document.getElementById('tipo_control').value.trim(),
+        art: document.getElementById('art').value.trim(),
+        accion: document.getElementById('accion').value.trim(),
+        responsable: document.getElementById('responsable').value.trim()
+    };
 
     if (!data.nombre) {
-        ERGOUtils.showToast('El nombre de la actividad es obligatorio.', 'error');
+        ERGOUtils.showToast('La Tarea Específica (Hallazgo) es obligatoria.', 'error');
         return;
     }
 
     try {
         if (esModoEdicion) {
             await dataClient.updateActividad(id, data);
-            ERGOUtils.showToast('Actividad actualizada.', 'success');
+            ERGOUtils.showToast('Hallazgo actualizado.', 'success');
         } else {
             const nuevaActividadArray = await dataClient.createActividad(data);
             if (!nuevaActividadArray || nuevaActividadArray.length === 0) {
                  throw new Error("La creación no devolvió el nuevo registro.");
             }
-            actividadEnEdicion = nuevaActividadArray[0]; // Actualizamos la actividad en edición
-            document.getElementById('actividad-id').value = actividadEnEdicion.id; // Ponemos el ID en el form
-            ERGOUtils.showToast('Actividad creada. Puedes añadir fotos.', 'success');
+            actividadEnEdicion = nuevaActividadArray[0]; 
+            document.getElementById('actividad-id').value = actividadEnEdicion.id;
+            ERGOUtils.showToast('Hallazgo creado. Ahora puedes añadir fotos o evaluar.', 'success');
+            
+            // Renombrar botón para reflejar modo edición
+            document.getElementById('modal-actividad-btn-guardar').textContent = 'Guardar Cambios';
         }
         
-        await loadActividades(); // Recarga la lista principal en ambos casos
+        await loadActividades(); // Recarga la lista principal
         
-        // Si no es modo edición (es decir, es la primera vez que se guarda), no cerramos el modal.
-        // Si es modo edición, sí lo cerramos.
         if (esModoEdicion) {
             cerrarModalActividad();
         }
 
     } catch (error) {
-        console.error('Error al guardar la actividad:', error);
-        ERGOUtils.showToast(`No se pudo guardar la actividad. ${error.message}`, 'error');
+        console.error('Error al guardar el hallazgo:', error);
+        ERGOUtils.showToast(`No se pudo guardar el hallazgo. ${error.message}`, 'error');
     }
 }
 

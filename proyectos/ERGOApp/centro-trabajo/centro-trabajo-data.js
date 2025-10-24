@@ -5,86 +5,105 @@
 
 
 // Carga inicial
-    async function loadEvaluacionInicial() {
-        try {
-            
-            let evaluaciones = [];
-            
-              if (window.ERGOConfig.USE_SUPABASE) {
+async function loadEvaluacionInicial() {
+    // --- Obtener referencias a los elementos del DOM ---
+    const scoreValueEl = document.getElementById('score-value');
+    const scoreCategoryEl = document.getElementById('score-category');
+    const evalFechaEl = document.getElementById('eval-fecha');
+    const evalSugeridasEl = document.getElementById('eval-sugeridas');
+
+    // --- Verificar si los elementos existen ANTES de usarlos ---
+    if (!scoreValueEl || !scoreCategoryEl || !evalFechaEl || !evalSugeridasEl) {
+        console.error("❌ Error crucial: Faltan elementos del DOM para mostrar la evaluación inicial (score-value, score-category, eval-fecha, eval-sugeridas). Verifica centro-trabajo.html.");
+        // Opcionalmente, mostrar un mensaje de error al usuario aquí si es necesario
+        return; // Detener la función si faltan elementos
+    }
+
+    try {
+        let evaluaciones = [];
+
+        // Intentar obtener datos de Supabase si está configurado
+        if (window.ERGOConfig.USE_SUPABASE) {
             try {
                 console.log('🔍 Consultando dataClient...');
-                evaluaciones = await dataClient.getEvaluaciones(workCenterId) || [];
-                console.log('🔍 DEBUG: Evaluaciones desde Supabase:', evaluaciones);
-                console.log('🔍 DEBUG: Primera evaluación:', evaluaciones[0]);
+                // Asumiendo que getEvaluaciones filtra por workCenterId o devuelve todas
+                const todasLasEvaluaciones = await dataClient.getEvaluaciones(workCenterId) || [];
+                // Asegurarse de filtrar por work_center_id si getEvaluaciones devuelve todas
+                evaluaciones = todasLasEvaluaciones.filter(e => e.work_center_id === workCenterId);
+                console.log('🔍 DEBUG: Evaluaciones desde Supabase (filtradas):', evaluaciones);
+                if (evaluaciones.length > 0) {
+                    console.log('🔍 DEBUG: Primera evaluación encontrada:', evaluaciones[0]);
+                }
             } catch (error) {
-                console.log('Supabase no disponible, usando localStorage');
+                console.log('Supabase no disponible o error en consulta, intentando localStorage:', error);
+                // Si Supabase falla, el array evaluaciones quedará vacío y se intentará localStorage
             }
         }
 
-            // Fallback a localStorage
-            if (evaluaciones.length > 0) {
-            evaluaciones = evaluaciones.filter(e => e.work_center_id === workCenterId);
-            console.log('🔍 DEBUG: Evaluaciones filtradas para este centro:', evaluaciones);
-        }
-
-        // Fallback a localStorage si no hay en Supabase
+        // Fallback a localStorage si Supabase no se usó, falló, o no devolvió resultados
         if (evaluaciones.length === 0) {
+            console.log('🔍 Intentando fallback a localStorage...');
             const localEvals = JSON.parse(localStorage.getItem('evaluaciones')) || [];
-            evaluaciones = localEvals.filter(e => e.workCenterId === workCenterId);
+            evaluaciones = localEvals.filter(e => e.workCenterId === workCenterId); // Ajusta la clave si es diferente en localStorage
             console.log('🔍 DEBUG: Usando localStorage fallback:', evaluaciones);
         }
-        
+
         console.log('🔍 Evaluaciones encontradas para este centro:', evaluaciones.length);
 
-         if (evaluaciones.length > 0) {
-            const eval_ = evaluaciones[0];
-            console.log('🔍 DEBUG: Estructura de la evaluación:', eval_);
+        // Si se encontraron evaluaciones (de Supabase o localStorage)
+        if (evaluaciones.length > 0) {
+            // Ordenar por fecha para asegurar que tomamos la más reciente si hay varias
+            evaluaciones.sort((a, b) => new Date(b.created_at || b.fecha_evaluacion || 0) - new Date(a.created_at || a.fecha_evaluacion || 0));
+            const eval_ = evaluaciones[0]; // Tomar la más reciente
+
+            console.log('🔍 DEBUG: Estructura de la evaluación a usar:', eval_);
             console.log('🔍 DEBUG: Campos disponibles:', Object.keys(eval_));
+
+            // Extraer datos, usando || para fallbacks entre posibles nombres de campo
             const score = eval_.score_final || eval_.scoreFinal || '0';
             const categoria = eval_.categoria_riesgo || eval_.categoriaRiesgo || 'Sin evaluar';
-            const fecha = eval_.fecha_evaluacion || eval_.fechaEvaluacion || 'No especificada';
+            // Formatear fecha si existe, si no, 'No especificada'
+            const fecha = eval_.fecha_evaluacion || eval_.fechaEvaluacion
+                          ? new Date(eval_.fecha_evaluacion || eval_.fechaEvaluacion).toLocaleDateString('es-ES')
+                          : 'No especificada';
 
-            // Actualizar score principal
-            document.getElementById('score-value').textContent = `${score}%`;
-            document.getElementById('score-category').textContent = categoria;
-            
-            // Aplicar color según score
+            // Actualizar elementos del DOM (ahora sabemos que existen)
+            scoreValueEl.textContent = `${parseFloat(score).toFixed(2)}%`; // Asegurar formato decimal
+            scoreCategoryEl.textContent = categoria;
+
             const scoreNum = parseFloat(score);
             const color = ERGOUtils.getScoreColor(scoreNum);
-            document.getElementById('score-value').style.color = color;
+            scoreValueEl.style.color = color;
 
-            // Actualizar info de evaluación inicial
-            document.getElementById('eval-fecha').textContent = fecha;
-            
-            // Determinar métodos sugeridos basado en score
-            const metodosRecomendados = getMetodosRecomendados(scoreNum);
-            document.getElementById('eval-sugeridas').textContent = metodosRecomendados;
-            
-            console.log('✅ Datos de evaluación cargados');
+            evalFechaEl.textContent = fecha;
+
+            const metodosRecomendados = getMetodosRecomendados(scoreNum); // Asume que esta función existe
+            evalSugeridasEl.textContent = metodosRecomendados;
+
+            console.log('✅ Datos de evaluación cargados y mostrados.');
+
         } else {
-            // NO EXISTE EVALUACIÓN - Mostrar valores por defecto limpios
-            console.log('🆕 Centro nuevo - estableciendo valores por defecto');
-            
-            // Limpiar score principal
-            document.getElementById('score-value').textContent = '--';
-            document.getElementById('score-category').textContent = 'Sin evaluar';
-            document.getElementById('score-value').style.color = '#6b7280'; // Color gris
-            
-            // Limpiar info de evaluación inicial
-            document.getElementById('eval-fecha').textContent = 'Pendiente';
-            document.getElementById('eval-sugeridas').textContent = 'Realizar evaluación inicial';
-            
-            console.log('🧹 Valores limpiados para centro nuevo');
+            // Si NO se encontraron evaluaciones ni en Supabase ni en localStorage
+            console.log('🆕 Centro sin evaluación inicial - estableciendo valores por defecto');
+
+            scoreValueEl.textContent = '--';
+            scoreCategoryEl.textContent = 'Sin evaluar';
+            scoreValueEl.style.color = '#6b7280'; // Color gris
+            evalFechaEl.textContent = 'Pendiente';
+            evalSugeridasEl.textContent = 'Realizar evaluación inicial';
+
+            console.log('🧹 Valores por defecto mostrados.');
         }
     } catch (error) {
+        // Manejo de errores durante la carga o procesamiento
         console.error('Error cargando evaluación inicial:', error);
-        
-        // En caso de error, también limpiar valores
-        document.getElementById('score-value').textContent = '--';
-        document.getElementById('score-category').textContent = 'Error al cargar';
-        document.getElementById('score-value').style.color = '#ef4444'; // Color rojo
-        document.getElementById('eval-fecha').textContent = 'Error';
-        document.getElementById('eval-sugeridas').textContent = 'Error al cargar datos';
+
+        // Mostrar estado de error en la UI (los elementos existen gracias a la verificación inicial)
+        scoreValueEl.textContent = '--';
+        scoreCategoryEl.textContent = 'Error al cargar';
+        scoreValueEl.style.color = '#ef4444'; // Color rojo
+        evalFechaEl.textContent = 'Error';
+        evalSugeridasEl.textContent = 'Error al cargar datos';
     }
 }
 
@@ -129,36 +148,50 @@
 
 async function loadActividades() {
     const evaluacionesContainer = document.getElementById('evaluaciones-container');
+    const btnReportePrincipal = document.getElementById('btn-ver-reporte-principal');
+
+    // Deshabilitar botón principal y mostrar mensaje de carga
+    if (btnReportePrincipal) btnReportePrincipal.disabled = true;
     evaluacionesContainer.innerHTML = '<div class="empty-evaluations"><p>Cargando actividades...</p></div>';
 
     try {
+        // Obtener los hallazgos/actividades del centro actual
         evaluacionesEspecificas = await dataClient.getActividades(workCenterId);
 
+        // Verificar si se encontraron hallazgos
         if (evaluacionesEspecificas && evaluacionesEspecificas.length > 0) {
-            evaluacionesContainer.innerHTML = '';
+            evaluacionesContainer.innerHTML = ''; // Limpiar el mensaje "Cargando..."
+
+            // Configurar y habilitar el botón del reporte consolidado
+            if (btnReportePrincipal) {
+                btnReportePrincipal.onclick = () => {
+                    // Navegar al reporte consolidado pasando solo los parámetros del centro/área
+    window.location.href = `reporte-dictamen.html?workCenter=${workCenterId}&area=${areaId}&centerName=${encodeURIComponent(centerName || '')}&areaName=${encodeURIComponent(areaName || '')}&responsible=${encodeURIComponent(responsibleName || '')}`;                };
+                btnReportePrincipal.disabled = false; // Habilitar
+            }
+
+            // Iterar sobre cada hallazgo para crear su tarjeta
             evaluacionesEspecificas.forEach(actividad => {
                 const item = document.createElement('div');
                 item.className = `actividad-item`;
                 item.setAttribute('data-id', actividad.id);
 
-                // ✅ CREAR DIVS SEPARADOS PARA EVITAR ESCAPE
-const comentariosDiv = document.createElement('div');
+                // Crear divs separados para el contenido HTML (evita problemas de escape)
+                const comentariosDiv = document.createElement('div');
                 comentariosDiv.className = 'content';
-                // REVISIÓN: Usar DOMPurify si existe, si no, usar el HTML directo.
-                comentariosDiv.innerHTML = (typeof DOMPurify !== 'undefined') 
-                    ? DOMPurify.sanitize(actividad.comentarios || '<i>Sin comentarios.</i>') 
+                comentariosDiv.innerHTML = (typeof DOMPurify !== 'undefined')
+                    ? DOMPurify.sanitize(actividad.comentarios || '<i>Sin comentarios.</i>')
                     : (actividad.comentarios || '<i>Sin comentarios.</i>');
-
 
                 const recomendacionesDiv = document.createElement('div');
                 recomendacionesDiv.className = 'content';
-                // REVISIÓN: Usar DOMPurify si existe, si no, usar el HTML directo.
                 recomendacionesDiv.innerHTML = (typeof DOMPurify !== 'undefined')
                     ? DOMPurify.sanitize(actividad.recomendaciones || '<i>Sin recomendaciones.</i>')
                     : (actividad.recomendaciones || '<i>Sin recomendaciones.</i>');
 
+                // Generar el HTML de la tarjeta
                 item.innerHTML = `
-                    <div class="actividad-header" onclick="toggleActividadDetails(this.parentElement, '${actividad.id}')">
+                    <div class="actividad-header" onclick="toggleActividadDetailsSimple(this)">
                         <div class="chevron">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
@@ -169,6 +202,12 @@ const comentariosDiv = document.createElement('div');
                             <div class="meta">Método: ${actividad.metodo || 'No definido'} • Creada: ${new Date(actividad.created_at).toLocaleDateString()}</div>
                         </div>
                         <div class="actividad-status">${actividad.score_final ? actividad.score_final.toFixed(1) : 'Pendiente'}</div>
+
+                        <button class="btn btn-secondary btn-sm"
+                                onclick="event.stopPropagation(); window.location.href='reporte-dictamen.html?workCenter=${workCenterId}&area=${areaId}&centerName=${encodeURIComponent(centerName || '')}&areaName=${encodeURIComponent(areaName || '')}&responsible=${encodeURIComponent(responsibleName || '')}&id=${actividad.id}'">
+                            Ver Reporte Det.
+                        </button>
+
                         <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); abrirModalActividad('${actividad.id}')">Editar</button>
                     </div>
                     <div class="actividad-details">
@@ -186,24 +225,32 @@ const comentariosDiv = document.createElement('div');
                         </div>
                     </div>
                 `;
-                
+
+                // Añadir la tarjeta al contenedor principal
                 evaluacionesContainer.appendChild(item);
-                
-                // ✅ AHORA INSERTAR EL CONTENIDO SIN ESCAPE
+
+                // Insertar el contenido HTML (comentarios/recomendaciones) en los divs correspondientes
                 document.getElementById(`comentarios-${actividad.id}`).appendChild(comentariosDiv);
                 document.getElementById(`recomendaciones-${actividad.id}`).appendChild(recomendacionesDiv);
             });
+
         } else {
+            // Si no se encontraron hallazgos, mostrar mensaje y deshabilitar botón consolidado
             evaluacionesContainer.innerHTML = `
                 <div class="empty-evaluations">
-                    <p>No hay evaluaciones específicas realizadas</p>
-                    <small>Agrega evaluaciones REBA, RULA, OCRA, NIOSH según corresponda</small>
+                    <p>No hay actividades (hallazgos) registradas para este centro.</p>
+                    <small>Usa el botón "+ Agregar Hallazgo" para empezar.</small>
                 </div>
             `;
+            if (btnReportePrincipal) {
+                 btnReportePrincipal.disabled = true;
+            }
         }
     } catch (error) {
+        // Manejo de errores durante la carga
         console.error('Error al cargar actividades:', error);
         evaluacionesContainer.innerHTML = '<p class="error-message">Error al cargar datos.</p>';
+         if (btnReportePrincipal) btnReportePrincipal.disabled = true; // Deshabilitar también en caso de error
     }
 }
 

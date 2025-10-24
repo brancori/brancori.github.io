@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictamen Ergonómico</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script> -->
+    <script src="../componentes/globals.js" defer></script> -->
+    <script src="../componentes/supabase-config.js" defer></script> -->
+    
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #4a4a4a;
+            --border-color: #cccccc;
+            --light-bg: #f9f9f9;
+            --font-stack-titles: 'Aptos Display', 'Aptos', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #e5e5e5;
+            color: var(--primary-color);
+            line-height: 1.6;
+            font-size: 12pt;
+        }
+
+        .container {
+            max-width: 8.5in;
+            margin: 1rem auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* BARRA DE HERRAMIENTAS */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .toolbar button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background-color: #0066cc;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #0052a3;
+        }
+
+        .btn-export {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background-color: #218838;
+        }
+
+        .btn-preview {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-preview:hover {
+            background-color: #5a6268;
+        }
+
+        /* PÁGINAS */
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            padding: 1in;
+            background: white;
+            position: relative;
+            page-break-after: always;
+        }
+
+        .page-content {
+            margin-top: 4rem;
+        }
+
+        /* PORTADA */
+        .portada {
+            font-family: var(--font-stack-titles);  
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 9in;
+        }
+
+        .logo-watermark {
+            position: absolute;
+            top: 1in;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 80px;
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #999;
+            opacity: 0.3;
+        }
+
+        .portada h1 {
+            font-family: var(--font-stack-titles);
+            font-size: 28pt;
+            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .portada h2 {
+            font-size: 20pt;
+            font-weight: normal;
+            margin-bottom: 3rem;
+            color: var(--secondary-color);
+        }
+
+        .portada-info {
+            width: 100%;
+            max-width: 500px;
+            text-align: left;
+            margin-top: 2rem;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: bold;
+        }
+
+        .info-value {
+            color: var(--secondary-color);
+        }
+
+        .editable-field {
+            border: 1px dashed #ccc;
+            padding: 0.25rem;
+            min-height: 1.5rem;
+            background-color: #fafafa;
+        }
+
+        .editable-field:focus {
+            outline: 2px solid #0066cc;
+            background-color: white;
+        }
+
+        /* TÍTULOS DE SECCIÓN */
+        .section-title {
+            font-family: var(--font-stack-titles);
+            font-size: 18pt;
+            font-weight: bold;
+            text-align: center;
+            font-weight: 600;
+            margin: 2rem 0 1.5rem 0;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .subsection-title {
+            font-family: var(--font-stack-titles);
+            font-weight: 600;
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .subsection-number {
+            font-family: var(--font-stack-titles);
+            font-weight: 600;
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+
+        /* EDITOR DE TEXTO ENRIQUECIDO */
+        .rich-editor {
+            border: 1px solid var(--border-color);
+            min-height: 150px;
+            padding: 1rem;
+            background-color: white;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .rich-editor[contenteditable="true"] {
+            background-color: #fffef7;
+        }
+
+        .rich-editor[contenteditable="true"]:focus {
+            outline: 2px solid #0066cc;
+        }
+
+        .editor-toolbar {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .editor-toolbar button {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border-radius: 3px;
+        }
+
+        .editor-toolbar button:hover {
+            background-color: #e9e9e9;
+        }
+
+        /* HALLAZGOS */
+        .hallazgo-item {
+            margin-bottom: 2rem;
+            page-break-inside: avoid;
+        }
+
+        .hallazgo-header {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .hallazgo-content {
+            margin-left: 1rem;
+            text-align: justify;
+        }
+
+        .hallazgo-field {
+            margin-bottom: 1rem;
+        }
+
+        .hallazgo-field-label {
+            font-weight: bold;
+            font-style: italic;
+            margin-bottom: 0.25rem;
+        }
+
+        /* TABLA MATRIZ */
+        .matriz-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 10pt;
+        }
+
+        .matriz-table th,
+        .matriz-table td {
+            border: 1px solid var(--primary-color);
+            padding: 0.5rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .matriz-table th {
+            background-color: var(--light-bg);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .matriz-table td {
+            line-height: 1.4;
+        }
+
+        /* VIÑETAS Y LISTAS */
+        .rich-editor ul {
+            margin-left: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rich-editor ol {
+            margin-left: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rich-editor li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* EVIDENCIAS */
+        .evidencia-section {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .evidencia-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .evidencia-placeholder {
+            width: 100%;
+            height: 150px;
+            background-color: #e9e9e9;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        /* IMPRESIÓN */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+            }
+
+            .toolbar {
+                display: none;
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0.75in;
+            }
+
+            .page-content {
+                margin-top: 0;
+            }
+
+            .editable-field {
+                border: none;
+                background-color: transparent;
+            }
+
+            .editor-toolbar {
+                display: none;
+            }
+
+            .rich-editor {
+                border: none;
+                padding: 0;
+                background-color: transparent;
+            }
+        }
+
+        @page {
+            size: letter;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE HERRAMIENTAS -->
+    <div class="toolbar">
+        <button class="btn-save" onclick="guardarBorrador()">💾 Guardar Borrador</button>
+        <button class="btn-export" onclick="exportarPDF()">📄 Exportar PDF</button>
+        <button class="btn-preview" onclick="toggleEditMode()">👁️ Vista Previa</button>
+    </div>
+
+    <div class="container">
+        
+        <!-- PORTADA -->
+        <div class="page portada">
+            <!-- TODO: Reemplazar con logo real de J&J -->
+            <div class="logo-watermark">
+                [LOGO J&J]
+            </div>
+
+            <h1>Dictamen Ergonómico</h1>
+            <h2>Johnson and Johnson</h2>
+
+            <div class="portada-info">
+                <div class="info-row">
+                    <span class="info-label">Centro de Trabajo:</span>
+                    <span class="info-value" id="centro-trabajo">[Cargando...]</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Área:</span>
+                    <span class="info-value" id="area-nombre">[Cargando...]</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha de realización:</span>
+                    <input type="date" class="editable-field" id="fecha-realizacion" 
+                           style="width: 100%; border: 1px solid #ccc; padding: 0.5rem;">
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Evaluador:</span>
+                    <span class="info-value">Lic. Brandon Cortes Rivera</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Tareas Observadas:</span>
+                    <div class="editable-field" contenteditable="true" id="tareas-observadas"
+                         style="width: 100%; min-height: 60px;">
+                        Trabajo de computadora, documentación y elaboración de reportes
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 2: RESUMEN EJECUTIVO -->
+        <div class="page">
+            <div class="page-content">
+                <h1 class="section-title" id="titulo-centro">[NOMBRE DEL CENTRO DE TRABAJO]</h1>
+
+                <!-- TODO: Aquí se puede agregar el score general del centro si se desea -->
+                
+                <div class="editor-toolbar">
+                    <button onclick="formatText('bold')"><b>B</b></button>
+                    <button onclick="formatText('italic')"><i>I</i></button>
+                    <button onclick="formatText('underline')"><u>U</u></button>
+                    <button onclick="formatText('insertUnorderedList')">• Lista</button>
+                    <button onclick="formatText('insertOrderedList')">1. Lista</button>
+                </div>
+                <div class="rich-editor" contenteditable="true" id="resumen-ejecutivo">
+                    <p>La evaluación inicial arrojó una puntuación de <strong>[Score]%</strong> (Riesgo [Nivel]). Este score, considerablemente [elevado/bajo] para un entorno de [tipo], se debe a deficiencias [describirlas].</p>
+                    <ul>
+                        <li><strong>Hallazgo Principal 1:</strong> Descripción del hallazgo y su impacto.</li>
+                        <li><strong>Hallazgo Principal 2:</strong> Descripción del hallazgo y su impacto.</li>
+                        <li><strong>Hallazgo Principal 3:</strong> Descripción del hallazgo y su impacto.</li>
+                    </ul>
+                    <p><strong>Plan de Acción y Proyección de Reducción del Score:</strong></p>
+                    <p>Se proponen las siguientes soluciones de ingeniería y administrativas para abordar directamente los hallazgos:</p>
+                    <ol>
+                        <li>Acción correctiva 1</li>
+                        <li>Acción correctiva 2</li>
+                        <li>Acción correctiva 3</li>
+                    </ol>
+                    <p><strong>Impacto Cuantitativo en el Score:</strong></p>
+                    <p>La implementación de estas dará un nuevo Score Proyectado = [X]% (Riesgo Bajo). Esto representa una reducción de más del [X]% en el score de riesgo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3: DICTAMEN ERGONÓMICO -->
+        <div class="page">
+            <div class="page-content">
+                <h1 class="section-title">Dictamen Ergonómico: Área de <span id="area-dictamen">[Área]</span></h1>
+
+                <h2 class="subsection-number">I. Introducción y Objetivo del Análisis</h2>
+                
+                <div class="editor-toolbar">
+                    <button onclick="formatText('bold')"><b>B</b></button>
+                    <button onclick="formatText('italic')"><i>I</i></button>
+                    <button onclick="formatText('underline')"><u>U</u></button>
+                    <button onclick="formatText('insertUnorderedList')">• Lista</button>
+                    <button onclick="formatText('insertOrderedList')">1. Lista</button>
+                </div>
+                <div class="rich-editor" contenteditable="true" id="introduccion">
+                    <p><strong>Contexto del Análisis:</strong> Este dictamen se enmarca en el programa proactivo de ergonomía de la organización, cuyo principio es "ajustar el trabajo a las personas y no la persona al trabajo".</p>
+                    <p><strong>Objetivo Específico:</strong> El objetivo es identificar, analizar y documentar los factores de riesgo ergonómico.</p>
+                    <p><strong>Alcance de la Evaluación:</strong> La evaluación inicial arrojó una puntuación de riesgo [nivel] del [X]%.</p>
+                </div>
+
+                <h2 class="subsection-number">II. Análisis de Condiciones Ergonómicas y de Diseño del Área de Trabajo</h2>
+
+                <!-- CONTENEDOR DE HALLAZGOS -->
+                <div id="hallazgos-container">
+                    <!-- Los hallazgos se cargarán dinámicamente aquí desde Supabase -->
+                    <p style="color: #666; font-style: italic;">Cargando hallazgos desde la base de datos...</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PÁGINA 4: MATRIZ Y CONCLUSIONES -->
+        <div class="page">
+            <div class="page-content">
+                <h2 class="subsection-title">Tabla 1: Matriz de Incumplimientos y Acciones</h2>
+
+                <!-- TODO: Esta tabla se llenará con datos de actividades desde Supabase -->
+                <table class="matriz-table" id="matriz-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Actividad<br>(Área Crítica)</th>
+                            <th style="width: 30%;">Descripción del Incumplimiento y Riesgo Derivado</th>
+                            <th style="width: 30%;">Medida de Control Propuesta (Jerarquía)</th>
+                            <th style="width: 20%;">Justificación (Principio de Diseño)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matriz-tbody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #666;">
+                                Cargando datos desde la base de datos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 class="subsection-number" style="margin-top: 3rem;">III. Conclusiones</h2>
+                
+                <div class="editor-toolbar">
+                    <button onclick="formatText('bold')"><b>B</b></button>
+                    <button onclick="formatText('italic')"><i>I</i></button>
+                    <button onclick="formatText('underline')"><u>U</u></button>
+                    <button onclick="formatText('insertUnorderedList')">• Lista</button>
+                    <button onclick="formatText('insertOrderedList')">1. Lista</button>
+                </div>
+                <div class="rich-editor" contenteditable="true" id="conclusiones">
+                    <p>El análisis demuestra que [Nombre del Área] opera con incumplimientos [críticos/moderados] de los principios de diseño ergonómico. El score de [X]% no es solo un número, sino el reflejo de un entorno de trabajo que [descripción del impacto].</p>
+                    <p>Se requiere una intervención [integral/prioritaria/gradual] para abordar los siguientes aspectos críticos:</p>
+                    <ul>
+                        <li>Aspecto crítico 1</li>
+                        <li>Aspecto crítico 2</li>
+                        <li>Aspecto crítico 3</li>
+                    </ul>
+                </div>
+
+                <h2 class="subsection-number">IV. Plan de Acción y Recomendaciones</h2>
+                
+                <div class="editor-toolbar">
+                    <button onclick="formatText('bold')"><b>B</b></button>
+                    <button onclick="formatText('italic')"><i>I</i></button>
+                    <button onclick="formatText('underline')"><u>U</u></button>
+                    <button onclick="formatText('insertUnorderedList')">• Lista</button>
+                    <button onclick="formatText('insertOrderedList')">1. Lista</button>
+                </div>
+                <div class="rich-editor" contenteditable="true" id="plan-accion">
+                    <p><strong>A. Controles de Ingeniería (Prioridad Alta)</strong></p>
+                    <ol>
+                        <li><strong>Acción 1:</strong> Descripción detallada de la acción correctiva.</li>
+                        <li><strong>Acción 2:</strong> Descripción detallada de la acción correctiva.</li>
+                        <li><strong>Acción 3:</strong> Descripción detallada de la acción correctiva.</li>
+                    </ol>
+                    <p><strong>B. Controles Administrativos (Implementación Inmediata)</strong></p>
+                    <ol>
+                        <li><strong>Protocolo de Pausas Activas:</strong> Establecer un procedimiento.</li>
+                        <li><strong>Capacitación y Comunicación:</strong> Realizar sesiones.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
+        let editMode = true;
+        let workCenterId = null;
+        let areaId = null;
+        let hallazgosData = [];
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Obtener parámetros de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            workCenterId = urlParams.get('workCenter');
+            areaId = urlParams.get('area');
+            const centerName = decodeURIComponent(urlParams.get('centerName') || 'Centro de Trabajo');
+            const areaName = decodeURIComponent(urlParams.get('areaName') || 'Área');
+            
+            // Establecer fecha actual por defecto
+            document.getElementById('fecha-realizacion').valueAsDate = new Date();
+
+            // TODO: Descomentar cuando dataClient esté disponible
+            await cargarDatosIniciales();
+        });
+
+        // ============================================
+        // CARGA DE DATOS
+        // ============================================
+        
+async function cargarDatosIniciales() {
+            try {
+                // Cargar información del centro de trabajo
+                const { data: centro, error: errorCentro } = await dataClient.supabase
+                    .from('work_centers')
+                    .select('name')
+                    .eq('id', workCenterId)
+                    .single();
+                
+                if (errorCentro) throw errorCentro;
+
+                // Cargar información del área
+                const { data: area, error: errorArea } = await dataClient.supabase
+                    .from('areas')
+                    .select('name') 
+                    .eq('id', areaId)
+                    .single();
+                
+                if (errorArea) throw errorArea;
+
+                // Actualizar encabezados
+                document.getElementById('centro-trabajo').textContent = centro.name.toUpperCase(); 
+                document.getElementById('area-nombre').textContent = area.name; 
+                document.getElementById('titulo-centro').textContent = centro.name.toUpperCase();
+                document.getElementById('area-dictamen').textContent = area.name;
+                
+                // Cargar hallazgos (actividades)
+                const { data: actividades, error: errorActividades } = await dataClient.supabase
+                    .from('actividades')
+                    .select('*')
+                    .eq('work_center_id', workCenterId)
+                    .order('created_at', { ascending: true });
+                
+                if (errorActividades) throw errorActividades;
+
+                hallazgosData = actividades;
+                renderizarHallazgos(actividades);
+                renderizarMatriz(actividades);
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                alert('Error al cargar los datos del centro de trabajo: ' + error.message);
+                
+                // Fallback a datos de prueba si falla la carga
+                const urlParams = new URLSearchParams(window.location.search);
+                const centerName = decodeURIComponent(urlParams.get('centerName') || 'Centro');
+                const areaName = decodeURIComponent(urlParams.get('areaName') || 'Área');
+                cargarDatosPrueba(centerName, areaName);
+            }
+        }
+
+        // Función temporal con datos de prueba
+        function cargarDatosPrueba(centerName, areaName) { // <-- MODIFICADO: Aceptar argumentos
+            document.getElementById('centro-trabajo').textContent = centerName.toUpperCase();
+            document.getElementById('area-nombre').textContent = areaName;
+            document.getElementById('titulo-centro').textContent = centerName.toUpperCase();
+            document.getElementById('area-dictamen').textContent = areaName;
+
+            // Datos de prueba
+            hallazgosData = [
+                {
+                    id: '1',
+                    nombre: 'Diseño de Estaciones de Trabajo y Posturas Forzadas',
+                    descripcion_detallada: 'La principal deficiencia del área es la falta de un sistema ergonómico integrado. Si bien algunos empleados disponen de periféricos como teclados, ratones o un monitor extra, la falta total de soportes para elevar las pantallas y el diseño espacial deficiente anulan cualquier beneficio ergonómico.',
+                    descripcion_riesgo: 'Mobiliario no ajustable y falta de soportes. Riesgo alto de TME en cuello, hombros y espalda.',
+                    recomendaciones: '(Ingeniería) Sustituir por equipamiento ergonómico totalmente ajustable (sillas, soportes).',
+                    grupo_riesgo: 'R02 - Posturas Forzadas',
+                    nivel_riesgo: 'ALTO',
+                    nuevo_nivel_riesgo: 'BAJO'
+                },
+                {
+                    id: '2',
+                    nombre: 'Ambiente Físico: Iluminación y Ruido',
+                    descripcion_detallada: 'El entorno de trabajo presenta condiciones ambientales adversas. La iluminación varía de 393 a 1643 lux, lo que indica zonas de penumbra y otras de deslumbramiento. El nivel de ruido medido es de 71.15 dB.',
+                    descripcion_riesgo: 'Iluminación deficiente y ruido elevado. Riesgo de fatiga visual y estrés.',
+                    recomendaciones: '(Ingeniería) Instalar controles de iluminación (filtros, difusores) y atenuación acústica.',
+                    grupo_riesgo: 'R07 - Entorno Visual y Pantallas',
+                    nivel_riesgo: 'MODERADO',
+                    nuevo_nivel_riesgo: 'BAJO'
+                },
+                {
+                    id: '3',
+                    nombre: 'Configuración Espacial y Densidad Ocupacional',
+                    descripcion_detallada: 'La oficina contiene a 5 personas en un espacio reducido, lo que limita severamente la movilidad. No hay espacio suficiente para colaboradores altos y el alcance para colaboradores de menor estatura es deficiente.',
+                    descripcion_riesgo: 'Espacio reducido para 5 personas, poca movilidad. Riesgo de fatiga estática y estrés por congestión.',
+                    recomendaciones: '(Ingeniería) Realizar una reconfiguración del layout de la oficina.',
+                    grupo_riesgo: 'R08 - Postura Estática',
+                    nivel_riesgo: 'ALTO',
+                    nuevo_nivel_riesgo: 'BAJO'
+                }
+            ];
+
+            renderizarHallazgos(hallazgosData);
+            renderizarMatriz(hallazgosData);
+        }
+
+        // ============================================
+        // RENDERIZADO DE HALLAZGOS
+        // ============================================
+        function renderizarHallazgos(hallazgos) {
+            const container = document.getElementById('hallazgos-container');
+            container.innerHTML = '';
+
+            hallazgos.forEach((hallazgo, index) => {
+                const letra = String.fromCharCode(65 + index); // A, B, C...
+                
+                const hallazgoDiv = document.createElement('div');
+                hallazgoDiv.className = 'hallazgo-item';
+                hallazgoDiv.innerHTML = `
+                    <h3 class="subsection-title">${letra}. ${hallazgo.nombre}</h3>
+                    
+                    <div class="hallazgo-field">
+                        <div class="hallazgo-field-label">Hallazgo:</div>
+                        <div class="hallazgo-content">
+                            ${hallazgo.descripcion_detallada || '[Descripción no disponible]'}
+                        </div>
+                    </div>
+
+                    <div class="hallazgo-field">
+                        <div class="hallazgo-field-label">Análisis y Riesgos Derivados:</div>
+                        <!-- TODO: Este campo debe guardarse en la nueva tabla dictamen_complementos -->
+                        <div class="editor-toolbar">
+                            <button onclick="formatText('bold')"><b>B</b></button>
+                            <button onclick="formatText('italic')"><i>I</i></button>
+                            <button onclick="formatText('underline')"><u>U</u></button>
+                            <button onclick="formatText('insertUnorderedList')">• Lista</button>
+                            <button onclick="formatText('insertOrderedList')">1. Lista</button>
+                        </div>
+                        <div class="rich-editor hallazgo-content" contenteditable="true" 
+                             data-hallazgo-id="${hallazgo.id}" data-field="analisis_riesgo">
+                            <p>Esta situación obliga a los empleados a adoptar posturas forzadas y sostenidas. Describir el impacto específico, las consecuencias documentadas, y la severidad del riesgo derivado de este hallazgo.]</p>
+                        </div>
+                    </div>
+
+                    <!-- TODO: Agregar campos para Tarea Específica y Evaluación Específica -->
+                    <div class="hallazgo-field">
+                        <div class="hallazgo-field-label">Tarea Específica:</div>
+                        <div class="editable-field" contenteditable="true" 
+                             data-hallazgo-id="${hallazgo.id}" data-field="tarea_especifica"
+                             style="min-height: 30px; padding: 0.5rem;">
+                            [Agregar tarea específica]
+                        </div>
+                    </div>
+
+                    <div class="hallazgo-field">
+                        <div class="hallazgo-field-label">Evaluación Específica:</div>
+                        <div class="editable-field" contenteditable="true" 
+                             data-hallazgo-id="${hallazgo.id}" data-field="evaluacion_especifica"
+                             style="min-height: 30px; padding: 0.5rem;">
+                            [Agregar método de evaluación: EJA, RULA, NIOSH, etc.]
+                        </div>
+                    </div>
+
+                    <!-- Evidencia Fotográfica -->
+                    <div class="evidencia-section">
+                        <h4 style="margin: 0 0 1rem 0; font-size: 11pt;">Evidencia Fotográfica</h4>
+                        <div class="evidencia-grid" data-hallazgo-id="${hallazgo.id}">
+                            <!-- TODO: Cargar fotos desde fotos_actividades -->
+                            <div class="evidencia-placeholder">Foto 1</div>
+                            <div class="evidencia-placeholder">Foto 2</div>
+                            <div class="evidencia-placeholder">Foto 3</div>
+                        </div>
+                        <p style="margin-top: 0.5rem; font-size: 9pt; color: #666;">
+                            <em>Las imágenes se cargarán desde la tabla fotos_actividades</em>
+                        </p>
+                    </div>
+
+                    <!-- Evaluaciones Específicas (EJA, RULA, NIOSH) -->
+                    <div class="evidencia-section" style="margin-top: 1rem;">
+                        <h4 style="margin: 0 0 1rem 0; font-size: 11pt;">Resultados de Evaluaciones</h4>
+                        <div data-hallazgo-id="${hallazgo.id}" class="evaluaciones-resultados">
+                            <!-- TODO: Cargar resultados de evaluaciones específicas -->
+                            <p style="font-size: 10pt; color: #666;">
+                                <strong>Grupo de Riesgo:</strong> ${hallazgo.grupo_riesgo || 'N/A'}<br>
+                                <strong>Nivel de Riesgo Inicial:</strong> ${hallazgo.nivel_riesgo || 'N/A'}<br>
+                                <strong>Nivel de Riesgo Proyectado:</strong> ${hallazgo.nuevo_nivel_riesgo || 'N/A'}
+                            </p>
+                            <p style="font-size: 9pt; color: #666; font-style: italic;">
+                                Los resultados detallados de EJA, RULA, NIOSH se cargarán desde las tablas correspondientes
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(hallazgoDiv);
+            });
+        }
+
+        // ============================================
+        // RENDERIZADO DE MATRIZ
+        // ============================================
+        function renderizarMatriz(hallazgos) {
+            const tbody = document.getElementById('matriz-tbody');
+            tbody.innerHTML = '';
+
+            hallazgos.forEach(hallazgo => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${hallazgo.nombre}</strong></td>
+                    <td>${hallazgo.descripcion_riesgo || '[Sin descripción]'}</td>
+                    <td>${hallazgo.recomendaciones || '[Sin recomendaciones]'}</td>
+                    <td>
+                        <!-- TODO: Campo editable para Justificación - guardar en tabla dictamen_complementos -->
+                        <div class="editable-field" contenteditable="true" 
+                             data-hallazgo-id="${hallazgo.id}" data-field="justificacion"
+                             style="min-height: 50px; padding: 0.5rem;">
+                            [Agregar justificación basada en principios de diseño ergonómico]
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ============================================
+        // FUNCIONES DE EDICIÓN
+        // ============================================
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const editables = document.querySelectorAll('[contenteditable]');
+            editables.forEach(el => {
+                el.contentEditable = editMode;
+            });
+            
+            const toolbars = document.querySelectorAll('.editor-toolbar');
+            toolbars.forEach(tb => {
+                tb.style.display = editMode ? 'flex' : 'none';
+            });
+
+            const btn = event.target;
+            btn.textContent = editMode ? '👁️ Vista Previa' : '✏️ Modo Edición';
+        }
+
+        // ============================================
+        // GUARDAR BORRADOR
+        // ============================================
+        async function guardarBorrador() {
+            try {
+                // Recopilar todos los datos editables
+                const datosFormulario = {
+                    work_center_id: workCenterId,
+                    area_id: areaId,
+                    fecha_realizacion: document.getElementById('fecha-realizacion').value,
+                    tareas_observadas: document.getElementById('tareas-observadas').textContent,
+                    resumen_ejecutivo: document.getElementById('resumen-ejecutivo').innerHTML,
+                    introduccion: document.getElementById('introduccion').innerHTML,
+                    conclusiones: document.getElementById('conclusiones').innerHTML,
+                    plan_accion: document.getElementById('plan-accion').innerHTML,
+                };
+
+                // Recopilar análisis de cada hallazgo
+                const analisisHallazgos = {};
+                const justificaciones = {};
+                const tareasEspecificas = {};
+                const evaluacionesEspecificas = {};
+
+                document.querySelectorAll('[data-hallazgo-id]').forEach(el => {
+                    const hallazgoId = el.dataset.hallazgoId;
+                    const field = el.dataset.field;
+                    
+                    if (field === 'analisis_riesgo') {
+                        analisisHallazgos[hallazgoId] = el.innerHTML;
+                    } else if (field === 'justificacion') {
+                        justificaciones[hallazgoId] = el.textContent;
+                    } else if (field === 'tarea_especifica') {
+                        tareasEspecificas[hallazgoId] = el.textContent;
+                    } else if (field === 'evaluacion_especifica') {
+                        evaluacionesEspecificas[hallazgoId] = el.textContent;
+                    }
+                });
+
+                console.log('Datos a guardar:', {
+                    formulario: datosFormulario,
+                    analisisHallazgos,
+                    justificaciones,
+                    tareasEspecificas,
+                    evaluacionesEspecificas
+                });
+
+                /* TODO: Implementar guardado en Supabase
+                
+                // OPCIÓN B: Crear tabla dictamen_complementos con esta estructura:
+                
+                CREATE TABLE dictamen_complementos (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    work_center_id TEXT NOT NULL REFERENCES work_centers(id),
+                    area_id TEXT NOT NULL REFERENCES areas(id),
+                    user_id UUID REFERENCES auth.users(id),
+                    
+                    -- Datos de portada
+                    fecha_realizacion DATE,
+                    tareas_observadas TEXT,
+                    
+                    -- Secciones editables
+                    resumen_ejecutivo TEXT,
+                    introduccion TEXT,
+                    conclusiones TEXT,
+                    plan_accion TEXT,
+                    
+                    -- Metadatos
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
+                    updated_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                -- Análisis individuales por hallazgo (relación 1:N)
+                CREATE TABLE hallazgo_analisis (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    dictamen_id UUID REFERENCES dictamen_complementos(id) ON DELETE CASCADE,
+                    actividad_id UUID REFERENCES actividades(id) ON DELETE CASCADE,
+                    
+                    -- Campos adicionales por hallazgo
+                    analisis_riesgo_derivado TEXT,
+                    justificacion TEXT,
+                    tarea_especifica TEXT,
+                    evaluacion_especifica TEXT,
+                    
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
+                    updated_at TIMESTAMPTZ DEFAULT NOW(),
+                    
+                    UNIQUE(dictamen_id, actividad_id)
+                );
+
+                // Código de guardado:
+                const { data: dictamen, error: errorDictamen } = await dataClient.supabase
+                    .from('dictamen_complementos')
+                    .upsert({
+                        work_center_id: workCenterId,
+                        area_id: areaId,
+                        ...datosFormulario
+                    }, { onConflict: 'work_center_id,area_id' })
+                    .select()
+                    .single();
+
+                if (errorDictamen) throw errorDictamen;
+
+                // Guardar análisis de cada hallazgo
+                for (const hallazgoId in analisisHallazgos) {
+                    await dataClient.supabase
+                        .from('hallazgo_analisis')
+                        .upsert({
+                            dictamen_id: dictamen.id,
+                            actividad_id: hallazgoId,
+                            analisis_riesgo_derivado: analisisHallazgos[hallazgoId],
+                            justificacion: justificaciones[hallazgoId],
+                            tarea_especifica: tareasEspecificas[hallazgoId],
+                            evaluacion_especifica: evaluacionesEspecificas[hallazgoId]
+                        }, { onConflict: 'dictamen_id,actividad_id' });
+                }
+                */
+
+                alert('✅ Borrador guardado correctamente\n\n(Nota: Implementar guardado en Supabase según estructura comentada en el código)');
+                
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                alert('❌ Error al guardar el borrador: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // EXPORTAR PDF
+        // ============================================
+        function exportarPDF() {
+            // Ocultar toolbars antes de imprimir
+            const toolbars = document.querySelectorAll('.editor-toolbar');
+            toolbars.forEach(tb => tb.style.display = 'none');
+
+            // Cambiar título del documento
+            const centerName = document.getElementById('centro-trabajo').textContent;
+            const areaName = document.getElementById('area-nombre').textContent;
+            document.title = `Dictamen Ergonómico - ${centerName} - ${areaName}`;
+
+            // Abrir diálogo de impresión
+            window.print();
+
+            // Restaurar toolbars si está en modo edición
+            setTimeout(() => {
+                if (editMode) {
+                    toolbars.forEach(tb => tb.style.display = 'flex');
+                }
+            }, 100);
+        }
+
+        // ============================================
+        // CARGA DE FOTOS (TODO)
+        // ============================================
+        /* TODO: Implementar cuando esté lista la conexión con Supabase
+        async function cargarFotosHallazgo(hallazgoId, container) {
+            try {
+                const { data: fotos, error } = await dataClient.supabase
+                    .from('fotos_actividades')
+                    .select('storage_path, file_name')
+                    .eq('actividad_id', hallazgoId);
+
+                if (error) throw error;
+
+                if (fotos && fotos.length > 0) {
+                    container.innerHTML = '';
+                    fotos.forEach(foto => {
+                        const { data: publicUrlData } = dataClient.supabase
+                            .storage
+                            .from('fotos')
+                            .getPublicUrl(foto.storage_path);
+
+                        const img = document.createElement('img');
+                        img.src = publicUrlData.publicUrl;
+                        img.alt = foto.file_name || 'Evidencia';
+                        img.style.width = '100%';
+                        img.style.height = '150px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '4px';
+                        img.style.border = '1px solid #ccc';
+                        
+                        container.appendChild(img);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando fotos:', error);
+            }
+        }
+        */
+
+        // ============================================
+        // CARGA DE EVALUACIONES ESPECÍFICAS (TODO)
+        // ============================================
+        /* TODO: Implementar carga de resultados de evaluaciones
+        async function cargarEvaluacionesHallazgo(hallazgoId, container) {
+            try {
+                // Buscar si existe evaluación EJA
+                const { data: eja } = await dataClient.supabase
+                    .from('evaluacion_eja')
+                    .select('*')
+                    .eq('actividad_id', hallazgoId)
+                    .single();
+
+                // Buscar RULA, NIOSH, etc.
+                // ...
+
+                if (eja) {
+                    container.innerHTML += `
+                        <div style="padding: 1rem; background: #f9f9f9; border-left: 3px solid #0066cc; margin-bottom: 0.5rem;">
+                            <strong>Evaluación EJA:</strong><br>
+                            Score: ${eja.score}<br>
+                            Postura: ${eja.postura}<br>
+                            Recomendación: ${eja.recomendacion}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error cargando evaluaciones:', error);
+            }
+        }
+        */
+
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        
+        // Auto-save cada 2 minutos (opcional)
+        // setInterval(() => {
+        //     if (editMode) {
+        //         console.log('Auto-guardando...');
+        //         guardarBorrador();
+        //     }
+        // }, 120000);
+
+        // Prevenir pérdida de datos
+        window.addEventListener('beforeunload', (e) => {
+            if (editMode) {
+                e.preventDefault();
+                e.returnValue = '¿Seguro que quieres salir? Los cambios no guardados se perderán.';
+            }
+        });
+
+        // Atajos de teclado
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + S para guardar
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                guardarBorrador();
+            }
+            
+            // Ctrl/Cmd + P para exportar PDF
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                exportarPDF();
+            }
+        });
+
+        console.log('%c📋 Dictamen Ergonómico Cargado', 'color: #0066cc; font-size: 14px; font-weight: bold;');
+        console.log('%cATAJOS DE TECLADO:', 'color: #666; font-weight: bold;');
+        console.log('Ctrl/Cmd + S: Guardar borrador');
+        console.log('Ctrl/Cmd + P: Exportar PDF');
+        console.log('%cTODO: Implementar integraciones con Supabase', 'color: #ff6600; font-weight: bold;');
+    </script>
+</body>
+</html>
