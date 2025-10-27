@@ -251,7 +251,6 @@
     <div class="modal-overlay" onclick="cerrarModalActividad()"></div>
     <div class="modal-content">
         <form id="form-actividad" onsubmit="event.preventDefault(); guardarActividad();">
-
             <div class="modal-header">
                 <h3 id="modal-actividad-titulo">Nuevo Hallazgo</h3>
                 <button type="button" class="modal-close" onclick="cerrarModalActividad()"><span>&times;</span></button>
@@ -302,15 +301,30 @@
                             <input type="text" id="responsable" class="input-field">
                         </div>
                     </div>
-                    <div>
-                        <div class="form-group">
-                            <label for="descripcion_riesgo">Descripción del Riesgo</label>
-                            <textarea id="descripcion_riesgo" class="input-field" rows="3"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="cumplimiento">Cumplimiento</label>
-                            <input type="text" id="cumplimiento" class="input-field" placeholder="Ej. NOM-036, NOM-001...">
-                        </div>
+<div>
+    <div class="form-group">
+        <label for="descripcion_riesgo">Descripción del Riesgo</label>
+        <textarea id="descripcion_riesgo" class="input-field" rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="cumplimiento-wrapper">Cumplimiento (Normatividad)</label>
+        
+        <div id="cumplimiento-wrapper" class="compliance-wrapper">
+            <button type="button" id="cumplimiento-selected-display" class="compliance-selected-display">
+                <span id="cumplimiento-selected-text">Selecciona una normatividad...</span>
+                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+            <div id="cumplimiento-radio-list" class="compliance-radio-list">
+                </div>
+        </div>
+    </div>
+    
+    <div id="cumplimiento-details" class="compliance-details-box" style="display: none;">
+        </div>
+</div>
                         <div class="form-group">
                             <label for="nivel_riesgo">Nivel de Riesgo Identificado</label>
                             <input type="text" id="nivel_riesgo" class="input-field" placeholder="Este campo se llenará con la evaluación">
@@ -475,12 +489,13 @@
                  <div class="form-group">
                     <label for="condiciones-art-input">ART</label>
                     <input type="text" id="condiciones-art-input" class="input-field">
-                </div>               
-            </div>
+                </div>    
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="cerrarModalCondiciones()">Cancelar</button>
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>           
             </div>
+
         </form>
     </div>
 </div>

@@ -57,6 +57,7 @@ function decodeHTML(html) {
  * @param {object} actividad - El objeto de la actividad con los datos.
  * @param {HTMLElement} detailsContainer - El div donde se renderizará el contenido.
  * @param {string} dirtyHtmlString La cadena de HTML no confiable.
+ * @param {string} normName - El 'name' de la norma (el valor del radio).
  */
 function renderActividadDetails(actividad, detailsContainer) {
     // ✅ Decodificar el HTML escapado
@@ -79,6 +80,51 @@ function renderActividadDetails(actividad, detailsContainer) {
             <div class="content">${recomendaciones}</div>
         </div>
     `;
+}
+
+function showComplianceDetails(normName) {
+    console.log(`DEBUG: HOVER-IN. showComplianceDetails llamado con: "${normName}"`); // <-- LOG
+    const detailsBox = document.getElementById('cumplimiento-details');
+    if (!detailsBox) {
+        console.error('DEBUG: ERROR - No se encontró #cumplimiento-details');
+        return;
+    }
+    if (!complianceDataStore) {
+        console.error('DEBUG: ERROR - complianceDataStore no está definido');
+        return;
+    }
+
+    const content = complianceDataStore[normName];
+    console.log(`DEBUG: HOVER-IN. Contenido encontrado: "${content ? content.substring(0, 30) + '...' : 'NADA'}"`); // <-- LOG
+
+    if (content) {
+        detailsBox.innerHTML = content;
+        detailsBox.style.display = 'block';
+    } else {
+        detailsBox.style.display = 'none';
+    }
+}
+
+/**
+ * Limpia la vista previa o la restaura al valor seleccionado.
+ * Se usa al quitar el mouse (mouseleave).
+ */
+function clearCompliancePreview() {
+    console.log('DEBUG: HOVER-OUT. clearCompliancePreview llamado.'); // <-- LOG
+    const detailsBox = document.getElementById('cumplimiento-details');
+    if (!detailsBox) return;
+
+    const selectedRadio = document.querySelector('input[name="cumplimiento_radio"]:checked');
+    
+    if (selectedRadio) {
+        console.log(`DEBUG: HOVER-OUT. Restaurando al valor seleccionado: "${selectedRadio.value}"`); // <-- LOG
+        // Volvemos a llamar a showComplianceDetails para restaurar el texto
+        showComplianceDetails(selectedRadio.value);
+    } else {
+        // Si no hay nada seleccionado, oculta la caja
+        detailsBox.style.display = 'none';
+        detailsBox.innerHTML = '';
+    }
 }
 
         /**
@@ -224,7 +270,7 @@ let actividadEnEdicion = null;
  * Abre el modal de actividad.
  * Si no se pasa una actividad, abre en modo "Creación".
  * Si se pasa una actividad, abre en modo "Edición".
- * @param {object|null} actividad - El objeto de la actividad a editar.
+ * @param {string|null} actividadId - El ID de la actividad a editar.
  */
 function abrirModalActividad(actividadId = null) {
     const actividad = actividadId ? evaluacionesEspecificas.find(e => e.id === actividadId) : null;
@@ -239,7 +285,7 @@ function abrirModalActividad(actividadId = null) {
     document.getElementById('form-actividad').reset();
     document.getElementById('fotos-grid-actividad').innerHTML = '';
     
-    // ... (Tu lógica existente para los botones EJA/WS)
+    // Lógica para los botones EJA/WS
     const tipoGroup = document.getElementById('tipo-analisis-group');
     const btns = tipoGroup.querySelectorAll('.btn-toggle');
     btns.forEach(btn => {
@@ -250,8 +296,17 @@ function abrirModalActividad(actividadId = null) {
         };
     });
     const btnEvaluarMetodo = document.getElementById('btn-evaluar-metodo');
-    // ... (Fin de lógica EJA/WS)
 
+    // --- NUEVO: Resetear el wrapper de cumplimiento ---
+    const wrapper = document.getElementById('cumplimiento-wrapper');
+    const selectedDisplayBtn = document.getElementById('cumplimiento-selected-display');
+    const selectedDisplayText = document.getElementById('cumplimiento-selected-text');
+    
+    wrapper.classList.remove('is-expanded');
+    selectedDisplayText.textContent = 'Selecciona una normatividad...';
+    selectedDisplayBtn.onmouseenter = null;
+    selectedDisplayBtn.onmouseleave = null;
+    // --- FIN NUEVO ---
 
     if (esEdicion) {
         // --- CAMPOS REUTILIZADOS ---
@@ -273,12 +328,30 @@ function abrirModalActividad(actividadId = null) {
         document.getElementById('descripcion_riesgo').value = actividad.descripcion_riesgo || '';
         document.getElementById('grupo_riesgo').value = actividad.grupo_riesgo || '';
         document.getElementById('puesto_involucrado').value = actividad.puesto_involucrado || '';
-        document.getElementById('cumplimiento').value = actividad.cumplimiento || '';
+        
         document.getElementById('nuevo_nivel_riesgo').value = actividad.nuevo_nivel_riesgo || '';
         document.getElementById('tipo_control').value = actividad.tipo_control || '';
         document.getElementById('art').value = actividad.art || '';
         document.getElementById('accion').value = actividad.accion || '';
         document.getElementById('responsable').value = actividad.responsable || '';
+
+        // --- MANEJO DE CUMPLIMIENTO (MODIFICADO) ---
+        const savedCompliance = actividad.cumplimiento || '';
+        if (savedCompliance) {
+            const radioToSelect = document.querySelector(`input[name="cumplimiento_radio"][value="${savedCompliance}"]`);
+            if (radioToSelect) {
+                radioToSelect.checked = true;
+                // Actualizamos el texto del botón
+                const label = radioToSelect.closest('.compliance-radio-item').querySelector('label');
+                if(label) selectedDisplayText.textContent = label.textContent;
+                
+                // Actualizamos el hover del botón
+                selectedDisplayBtn.onmouseenter = () => showComplianceDetails(savedCompliance);
+                selectedDisplayBtn.onmouseleave = () => clearCompliancePreview();
+            }
+        }
+        // Mostramos el detalle de la norma ya guardada
+        showComplianceDetails(savedCompliance); 
 
         // Cargar fotos
         loadFotosActividad(actividad.id);
@@ -288,10 +361,13 @@ function abrirModalActividad(actividadId = null) {
         btnEvaluarMetodo.disabled = true;
         tipoGroup.querySelector('[data-value="EJA"]').classList.add('active');
         
-        // Limpiar campos (aunque reset() ya lo hace, es bueno ser explícito)
+        // Limpiar campos
         quillActividadComentarios.root.innerHTML = '';
         quillActividadRecomendaciones.root.innerHTML = '';
         document.getElementById('actividad-id').value = '';
+        
+        // Limpiar vista previa de cumplimiento
+        clearCompliancePreview(); 
     }
     
     ERGOModal.open('modal-actividad');
@@ -304,6 +380,20 @@ function cerrarModalActividad() {
     ERGOModal.close('modal-actividad');
     document.getElementById('form-actividad').reset();
     actividadEnEdicion = null;
+
+    // --- LIMPIEZA DE CUMPLIMIENTO (MODIFICADO) ---
+    const checkedRadio = document.querySelector('input[name="cumplimiento_radio"]:checked');
+    if (checkedRadio) {
+        checkedRadio.checked = false; // Deseleccionamos el radio
+    }
+    
+    // Reseteamos el botón
+    document.getElementById('cumplimiento-wrapper').classList.remove('is-expanded');
+    document.getElementById('cumplimiento-selected-text').textContent = 'Selecciona una normatividad...';
+    document.getElementById('cumplimiento-selected-display').onmouseenter = null;
+    document.getElementById('cumplimiento-selected-display').onmouseleave = null;
+    
+    clearCompliancePreview(); // Ocultamos la caja de detalles
 }
 
 /**
@@ -319,6 +409,9 @@ async function guardarActividad() {
 
     const tipoAnalisisActivo = document.querySelector('#tipo-analisis-group .btn-toggle.active');
     
+    // --- OBTENER VALOR DE CUMPLIMIENTO (RADIO) ---
+    const selectedCompliance = document.querySelector('input[name="cumplimiento_radio"]:checked');
+
     const data = {
         work_center_id: workCenterId,
         area_id: areaId,
@@ -337,7 +430,10 @@ async function guardarActividad() {
         descripcion_riesgo: document.getElementById('descripcion_riesgo').value.trim(),
         grupo_riesgo: document.getElementById('grupo_riesgo').value.trim(),
         puesto_involucrado: document.getElementById('puesto_involucrado').value.trim(),
-        cumplimiento: document.getElementById('cumplimiento').value.trim(),
+        
+        // --- CAMPO CORREGIDO ---
+        cumplimiento: selectedCompliance ? selectedCompliance.value : null, // Obtiene el valor del radio
+        
         nuevo_nivel_riesgo: document.getElementById('nuevo_nivel_riesgo').value.trim(),
         tipo_control: document.getElementById('tipo_control').value.trim(),
         art: document.getElementById('art').value.trim(),

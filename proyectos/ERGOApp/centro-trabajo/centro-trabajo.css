@@ -54,10 +54,6 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
             color: var(--gray-600);
             font-size: 1rem;
         }
-        #modal-actividad .modal-content {
-            max-width: 800px;
-            width: 90%;
-        }
 
         .score-container {
             text-align: center;
@@ -479,152 +475,6 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
         cursor: zoom-in;
     }
 
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    /* Header y estructura general */
-    .centro-header {
-        padding: 1rem;
-    }
-
-    .centro-title {
-        grid-template-columns: 1fr; /* Cambia a una columna */
-        gap: 1rem;
-    }
-
-    /* Info cards y contenedores */
-    .info-card {
-        padding: 1rem;
-    }
-
-    .details-grid {
-        grid-template-columns: 1fr 1fr; /* 2 columnas en móvil */
-        gap: 0.5rem;
-    }
-
-    .detail-item {
-        padding: 0.75rem;
-    }
-
-    /* Vista general y contenido */
-    .vista-general-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .content-sections {
-        padding: 1rem;
-        gap: 1.5rem;
-    }
-
-    /* Mejorar espaciado de secciones */
-    .section-card {
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-    }
-
-    /* Ajustar títulos de sección */
-    .section-title {
-        font-size: 1.125rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--gray-200);
-    }
-
-    /* Mejorar espaciado de botones */
-    .btn {
-        width: 100%; /* Botones a ancho completo en mobile */
-        justify-content: center;
-        padding: 0.875rem 1rem;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Ajustar grupos de botones */
-    .btn-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        width: 100%;
-    }
-
-    /* Mejorar espaciado de textos */
-    .section-content {
-        padding: 0.5rem 0;
-    }
-
-    p, .text-content {
-        font-size: 0.9375rem;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-
-    /* Ajustar elementos de lista */
-    .evaluaciones-list,
-    .notas-list {
-        gap: 1rem;
-    }
-
-    /* Mejorar espaciado de items */
-    .nota-item,
-    .evaluacion-item {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-    }
-
-    /* Centrar contenido cuando sea necesario */
-    .center-content {
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    /* Mejorar espaciado de acciones */
-    .actions-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        margin-top: 1rem;
-    }
-
-    /* Ajustar inputs y campos de formulario */
-    .form-group {
-        margin-bottom: 1.25rem;
-    }
-
-    input,
-    textarea,
-    select {
-        width: 100%;
-        padding: 0.75rem;
-        font-size: 1rem;
-    }
-
-    /* Mejorar legibilidad de etiquetas */
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-
-    /* Ajustar espaciado de modales */
-    .modal-body {
-        padding: 1.25rem;
-    }
-
-    .modal-footer {
-        padding: 1rem;
-        gap: 0.75rem;
-    }
-
-    /* Mejorar visualización de fotos */
-    .fotos-grid {
-        gap: 0.75rem;
-        padding: 0.5rem 0;
-    }
-}
-
 /* Ajustes específicos para dispositivos muy pequeños */
 @media (max-width: 375px) {
     .content-sections {
@@ -719,11 +569,6 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     display: none !important;
 }
 
-.evaluaciones-list { /* Cambiado de 'evaluaciones-container' */
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem; /* Un poco menos de espacio entre ítems */
-}
 
 .actividad-item {
     border: 1px solid var(--gray-200);
@@ -839,22 +684,45 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
 /* ==            2. ESTILOS PARA EL MODAL MEJORADO                 == */
 /* ================================================================== */
 
-#modal-actividad .modal-content {
-    max-width: 900px; /* <-- Modal más ancho */
-    width: 95%;
-}
 
-#modal-actividad .modal-body {
-    max-height: 70vh; /* <-- Altura máxima para el cuerpo */
-    overflow-y: auto; /* <-- Scroll automático */
+/* Modal Header - Fijo en la parte superior */
+#modal-actividad .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--gray-200);
+    flex-shrink: 0; /* No se comprime */
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 2rem; /* Espacio solo entre columnas */
+#modal-actividad .modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
 }
+
+#modal-actividad .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+#modal-actividad .modal-close:hover {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
 
 .form-group.full-width {
     grid-column: 1 / -1; /* Ocupa todo el ancho */
@@ -1875,57 +1743,183 @@ textarea.is-readonly:focus {
     border: none;
 }
 
-/* Ajustes para el editor Quill dentro del modal de comentarios */
-#modal-comentarios .modal-body {
-    padding: 1rem;
+/* Animación de aparición */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-#comentarios-editor-modal .ql-container {
-    font-size: 1rem;
-    height: calc(100% - 42px); /* Ajusta la altura del área de texto */
-}
-#comentarios-generales {
-  border: 1px solid #d1d5db;              /* gris claro */
-  background-color: #f9fafb;              /* gris casi blanco */
-  border-radius: 8px;
-  padding: 1rem;
-  min-height: 120px;
-  font-size: 0.95rem;
-  color: #333;
-  line-height: 1.6;
-  transition: box-shadow 0.2s ease-in-out, border-color 0.2s;
-  cursor: default;
-  overflow-wrap: break-word;
+/* 1. El contenedor principal */
+.compliance-wrapper {
+    position: relative; /* Permite que la lista flote sobre el contenido */
 }
 
-/* Al pasar el mouse (solo visual, no editable) */
-#comentarios-generales:hover {
-  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+/* 2. El "botón" que muestra la selección */
+.compliance-selected-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--gray-900);
+    background-color: white;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    text-align: left;
 }
 
-/* Si el centro está cerrado (opcional, para reforzar modo lectura) */
-.container.is-locked #comentarios-generales {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border-style: dashed;
+.compliance-selected-display:hover {
+    border-color: var(--gray-400);
 }
 
-/* --- Estilos del modal de edición --- */
-#modal-comentarios .ql-toolbar {
-  border-radius: 8px 8px 0 0;
-  background-color: #f3f4f6;
+.compliance-selected-display .chevron-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease-out;
+    color: var(--gray-500);
 }
 
-#modal-comentarios .ql-container {
-  border: 1px solid #d1d5db;
-  border-radius: 0 0 8px 8px;
-  background-color: white;
+/* 3. La lista de radios (ahora oculta y flotante) */
+.compliance-radio-list {
+    position: absolute; /* Hace que flote */
+    top: 100%;          /* Se posiciona justo debajo del botón */
+    left: 0;
+    right: 0;
+    z-index: 100;       /* Se superpone a otros elementos */
+    background: white;
+    border: 1px solid var(--gray-300);
+    box-shadow: var(--shadow-lg); /* Le da profundidad */
+    
+    /* --- Oculto por defecto --- */
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow-y: auto;   /* Mantiene el scroll si es muy larga */
+    transition: all 0.2s ease-out;
+    
+    border-radius: var(--border-radius-md);
+    padding: 0.5rem;
+    margin-top: 0.25rem; /* Pequeña separación del botón */
+}
+
+/* 4. Estado expandido */
+.compliance-wrapper.is-expanded .compliance-radio-list {
+    max-height: 250px; /* Altura máxima visible */
+    opacity: 1;
+    visibility: visible;
+}
+/* 5. Estilos internos de la lista (sin cambios) */
+.compliance-radio-item input[type="radio"] {
+    display: none;
+}
+
+.compliance-radio-label {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.compliance-radio-label:hover {
+    background-color: var(--primary-100);
+    color: var(--primary-700);
+}
+
+.compliance-radio-item input[type="radio"]:checked + .compliance-radio-label {
+    background-color: var(--primary-500);
+    color: white;
+    font-weight: 600;
+}
+
+.compliance-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 0.5rem;
+}
+
+.compliance-legend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    padding: 0 0.25rem;
+    margin-left: 0.5rem;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 
 
+/* ================================================================== */
+/* ==     MODAL DE ACTIVIDAD - CSS COMPLETO Y CORREGIDO           == */
+/* ==     ELIMINA CUALQUIER ESTILO PREVIO DE #modal-actividad     == */
+/* ================================================================== */
 
-/* Animación (diferente de zoomIn para variedad) */
+/* PASO 1: Modal Base y Overlay */
+#modal-actividad.modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1000;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+    overflow: hidden !important; /* Evita scroll en el modal padre */
+}
+
+#modal-actividad.modal.show {
+    display: flex !important;
+}
+.modal.show{
+    gap: 0 ;
+    width: 100% ;
+}
+
+#modal-actividad .modal-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+/* PASO 2: Modal Content - LA CLAVE DEL SCROLL */
+#modal-actividad .modal-content {
+    position: relative !important;
+    background: white !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--shadow-xl) !important;
+    width: 100% !important;
+    max-width: 1000px !important;
+    max-height: 90vh !important; /* Altura máxima */
+    display: flex !important;
+    flex-direction: column !important;
+    animation: modalSlideIn 0.3s ease-out !important;
+    padding-bottom: 20px;;
+}
+
 @keyframes modalSlideIn {
     from {
         opacity: 0;
@@ -1935,5 +1929,509 @@ textarea.is-readonly:focus {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+}
+
+/* PASO 3: Modal Header - FIJO arriba */
+#modal-actividad .modal-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 1.25rem 1.5rem !important;
+    border-bottom: 1px solid var(--gray-200) !important;
+    flex-shrink: 0 !important; /* NO se comprime */
+    background: white !important;
+}
+
+#modal-actividad .modal-header h3 {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: var(--gray-900) !important;
+    margin: 0 !important;
+}
+
+#modal-actividad .modal-close {
+    background: transparent !important;
+    border: none !important;
+    font-size: 1.5rem !important;
+    color: var(--gray-400) !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+}
+
+#modal-actividad .modal-close:hover {
+    background: var(--gray-100) !important;
+    color: var(--gray-600) !important;
+}
+
+/* PASO 4: Modal Body - AQUÍ VA EL SCROLL */
+#modal-actividad .modal-body {
+    padding: 1.5rem !important;
+    overflow-y: auto !important; /* SCROLL vertical */
+    flex: 1 1 auto !important; /* Crece y se encoge */
+    min-height: 0 !important; /* SÚPER IMPORTANTE para que funcione el scroll en flex */
+    
+    /* Scroll personalizado */
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--gray-400) var(--gray-100) !important;
+}
+
+#modal-actividad .modal-body::-webkit-scrollbar {
+    width: 10px !important;
+}
+
+#modal-actividad .modal-body::-webkit-scrollbar-track {
+    background: var(--gray-100) !important;
+    border-radius: 10px !important;
+}
+
+#modal-actividad .modal-body::-webkit-scrollbar-thumb {
+    background: var(--gray-400) !important;
+    border-radius: 10px !important;
+}
+
+#modal-actividad .modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500) !important;
+}
+
+/* PASO 5: Modal Footer - FIJO abajo */
+#modal-actividad .modal-footer {
+    display: flex !important;
+    justify-content: flex-end !important;
+    padding: 1.25rem 1.5rem !important;
+    border-top: 1px solid var(--gray-200) !important;
+    background: var(--gray-50) !important;
+    border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg) !important;
+    z-index: 900;;
+}
+
+/* ================================================================== */
+/* ==              FORMULARIO - GRID Y CAMPOS                      == */
+/* ================================================================== */
+
+#modal-actividad .form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem 1.5rem !important;
+    margin-bottom: 0 !important;
+}
+
+#modal-actividad .form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.4rem !important;
+    margin-bottom: 0 !important;
+}
+
+#modal-actividad .form-group.full-width {
+    grid-column: 1 / -1 !important;
+    margin-top: 0.75rem !important;
+}
+
+#modal-actividad .form-group label {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: var(--gray-700) !important;
+    display: block !important;
+    margin-bottom: 0 !important;
+}
+
+#modal-actividad .form-group small {
+    font-size: 0.75rem !important;
+    color: var(--gray-500) !important;
+    margin-top: 0.25rem !important;
+    display: block !important;
+}
+
+#modal-actividad .input-field {
+    width: 100% !important;
+    padding: 0.65rem 0.75rem !important;
+    border: 1px solid var(--gray-300) !important;
+    border-radius: var(--border-radius-md) !important;
+    font-size: 0.9375rem !important;
+    color: var(--gray-900) !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+}
+
+#modal-actividad .input-field:focus {
+    outline: none !important;
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+}
+
+#modal-actividad textarea.input-field {
+    resize: vertical !important;
+    min-height: 70px !important;
+}
+
+#modal-actividad .ql-container {
+    min-height: 100px !important;
+    font-size: 0.9375rem !important;
+}
+
+#modal-actividad .ql-editor {
+    min-height: 100px !important;
+    padding: 0.75rem !important;
+}
+
+/* Input with button */
+#modal-actividad .input-with-button {
+    display: flex !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+}
+
+#modal-actividad .input-with-button .input-field,
+#modal-actividad .input-with-button select {
+    flex-grow: 1 !important;
+}
+
+#modal-actividad .input-with-button .btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+}
+
+/* Botones toggle */
+#modal-actividad .btn-group {
+    display: flex !important;
+    border: 1px solid var(--gray-300) !important;
+    border-radius: var(--border-radius-md) !important;
+    overflow: hidden !important;
+    flex-grow: 1 !important;
+}
+
+#modal-actividad .btn-toggle {
+    flex: 1 !important;
+    padding: 0.65rem 1rem !important;
+    border: none !important;
+    background-color: white !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+    color: var(--gray-600) !important;
+    font-size: 0.9375rem !important;
+}
+
+#modal-actividad .btn-toggle:not(:last-child) {
+    border-right: 1px solid var(--gray-300) !important;
+}
+
+#modal-actividad .btn-toggle.active {
+    background-color: var(--primary-500) !important;
+    color: white !important;
+}
+
+#modal-actividad .btn-toggle:hover:not(.active) {
+    background-color: var(--gray-50) !important;
+}
+
+/* ================================================================== */
+/* ==                    FOTOS DE ACTIVIDAD                        == */
+/* ================================================================== */
+
+#modal-actividad #seccion-fotos-actividad {
+    padding: 1rem !important;
+    background: var(--gray-50) !important;
+    border-radius: var(--border-radius-md) !important;
+    border: 1px solid var(--gray-200) !important;
+    margin-top: 0.75rem !important;
+}
+
+#modal-actividad #fotos-grid-actividad {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)) !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+#modal-actividad .foto-slot {
+    aspect-ratio: 1 !important;
+    border: 2px dashed var(--gray-300) !important;
+    border-radius: var(--border-radius-md) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    background: white !important;
+    overflow: hidden !important;
+}
+
+#modal-actividad .foto-slot:hover:not(.occupied) {
+    border-color: var(--primary-500) !important;
+    background: var(--primary-50) !important;
+}
+
+#modal-actividad .foto-slot.occupied {
+    border: 2px solid var(--gray-200) !important;
+    padding: 0 !important;
+}
+
+#modal-actividad .foto-slot img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+#modal-actividad .foto-delete {
+    position: absolute !important;
+    top: 4px !important;
+    right: 4px !important;
+    background: rgba(239, 68, 68, 0.9) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    z-index: 10 !important;
+    opacity: 0 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+#modal-actividad .foto-slot.occupied:hover .foto-delete {
+    opacity: 1 !important;
+}
+
+#modal-actividad .foto-delete:hover {
+    background: rgba(220, 38, 38, 1) !important;
+    transform: scale(1.1) !important;
+}
+
+/* ================================================================== */
+/* ==            COMPLIANCE DROPDOWN (NORMATIVIDAD)                == */
+/* ================================================================== */
+
+#modal-actividad .compliance-wrapper {
+    position: relative !important;
+}
+
+#modal-actividad .compliance-selected-display {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0.65rem 0.75rem !important;
+    font-size: 0.9375rem !important;
+    line-height: 1.5 !important;
+    color: var(--gray-900) !important;
+    background-color: white !important;
+    border: 1px solid var(--gray-300) !important;
+    border-radius: var(--border-radius-md) !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    transition: all 0.2s ease !important;
+}
+
+#modal-actividad .compliance-selected-display:hover {
+    border-color: var(--primary-500) !important;
+    background-color: var(--gray-50) !important;
+}
+
+#modal-actividad .compliance-selected-display .chevron-icon {
+    flex-shrink: 0 !important;
+    transition: transform 0.2s ease-out !important;
+    color: var(--gray-500) !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
+#modal-actividad .compliance-wrapper.is-expanded .chevron-icon {
+    transform: rotate(180deg) !important;
+}
+
+#modal-actividad .compliance-radio-list {
+    position: absolute !important;
+    top: calc(100% + 0.5rem) !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
+    background: white !important;
+    border: 1px solid var(--gray-300) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border-radius: var(--border-radius-md) !important;
+    padding: 0.5rem !important;
+    max-height: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    overflow-y: auto !important;
+    transition: all 0.3s ease-out !important;
+}
+
+#modal-actividad .compliance-wrapper.is-expanded .compliance-radio-list {
+    max-height: 300px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#modal-actividad .compliance-radio-list::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+#modal-actividad .compliance-radio-list::-webkit-scrollbar-track {
+    background: var(--gray-100) !important;
+    border-radius: 10px !important;
+}
+
+#modal-actividad .compliance-radio-list::-webkit-scrollbar-thumb {
+    background: var(--gray-300) !important;
+    border-radius: 10px !important;
+}
+
+#modal-actividad .compliance-fieldset {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0.5rem 0 !important;
+}
+
+#modal-actividad .compliance-legend {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--gray-500) !important;
+    text-transform: uppercase !important;
+    padding: 0.5rem 0.75rem !important;
+    margin: 0 !important;
+}
+
+#modal-actividad .compliance-radio-item {
+    margin-bottom: 0.25rem !important;
+}
+
+#modal-actividad .compliance-radio-item input[type="radio"] {
+    display: none !important;
+}
+
+#modal-actividad .compliance-radio-label {
+    display: block !important;
+    width: 100% !important;
+    padding: 0.65rem 0.75rem !important;
+    border-radius: var(--border-radius-sm) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-out !important;
+    font-weight: 500 !important;
+    color: var(--gray-700) !important;
+    font-size: 0.875rem !important;
+}
+
+#modal-actividad .compliance-radio-label:hover {
+    background-color: var(--primary-50) !important;
+    color: var(--primary-700) !important;
+}
+
+#modal-actividad .compliance-radio-item input[type="radio"]:checked + .compliance-radio-label {
+    background-color: var(--primary-500) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+#modal-actividad .compliance-details-box {
+    margin-top: 0.75rem !important;
+    padding: 0.875rem 1rem !important;
+    background-color: var(--primary-50) !important;
+    border-left: 4px solid var(--primary-500) !important;
+    border-radius: var(--border-radius-md) !important;
+    font-size: 0.875rem !important;
+    color: var(--gray-700) !important;
+    line-height: 1.5 !important;
+    animation: fadeIn 0.3s ease-out !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================================================================== */
+/* ==                    RESPONSIVE MOBILE                         == */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+    #modal-actividad .modal-content {
+        max-height: 95vh !important;
+        margin: 0 !important;
+        border-radius: var(--border-radius-md) !important;
+    }
+
+    #modal-actividad .modal-header {
+        padding: 1rem 1.25rem !important;
+    }
+
+    #modal-actividad .modal-header h3 {
+        font-size: 1.125rem !important;
+    }
+
+    #modal-actividad .modal-body {
+        padding: 1.25rem ;
+    }
+
+    #modal-actividad .modal-footer {
+        padding: 1rem 1.25rem;
+        flex-direction: column;
+    }
+
+    #modal-actividad .modal-footer .btn {
+        width: 100%;
+    }
+
+    #modal-actividad .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
+
+    #modal-actividad .input-with-button {
+        flex-direction: column !important;
+    }
+
+    #modal-actividad .input-with-button .btn {
+        width: 100% !important;
+    }
+
+    #modal-actividad #fotos-grid-actividad {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #modal-actividad .modal {
+        padding: 0.5rem !important;
+    }
+
+    #modal-actividad #fotos-grid-actividad {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+#modal-actividad .modal-content {
+  max-height: 90vh !important;  /* evita que se salga del viewport */
+  overflow-y: auto !important;   /* activa el scroll interno */
+}
+
+#modal-actividad .modal-body {
+  overflow-y: auto !important;
+  padding-right: 8px; /* evita que el scroll tape contenido */
+}
+
+/* (opcional) suprimir el bloqueo de scroll global */
+body.modal-open {
+  overflow: auto !important;
 }
 
