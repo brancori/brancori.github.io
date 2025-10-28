@@ -1,0 +1,416 @@
+:root {
+    --azul-trox: #00375F;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    /* Estilos de layout específicos para el quiz */
+    display: grid; 
+    height: 100vh; 
+    margin: 0; 
+    background: #fff; 
+    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+#container {
+    height: auto;
+    width: auto;
+}
+#logo_start{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 45px;
+    align-items: center;
+    width: 400px;
+    margin: 0 auto 35px auto;
+}
+#start{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:70px;
+    width: 250px;
+    padding: 10px 0;
+    background: #fff;
+    color: #00375F;
+    font-size: 23px;
+    font-weight: 700;
+    border-radius:  30px 30px;
+    border: 2px solid #00375F;
+    cursor: pointer;
+    margin: auto;
+    /* display: none; */
+}
+#start:hover{
+    background: #00375F;
+    color: #fff;
+
+}
+#info_{
+    display: grid;
+    text-align: justify;
+    width: 30vw;
+    margin-bottom: 25px;
+    font-weight: 700;
+    place-items: center;
+    display: none;
+}
+#guide, #quiz{
+    height: auto;
+    width: 580px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 30px 10px;
+    border: 2px solid #00375F;
+    display: none;
+}
+#username{
+    font-size: 20px;
+    color: #00375F;
+    font-family: helvetica;
+    font-weight: 900;
+    margin: 25px;
+}
+#guide h2{
+    font-size: 60px;
+    color: #00375F;
+    margin: 0 auto;
+}
+#guide h4{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    margin: 0 auto;
+}
+#guide #button {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+#guide #button button{
+    height: 50px;
+    width: 120px;
+    margin: 10px 25px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #00375F;
+    border: 1px solid #fff;
+    border-radius: 20px 5px;
+    cursor: pointer;
+}
+#guide #button button:last-child{
+    margin:10px 0;
+}
+#guide #button button:hover{
+    background: #001d31;
+}
+#quiz{
+    /* display: block; */
+    position: relative;
+    width: min(580px, 100%);
+    margin: 0 auto;
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 30px 10px;
+    border: 2px solid #00375F;
+    display: none;
+    box-sizing: border-box;
+}
+#quiz #quiz_header{
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    z-index: 10;
+}
+#quiz #quiz_header h5{
+    font-size: 20px;
+    margin: 0 20px;
+    color: #00375F;
+}
+#quiz #quiz_header #timer{
+    height: 50px;
+    width: 230px;
+    background: #00375F;
+    color: #fff;
+    border: 1px solid #fff;
+    font-size: 18px;
+    border-radius: 20px 5px;
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 10px;
+}
+#quiz #quiz_header #timer h6{
+    font-size: 14px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    margin: 0 10px;
+}
+#quiz #quiz_header #timer #time{
+    height: 47px;
+    width: 40px;
+    background: #fff;
+    color: #001d31;
+    border: 1px solid #fff;
+    border-radius: 15px 7px;
+    position: absolute;
+    left: 185px;
+    top: 2px;
+}
+/* Quiz Question */
+#quiz #question{
+    position: relative;
+    margin-top: 4rem;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: row;
+}
+#quiz #question h2{
+    font-size: 27px;
+    color: #001d31;
+}
+#quiz #question h2:first-child{
+    margin: 0 10 px 0 5px;
+}
+/* Quiz Option  */
+#quiz #optionList{
+    position: relative;
+    margin-top: 1rem;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 400px;
+    width: 100%;
+}
+#quiz #optionList h4{
+    width: 100%;
+    max-width: 535px;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    box-sizing: border-box;
+    height: 50px;
+    background: #00375F;
+    margin: 5px 0;
+    border-radius: 7px;
+    font-size: 20px;
+    color: #fff;
+    overflow: hidden;
+    border: 1px solid #fff;
+    cursor: pointer;
+    place-self: center;
+}
+
+#quiz #optionList h4:hover{
+    background: #001d31;
+}
+#quiz #optionList .active{
+    background: #00375F;
+}
+#quiz #optionList .disabled{
+    pointer-events:none;
+}
+
+/* Answers Section */
+#quiz #answersSection{
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    padding: 0.75rem;
+    box-sizing: border-box;
+    height: 60px;
+    background: #001d31;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    border-radius: 25px 0;
+}
+#quiz #answersSection h3{
+    margin: 0px 30px;
+    display:none;
+    color: #fff;
+}
+#quiz #answersSection h3:last-child{
+    height: 40px;
+    width: 100px;
+    display: grid;
+    place-items:center ;
+    background: #fff;
+    position: absolute;
+    right: 0;
+    color: #00375F;
+    border: 1px solid #00375F;   
+    font-size: 18px;
+    border-radius: 20px 5px;
+    cursor: pointer;
+    margin: 0 20px;
+}
+#quiz #answersSection h3:hover{
+    background: #001d31;
+    color: #fff;
+}
+#quiz #answersSection h3:first-child:hover{
+    background: none;
+}
+
+/* Result Selection */
+#container #result{
+    place-content: center;
+    margin: auto;
+    height: 500px;
+    width: 450px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 30px 10px;
+    border: 1px solid #fff;
+    overflow: hidden;
+    position: relative;
+    display: none;
+}
+#container #result i{
+    font-size: 180px;
+    color: #00375F;
+    position: absolute;
+    top:30px;
+    left: 100px;
+    background: #fff;
+}
+#container #result h6{
+    height: 40px;
+    width: 87%;
+    font-size: 25px;
+    position: absolute;
+    text-align: center;
+    top: 235px;
+    margin-top: 30px;
+}
+#container #result #points{
+    font-size: 30px;
+    top: 275px;
+}
+#container .sorry_text_end{
+    font-size: 20px;
+    position: relative;
+    top: 320px;
+    text-align: center;
+    color: #001d31;
+}
+#container #congrat_text_end{
+    font-size: 20px;
+    position: relative;
+    top: 320px;
+    text-align: center;
+    color: #001d31;
+}
+#container #result button{
+    height: 60px;
+    width: 260px;
+    border: none;
+    outline: none;
+    background: #001d31;
+    color: #fff;
+    position: absolute;
+    left: 105px;
+    top: 335px;
+    border: 1px solid #fff;
+    border-radius: 20px 5px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+#container #result button:last-child{
+    top: 405px;
+}
+#container #result button:hover{
+    background: #001d31;
+}
+#info p{
+    text-align: center;
+}
+@media (max-width:600px){
+    body{
+        height: 90vh;
+        align-content: center;
+        text-align: center;
+        margin: 25px;
+    }
+    #container{
+        width: 90vw;
+        text-align: center;
+    }
+    #guide, #quiz{
+        width: 90vw;
+        padding: 25px;
+        height: 70vh;
+    }
+    #optionList{
+        width: 80vw !important;
+    }
+    #quiz #optionList h4{
+        width: 80vw;
+    }
+    #username{
+        font-size: 20px;
+        position: absolute;
+        top: 0;
+    }
+
+    
+}
+
+@media (max-width: 600px) {
+    body {
+        margin: 5px;
+        padding: 1rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        width: 90vw;
+    }
+    #Congrats{
+        width: 100vw;
+    }
+    #container {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    #quiz {
+        padding: 0.75rem;
+        height: calc(90vh - 2rem);
+        overflow-y: auto;
+    }
+
+    #quiz #quiz_header {
+        padding: 0.5rem;
+    }
+
+    #quiz #quiz_header #timer {
+        width: 180px;
+        right: 0.5rem;
+    }
+
+    #quiz #optionList h4 {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        min-height: 44px;
+    }
+
+    #quiz #question h2 {
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+
+    #quiz #answersSection h3:last-child {
+        width: 90px;
+        margin-right: 0.5rem;
+    }
+}

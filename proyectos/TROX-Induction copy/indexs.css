@@ -1,0 +1,283 @@
+@font-face {
+    font-family: Helvetica;
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Heavy.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Regular.ttf);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.eot);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff);
+    src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
+}
+body {
+    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: #00375F; /* Color base para texto */
+}
+
+h1, h2, h3 {
+    color: #00375F;
+    text-align: center;
+}
+
+p {
+    color: #6e7883;
+    text-align: center;
+}
+
+/* ----- Estilo para el nombre de usuario (usado en quiz y credencial) ----- */
+#username {
+    font-size: 20px;
+    color: #00375F;
+    font-family: helvetica;
+    font-weight: 900;
+    margin: 25px;
+}
+
+/* Aquí mantienes los estilos que ya eran únicos de tu index.html */
+header {
+    display: flex;
+    margin: 0 20px;
+}
+
+.Bienvenido {
+    display: grid;
+    place-items: center;
+}
+
+header{
+    display: flex;
+    margin: 0 20px;
+}
+img {
+    margin: 25px;
+    width: 200px;
+}
+
+.Bienvenido p{
+    text-align:justify ;
+    width: 88vw;
+}
+#subcontainer2 p{
+    display: inline-block;
+    padding-right: 25px;
+    color:#00375F ;
+    font-weight: bold;
+}
+#Container2{
+    margin-left: 35px;
+}
+#SubContainer1 p{
+    display: inline-block;
+    padding-right: 25px;
+    font-size: .875rem;
+    font-weight: 500;
+}
+.induction{
+    display: grid;
+    place-items: center;
+}
+.evaluacion {
+    display: flex;
+    flex-direction: column;
+    width: 88vw;
+    align-items: center;
+    justify-content: center;
+    margin: 4vw;
+}
+/* Validación para formulario */
+.item1-incorrecto{
+    color: #bb2929;
+    opacity: 1;
+    border: 1px solid #bb2929;
+    border-bottom: none;
+}
+.item1-correcto{
+    color: #1ed12d;
+    opacity: 1;
+    border: 1px solid #1ed12d;
+    border-bottom: none;
+}
+.induction img{
+    width: 75vw;
+    border-radius: 20px;
+}
+.info img:hover{
+    transform: scale(1.2);
+    border-radius: 15px;
+}
+.info{
+    display: flex;
+    flex-direction: row;
+    justify-content: baseline;
+    overflow-x: scroll;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+}
+.info div{
+    width: 300px;
+    margin: 0 25px;
+    text-align: center;
+    scroll-snap-align: center;
+    box-sizing: border-box;
+}
+.info div p{
+    margin-top: 0;
+}
+.info div .date{
+    font-size: small;
+    margin: 0;
+}
+.picture{
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+.footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0px;
+}
+footer div{
+    flex-direction: column;
+    width: 30vw;
+    align-items: center;
+    padding: 0px;
+}
+.info_footer{
+    font-size: small;
+    text-align: center;
+    padding: 0px;
+}
+.info_footer ul{
+    padding: 0px;
+}
+/* Validar CURP */
+#registro_login pre{
+    justify-items: center;
+    align-items: center;
+    width: 60%;
+    margin: auto ;
+    }
+#resultado {
+    color: red;
+    font-weight: bold;
+    border-radius: 15px;
+    text-align: center;
+
+}
+#resultado.ok {
+    color: green;
+}
+ /* Registro toggle */
+ #registro_login .register_container{
+    width: 600px;
+    background: #e2e2e2;
+    border-radius: 8px;
+    margin: auto;
+    justify-content: center;
+    text-align: center;
+    padding: 7px;
+}
+.inputs_Container input{
+    box-shadow: none;
+    background: #f5f5f5;
+    outline: none;
+    border: 0px solid f5f5f5s ;
+    margin: auto 15px;
+    border-bottom:1px solid #6e7883;
+    transition: all .5s ease;
+    text-align: center;
+    width: 200px;
+    border-radius: 2px;
+    line-height: 45px;
+    height: 20px;
+    text-transform: uppercase;
+}
+.inputs_Container input:hover {
+	box-shadow: 3px 0px 30px rgba(163,163,163, 1);
+}
+.inputs_Container input:focus {
+	border: 3px solid #00375F;
+	outline: none;
+	box-shadow: 3px 0px 30px rgba(163,163,163, 0.4);
+}
+.ir_Examen{
+    width: 200px;
+    height: 35px;
+    background-color: #00375F;
+    color: aliceblue;
+    font-weight: bold;
+    font-size: large;
+    border: none;
+    border-radius: 5px;
+    margin: 25px auto auto;
+    text-align: center;
+    place-content: center;
+    align-content: center;
+    cursor: pointer;
+
+}
+.result_container{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    justify-items: center;
+    align-content: center;
+}
+@media (max-width: 600px){
+     #registro_ {
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #registro_login .register_container{
+        width: 100%;
+        padding: 1px;
+
+    }
+    .inputs_Container input{
+        width: 80%;
+    }
+
+    .infor_label{
+        margin:5px auto;
+    }
+    #registro_login pre{
+        font-size: 14px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 90%;
+        justify-content: center;
+        }
+    #video_ img{
+        width: 100%;
+        margin: 0;
+    }
+    #submit_login{
+        margin-bottom: 20px;
+        justify-content: center;
+    }
+    #Container2{
+        display: none;
+    }
+    #submit_register{
+        width: 50%;
+        display: inline-block;
+        place-self: start;
+        margin-top: 25px;
+    }
+    .reset_password{
+        display: flex;
+        margin: auto;
+        margin-bottom: 20px;
+    }
+    .evaluacion .ir_Examen{
+        font-size: 14px;
+    }
+    #email{
+        display: none;
+    }
+    .title_info{
+        margin: 7px 0;
+    }
+}

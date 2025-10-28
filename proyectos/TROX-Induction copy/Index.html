@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INDUCCIÓN CONTRATISTAS</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./assets/img/logo.png">
+    <link rel="stylesheet" href="./indexs.css">
+</head>
+<body>
+    <header>
+        <section id="Container1">
+            <img id="logo" src="./assets/img/trox logo.gif" >
+        </section>
+        
+        <section id="Container2">
+            <div id="SubContainer1">
+                <p>CONTACTO</p>
+                <p>INICIO</p>
+                <p>TROX EN EL MUNDO</p>
+            </div>
+            
+            <div id="subcontainer2">
+                <p>PRODUCTOS</p>
+                <p>ESPECIALIZACIÓN</p>
+                <p>SERVICIOS</p>
+                <p>COMPAÑIA</p>
+                <p>CONTRATISTAS</p>
+            </div>
+        </section>
+    </header>
+
+    <section class ="Bienvenido"> <h1>INDUCCIÓN PARA CONTRATISTAS</h1>
+        <P >Bienvenido estas a punto de iniciar tu inducción para poder realizar trabajo como contratista en TROX MÉXICO, es para nosotros un gusto 
+             poder trabajar contigo, pero nuestro principal objetivo es mantener la seguridad tanto de todos nuentros visitantes
+            como la de nuestros propios colaboradores, por lo que es de indispensable que termines esta inducción para poder ingresar y realizar tu 
+            trabajo de manera segura.
+        </P>
+    </section> 
+    <section class="induction" ><h2>INDUCCIÓN</h2>
+        <div id="video_">
+            <img src="./assets/img/video_trox.png" alt="video_inducción">
+        </div>
+    </section>
+    <section class="evaluacion"> <h2>EVALUACIÓN</h2>
+        <p>Estás a punto de Realizar tu examen de evaluación contaras con 15 min para realizarlo, sí no acreditas tu examen al primer intento tendran que pasar 6 horas para que puedas volver a realizarlo.</p>
+        
+        <div id="registro_login">
+
+                <form action="#" id="registro_">
+                    <div class="register_container">
+                        <h2 class="title_info">Registro</h2>
+                        <div class="inputs_Container">
+                            <input type="text" id="curp" placeholder="Ingrese su CURP" class="item1"  name="curp" required>
+                            <input type="text" placeholder="Brandon Cortes" class="item1" name="nombre" id="nombre" required>
+                        </div>
+                        <p id="text_registro" class="infor_label">Para validar tu registro será necesario que te registres con tu CURP  </p>
+                    </div>
+                    <div class="result_container">
+                        <pre id="resultado" class="item3"></pre>
+                        <button id="ir_Examen"  class="ir_Examen " onclick="location.hrefwindow.location = './quiz/quiz.html'">IR AL EXAMEN</button>
+                    </div>
+
+                </form>
+  
+    
+            </div>
+ 
+
+
+    </section>
+    <h2>BOLITIN DE SEGURIDAD</h2>
+    <section class="info">
+            <div>
+                <img class="picture" src="./assets/img/Kachel_Mann_360x165px_EN.webp" alt="">
+                <p class="date">Fecha 25/10/2022</p>
+                <p>Actualización del formato de reporte de accidentes</p>
+            </div>
+            <div>
+                <img class="picture" src="./assets/img/TL22_NewsStageImage_img_01_2022_09_DE_en.webp" alt="">
+                <p class="date">Fecha 25/10/2022</p>
+                <p>Implementación de la NOM-036-STPS-2020</p>
+            </div>
+            <div>
+                <img class="picture" src="./assets/img/fk_eu_topicteaser.png" alt="">
+                <p class="date">Fecha 25/10/2022</p>
+                <p>Actualización de las politicas de seguridad</p>
+            </div>
+            <div>
+                <img class="picture" src="./assets/img/trox_epf.jpg" alt="">
+                <p class="date">Fecha 25/10/2022</p>
+                <p>Actualización de las politicas de seguridad</p>
+            </div>
+    </section>
+
+    
+
+    <footer class="footer">
+        <div class="formatos"> 
+        <h3>Formatos</h3>
+        <article class="info_footer">
+            <ul><a href="./assets/formatos/ANALISIS-RIESGO-TROX_DEP-H&S.xlsx">Formato de Análisis de Riesgo</a></ul>
+            <ul><a href="">Check List Escalera</a></ul>
+        </article>
+        </div>
+
+        <div class="contactos">
+            <h3>Contacto</h3>
+            <article class="info_footer">
+                <p>Seguridad e Higiene <br>
+                222 222 2222 </p>
+            <p>Número Recepción <br>
+            222 222 2222</p>
+            <p id="email">Coreo electrónico <br>
+            seguridadindustrial@troxgroup.mx</p>
+            </article>
+        </div>
+
+        <div class="politicas">
+        <h3>Políticas</h3>
+        <article class="info_footer">
+            <ul><a href="">Políticas de Seguridad</a></ul>
+            <ul><a href="">Política Medio Ambietal</a></ul>
+            <ul><a href="">Política para Contratistas</a></ul>
+            <ul><a href="">Política de COVID-19</a></ul>
+        </article>
+        </div>
+    </footer>
+   
+    <script src="./quiz/jquery-3.1.1.min.js"></script>
+    <script src="./Index.js"></script>
+    <script src="https://kit.fontawesome.com/2c36e9b7b1.js" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('registro_').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var nombre = document.getElementById('nombre').value;
+            if (nombre) {
+                localStorage.setItem('nombre', nombre);
+                window.location.href = './quiz/quiz.html';
+            } else {
+                alert('Por favor, ingrese su nombre.');
+            }
+        });
+    </script>
+</body>
+</html>

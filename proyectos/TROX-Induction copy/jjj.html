@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacitación App - Login</title>
+    <!-- Ruta corregida: Se añade ./ para ser explícito -->
+    <link rel="stylesheet" href="./indexs.css">
+    <!-- Ruta corregida: Se añade ./ para ser explícito -->
+    <link rel="shortcut icon" type="image/x-icon" href="./assets/img/logo.png">
+    <style>
+        /* Estilos simples para centrar el formulario */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+            background-color: #f4f4f4; /* Un fondo ligero para destacar la tarjeta */
+        }
+
+        /* Estilos para el contenedor del login, ahora un poco más pequeño */
+        #login_container {
+            width: 100%;
+            max-width: 380px; /* Ancho máximo más reducido para el formulario */
+            background: #e2e2e2; /* Mismo color gris de tu registro */
+            border-radius: 8px;
+            padding: 1.8rem; /* Padding ligeramente reducido */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        #login_container h2 {
+            color: #00375F; /* Tu color azul principal */
+            margin-bottom: 1.8rem; /* Margen un poco más pequeño */
+            font-size: 1.8rem; /* Tamaño de fuente del título */
+        }
+
+        /* Estilos para los inputs, similares a .inputs_Container */
+        .login-input-group {
+            margin-bottom: 1.2rem; /* Margen inferior de inputs ligeramente reducido */
+            text-align: left;
+        }
+
+        .login-input-group label {
+            display: block;
+            margin-bottom: 0.4rem; /* Margen inferior de labels reducido */
+            color: #6e7883; /* Tu color de texto secundario */
+            font-weight: 500;
+            font-size: 0.95rem; /* Tamaño de fuente ligeramente más pequeño */
+        }
+
+        .login-input-group input {
+            width: 100%;
+            padding: 0.7rem 1rem; /* Padding de inputs ligeramente reducido */
+            border: 1px solid #ccc;
+            border-radius: 5px; /* Mismos bordes redondeados */
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 0.95rem; /* Tamaño de fuente de input */
+            background: #f5f5f5;
+            border-bottom: 2px solid #6e7883;
+            transition: all .5s ease;
+        }
+
+        .login-input-group input:focus {
+            border-color: #00375F;
+            box-shadow: 0 0 0 3px rgba(0, 55, 95, 0.2);
+            outline: none;
+        }
+
+        /* Botón de Login, usando tu clase .ir_Examen */
+        .login-button {
+            width: 100%;
+            padding: 0.7rem; /* Padding del botón ligeramente reducido */
+            background-color: #00375F;
+            color: aliceblue;
+            font-weight: bold;
+            font-size: 1.05rem; /* Tamaño de fuente del botón */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+            margin-top: 0.8rem; /* Margen superior para separarlo de los inputs */
+        }
+
+        .login-button:hover {
+            background-color: #002a4a;
+        }
+        
+        .login-footer {
+            margin-top: 1.2rem; /* Margen superior del footer reducido */
+            font-size: 0.85rem; /* Tamaño de fuente del footer reducido */
+        }
+
+        .login-footer a {
+            color: #00375F;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- ESTILOS PARA EL MODAL (POP-UP) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            /* Oculto por defecto y sin interceptar clics */
+            visibility: hidden; 
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 2.2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 360px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Estilos para mostrar el modal */
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        #modalIcon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        /* Icono de éxito (verde) */
+        #modalIcon.success {
+            color: #28a745; 
+        }
+        /* Icono de error (rojo) */
+        #modalIcon.error {
+            color: #dc3545;
+        }
+
+        #modalTitle {
+            color: #00375F; /* Color principal */
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        #modalMessage {
+            color: #6e7883; /* Color de texto secundario */
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        /* Reutilizamos el estilo del botón de login */
+        #modalClose {
+            width: 100%;
+            padding: 0.7rem;
+        }
+        /* --- FIN DE ESTILOS PARA EL MODAL --- */
+
+    </style>
+</head>
+<body>
+    <!-- Copio el header de tu Index.html para mantener la consistencia -->
+    <header>
+        <section id="Container1">
+            <!-- Ruta corregida: Se añade ./ para ser explícito -->
+            <img id="logo" src="./assets/img/trox logo.gif" >
+        </section>
+        
+        <section id="Container2">
+            <div id="SubContainer1">
+                <p>CONTACTO</p>
+                <p>INICIO</p>
+                <p>TROX EN EL MUNDO</p>
+            </div>
+            
+            <div id="subcontainer2">
+                <p>PRODUCTOS</p>
+                <p>ESPECIALIZACIÓN</p>
+                <p>SERVICIOS</p>
+                <p>COMPAÑIA</p>
+                <p>CONTRATISTAS</p>
+            </div>
+        </section>
+    </header>
+
+    <!-- Sección principal con el formulario de login --><main>
+        
+        <div id="login_container">
+            <form id="login_form_validation"> <!-- Envuelve los inputs y botón en un form para la validación --><h2>Capacitación App</h2>
+                
+                <div class="login-input-group">
+                    <label for="usuario">Usuario</label>
+                    <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario" required>
+                </div>
+
+                <div class="login-input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+                </div>
+                
+                <!-- 
+                  Este botón ahora es de tipo 'submit' dentro del formulario.
+                  El JavaScript se encargará de interceptar el envío.
+                --><button type="submit" id="login_button" class="ir_Examen login-button">Ingresar</button>
+
+                <div class="login-footer">
+                    <!-- Ruta corregida: Se añade ./ para ser explícito -->
+                    <p>¿No tienes cuenta? <a href="./Index.html">Regístrate aquí</a></p>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- HTML del Modal (Pop-up) -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <!-- El icono se cargará desde Font Awesome (ya lo tenías incluido) -->
+            <i id="modalIcon" class="fas"></i> 
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <button id="modalClose" class="ir_Examen login-button">Aceptar</button>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="formatos"> 
+            <h3>Formatos</h3>
+            <article class="info_footer">
+                <!-- Ruta corregida: Se añade ./ para ser explícito -->
+                <ul><a href="./assets/formatos/ANALISIS-RIESGO-TROX_DEP-H&S.xlsx">Formato de Análisis de Riesgo</a></ul>
+                <ul><a href="">Check List Escalera</a></ul>
+            </article>
+        </div>
+
+        <div class="contactos">
+            <h3>Contacto</h3>
+            <article class="info_footer">
+                <p>Seguridad e Higiene <br>
+                222 222 2222 </p>
+            <p>Número Recepción <br>
+            222 222 2222</p>
+            <p id="email">Coreo electrónico <br>
+            seguridadindustrial@troxgroup.mx</p>
+            </article>
+        </div>
+
+        <div class="politicas">
+            <h3>Políticas</h3>
+            <article class="info_footer">
+                <ul><a href="">Políticas de Seguridad</a></ul>
+                <ul><a href="">Política Medio Ambietal</a></ul>
+                <ul><a href="">Política para Contratistas</a></ul>
+                <ul><a href="">Política de COVID-19</a></ul>
+            </article>
+        </div>
+    </footer>
+   
+    <!-- Script de JavaScript para la validación de login --><script>
+        // Esperamos a que todo el DOM (la página) esté cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Elementos del formulario
+            const loginForm = document.getElementById('login_form_validation');
+            const usuarioInput = document.getElementById('usuario');
+            const passwordInput = document.getElementById('password');
+
+            // Elementos del Modal
+            const modal = document.getElementById('customModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalClose = document.getElementById('modalClose');
+
+            // --- Función para mostrar el modal ---
+            function showModal(title, message, type) {
+                modalTitle.innerText = title;
+                modalMessage.innerText = message;
+                
+                modalIcon.className = 'fas'; // Resetea clases de icono
+                if (type === 'success') {
+                    // Icono de check (éxito)
+                    modalIcon.classList.add('fa-check-circle', 'success');
+                } else if (type === 'error') {
+                    // Icono de exclamación (error)
+                    modalIcon.classList.add('fa-exclamation-triangle', 'error');
+                }
+                
+                modal.classList.add('show');
+            }
+
+            // --- Función para cerrar el modal ---
+            function closeModal() {
+                modal.classList.remove('show');
+            }
+
+            // Event listener para el botón de cerrar
+            modalClose.addEventListener('click', closeModal);
+            
+            // Event listener para cerrar al hacer clic fuera del contenido (en el overlay)
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // --- Event listener del formulario (actualizado) ---
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Previene el envío del formulario
+
+                const usuarioVal = usuarioInput.value;
+                const passwordVal = passwordInput.value;
+
+                // Credenciales fijas
+                const usuarioCorrecto = 'admin';
+                const passwordCorrecta = '123';
+
+                if (usuarioVal === usuarioCorrecto && passwordVal === passwordCorrecta) {
+                    // ¡ÉXITO! Muestra modal de éxito
+                    showModal('¡Éxito!', 'Inicio de sesión correcto. Serás redirigido.', 'success');
+                    
+                    // Redirige después de 2 segundos para que el usuario vea el mensaje
+                    setTimeout(() => {
+                        // --- RUTA CORREGIDA ---
+                        // Se asume que quiz.html está dentro de la carpeta 'quiz'
+                        window.location.href = './quiz/quiz.html'; 
+                    }, 2000);
+
+                } else {
+                    // ¡ERROR! Muestra modal de error
+                    showModal('Error', 'Usuario o contraseña incorrectos. Inténtalo de nuevo.', 'error');
+                }
+            });
+
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/2c36e9b7b1.js" crossorigin="anonymous"></script>
+</body>
+</html>
+

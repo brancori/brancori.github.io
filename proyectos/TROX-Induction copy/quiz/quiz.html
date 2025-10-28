@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../indexs.css">
+    <link rel="stylesheet" href="./css/quizs.css">
+    <link rel="shortcut icon" type="image/x-icon" href="/proyectos/TROX-Induction/assets/img/logo.png">
+    <title>Examen Inducción</title>
+</head>
+<body>
+    
+
+    <div id="container">
+        <pre id="username"></pre>
+        <!--    Start Section     -->
+        <div id="main_container">
+            <img id="logo_start" src="/proyectos/TROX-Induction/assets/img/trox logo.gif" alt="Logo_Trox">
+            <div id="start">INICIAR EL EXAMEN</div>
+            <div id="info">
+                <p>TROX MÉXICO S.A de C.V se rerva el derecho, de la apliación
+                    de los examenes en sitio para corroborar la verasidad del mismo.</p>
+                <p>Recuerda que tus respuestas son el fruta de tu tiempo y atención invertida en la inducción.</p>
+            </div>
+        </div>
+        <!--    Guide Section    -->
+        <div id="guide">
+            <h2>Guía de examen</h2>
+            <h4>1.Solo dispondrás de 20 segundos para responder cada pregunta.</h4>
+            <h4>2.Una vez selecciones tu respuesta ni podras deshacer tu elección.</h4>
+            <h4>3.Solo sumaras puntos con tus respuestas correctas.</h4>
+            <h4>4.No podrás salir del examen mientras este en curso.</h4>
+            <div id="button">
+                <button id="exit">Salir</button>
+                <button id="continue">Continuar</button>
+            </div>
+        </div>
+        <div id="quiz">
+            <div id="quiz_header">
+                <h5>Mucho éxito en tu aplicación</h5>
+                <div id="timer">
+                    <h6>Tiempo restante</h6>
+                    <h6 id="time">00</h6>
+                </div>
+            </div>
+            <!-- Quiz question -->
+            <div id="question">
+                <h2 id="questionNo"></h2>
+                <h2 id="questionText"></h2>
+            </div>
+            <!-- Quiz question -->
+            <div id="optionList">
+                <h4 class="choice_que" id="option1"></h4>
+                <h4 class="choice_que" id="option2"></h4>
+                <h4 class="choice_que" id="option3"></h4>
+                <h4 class="choice_que" id="option4"></h4>
+            </div>
+
+            <!-- Anwers Section -->
+            
+            <div id="answersSection">
+                <h3 id="total_correct">3 Of 10 Questions</h3>
+                <h3 id="next_question">Siguiente</h3>
+            </div>
+        </div>
+        <!-- Result Section -->
+        <div id="result">
+            <i class="fas fa-trophy">Fin</i>
+            <h6>Has completado el examen</h6>
+            <h6 id="points">Tu Resultado es 4 de 10</h6>
+            <!-- <button id="quit">Cerrar examen</button> -->
+            <div id="haceCredencial" style="display: none;">
+                <h2 id="congrat_text_end">Felicidades ahora podras realizar el llenado de datos de tu credencial de acceso para mandarlo</h2>
+            <a href="./credenciales/credencial.html" ><button  >Hacer Credencial</button></a>
+            </div>
+            <div id="quit" style="display: none;">
+                <h2 class="sorry_text_end">Lamentablemente no podras seguir Continuando con tu proceso deberas volverlo a intentar</h2>
+                <button >Cerrar Quiz</button>
+            </div>
+            
+        </div>
+    </div>
+    <script src="./questions.js"></script>
+    <script src="./scripts.js"></script>  
+</body>
+</html>

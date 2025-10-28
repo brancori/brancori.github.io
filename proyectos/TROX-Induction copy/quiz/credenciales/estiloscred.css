@@ -1,0 +1,298 @@
+body{
+    max-width: 80vw;
+    padding: 20px;
+}
+#vigencia{
+    display: flex;
+    position: relative;
+    top: 7px;
+    left: 10px;
+}
+
+#Congrats{
+    text-align: justify;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+#Congrats h1{
+    text-align: center;
+}
+#Congrats p{
+    margin: 0;
+    font-size: small;
+    display: inline-block;
+    min-width: 350px; 
+}
+#logo{
+    max-width: 600px;
+    place-self: center;
+    margin-top: 45px;
+    min-width: 150px;
+}
+#Congrats a{
+    font-size: small;
+}
+#main{
+    position: relative;
+    display: flex;
+    flex-basis: 45%;
+    flex-basis: 45%;
+    gap:25px;
+    flex-wrap: nowrap;
+    place-content: center;
+    margin: auto;
+    margin-top: 35px;
+    align-items: center;
+}
+#main h2, h3 {
+text-align: center;
+width: 90%;
+margin: 35px;
+}
+#main #info h2{
+    width: 300px;
+}
+#rectangule{
+    background: #003C9B;
+    border-radius: 10px 10px 0px 0px;
+    width: 100%;
+    height: 25px;
+}
+#credential_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    height: 100%;
+}
+#credential_container #front_credential{
+    border: 2px solid #003C9B;
+    width: 300px;
+    height: 470px;
+    border-radius: 7px;
+}
+#credential_container #backcredential{
+    border: 2px solid #003C9B;
+    width: 300px;
+    height: 470px;
+    border-radius: 7px;
+    display: none;
+}
+#header_container input{
+    width: 60%;
+    border-radius: 2px;
+    border:none;
+    background: rgb(214, 214, 214);
+    text-align: center;
+}
+#form_container {
+    width:95vw;
+    background: #fff;
+    border-radius: 15px;
+    border: 2px solid #003C9B;
+    column-gap: 20px;
+    /* display: none; */
+}
+#header_container{
+    text-align: center;
+}
+#header_container p{
+    text-align: center;
+    margin-bottom: 0;
+}
+#licencias{
+    display: flex;
+    justify-content: center;  
+}
+
+/* Credencial */
+.datos_{
+    background: rgb(223, 223, 223);
+    border-radius: 10px;
+    width: 250px;
+    height: 21px;
+    margin: auto;
+}
+#list{
+    display:block;
+    width: 120px;
+    height: 140px;
+    position: relative;
+    top: 10px;
+    border: 1px solid #a5a5a5;
+    border-radius: 15px 7px;
+    margin: auto;
+}
+#list img{
+    position: absolute;
+    object-fit: cover;
+    width: 120px;
+    height: 140px;
+    right: 0px;
+    background: #fff;
+    border-radius: 15px 7px;
+}
+#list2 img{
+    position: absolute;
+    object-fit: cover;
+    width: 200px;
+    height: 50px;
+    right: 0px;
+    background: #fff;
+    border-radius: 15px 7px;
+}
+#logo_empresa{
+    display: block;
+    width: 200px;
+    height: 50px;
+    position: relative;
+    margin: auto;
+    margin-top: 15px;
+    border: 1px solid #a5a5a5;
+    border-radius: 15px 7px;
+}
+#front_credential p{
+    margin: 5px auto;
+    font-size: 15px;
+}
+.toggle{
+    margin-bottom: 15px;
+    place-self: end;
+    margin-right: 15px;
+    width: 100px;
+    font-size: 12px;
+    line-height: 25px;
+    text-align: center;
+    border-top: 2px solid #00375F;
+    border-bottom: 2px solid #00375F;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+#credential_container .toggle h2{
+    margin: 0;
+}
+#credential_container .toggle:hover{
+    border-top: 2px solid #6e7883;
+    border-bottom: 2px solid #6e7883;
+}
+#credential_container .toggle h2:hover{
+    color: #5f5f5f;
+}
+#faltas_Seguridad {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+    place-items: center;
+}
+#faltas_Seguridad .nfaltas{
+    background: #003C9B;
+    border-radius: 50px;
+    width: 27px;
+    height: 27px;
+    color: #fff;
+    border-radius: 50px;
+    position: relative;
+}
+#faltas_Seguridad span{
+    top: 3px;
+    position: inherit;
+    margin-top: 0;
+}
+#faltas_Seguridad p{
+    display: inline;
+}
+#skills{
+    display: flex;
+    gap: 5px;
+    place-items: center;
+    justify-content: center;
+}
+#skills .skills_box{
+    width: 12px;
+    height: 12px;
+    border: 1px solid #00375F;
+}
+.credential{
+    width: 90%;
+}
+#description_dc3:nth-child(11){
+    font-size: 13px;
+}
+#backcredential p:nth-child(1){
+    margin-top: 18px;
+}
+#backcredential p{
+    margin: 7px auto;
+}
+#username{
+    font-size: 20px;
+    color: #00375F;
+    font-family: helvetica;
+    font-weight: 900;
+    margin: 25px;
+}
+#backcredential div{
+    display: flex;
+    margin: auto;
+    border-bottom: 2px solid #00375F;
+    width: 180px;
+    height: 110px;
+}
+.credential {
+    position: relative;
+}
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 48px;
+    opacity: 0.2;
+    color: #003C9B;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.send-button{
+    width: 90vw;
+    height: 45px;
+    background-color: #00375F;
+    color: #fff;
+    font-size: 20px;
+    border-radius: 35px;
+}
+.btn-cont{
+    width: 95vw;
+    padding: 10px;
+}
+
+
+input #TA, #EP, #TE, #OM, #CI, #MSP{
+    background: #00375F;
+}
+
+ @media (max-width:600px){
+    #logo{
+        max-width: 300px;
+    }
+    #main{
+        flex-direction: column;
+        
+    }
+    .send-button{
+        width: 90vw;
+        height: 45px;
+        background-color: #00375F;
+        color: #fff;
+        font-size: 20px;
+        border-radius: 25px;
+    }
+    .btn-cont{
+        width: 95vw;
+        padding: 10px;
+    }
+ }

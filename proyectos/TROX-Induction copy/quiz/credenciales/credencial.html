@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Exo:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/indexs.css">
+    <link rel="stylesheet" href="./estiloscred.css">
+    <title>CREDENCIALES</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("bCQM2FcfOF9Lcyk32"); // Tu clave pública
+        })();
+    </script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <pre id="username"></pre>
+    <section id="Congrats">
+       <img src="/proyectos/TROX-Induction/assets/img/trox logo.gif" alt="Logo de Trox" id="logo">
+        <h1>FELICIDADES</h1>
+        <h2 id="info">Has concluido satisfactoriamente tu curso de inducción y acreditado el examen de evaluación, por lo que te solitamos algunas datos que nos serviran para realizar tu credencial de acceso temporal.
+            esta credencial tendrá una vigencia de 6 meses y durante toda tu estancia en TROX México, deberas portarla  en todo momento como método de identificación.
+            <p>Para más información sobre tus datos personales consulta nuestro </p><a href=""> Aviso de Privasidad</a>
+        </h2>
+    </section>
+
+    <section id="main">
+        <div id="form_container" class="form_container">
+            <div id="header_container">
+                <div id="rectangule"></div>
+                <p for="LE">INGRESA UNA FOTOGRAFIA</p> <input type="file" id="pp">
+                <p>INGRESA EL LOGO DE TU EMPRESA</p> <input type="file" id="LE" name="LE">
+                <P>NOMBRE DE LA EMPRESA CONTRATISTA </P>
+                <input type="text" placeholder="Nombre empresa" class="nombre" id="NEC"  oninput="cambio()">
+                <p>NOMBRE DEL TRABAJADOR</p>  
+                <input type="text" placeholder="Juan Hernández Hernández" class="nombre" id="Nt"  oninput="cambio()">
+                <p>PUESTO DEL TRABAJADOR    </p> 
+                <input type="text" placeholder="Soldador" id="pt" oninput="cambio()">
+                <p>NÚMERO DE SEGURIDAD SOCIAL </p> 
+                <input type="number" placeholder="222 222 555" id="nss" oninput="cambio()" m="9" max="9">
+                <p>CONTACTO DE EMERGENCIA   </p> 
+                <input type="text" placeholder="Juan Hernández Hernández" class="nombre" id="ce" oninput="cambio()">
+                <p>NÚMERO DE CONTACTO   </p> 
+                <input type="number" placeholder="222 222 2222" id="nc" oninput="cambio()" max="10">
+                <p>CONTACTO TROX </p> 
+                <input type="text" placeholder="Nombre del Contacto" class="nombre" id="cT" oninput="cambio()">
+            </div>
+            <h2>Licencias de habilidades</h2>
+            <h3>Recuerda que tendrás que evidencia de tener estas certificaciones vigentes en el formato DC3</h3>
+            <div id="licencias">
+                <div class="check_box">
+                    <p><input type="checkbox" name="check" id="TA"  value="1" onchange="ShowSkills()"> Trabajos en alturas</p>
+                    <p><input type="checkbox" name="EC" id="EC" value="2" onchange="ShowSkills()"> Espacios Confinados</p>
+                    <p><input type="checkbox" name="TE" id="TE" value="3" onchange="ShowSkills()"> Trabajos Eléctricos</p>
+                </div>
+                <div class="check_box">
+                    <p><input type="checkbox" name="OM" id="OM" value="4" onchange="ShowSkills()"> Operador de montacargas</p>
+                    <p><input type="checkbox" name="CI" id="CI" value="5" onchange="ShowSkills()"> Combate contra incendios</p>
+                    <p><input type="checkbox" name="MSP" id="MSP" value="6" onchange="ShowSkills()"> Manejo de Sustancias Peligrosas</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="credential_container" class="credential_container">
+            <div class="toggle">
+                <h2>Girar</h2>
+            </div>
+            <div id="front_credential" class="credential">
+                <Label id="vigencia">Vigencia<label></Label></label>
+                <div id="list" ></div>
+                
+                <div id="logo_empresa"><div id="list2"></div></div>
+                <p id="main_p">EMPRESA CONTRATISTA</p>
+                <p class="datos_" id="nContratista"></p>
+                <p>NOMBRE DEL TRABAJADOR</p>
+                <p class="datos_" id="input_nt"></p>
+                <p>PUESTO DEL TRABAJADOR</p>
+                <p class="datos_" id="input_pt"></p>
+                <p>LICENCIA DE HABILIDADES</p>
+                <div id="skills">
+                <label>TA</label><label class="skills_box" id="TA_" style="background: none;"></label><label>EC</label><label class="skills_box" id="EC_"></label>
+                <label>TE</label><labe class="skills_box" id="TE_"></labe><label>OM</label><label class="skills_box" id="OM_"></label>
+                <label>CI</label><label class="skills_box" id="CI_"></label></label><label>MSP</label><label class="skills_box" id="MSP_"></label>
+                </div>
+                <div id="faltas_Seguridad"><p>Faltas a la Seguridad </p><div class="nfaltas"><span>1ra</span></div><div class="nfaltas"><span>2da</span></div></div>
+            </div>
+
+            <div id="backcredential" class="credential">
+                <p>NÚMERO DE SEGURIDAD SOCIAL</p>
+                <P class="datos_" id="input_nss"></P>
+                <p>CONTACTO DE EMERGENCIA</p>
+                <P class="datos_" id="input_ce"></P>
+                <p>NÚMERO DE CONTACTO</p>
+                <P class="datos_" id="input_nc"></P>
+                <p>CONTACTO TROX</p>
+                <P class="datos_" id="input_ct"></P>
+                <div id="sing_she"></div>
+                <P>FIRMA DE AUTORIZACIÓN</P>
+                <P id="description_dc3">TA:Trabajos en Alturas, EC: Espacios Confinados, TE: Trabajos Eléctricos,
+                OM: Operador de Montacargas, CI: Combate Contra Incencios </P>
+            </div>
+
+        </div>
+    </section>
+
+    <button onclick="printView()">Enviar</button>
+    <div class="btn-cont"><button onclick="sendCredential()" class="send-button">Enviar por Correo</button></div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Agregar antes de los demás scripts -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style type="text/css" media="print">
+        @media print {
+            /* Configuración general de impresión */
+            @page {
+                size: letter landscape;
+                margin: 0;
+            }
+            
+            /* Forzar impresión de colores */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            body * {
+                display: none;
+            }
+            
+            #credential_container {
+                display: flex !important;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                justify-content: center;
+                align-items: center;
+                background: white;
+                flex-direction: row;
+            }
+
+            #front_credential, #backcredential {
+                display: inline-block !important;
+                width: 300px !important;
+                margin: 0 10px !important;
+            }
+
+            #front_credential *, #backcredential * {
+                display: block !important;
+            }
+            #skills{
+                display:flex !important;
+            }
+            #faltas_Seguridad {
+                display: grid !important;
+                grid-template-columns: 2fr 1fr 1fr !important;
+                align-items: center !important;
+                place-items: center;
+            }
+            #faltas_Seguridad .nfaltas {
+                background-color: #003C9B !important;
+                border-radius: 50px !important;
+                width: 27px !important;
+                height: 27px !important;
+                color: #fff !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                position: relative !important;
+            }
+
+            /* Asegurar que los spans dentro de nfaltas también tengan color */
+            #faltas_Seguridad .nfaltas span {
+                color: #fff !important;
+                display: block !important;
+            }
+        }
+    </style>
+    <script >
+// Agregar este código después de que se carga el documento
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar marca de agua a front_credential
+    const frontWatermark = document.createElement('div');
+    frontWatermark.className = 'watermark';
+    frontWatermark.textContent = 'IMAGEN MUESTRA';
+    document.getElementById('front_credential').appendChild(frontWatermark);
+    
+    // Agregar marca de agua a backcredential
+    const backWatermark = document.createElement('div');
+    backWatermark.className = 'watermark';
+    backWatermark.textContent = 'IMAGEN MUESTRA';
+    document.getElementById('backcredential').appendChild(backWatermark);
+    
+    // Establecer vigencia
+    setVigencia();
+});
+
+        $('.toggle').click(function(){
+    $('.credential').animate({
+        height: "toggle",
+        'padding-top': 'toggle',
+        'padding-bottom': 'toggle',
+        opacity: 'toggle'
+    }, "slow");
+});
+    </script>
+    <script>
+
+$("#pp").on("change", function(){
+    var imagen = $(this)[0].files[0];
+    procesarImagen(imagen, function(result){
+        $("#list").append("<img src='" + result + "'>");
+    });
+});
+
+$("#LE").on("change", function(){
+    var imagen = $(this)[0].files[0];
+    procesarImagen(imagen, function(result){
+        $("#list2").append("<img src='" + result + "'>");
+    });
+});
+var procesarImagen = function(imagen, callback){
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL(imagen);
+    fileReader.onload = function(){
+        callback(fileReader.result);
+    };
+};
+    </script>
+    
+    <script src="./credenciales.js"></script>
+    <script src="/proyectos/TROX-Induction/quiz/scripts.js"></script>
+    <form id="emailForm" style="display: none;">
+        <input type="hidden" name="to_name">
+        <input type="hidden" name="from_name">
+        <input type="hidden" name="message">
+        <input type="hidden" name="to_email">
+        <input type="hidden" name="image">
+        <input type="file" name="attachment" id="attachment" style="display: none;">
+    </form>
+</body>
+</html>
