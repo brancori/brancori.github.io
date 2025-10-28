@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./indexs.css">
+    <link rel="stylesheet" href="./profie.css">
+    <title>Document</title>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-navbar">
+        <div class="logo-section">
+            <h2><i class="fas fa-graduation-cap"></i> TROX Academy</h2>
+        </div>
+        <div class="nav-actions">
+            <button class="notification-btn" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3><i class="fas fa-bell"></i> Notificaciones</h3>
+            <button class="notification-close" id="notificationClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notification-list">
+            <div class="notification-item urgent">
+                <div class="notification-icon-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Curso por vencer</h4>
+                    <p>Tu curso "Inducción de Seguridad" vence en 3 días</p>
+                    <div class="notification-time">Hace 2 horas</div>
+                </div>
+            </div>
+            
+            <div class="notification-item success">
+                <div class="notification-icon-box">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>¡Nueva certificación desbloqueada!</h4>
+                    <p>Has obtenido la certificación "Brigadista Primeros Auxilios"</p>
+                    <div class="notification-time">Hace 1 día</div>
+                </div>
+            </div>
+            
+            <div class="notification-item info">
+                <div class="notification-icon-box">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Nuevo curso disponible</h4>
+                    <p>"Seguridad en Alturas Básico" - Recomendado para tu perfil</p>
+                    <div class="notification-time">Hace 2 días</div>
+                </div>
+            </div>
+
+            <div class="notification-item info">
+                <div class="notification-icon-box">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Sesión presencial agendada</h4>
+                    <p>Práctica de extintores - 2 de Nov, 10:00 AM</p>
+                    <div class="notification-time">Hace 3 días</div>
+                </div>
+            </div>
+
+            <div class="notification-item success">
+                <div class="notification-icon-box">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Curso completado</h4>
+                    <p>Felicidades por completar "Política de Seguridad TROX"</p>
+                    <div class="notification-time">Hace 1 semana</div>
+                </div>
+            </div>
+        </div>
+        <div class="notification-footer">
+            <button id="markAllRead">Marcar todas como leídas</button>
+        </div>
+    </div>
+
+    <!-- Badge Requirements Modal -->
+    <div class="badge-requirements-modal" id="badgeModal">
+        <div class="badge-modal-content">
+            <div class="badge-modal-header">
+                <h2><i class="fas fa-trophy"></i> Mapa de Certificaciones Profesionales</h2>
+                <button class="badge-modal-close" id="badgeModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="badge-modal-body">
+                
+                <!-- Brigadista Section -->
+                <div class="badge-path-section">
+                    <h3><i class="fas fa-first-aid"></i> Ruta: Brigadista Profesional</h3>
+                    <div class="badge-path">
+                        
+                        <!-- Brigadista Primeros Auxilios -->
+                        <div class="badge-requirement-card earned">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon earned">
+                                    <i class="fas fa-first-aid"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>Brigadista de Primeros Auxilios</h4>
+                                    <p>Certificación profesional en respuesta médica de emergencia</p>
+                                </div>
+                                <div class="badge-req-status earned">
+                                    <i class="fas fa-check-circle"></i> OBTENIDA
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item completed">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Primeros Auxilios Básicos (4hrs)</span>
+                                </div>
+                                <div class="course-req-item completed">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>RCP y DEA (2hrs)</span>
+                                </div>
+                                <div class="course-req-item completed">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Evaluación Práctica</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Brigadista Combate Incendios -->
+                        <div class="badge-requirement-card">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon">
+                                    <i class="fas fa-fire-extinguisher"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>Brigadista Combate Contra Incendios</h4>
+                                    <p>Especialización en prevención y control de incendios</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-lock"></i> BLOQUEADA
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Metodología de Instrucción (6hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Auditoría de Sistemas de Altura (8hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Certificación Internacional (Examen)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>100 horas de experiencia documentada</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Quality Expert Section -->
+                <div class="badge-path-section">
+                    <h3><i class="fas fa-certificate"></i> Ruta: Quality Expert</h3>
+                    <div class="badge-path">
+                        
+                        <div class="badge-requirement-card">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>Quality Expert - Especialista en Calidad</h4>
+                                    <p>Dominio completo de sistemas de gestión de calidad</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-lock"></i> 0/3 completados
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>ISO 9001:2015 Fundamentos (8hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Auditoría Interna de Calidad (12hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Herramientas de Mejora Continua (8hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Proyecto de Mejora (Práctico)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Líder HSE Section -->
+                <div class="badge-path-section">
+                    <h3><i class="fas fa-crown"></i> Certificación Suprema</h3>
+                    <div class="badge-path">
+                        
+                        <div class="badge-requirement-card" style="background: linear-gradient(135deg, #fff8e1 0%, #ffeaa7 100%); border: 3px solid #ffd700;">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>👑 Líder HSE - Máxima Distinción</h4>
+                                    <p>Reconocimiento al dominio excepcional en Salud, Seguridad y Ambiente</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-trophy"></i> 1/10+ certificaciones
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item completed">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>✓ Brigadista de Primeros Auxilios</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Brigadista Combate Contra Incendios</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Trabajos en Altura Master</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Quality Expert</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Manejo de Sustancias Peligrosas (Avanzado)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Gestión Ambiental ISO 14001</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Liderazgo en Seguridad</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Investigación de Incidentes</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Seguridad Eléctrica (Certificado)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Instructor Certificado HSE</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1.5rem; padding: 1rem; background: white; border-radius: 8px; border-left: 4px solid #ffd700;">
+                                <p style="margin: 0; color: var(--text-primary); font-weight: 600;">
+                                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                                    <strong>Beneficios:</strong> Reconocimiento corporativo, bono especial, elegibilidad para posiciones de supervisión HSE, mentor autorizado
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<span>Uso de Extintores Nivel 1 (1.5hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Teoría del Fuego (2hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Práctica con Fuego Real (4hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Evaluación Final</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Trabajos en Altura Section -->
+                <div class="badge-path-section">
+                    <h3><i class="fas fa-mountain"></i> Ruta: Trabajos en Altura (Progresión)</h3>
+                    
+                    <!-- Progress Path -->
+                    <div class="progress-path">
+                        <div class="progress-step">
+                            <div class="progress-step-circle">1</div>
+                            <div class="progress-step-label">Básico</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="progress-step-circle">2</div>
+                            <div class="progress-step-label">Intermedio</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="progress-step-circle">3</div>
+                            <div class="progress-step-label">Avanzado</div>
+                        </div>
+                        <div class="progress-step">
+                            <div class="progress-step-circle">4</div>
+                            <div class="progress-step-label">Master</div>
+                        </div>
+                    </div>
+
+                    <div class="badge-path">
+                        
+                        <!-- Nivel Básico -->
+                        <div class="badge-requirement-card">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon">
+                                    <i class="fas fa-hard-hat"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>Trabajos en Altura - Nivel Básico</h4>
+                                    <p>Fundamentos y uso de EPP para trabajos en altura</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-lock"></i> BLOQUEADA
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Introducción a Trabajos en Altura (2hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>EPP para Altura (3hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Evaluación Teórica</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nivel Intermedio -->
+                        <div class="badge-requirement-card">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>Trabajos en Altura - Nivel Intermedio</h4>
+                                    <p>Técnicas avanzadas y sistemas de protección</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-lock"></i> Requiere Básico
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Sistemas de Anclaje (3hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Líneas de Vida (4hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Práctica en Torre (6hrs)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nivel Avanzado -->
+                        <div class="badge-requirement-card">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon">
+                                    <i class="fas fa-user-astronaut"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>Trabajos en Altura - Nivel Avanzado</h4>
+                                    <p>Rescate en altura y situaciones de emergencia</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-lock"></i> Requiere Intermedio
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Técnicas de Rescate (8hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Espacios Confinados en Altura (4hrs)</span>
+                                </div>
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <span>Simulacro de Rescate Real</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Master -->
+                        <div class="badge-requirement-card">
+                            <div class="badge-req-header">
+                                <div class="badge-req-icon">
+                                    <i class="fas fa-mountain"></i>
+                                </div>
+                                <div class="badge-req-info">
+                                    <h4>🏆 Trabajos en Altura - MASTER</h4>
+                                    <p>Certificación máxima - Instructor autorizado</p>
+                                </div>
+                                <div class="badge-req-status locked">
+                                    <i class="fas fa-crown"></i> Requiere Avanzado
+                                </div>
+                            </div>
+                            <div class="course-requirements-list">
+                                <div class="course-req-item">
+                                    <i class="fas fa-circle"></i>
+                                    <!DOCTYPE html>
+</body>
+</html>

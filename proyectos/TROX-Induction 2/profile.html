@@ -1,0 +1,850 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil de Capacitación PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./profie.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-navbar">
+        <div class="logo-section">
+            <h2><i class="fas fa-graduation-cap"></i> TROX Academy</h2>
+        </div>
+        <div class="nav-actions">
+            <button class="notification-btn" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <!-- CORRECCIÓN: Cambiado de <button> a <a> para el enlace -->
+            <a href="index.html" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 'stats-grid' se movió dentro de 'content-area' -->
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2>Admin Usuario</h2>
+                    <p class="role">Contratista | ID: 789456</p>
+                    
+                    <div class="progress-donut">
+                        <svg viewBox="0 0 150 150">
+                            <circle class="progress-donut-bg" cx="75" cy="75" r="69"></circle>
+                            <circle class="progress-donut-fg" cx="75" cy="75" r="69"></circle>
+                        </svg>
+                        <span class="progress-text">40%</span>
+                    </div>
+                    <p style="color: var(--primary); font-weight: 600; margin-bottom: 1rem;">
+                        2 de 5 cursos completados
+                    </p>
+                    <button class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-user-edit"></i> Editar Perfil
+                    </button>
+                </div>
+
+                <!-- Badges Card -->
+                <div class="badges-card">
+                    <h3><i class="fas fa-trophy"></i> Certificaciones</h3>
+                    <div class="badges-grid">
+                        <div class="badge earned" title="Certificación Obtenida">
+                            <i class="fas fa-first-aid"></i>
+                            <span>Brigadista P. Auxilios Leader</span>
+                        </div>
+                        <div class="badge" title="Requiere: Curso de Primeros Auxilios Avanzado">
+                            <i class="fas fa-fire-extinguisher"></i>
+                            <span>Combate Incendios Leader</span>
+                        </div>
+                        <div class="badge" title="Requiere: 3 cursos de calidad completados">
+                            <i class="fas fa-certificate"></i>
+                            <span>Quality Expert</span>
+                        </div>
+                        <div class="badge" title="Requiere: Curso de Trabajos en Altura Básico">
+                            <i class="fas fa-hard-hat"></i>
+                            <span>Alturas Instructor</span>
+                        </div>
+                        <div class="badge" title="Requiere: Alturas Básico + Intermedio + Rescate">
+                            <i class="fas fa-mountain"></i>
+                            <span>Espacios Confinados Instructor</span>
+                        </div>
+                        <div class="badge" title="Requiere: 10+ certificaciones profesionales">
+                            <i class="fas fa-crown"></i>
+                            <span>Líder HSE</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" id="viewBadgesBtn" style="width: 100%; margin-top: 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> Ver Requisitos
+                    </button>
+                </div>
+
+                <!-- Calendar Card -->
+                <div class="calendar-card">
+                    <h3><i class="far fa-calendar-alt"></i> Próximos Vencimientos</h3>
+                    <div class="calendar-event urgent">
+                        <div class="event-date">
+                            <div class="day">30</div>
+                            <div class="month">OCT</div>
+                        </div>
+                        <div class="event-details">
+                            <h4>Inducción de Seguridad</h4>
+                            <p>Vence en 3 días</p>
+                        </div>
+                    </div>
+                    <div class="calendar-event">
+                        <div class="event-date">
+                            <div class="day">26</div>
+                            <div class="month">NOV</div>
+                        </div>
+                        <div class="event-details">
+                            <h4>Manejo de Químicos</h4>
+                            <p>Vence en 30 días</p>
+                        </div>
+                    </div>
+                    <div class="calendar-event">
+                        <div class="event-date">
+                            <div class="day">26</div>
+                            <div class="month">DIC</div>
+                        </div>
+                        <div class="event-details">
+                            <h4>Uso de Extintores</h4>
+                            <p>Vence en 60 días</p>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- Cierre de .sidebar -->
+
+            <!-- Main Content -->
+            <div class="content-area">
+                
+                <!-- CORRECCIÓN: 'stats-grid' movido aquí dentro -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon total">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>5</h3>
+                            <p>Cursos Totales</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon completed">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>2</h3>
+                            <p>Completados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>2</h3>
+                            <p>En Progreso</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon urgent">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>1</h3>
+                            <p>Urgente</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar cursos...">
+                    </div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all">Todos</button>
+                        <button class="filter-btn" data-filter="urgent">Urgente</button>
+                        <button class="filter-btn" data-filter="pending">Pendiente</button>
+                        <button class="filter-btn" data-filter="completed">Completado</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="assigned">
+                        <i class="fas fa-tasks"></i> Asignados
+                    </div>
+                    <div class="tab" data-tab="certificates">
+                        <i class="fas fa-certificate"></i> Certificados
+                    </div>
+                    <div class="tab" data-tab="catalog">
+                        <i class="fas fa-search-plus"></i> Explorar
+                    </div>
+                    <div class="tab" data-tab="timeline">
+                        <i class="fas fa-history"></i> Historial
+                    </div>
+                    <div class="tab" data-tab="recommendations">
+                        <i class="fas fa-lightbulb"></i> Sugerencias
+                    </div>
+                </div>
+
+                <!-- Tab Content: Assigned Courses -->
+                <div class="tab-content active" id="assigned">
+                    <div class="course-grid">
+                        <!-- Course 1: Urgent -->
+                        <div class="course-card" data-status="urgent">
+                            <div class="course-icon-lg urgent">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Inducción de Seguridad (Contratistas)</h3>
+                                <p style="color: var(--danger); font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-clock"></i> Vence en 3 días
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-user"></i> Capacitador: Ing. García
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-hourglass-half"></i> 2 horas
+                                    </span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: 60%"></div>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                    Progreso: 60% completado
+                                </p>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Continuar
+                                </a>
+                                <button class="btn btn-outline btn-reminder" data-course="Inducción de Seguridad">
+                                    <i class="fas fa-bell"></i> Recordar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Course 2: Pending -->
+                        <div class="course-card" data-status="pending">
+                            <div class="course-icon-lg pending">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Manejo de Sustancias Químicas</h3>
+                                <p style="color: var(--warning); font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-calendar"></i> Vence en 30 días
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-user"></i> Capacitador: Dra. Martínez
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-hourglass-half"></i> 3 horas
+                                    </span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: 25%"></div>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                    Progreso: 25% completado
+                                </p>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Continuar
+                                </a>
+                                <button class="btn btn-outline btn-reminder" data-course="Manejo de Sustancias Químicas">
+                                    <i class="fas fa-bell"></i> Recordar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Course 3: Pending -->
+                        <div class="course-card" data-status="pending">
+                            <div class="course-icon-lg pending">
+                                <i class="fas fa-fire-extinguisher"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Uso de Extintores Nivel 1</h3>
+                                <p style="color: var(--warning); font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-calendar"></i> Vence en 60 días
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-user"></i> Capacitador: Ing. López
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-hourglass-half"></i> 1.5 horas
+                                    </span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                    No iniciado
+                                </p>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> Empezar
+                                </a>
+                                <button class="btn btn-outline btn-reminder" data-course="Uso de Extintores Nivel 1">
+                                    <i class="fas fa-bell"></i> Recordar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Certificates -->
+                <div class="tab-content" id="certificates">
+                    <div class="course-grid">
+                        <!-- Certificate 1 -->
+                        <div class="course-card" data-status="completed">
+                            <div class="course-icon-lg completed">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Política de Seguridad TROX</h3>
+                                <p style="color: var(--success); font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-check-circle"></i> Completado el 15/10/2025
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-star"></i> Calificación: 95/100
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-trophy"></i> Certificado #TRX-2025-001
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <button class="btn btn-primary btn-download" data-cert="Política de Seguridad TROX">
+                                    <i class="fas fa-download"></i> Descargar PDF
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-share-alt"></i> Compartir
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Certificate 2 -->
+                        <div class="course-card" data-status="completed">
+                            <div class="course-icon-lg completed">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>COVID-19: Protocolo de Acceso</h3>
+                                <p style="color: var(--success); font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-check-circle"></i> Completado el 01/09/2025
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-star"></i> Calificación: 100/100
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-trophy"></i> Certificado #TRX-2025-002
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <button class="btn btn-primary btn-download" data-cert="COVID-19: Protocolo de Acceso">
+                                    <i class="fas fa-download"></i> Descargar PDF
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-share-alt"></i> Compartir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Catalog -->
+                <div class="tab-content" id="catalog">
+                    <div class="course-grid">
+                        <!-- Catalog Course 1 -->
+                        <div class="course-card">
+                            <div class="course-icon-lg catalog">
+                                <i class="fas fa-first-aid"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Brigada de Primeros Auxilios</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    Curso voluntario de especialización
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-hourglass-half"></i> 8 horas
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-users"></i> 45 inscritos
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-star"></i> 4.8/5
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <button class="btn btn-success btn-enroll" data-course="Brigada de Primeros Auxilios">
+                                    <i class="fas fa-plus-circle"></i> Inscribirme
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-info-circle"></i> Más info
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Catalog Course 2 -->
+                        <div class="course-card">
+                            <div class="course-icon-lg catalog">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Brigada de Búsqueda y Rescate</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    Curso avanzado de respuesta emergencias
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-hourglass-half"></i> 12 horas
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-users"></i> 32 inscritos
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-star"></i> 4.9/5
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <button class="btn btn-success btn-enroll" data-course="Brigada de Búsqueda y Rescate">
+                                    <i class="fas fa-plus-circle"></i> Inscribirme
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-info-circle"></i> Más info
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Catalog Course 3 (Estaba fuera) -->
+                        <div class="course-card">
+                            <div class="course-icon-lg catalog">
+                                <i class="fas fa-recycle"></i>
+                            </div>
+                            <div class="course-info">
+                                <h3>Gestión Ambiental y Reciclaje</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    Curso de sostenibilidad corporativa
+                                </p>
+                                <div class="course-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-hourglass-half"></i> 2 horas
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-users"></i> 78 inscritos
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-star"></i> 4.7/5
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <button class="btn btn-success btn-enroll" data-course="Gestión Ambiental y Reciclaje">
+                                    <i class="fas fa-plus-circle"></i> Inscribirme
+                                </button>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-info-circle"></i> Más info
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Timeline (Estaba fuera) -->
+                <div class="tab-content" id="timeline">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">15 de Octubre, 2025</div>
+                                <h3 style="color: var(--success); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-check-circle"></i> Curso Completado
+                                </h3>
+                                <p><strong>Política de Seguridad TROX</strong></p>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                    Calificación obtenida: 95/100 | Certificado emitido
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">10 de Octubre, 2025</div>
+                                <h3 style="color: var(--warning); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-play-circle"></i> Curso Iniciado
+                                </h3>
+                                <p><strong>Inducción de Seguridad (Contratistas)</strong></p>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                    En progreso: 60% completado
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">1 de Septiembre, 2025</div>
+                                <h3 style="color: var(--success); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-check-circle"></i> Curso Completado
+                                </h3>
+                                <p><strong>COVID-19: Protocolo de Acceso</strong></p>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                    Calificación obtenida: 100/100 | Certificado emitido
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">25 de Agosto, 2025</div>
+                                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">
+                                    <i class="fas fa-user-plus"></i> Registro en Plataforma
+                                </h3>
+                                <p><strong>Bienvenido a TROX Academy</strong></p>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                    Tu cuenta ha sido activada correctamente
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Recommendations (Estaba fuera) -->
+                <div class="tab-content" id="recommendations">
+                    <h2 style="margin-bottom: 1rem; color: var(--primary);">
+                        <i class="fas fa-magic"></i> Cursos Recomendados Para Ti
+                    </h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Basado en tu perfil, historial y cursos completados
+                    </p>
+                    
+                    <div class="recommendations-grid">
+                        <!-- Recommendation 1 -->
+                        <div class="recommendation-card">
+                            <div class="rec-header">
+                                <div class="rec-icon">
+                                    <i class="fas fa-hard-hat"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin-bottom: 0.25rem;">Seguridad en Alturas</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                        Nivel Intermedio
+                                    </p>
+                                </div>
+                                <span class="match-score">92%</span>
+                            </div>
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Continuación ideal después de completar Inducción de Seguridad
+                            </p>
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                                <span style="background: #e6f0ff; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                                    6 horas
+                                </span>
+                                <span style="background: #e6f0ff; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                                    Certificación
+                                </span>
+                            </div>
+                            <button class="btn btn-success btn-enroll" data-course="Seguridad en Alturas" style="width: 100%;">
+                                <i class="fas fa-plus-circle"></i> Inscribirme
+                            </button>
+                        </div>
+
+                        <!-- Recommendation 2 -->
+                        <div class="recommendation-card">
+                            <div class="rec-header">
+                                <div class="rec-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin-bottom: 0.25rem;">EPP Avanzado</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                        Nivel Avanzado
+                                    </p>
+                                </div>
+                                <span class="match-score">88%</span>
+                            </div>
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Especializacióncomplementaria a tus cursos actuales
+                            </p>
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                                <span style="background: #e6f0ff; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                                    4 horas
+                                </span>
+                                <span style="background: #e6f0ff; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                                    Práctico
+                                </span>
+                            </div>
+                            <button class="btn btn-success btn-enroll" data-course="EPP Avanzado" style="width: 100%;">
+                                <i class="fas fa-plus-circle"></i> Inscribirme
+                            </button>
+                        </div>
+
+                        <!-- Recommendation 3 -->
+                        <div class="recommendation-card">
+                            <div class="rec-header">
+                                <div class="rec-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <h3 style="margin-bottom: 0.25rem;">Riesgo Eléctrico</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                        Nivel Básico
+                                    </p>
+                                </div>
+                                <span class="match-score">85%</span>
+                            </div>
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Muy solicitado en tu área de trabajo
+                            </p>
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                                <span style="background: #e6f0ff; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                                    3 horas
+                                </span>
+                                <span style="background: #e6f0ff; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                                    Popular
+                                </span>
+                            </div>
+                            <button class="btn btn-success btn-enroll" data-course="Riesgo Eléctrico" style="width: 100%;">
+                                <i class="fas fa-plus-circle"></i> Inscribirme
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- Cierre de .content-area -->
+        </div> <!-- Cierre de .main-grid -->
+    </div> <!-- Cierre de .container -->
+
+    <!-- Modal (Estaba fuera) -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon"></div>
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <button class="btn btn-primary" id="modalClose" style="width: 100%;">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const modal = document.getElementById('modal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalClose = document.getElementById('modalClose');
+
+        function showModal(title, message, type = 'success') {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalIcon.className = `modal-icon ${type}`;
+            
+            if (type === 'success') {
+                modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            } else if (type === 'info') {
+                modalIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const targetId = tab.dataset.tab;
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // Filter functionality
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const courseCards = document.querySelectorAll('.course-card[data-status]');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                
+                courseCards.forEach(card => {
+                    if (filter === 'all' || card.dataset.status === filter) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const allCourseCards = document.querySelectorAll('.course-card');
+            
+            allCourseCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Enroll buttons
+        const enrollBtns = document.querySelectorAll('.btn-enroll');
+        enrollBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const courseName = btn.dataset.course;
+                showModal(
+                    '¡Inscripción Exitosa!',
+                    `Te has inscrito al curso "${courseName}". Aparecerá en tu pestaña de cursos asignados.`,
+                    'success'
+                );
+            });
+        });
+
+        // Download buttons
+        const downloadBtns = document.querySelectorAll('.btn-download');
+        downloadBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const certName = btn.dataset.cert;
+                showModal(
+                    'Generando Certificado',
+                    `Tu certificado "${certName}" se está generando en formato PDF...`,
+                    'success'
+                );
+            });
+        });
+
+        // Reminder buttons
+        const reminderBtns = document.querySelectorAll('.btn-reminder');
+        reminderBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const courseName = btn.dataset.course;
+                showModal(
+                    'Recordatorio Activado',
+                    `Recibirás notificaciones sobre el curso "${courseName}"`,
+                    'info'
+                );
+            });
+        });
+
+        // Notification button
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationPanel = document.getElementById('notificationPanel');
+        const notificationClose = document.getElementById('notificationClose');
+        const markAllRead = document.getElementById('markAllRead');
+
+        notificationBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationPanel.classList.toggle('show');
+        });
+
+        notificationClose.addEventListener('click', () => {
+            notificationPanel.classList.remove('show');
+        });
+
+        markAllRead.addEventListener('click', () => {
+            showModal(
+                'Notificaciones Actualizadas',
+                'Todas las notificaciones han sido marcadas como leídas',
+                'info'
+            );
+            document.querySelector('.notification-badge').textContent = '0';
+            setTimeout(() => {
+                notificationPanel.classList.remove('show');
+            }, 1500);
+        });
+
+        // Close notification panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!notificationPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationPanel.classList.remove('show');
+            }
+        });
+
+        // Badge Requirements Modal
+        const badgeModal = document.getElementById('badgeModal');
+        const viewBadgesBtn = document.getElementById('viewBadgesBtn');
+        const badgeModalClose = document.getElementById('badgeModalClose');
+
+        viewBadgesBtn.addEventListener('click', () => {
+            badgeModal.classList.add('show');
+        });
+
+        badgeModalClose.addEventListener('click', () => {
+            badgeModal.classList.remove('show');
+        });
+
+        badgeModal.addEventListener('click', (e) => {
+            if (e.target === badgeModal) {
+                badgeModal.classList.remove('show');
+            }
+        });
+
+        // Theme toggle (dummy)
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            showModal(
+                'Cambio de Tema',
+                'La función de modo oscuro estará disponible próximamente',
+                'info'
+            );
+        });
+
+        // Animate progress bars on page load
+        window.addEventListener('load', () => {
+            const progressBars = document.querySelectorAll('.progress-bar-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
