@@ -283,7 +283,6 @@
                                     <option value="OCRA">OCRA (Movimientos repetitivos)</option>
                                     <option value="NIOSH">NIOSH (Levantamiento de cargas)</option>
                                     <option value="NOM036">NOM-036 (Cargas Manuales)</option>
-                                    <option value="EJA">EJA (Johnson)</option>
                                 </select>
                                 <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
                             </div>
@@ -292,10 +291,7 @@
                             <label for="tipo_control">Tipo de Control</label>
                             <input type="text" id="tipo_control" class="input-field" placeholder="Ej. Ingeniería, Administrativo...">
                         </div>
-                        <div class="form-group">
-                            <label for="art">ART (Análisis de Riesgo)</label>
-                            <input type="text" id="art" class="input-field">
-                        </div>
+
                         <div class="form-group">
                             <label for="responsable">Responsable</label>
                             <input type="text" id="responsable" class="input-field">
@@ -324,8 +320,21 @@
     
     <div id="cumplimiento-details" class="compliance-details-box" style="display: none;">
         </div>
-</div>
-                        <div class="form-group">
+                                <div class="form-group" style="margin-top: 2rem;">
+                            <label id="tipo-analisis-label">Evaluación JNJ</label>
+                            <div class="input-with-button">
+                                <div class="btn-group" id="tipo-analisis-group" role="group" aria-labelledby="tipo-analisis-label">
+                                    <button type="button" class="btn-toggle" data-value="EJA">EJA (Johnson)</button>
+                                    <button type="button" class="btn-toggle" data-value="WS">Computer Work Station</button>
+                                </div>
+                                <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
+                            </div>
+                        </div>
+                                                <div class="form-group">
+                            <label for="art">ART (Análisis de Riesgo)</label>
+                            <input type="text" id="art" class="input-field">
+                        </div>
+<div class="form-group">
                             <label for="nivel_riesgo">Nivel de Riesgo Identificado</label>
                             <input type="text" id="nivel_riesgo" class="input-field" placeholder="Este campo se llenará con la evaluación">
                         </div>
@@ -333,19 +342,12 @@
                             <label for="nuevo_nivel_riesgo">Nuevo Nivel de Riesgo (Esperado)</label>
                             <input type="text" id="nuevo_nivel_riesgo" class="input-field">
                         </div>
+</div>
+                        
+
                         <div class="form-group">
                             <label for="accion">Acción</label>
                             <input type="text" id="accion" class="input-field">
-                        </div>
-                        <div class="form-group">
-                            <label id="tipo-analisis-label">Tipo de Análisis</label>
-                            <div class="input-with-button">
-                                <div class="btn-group" id="tipo-analisis-group" role="group" aria-labelledby="tipo-analisis-label">
-                                    <button type="button" class="btn-toggle" data-value="EJA">EJA</button>
-                                    <button type="button" class="btn-toggle" data-value="WS">WS</button>
-                                </div>
-                                <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
-                            </div>
                         </div>
                     </div>
                 </div> <div class="form-group full-width">

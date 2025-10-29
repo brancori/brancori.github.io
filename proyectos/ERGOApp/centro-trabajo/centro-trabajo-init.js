@@ -249,6 +249,8 @@ function setupEventListeners() {
     const btnEvaluarTipo = document.getElementById('btn-evaluar-tipo');
 
     btnEvaluarTipo.addEventListener('click', () => {
+            console.log('🔘 Click en btn-evaluar-tipo');
+    console.log('📋 actividadEnEdicion:', actividadEnEdicion);
         // 1. Verifica que haya una actividad en edición
         if (!actividadEnEdicion) {
             ERGOUtils.showToast('Primero debes guardar la actividad para poder evaluarla.', 'info');
