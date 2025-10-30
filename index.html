@@ -217,6 +217,134 @@
             setTimeout(() => errorElement.textContent = '', 3000);
         }
     }
+    let johnsonDetailsData = []; // Para almacenar los datos del JSON
+
+/**
+ * Carga los datos del JSON al iniciar
+ */
+async function loadModalData() {
+    try {
+        const response = await fetch('johnson_details.json'); // Asegúrate que la ruta sea correcta
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        johnsonDetailsData = await response.json();
+        console.log('Datos de detalles (JSON) cargados.', johnsonDetailsData);
+    } catch (error) {
+        console.error('Error al cargar johnson_details.json:', error);
+    }
+}
+
+/**
+ * Abre el modal y lo rellena con la información del ID
+ * @param {number} id - El ID de la evaluación (1-40)
+ */
+function openDetailsModal(id) {
+    const data = johnsonDetailsData.find(item => item.id === id);
+    if (!data) {
+        console.warn(`No se encontraron datos para el modal con ID: ${id}`);
+        return;
+    }
+
+    // Rellenar cabecera
+    document.getElementById('modal-category').textContent = data.category || 'Ergonomic Factor';
+    document.getElementById('modal-title').textContent = `${data.id}. ${data.title}`;
+    
+    // Construir cuerpo
+    const body = document.getElementById('modal-body-content');
+    body.innerHTML = ''; // Limpiar contenido anterior
+    
+    // 1. Descripción
+    const descriptionEl = document.createElement('p');
+    descriptionEl.className = 'modal-description';
+    descriptionEl.textContent = data.description;
+    body.appendChild(descriptionEl);
+    
+    // 2. Contenido (lista o tabla)
+    const contentHtml = buildModalContent(data);
+    body.insertAdjacentHTML('beforeend', contentHtml);
+
+    // Mostrar modal
+    document.getElementById('details-modal-overlay').style.display = 'flex';
+}
+
+/**
+ * Genera el HTML para el cuerpo del modal basado en el content_type
+ * @param {object} data - El objeto de datos para un item
+ * @returns {string} - El string HTML para el contenido
+ */
+function buildModalContent(data) {
+    if (data.content_type === 'list') {
+        const c = data.content;
+        return `
+            <div class="modal-list">
+                <div class="modal-list-item high">
+                    <strong>${c.high.title}</strong>
+                    <p>${c.high.text}</p>
+                </div>
+                <div class="modal-list-item moderate">
+                    <strong>${c.moderate.title}</strong>
+                    <p>${c.moderate.text}</p>
+                </div>
+                <div class="modal-list-item low">
+                    <strong>${c.low.title}</strong>
+                    <p>${c.low.text}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (data.content_type === 'table') {
+        const c = data.content;
+        let headers = c.headers.map(h => `<th>${h}</th>`).join('');
+        let rows = c.rows.map(row => {
+            let values = row.values.map(val => `<td>${val}</td>`).join('');
+            return `<tr><td>${row.label}</td>${values}</tr>`;
+        }).join('');
+        
+        return `<table class="modal-table">
+                    <thead><tr>${headers}</tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+    }
+
+    if (data.content_type === 'multi-table') {
+        return data.content.map(tableSet => {
+            const c = tableSet.table;
+            let headers = c.headers.map(h => `<th>${h}</th>`).join('');
+            let rows = c.rows.map(row => {
+                let values = row.values.map(val => `<td>${val}</td>`).join('');
+                return `<tr><td>${row.label}</td>${values}</tr>`;
+            }).join('');
+            
+            return `<div class="modal-multi-table">
+                        <h4>${tableSet.title}</h4>
+                        <table class="modal-table">
+                            <thead><tr>${headers}</tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+        }).join('');
+    }
+
+    return '<p>No se encontró un tipo de contenido válido.</p>';
+}
+
+/**
+ * Cierra el modal
+ */
+function closeModal() {
+    document.getElementById('details-modal-overlay').style.display = 'none';
+}
+
+// --- ASIGNAR EVENTOS DEL MODAL ---
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+document.getElementById('details-modal-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'details-modal-overlay') {
+        closeModal();
+    }
+});
+
+// Cargar los datos del JSON al iniciar
+loadModalData();
 </script>
 
 </body>

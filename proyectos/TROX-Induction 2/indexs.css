@@ -1,3 +1,23 @@
+:root {
+    --color-primario-azul: #00375F;
+    --color-texto-secundario: #6e7883;
+    --color-error: #bb2929;
+    --color-exito: #1ed12d;
+    --color-error-rojo: red;
+    --color-exito-verde: green;
+    --color-fondo-claro: #f5f5f5;
+    --color-texto-claro: aliceblue;
+    --color-texto-oscuro: #333;
+    --color-texto-blanco: white;
+    --color-borde-input: #eaeaea;
+    --color-fondo-login-trans: rgba(255, 255, 255, 0.8);
+    --color-sombra-login: rgba(0, 0, 0, 0.2);
+    --color-borde-login-trans: rgba(255, 255, 255, 0.3);
+    --color-fondo-tabs-trans: rgba(176, 0, 0, 0.3);
+    --color-sombra-input-hover: rgba(163,163,163, 1);
+    --color-sombra-input-focus: rgba(163,163,163, 0.4);
+}
+
 @font-face {
     font-family: Helvetica;
     src: url(/proyectos/TROX-Induction/assets/fuentes/HelveticaNeue_LT_67_MdCn_Heavy.ttf);
@@ -7,29 +27,26 @@
     src: url(/proyectos/TROX-Induction/assets/fuentes/396a25718aa788c4df0b49b11e6a248d.woff2);
 }
 body {
-    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-family: "HelveticaNeueW02-47LtCn", "HelveticaNeueW02-67MdCn 694060", Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 900;
-    color: #00375F; /* Color base para texto */
+    color: var(--color-primario-azul); /* Color base para texto */
 }
 
 h1, h2, h3 {
-    color: #00375F;
+    color: var(--color-primario-azul);
     text-align: center;
 }
 
 p {
-    color: #6e7883;
+    color: var(--color-texto-secundario);
     text-align: center;
 }
 
 /* ----- Estilo para el nombre de usuario (usado en quiz y credencial) ----- */
 #username {
     font-size: 20px;
-    color: #00375F;
-    font-family: helvetica;
-    font-weight: 900;
-    margin: 25px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Aquí mantienes los estilos que ya eran únicos de tu index.html */
@@ -59,7 +76,7 @@ img {
 #subcontainer2 p{
     display: inline-block;
     padding-right: 25px;
-    color:#00375F ;
+    color: var(--color-primario-azul);
     font-weight: bold;
 }
 #Container2{
@@ -85,15 +102,15 @@ img {
 }
 /* Validación para formulario */
 .item1-incorrecto{
-    color: #bb2929;
+    color: var(--color-error);
     opacity: 1;
-    border: 1px solid #bb2929;
+    border: 1px solid var(--color-error);
     border-bottom: none;
 }
 .item1-correcto{
-    color: #1ed12d;
+    color: var(--color-exito);
     opacity: 1;
-    border: 1px solid #1ed12d;
+    border: 1px solid var(--color-exito);
     border-bottom: none;
 }
 .induction img{
@@ -159,19 +176,18 @@ footer div{
     margin: auto ;
     }
 #resultado {
-    color: red;
+    color: var(--color-error-rojo);
     font-weight: bold;
     border-radius: 15px;
     text-align: center;
 
 }
 #resultado.ok {
-    color: green;
+    color: var(--color-exito-verde);
 }
  /* Registro toggle */
  #registro_login .register_container{
     width: 600px;
-    background: #e2e2e2;
     border-radius: 8px;
     margin: auto;
     justify-content: center;
@@ -180,11 +196,11 @@ footer div{
 }
 .inputs_Container input{
     box-shadow: none;
-    background: #f5f5f5;
+    background: var(--color-fondo-claro);
     outline: none;
     border: 0px solid f5f5f5s ;
     margin: auto 15px;
-    border-bottom:1px solid #6e7883;
+    border-bottom:1px solid var(--color-texto-secundario);
     transition: all .5s ease;
     text-align: center;
     width: 200px;
@@ -194,18 +210,18 @@ footer div{
     text-transform: uppercase;
 }
 .inputs_Container input:hover {
-	box-shadow: 3px 0px 30px rgba(163,163,163, 1);
+	box-shadow: 3px 0px 30px var(--color-sombra-input-hover);
 }
 .inputs_Container input:focus {
-	border: 3px solid #00375F;
+	border: 3px solid var(--color-primario-azul);
 	outline: none;
-	box-shadow: 3px 0px 30px rgba(163,163,163, 0.4);
+	box-shadow: 3px 0px 30px var(--color-sombra-input-focus);
 }
 .ir_Examen{
     width: 200px;
     height: 35px;
-    background-color: #00375F;
-    color: aliceblue;
+    background-color: var(--color-primario-azul);
+    color: var(--color-texto-claro);
     font-weight: bold;
     font-size: large;
     border: none;
@@ -280,4 +296,137 @@ footer div{
     .title_info{
         margin: 7px 0;
     }
+}
+.login-container {
+    background-color: var(--color-fondo-login-trans); /* Fondo semitransparente */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--color-sombra-login);
+    width: 350px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid var(--color-borde-login-trans);
+}
+
+.login-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-texto-oscuro);
+    border-radius: 5px;
+    transition: background-color 0.5s ease;
+}
+.tab-button.active {
+    background-color: var(--color-primario-azul); /* Color azul para la pestaña activa */
+    color: var(--color-texto-blanco);
+}
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 12px 10px;
+    margin-bottom: 20px;
+    border: 1px solid var(--color-borde-input);
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; 
+}
+
+
+.login-button {
+    width: 100%;
+    margin-top: 10px; 
+}
+
+.login-button:hover {
+    background-color: var(--color-primario-azul);
+}
+
+.register-link {
+    display: block;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--color-primario-azul);
+    text-decoration: none;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Para el fondo de la página, si quieres el efecto de la red de nodos */
+/* Esto sería un fondo de imagen o un SVG complejo, pero aquí te doy una idea básica */
+
+main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+    /* Fondo con la imagen de red (sustituye la URL por una tuya) */
+    background-image: url(./assets/img/fondo_.png); /* Sustituye con tu imagen de fondo */
+    background-size: cover;
+    background-position: center;
+}
+
+/* --- ESTILOS PARA EL EFECTO FLIP-CARD --- */
+
+/* El contenedor principal que da la perspectiva 3D */
+.flip-card {
+    background-color: transparent;
+    width: 350px; /* Debe coincidir con el ancho de tu .login-container */
+    height: 450px; /* Ajusta la altura según tu formulario */
+    perspective: 1000px; /* Efecto 3D */
+}
+
+/* El contenedor que realmente gira */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+/* Clase que se añade con JS para girar */
+.flip-card.is-flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Posicionamiento de las caras frontal y trasera */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Para Safari */
+    backface-visibility: hidden;
+}
+
+/* La cara trasera empieza girada */
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+/* Hacemos que el login-container ocupe todo el espacio de la cara */
+.flip-card-front .login-container,
+.flip-card-back .login-container {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box; /* Asegura que el padding no desborde */
 }

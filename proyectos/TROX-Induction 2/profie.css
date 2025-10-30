@@ -1213,3 +1213,29 @@
                 grid-template-columns: 1fr;
             }
         }
+/* Estilos para el panel de control de la demo */
+    .demo-controls {
+        padding: 12px;
+        text-align: center;
+        width: 100%;
+        z-index: 1001; /* Asegura que esté encima de la navbar */
+        position: relative; 
+    }
+
+    .demo-btn {
+        background-color: black;
+        color: #ffffff; /* Dorado */
+        border-radius: 20px; /* Bordes redondeados */
+        padding: 8px 25px;
+        margin: 0 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 5px rgba(144, 144, 144, 0.7);
+    }
+    
+    .demo-btn:hover {
+        background-color: #FFD700;
+        color: black;
+    }

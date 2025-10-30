@@ -1,0 +1,148 @@
+[
+  {
+    "id": 1,
+    "category": "Respuesta Médica",
+    "title": "Respuesta Médica",
+    "description": "Entrevistando al profesional de salud ocupacional de la planta y/o revisando datos médicos/de lesiones, determine si la información de pérdidas es de riesgo alto, moderado o bajo.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Casos de Días Laborales Perdidos o Restringidos y Tasa de Casos Registrables de J&J y Primeros Auxilios (LWDC, RWDC y JJRC)",
+        "text": "Uno o más casos ergonómicos de días perdidos o restringidos en los últimos 2 años, o, una tasa de incidentes registrables de J&J relacionados con ergonomía que excede el 30% en los últimos 2 años (ej., en promedio, más de 3 casos registrables de J&J por cada 10 empleados)."
+      },
+      "moderate": {
+        "title": "Casos Registrables de J&J y Primeros Auxilios y Tasa de Casos Registrables de J&J (LWDC, RWDC y JJRC)",
+        "text": "Uno o más casos ergonómicos registrables de J&J en los últimos 2 años, o, una tasa de incidentes de primeros auxilios relacionados con ergonomía que excede el 30% en los últimos 2 años (ej., en promedio, más de 3 casos de primeros auxilios relacionados con ergonomía por cada 10 empleados)."
+      },
+      "low": {
+        "title": "Casos de Primeros Auxilios",
+        "text": "Uno o más casos de primeros auxilios relacionados con ergonomía en los últimos 2 años."
+      }
+    }
+  },
+  {
+    "id": 2,
+    "category": "Indicadores de Exigencia Laboral Excesiva",
+    "title": "Respuesta del Empleado",
+    "description": "Satisfacción del empleado basada en la rotación de personal, quejas de empleados y encuestas a empleados.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Rotación de Personal",
+        "text": "Calificado subjetivamente como por debajo del promedio, promedio o por encima del promedio. Si es 'por encima del promedio', el factor de riesgo de Respuesta del Empleado es 'riesgo alto'."
+      },
+      "moderate": {
+        "title": "Quejas de Empleados",
+        "text": "Múltiples quejas de empleados sobre la dificultad del trabajo en los últimos 2 años. Al menos un 50% de respuesta positiva a una encuesta de empleados."
+      },
+      "low": {
+        "title": "Encuesta a Empleados",
+        "text": "Al menos un 50% de respuesta positiva a una encuesta de incomodidad u otra encuesta de empleados en los últimos 2 años."
+      }
+    }
+  },
+  {
+    "id": 3,
+    "category": "Indicadores de Exigencia Laboral Excesiva",
+    "title": "Misceláneos",
+    "description": "Usando la información proporcionada a continuación, determine si los factores de riesgo Misceláneos son de riesgo alto o moderado.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Selección Formal de Empleados y Acondicionamiento Laboral",
+        "text": "Si el departamento ha implementado un proceso de selección de empleados, o un período de adaptación/acondicionamiento, el factor de riesgo Misceláneo es 'riesgo alto'. Si el proceso de selección o período de adaptación es estrictamente preventivo, no se considera 'riesgo alto'."
+      },
+      "moderate": {
+        "title": "Modificaciones por Empleados",
+        "text": "Modificaciones hechas por empleados a herramientas, equipos o estaciones de trabajo/mobiliario."
+      },
+      "low": {
+        "title": "No Aplicable para Riesgo Bajo",
+        "text": ""
+      }
+    }
+  },
+  {
+    "id": 4,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Fuerza de Agarre Manual / Agarre de Potencia",
+    "description": "Utilizando la tabla siguiente, determine si la fuerza de agarre de potencia es de riesgo alto, moderado o bajo, basándose en la fuerza y el Conteo Total Por Jornada. Primero localice el Conteo Total Por Jornada en la tabla, luego determine la categoría de riesgo basada en la fuerza.",
+    "content_type": "table",
+    "content": {
+      "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo"],
+      "rows": [
+        { "label": "01-10", "values": [">35.4", "27.7-35.4", "18.1-27.2"] },
+        { "label": "11-100", "values": [">17.7", "14.1-17.7", "9.1-13.6"] },
+        { "label": "101-500", "values": [">10.9", "8.6-10.9", "5.4-8.2"] },
+        { "label": "501-2000", "values": [">7.3", "5.9-7.3", "3.6-5.4"] },
+        { "label": "2001-5000", "values": [">5.4", "4.5-5.4", "2.7-4.1"] }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Fuerza de Agarre de Pinza",
+    "description": "Utilizando la tabla siguiente, determine si la fuerza de agarre de pinza es de riesgo alto, moderado o bajo, basándose en la Fuerza y el Conteo Total Por Jornada. Primero localice el Conteo Total Por Jornada en la tabla, luego determine la categoría de riesgo basada en la Fuerza.",
+    "content_type": "table",
+    "content": {
+      "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo"],
+      "rows": [
+        { "label": "01-10", "values": [">9.1", "7.7-9.1", "5.4-7.3"] },
+        { "label": "11-100", "values": [">4.5", "4.1-4.5", "2.7-3.6"] },
+        { "label": "101-500", "values": [">2.7", "2.3-2.7", "1.6-2.3"] },
+        { "label": "501-2000", "values": [">1.8", "1.5-1.8", "1.1-1.5"] },
+        { "label": "2001-5000", "values": [">0.9", "1.0-1.4", "0.8-1.1"] }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Fuerza de Presión de Dedo o Pulgar",
+    "description": "Utilizando las tablas siguientes, determine si la fuerza de presión con los dedos (presionando simultáneamente con índice, medio, anular y meñique) o la fuerza de presión del pulgar (presionando con 1 pulgar) es de riesgo alto, moderado o bajo, basándose en la Fuerza y el Conteo Total Por Jornada. Primero localice el Conteo Total Por Jornada en la tabla, luego determine la categoría de riesgo basada en la fuerza.",
+    "content_type": "multi-table",
+    "content": [
+      {
+        "title": "Fuerza de Presión de Dedos",
+        "table": {
+          "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo"],
+          "rows": [
+            { "label": "01-10", "values": [">13.6", "11.8-13.6", "8.2-11.3"] },
+            { "label": "11-100", "values": [">7.3", "5.9-7.3", "4.1-5.4"] },
+            { "label": "101-500", "values": [">4.5", "3.6-4.5", "2.3-3.2"] },
+            { "label": "501-2000", "values": [">2.7", "2.3-2.7", "1.6-2.3"] },
+            { "label": "2001-5000", "values": [">2.0", "1.6-2.0", "1.1-1.6"] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Flexión de Muñeca",
+    "description": "Utilizando las tablas siguientes, determine si la flexión de muñeca es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare ambas calificaciones y tome la más alta.",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 100-3000", "Conteo: 3001-5000", "Conteo: >5000"],
+        "rows": [
+          {"label": ">65°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30°-65°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15°-30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": ">65°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30°-65°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15°-30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  }
+]

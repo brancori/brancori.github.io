@@ -16,14 +16,6 @@
             flex-direction: column;
             min-height: 100vh;
         }
-        main {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem 0;
-            background-color: #f4f4f4; /* Un fondo ligero para destacar la tarjeta */
-        }
 
         /* Estilos para el contenedor del login, ahora un poco más pequeño */
         #login_container {
@@ -51,7 +43,6 @@
         .login-input-group label {
             display: block;
             margin-bottom: 0.4rem; /* Margen inferior de labels reducido */
-            color: #6e7883; /* Tu color de texto secundario */
             font-weight: 500;
             font-size: 0.95rem; /* Tamaño de fuente ligeramente más pequeño */
         }
@@ -62,9 +53,7 @@
             border: 1px solid #ccc;
             border-radius: 5px; /* Mismos bordes redondeados */
             box-sizing: border-box;
-            font-family: inherit;
             font-size: 0.95rem; /* Tamaño de fuente de input */
-            background: #f5f5f5;
             border-bottom: 2px solid #6e7883;
             transition: all .5s ease;
         }
@@ -209,30 +198,45 @@
 
     <!-- Sección principal con el formulario de login --><main>
         
-        <div id="login_container">
-            <form id="login_form_validation"> <!-- Envuelve los inputs y botón en un form para la validación --><h2>Capacitación App</h2>
-                
-                <div class="login-input-group">
-                    <label for="usuario">Usuario</label>
-                    <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario" required>
-                </div>
+<div class="flip-card">
+        <div class="flip-card-inner">
 
-                <div class="login-input-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+            <div class="flip-card-front">
+                <div class="login-container">
+                    <div class="login-tabs">
+                        <button class="tab-button active" data-flip-target="front">TRABAJADORES</button>
+                        <button class="tab-button" data-flip-target="back">CONTRATISTAS</button>
+                    </div>
+                    <div class="login-form">
+                        <label for="username">Usuario</label>
+                        <input type="text" id="username" placeholder="usuario@trox.com">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password">
+                        <button class="login-button" id="loginButtonFront">Ingresar</button>
+                        <a href="#" class="register-link">¿No tienes cuenta? Regístrate aquí</a>
+                    </div>
                 </div>
-                
-                <!-- 
-                  Este botón ahora es de tipo 'submit' dentro del formulario.
-                  El JavaScript se encargará de interceptar el envío.
-                --><button type="submit" id="login_button" class="ir_Examen login-button">Ingresar</button>
+            </div>
 
-                <div class="login-footer">
-                    <!-- Ruta corregida: Se añade ./ para ser explícito -->
-                    <p>¿No tienes cuenta? <a href="./Index.html">Regístrate aquí</a></p>
+            <div class="flip-card-back">
+                <div class="login-container">
+                     <div class="login-tabs">
+                        <button class="tab-button" data-flip-target="front">TRABAJADORES</button>
+                        <button class="tab-button active" data-flip-target="back">CONTRATISTAS</button>
+                    </div>
+                    <div class="login-form">
+                        <label for="username_c">ID Contratista</label>
+                        <input type="text" id="username_c" placeholder="ej: ID Contratista">
+                        <label for="password_c">Contraseña</label>
+                        <input type="password" id="password_c">
+                        <button class="login-button" id="loginButtonBack">Ingresar</button>
+                        <a href="#" class="register-link">¿No tienes cuenta? Regístrate aquí</a>
+                    </div>
                 </div>
-            </form>
+            </div>
+
         </div>
+    </div>
 
     </main>
 
@@ -279,22 +283,77 @@
         </div>
     </footer>
    
-    <!-- Script de JavaScript para la validación de login --><script>
+    <!-- Script de JavaScript para la validación de login -->
+     <script>
         // Esperamos a que todo el DOM (la página) esté cargado
+// Esperamos a que todo el DOM (la página) esté cargado
         document.addEventListener('DOMContentLoaded', function() {
             
-            // Elementos del formulario
-            const loginForm = document.getElementById('login_form_validation');
-            const usuarioInput = document.getElementById('usuario');
+            // --- Elementos del DOM (Corregidos y unificados) ---
+            const loginButton = document.querySelector('.login-button'); // Apunta al botón
+            const usuarioInput = document.getElementById('username'); // Declarado una sola vez
             const passwordInput = document.getElementById('password');
+            const tabs = document.querySelectorAll('.tab-button');
 
-            // Elementos del Modal
+            // --- Elementos del Modal ---
             const modal = document.getElementById('customModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalMessage = document.getElementById('modalMessage');
             const modalIcon = document.getElementById('modalIcon');
             const modalClose = document.getElementById('modalClose');
 
+const flipCard = document.querySelector('.flip-card');
+const flipButtons = document.querySelectorAll('.tab-button');
+
+flipButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const target = button.getAttribute('data-flip-target');
+        
+        if (target === 'back') {
+            flipCard.classList.add('is-flipped');
+        } else {
+            flipCard.classList.remove('is-flipped');
+        }
+    });
+});
+
+// --- Event listener del Botón de Login (Corregido) ---
+// (Reemplaza tu listener de 'loginButton' por estos dos)
+
+const loginButtonFront = document.getElementById('loginButtonFront');
+const loginButtonBack = document.getElementById('loginButtonBack');
+
+// Listener para el botón frontal (Trabajadores)
+loginButtonFront.addEventListener('click', function(event) {
+    event.preventDefault();
+    // Reutiliza la lógica de validación que ya tenías
+    const usuarioVal = document.getElementById('username').value;
+    const passwordVal = document.getElementById('password').value;
+    
+    // (Aquí iría tu validación)
+    if (usuarioVal === 'admin' && passwordVal === '123') {
+        showModal('¡Éxito!', 'Inicio de sesión (Trabajador) correcto.', 'success');
+        setTimeout(() => { window.location.href = './profile.html'; }, 2000);
+    } else {
+        showModal('Error', 'Usuario o contraseña incorrectos.', 'error');
+    }
+});
+
+// Listener para el botón trasero (Contratistas)
+loginButtonBack.addEventListener('click', function(event) {
+    event.preventDefault();
+    const usuarioVal = document.getElementById('username_c').value;
+    const passwordVal = document.getElementById('password_c').value;
+
+    // (Aquí puedes poner una validación diferente para contratistas)
+    if (usuarioVal === 'contra' && passwordVal === '123') {
+        showModal('¡Éxito!', 'Inicio de sesión (Contratista) correcto.', 'success');
+        setTimeout(() => { window.location.href = './profile.html'; }, 2000);
+    } else {
+        showModal('Error', 'ID o contraseña de Contratista incorrectos.', 'error');
+    }
+});
+            
             // --- Función para mostrar el modal ---
             function showModal(title, message, type) {
                 modalTitle.innerText = title;
@@ -317,19 +376,18 @@
                 modal.classList.remove('show');
             }
 
-            // Event listener para el botón de cerrar
+            // --- Event listeners del Modal ---
             modalClose.addEventListener('click', closeModal);
-            
-            // Event listener para cerrar al hacer clic fuera del contenido (en el overlay)
             modal.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     closeModal();
                 }
             });
 
-            // --- Event listener del formulario (actualizado) ---
-            loginForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Previene el envío del formulario
+            // --- Event listener del Botón de Login (Corregido) ---
+            // Ahora escucha el 'click' en el botón, no el 'submit' de un formulario
+            loginButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Previene comportamiento por defecto (si lo tuviera)
 
                 const usuarioVal = usuarioInput.value;
                 const passwordVal = passwordInput.value;
@@ -342,7 +400,7 @@
                     // ¡ÉXITO! Muestra modal de éxito
                     showModal('¡Éxito!', 'Inicio de sesión correcto. Serás redirigido.', 'success');
                     
-                    // Redirige después de 2 segundos para que el usuario vea el mensaje
+                    // Redirige después de 2 segundos
                     setTimeout(() => {
                         window.location.href = './profile.html'; 
                     }, 2000);
