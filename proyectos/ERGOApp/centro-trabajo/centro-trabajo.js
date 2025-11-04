@@ -310,30 +310,29 @@ function abrirModalActividad(actividadId = null) {
 
     if (esEdicion) {
         // --- CAMPOS REUTILIZADOS ---
-        document.getElementById('actividad-id').value = actividad.id;
+document.getElementById('actividad-id').value = actividad.id;
         document.getElementById('actividad-nombre').value = actividad.nombre; // Tarea Específica
         document.getElementById('actividad-metodo').value = actividad.metodo; // Evaluación Específica
         quillActividadComentarios.root.innerHTML = actividad.comentarios || ''; // Comentarios
         quillActividadRecomendaciones.root.innerHTML = actividad.recomendaciones || ''; // Medida de Control
-        document.getElementById('nivel_riesgo').value = actividad.nivel_riesgo || ''; // Nivel de Riesgo
+        // document.getElementById('nivel_riesgo').value = actividad.nivel_riesgo || ''; // Nivel de Riesgo (Eliminado)
         
         const tipoAnalisis = actividad.tipo_analisis || 'EJA';
-        const activeBtn = tipoGroup.querySelector(`[data-value="${tipoAnalisis}"]`);
+                const activeBtn = tipoGroup.querySelector(`[data-value="${tipoAnalisis}"]`);
         if (activeBtn) activeBtn.classList.add('active');
-        
+        // ... (código existente) ...
         btnEvaluarMetodo.disabled = !actividad.metodo;
 
         // --- NUEVOS CAMPOS ---
         document.getElementById('descripcion_detallada').value = actividad.descripcion_detallada || '';
         document.getElementById('descripcion_riesgo').value = actividad.descripcion_riesgo || '';
         document.getElementById('grupo_riesgo').value = actividad.grupo_riesgo || '';
-        document.getElementById('puesto_involucrado').value = actividad.puesto_involucrado || '';
+        // document.getElementById('puesto_involucrado').value = actividad.puesto_involucrado || ''; // Eliminado
         
         document.getElementById('nuevo_nivel_riesgo').value = actividad.nuevo_nivel_riesgo || '';
         document.getElementById('tipo_control').value = actividad.tipo_control || '';
-        document.getElementById('art').value = actividad.art || '';
+        // document.getElementById('art').value = actividad.art || ''; // Eliminado
         document.getElementById('accion').value = actividad.accion || '';
-        document.getElementById('responsable').value = actividad.responsable || '';
 
         // --- MANEJO DE CUMPLIMIENTO (MODIFICADO) ---
         const savedCompliance = actividad.cumplimiento || '';
@@ -422,23 +421,24 @@ async function guardarActividad() {
         metodo: document.getElementById('actividad-metodo').value, // Evaluación Específica
         comentarios: quillActividadComentarios.root.innerHTML, // Comentarios
         recomendaciones: quillActividadRecomendaciones.root.innerHTML, // Medida de Control
-        nivel_riesgo: document.getElementById('nivel_riesgo').value.trim(), // Nivel de Riesgo
         tipo_analisis: tipoAnalisisActivo ? tipoAnalisisActivo.dataset.value : 'EJA',
 
         // --- NUEVOS CAMPOS ---
         descripcion_detallada: document.getElementById('descripcion_detallada').value.trim(),
         descripcion_riesgo: document.getElementById('descripcion_riesgo').value.trim(),
-        grupo_riesgo: document.getElementById('grupo_riesgo').value.trim(),
-        puesto_involucrado: document.getElementById('puesto_involucrado').value.trim(),
+        grupo_riesgo: document.getElementById('grupo_riesgo').value, // Campo ahora es SELECT
+        
+        // --- DATOS AUTOMÁTICOS ---
+        puesto_involucrado: document.getElementById('condicion-puestos-valor').innerHTML, // Toma el HTML de la lista de puestos
+        art: document.getElementById('condicion-art-valor').textContent.trim(), // Toma el texto del ART
         
         // --- CAMPO CORREGIDO ---
         cumplimiento: selectedCompliance ? selectedCompliance.value : null, // Obtiene el valor del radio
         
         nuevo_nivel_riesgo: document.getElementById('nuevo_nivel_riesgo').value.trim(),
-        tipo_control: document.getElementById('tipo_control').value.trim(),
-        art: document.getElementById('art').value.trim(),
-        accion: document.getElementById('accion').value.trim(),
-        responsable: document.getElementById('responsable').value.trim()
+        tipo_control: document.getElementById('tipo_control').value, // Campo ahora es SELECT
+        accion: document.getElementById('accion').value.trim()
+        // 'responsable' y 'nivel_riesgo' han sido eliminados
     };
 
     if (!data.nombre) {
@@ -473,11 +473,6 @@ async function guardarActividad() {
         console.error('Error al guardar el hallazgo:', error);
         ERGOUtils.showToast(`No se pudo guardar el hallazgo. ${error.message}`, 'error');
     }
-}
-
-// El botón para abrir/cerrar solo debe ser visible para administradores
-if (!ERGOAuth.hasPermission('update')) {
-    toggleButton.style.display = 'none';
 }
         /**
          * Abre el modal para confirmar la acción con contraseña.

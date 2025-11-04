@@ -619,6 +619,19 @@
             user-select: none;  /* Evita que se pueda seleccionar texto */
             transition: opacity 0.3s ease;
         }
+        #evaluations-container {
+    transition: margin-top 0.3s ease;
+}
+
+/* Regla principal: Cuando el header está colapsado... */
+#main-header-container.collapsed ~ #evaluations-container {
+    margin-top: 150px;
+}
+
+/* (Opcional) Resetea el margen cuando el header está expandido */
+#main-header-container.expanded ~ #evaluations-container {
+    margin-top: 12px; /* O el valor original que tenías en el padding (12px) */
+}
     </style>
 </head>
 <body>
@@ -645,7 +658,7 @@
                 </div>
                 <div class="info-content">
                     <label>Name of Analyst</label>
-                    <input type="text" id="nAnalyst" placeholder="Brandon Cortes">
+                    <input type="text" id="nAnalyst" placeholder="Brandon Cortes" value="Brandon Cortes">
                 </div>
             </section>
 
@@ -941,28 +954,50 @@
             const jobInput = document.getElementById('job');
             const compactJob = document.getElementById('compact-job');
 
+            // --- INICIO DE MODIFICACIÓN ---
+            // Sobrescribir el valor de 'job' si viene de la URL
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const actividadNombre = urlParams.get('actividadNombre');
+
+                // Si 'actividadNombre' viene en la URL, sobrescribe el valor por defecto
+                if (actividadNombre) {
+                    const decodedName = decodeURIComponent(actividadNombre);
+                    jobInput.value = decodedName;
+                    compactJob.textContent = decodedName; // Actualizar header compacto
+                }
+                // Si no hay parámetro, los 'value' del HTML se usan por defecto
+            } catch (e) {
+                console.error("Error al poblar datos de URL:", e);
+            }
+            // --- FIN DE MODIFICACIÓN ---
+
             jobInput.addEventListener('input', () => {
                 compactJob.textContent = jobInput.value || '-';
             });
-let isHeaderCompact = false;
-const scrollThreshold = 150; // El punto donde quieres que cambie
 
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
+            // Lógica de colapso con "Dead Zone" para evitar el loop
+            let isHeaderCompact = false;
+            const shrinkThreshold = 250; // Umbral para encoger
+            const expandThreshold = 80;  // Umbral para expandir
 
-  // SÓLO se compacta si el scroll es mayor Y NO ESTÁ compacto
-  if (scrollY > scrollThreshold && !isHeaderCompact) {
-    header.classList.add('header-compact');
-    isHeaderCompact = true; // Fija el estado
-  
-  // SÓLO se expande si el scroll es menor Y SÍ ESTÁ compacto
-  } else if (scrollY <= scrollThreshold && isHeaderCompact) {
-    header.classList.remove('header-compact');
-    isHeaderCompact = false; // Fija el estado
-  }
-  
-  // Si ninguna condición se cumple, no hace nada y rompe el bucle.
-});
+            window.addEventListener('scroll', () => {
+              const scrollY = window.scrollY;
+
+              // Encoger: Si bajamos más de 150 Y AÚN NO está compacto
+              if (scrollY > shrinkThreshold && !isHeaderCompact) {
+                header.classList.remove('expanded');
+                header.classList.add('collapsed');
+                isHeaderCompact = true;
+              
+              // Expandir: Si subimos a menos de 50 Y SÍ está compacto
+              } else if (scrollY < expandThreshold && isHeaderCompact) {
+                header.classList.remove('collapsed');
+                header.classList.add('expanded');
+                isHeaderCompact = false;
+              }
+              // Si scrollY está entre 50 y 150, no se hace nada, rompiendo el loop.
+            });
 
             // Listener para empleados
             document.getElementById('Employees').addEventListener('input', window.updateSummary);
@@ -1508,7 +1543,92 @@ function buildModalContent(data) {
         return table1Html + table2Html;
     }
     // --- FIN DEL CÓDIGO AÑADIDO ---
+else if (data.content_type === 'complex-rules') {
+        const c = data.content;
 
+        // --- Funciones Auxiliares (puedes reutilizarlas si ya existen) ---
+        const createTable = (tableData) => {
+            if (!tableData) return '';
+            let headers = tableData.headers.map(h => `<th>${h}</th>`).join('');
+            let rows = tableData.rows.map(row => {
+                // Modificación para manejar celdas con HTML (como <ul>)
+                let labelCell = `<td>${row.label}</td>`;
+                let values = row.values.map(val => `<td>${val}</td>`).join('');
+                return `<tr>${labelCell}${values}</tr>`;
+            }).join('');
+            
+            return `<div class="modal-multi-table">
+                        ${tableData.title ? `<h4>${tableData.title}</h4>` : ''}
+                        <table class="modal-table">
+                            <thead><tr>${headers}</tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+        };
+        
+        const createList = (listData) => {
+            if (!listData) return '';
+            let items = listData.items.map(item => `<li>${item}</li>`).join('');
+            return `<div style="padding: 8px 0;">
+                        ${listData.title ? `<p style="font-weight:600; margin-bottom: 8px;">${listData.title}</p>` : ''}
+                        <ul style="margin-left: 20px; margin-bottom: 16px; font-size: 13px; line-height: 1.5;">${items}</ul>
+                    </div>`;
+        };
+        // --- Fin Funciones Auxiliares ---
+
+        let html = '';
+
+        // Función genérica para renderizar una sección (high, mod, low)
+        const renderSection = (sectionData, riskClass) => {
+            if (!sectionData) return '';
+
+            let sectionHtml = `<div class="modal-list-item ${riskClass}">
+                                <strong>${sectionData.title}</strong>
+                                <p>${sectionData.description}</p>`;
+            
+            // Lógica para renderizar contenido basado en 'type'
+            switch (sectionData.type) {
+                case 'table':
+                    sectionHtml += createTable(sectionData.table_data);
+                    break;
+                case 'list':
+                    sectionHtml += createList(sectionData.list_data);
+                    break;
+                case 'table-and-list':
+                    sectionHtml += createTable(sectionData.table_data);
+                    sectionHtml += createList(sectionData.list_data);
+                    break;
+                case 'multi-table':
+                    sectionData.content.forEach(tableSet => {
+                         sectionHtml += createTable(tableSet.table);
+                    });
+                    break;
+                // --- NUEVA LÓGICA ---
+                case 'multi-table-and-list':
+                    if (sectionData.tables_data && Array.isArray(sectionData.tables_data)) {
+                        sectionData.tables_data.forEach(table => {
+                            sectionHtml += createTable(table);
+                        });
+                    }
+                    sectionHtml += createList(sectionData.list_data);
+                    break;
+                // --- FIN NUEVA LÓGICA ---
+            }
+
+            if (sectionData.note) {
+                sectionHtml += `<p style="font-size: 11px; color: #555; margin-top: 8px;"><em>Nota: ${sectionData.note}</em></p>`;
+            }
+            sectionHtml += `</div>`;
+            return sectionHtml;
+        };
+
+        // Renderizar cada sección
+        html += renderSection(c.high, 'high');
+        html += renderSection(c.moderate, 'moderate');
+        html += renderSection(c.low, 'low');
+        
+        return html;
+    }
     // Mensaje de error si ningún 'if' coincide
     return '<p>No se encontró un tipo de contenido válido.</p>';
 }

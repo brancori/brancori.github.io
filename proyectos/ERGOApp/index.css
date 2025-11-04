@@ -19,19 +19,19 @@
     flex-wrap: wrap; /* Permite que los elementos se envuelvan a la siguiente línea */
     justify-content: space-between;
     align-items: center;
-    gap: 1.5rem; /* Espacio uniforme entre elementos */
+    gap: 1rem; /* Espacio uniforme entre elementos */
 }
 
 .header-main h1 {
-    font-size: 1.875rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 600;
     color: var(--gray-900);
     margin-bottom: 0.5rem;
 }
 
 .subtitle {
     color: var(--gray-600);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
 }
 
 /* User Info */
@@ -67,11 +67,11 @@
 }
 /* Dashboard Sections */
 .dashboard-section {
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
 }
 
 .dashboard-section h2 {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--gray-900);
     margin-bottom: 1.5rem;
@@ -82,7 +82,7 @@
     background: white;
     border: none; /* Quitamos el borde general */
     border-radius: var(--border-radius-lg); 
-    padding: 1.5rem; /* Aumentamos el padding */
+    padding: 1rem; /* Aumentamos el padding */
     box-shadow: var(--shadow-md);
 }
 
@@ -93,10 +93,10 @@
 }
 
 .table-title {
-    font-size: 1.125rem;
+    font-size: .95rem;
     font-weight: 600;
     color: var(--gray-800);
-    padding: 0;
+    padding: 0.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--gray-200);
     text-align: left;
@@ -144,13 +144,19 @@
 .table-row:last-child {
     border-bottom: none;
 }
-
+body {
+    line-height: 1.4;
+}
 .table-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--gray-100); /* Línea divisoria suave */
     transition: background-color 0.2s ease;
+    min-height: 36px;
+}
+.kpi-grid {
+    gap: 1rem;
 }
 .table-row.clickable:hover,
 .table-row:hover {
@@ -220,8 +226,8 @@
 }
 
 .cell {
-    padding: 0.8rem 0.5rem;
-    font-size: 0.875rem;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     border: none;
@@ -326,7 +332,7 @@
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--border-radius-lg);
-    padding: 2rem;
+    padding: 1.25rem;
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
@@ -336,7 +342,7 @@
 .action-card:hover:not(.disabled) {
     border-color: var(--primary-300);
     box-shadow: var(--shadow-lg);
-    transform: translateY(-6px);
+    transform: translateY(-3px);
     background: radial-gradient(circle at top left, var(--primary-50), white 50%); /* Destello de color menta */
 }
 .action-card:hover:not(.disabled) .action-icon {
@@ -349,14 +355,14 @@
 }
 
 .action-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
     opacity: 0.8;
     transition: var(--transition);
 }
 
 .action-card h3 {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--gray-900);
     margin-bottom: 0.5rem;
@@ -364,7 +370,7 @@
 
 .action-card p {
     color: var(--gray-600);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     margin-bottom: 0;
 }
 
@@ -380,22 +386,11 @@
     font-weight: 500;
 }
 
-/* Map Container */
 .map-container {
     background: white;
     border: 1px solid var(--gray-200);
     border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.map-container {
-    background: white;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -406,8 +401,8 @@
 }
 
 .map-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
     opacity: 0.6;
 }
 
@@ -591,20 +586,21 @@
 
 /* ===== DASHBOARD KPIS ===== */
 .kapis_conteniner {
-    width: 100%;
+    width: 50%;
     border-radius: 0;
     margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
     align-items: stretch;
     padding: 1.5rem 2rem;
-    background: var(--gray-50);
+    background: white;
+        border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
     border-bottom: 1px solid var(--gray-200);
 }
 
 .kpi_item, .nav_module {
-    height: 100%;
     border: none;
     border-radius: var(--border-radius-md);
     display: flex;
@@ -612,25 +608,33 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 1.5rem 1rem;
+    padding: .5rem;
     background: white;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
 }
+.kapis_main_conteiner{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
 .kpi_item:hover, .nav_module:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 
 .kpi_item h2 {
-    font-size: 2.5rem;
-    margin: 0.5rem 0 0 0;
+    font-size: 1.125rem;
+    margin: 0.25rem 0 0 0;
     color: var(--primary-600); 
     font-weight: 700;
 }
-
+.header {
+    padding: 0.75rem 1.5rem;
+}
 .kpi_item h3 {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     margin: 0;
     color: var(--gray-500);
     font-weight: 500;
@@ -673,9 +677,10 @@
     color: var(--gray-500);
 }
 .nav_module {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    display: flex;
+    flex-direction: row;
     gap: 1.5rem;
+    width: 100%;
     align-items: stretch;
     background: var(--gray-50); /* Mismo fondo que el contenedor de KPIs */
     border-bottom: 1px solid var(--gray-200);
@@ -801,7 +806,7 @@
 /* ===== PARALLAX ERGONÓMICO PARA MAIN-CONTENT ===== */
 
 .main-content {
-    padding: 2rem;
+    padding: 1rem 1.5rem;
     position: relative;
     overflow: hidden;
     /* Crear un contexto de apilamiento para las capas parallax */
@@ -1198,4 +1203,93 @@ puedes reemplazar el ::after por esto:
 
 #due-dates-table-container .table-row.overdue:hover {
     background: var(--red-50) !important;
+}
+.kapis_main_conteiner{
+    display: flex;
+}
+
+.dashboard-columns-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1rem 1.5rem;
+    margin: 0;
+}
+
+.dashboard-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+}
+
+.column-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.dashboard-column .kapis_main_conteiner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    height: 100%;
+}
+
+.dashboard-column .kapis_conteniner {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1rem;
+}
+
+.dashboard-column .kapis_conteniner .kpi_item {
+    /* Ajuste para 4 columnas (1rem gap * 3 gaps) / 4 items = 0.75rem */
+    flex: 1 1 calc(25% - 0.75rem); 
+    width: auto;
+    padding: 0.75rem 0.5rem; /* Menos padding vertical */
+}
+
+.dashboard-column .kpi_item h2 {
+    font-size: 1.25rem; /* Texto más pequeño */
+    margin: 0.25rem 0 0 0;
+}
+
+.dashboard-column .kpi_item h3 {
+    font-size: 0.75rem; /* Texto más pequeño */
+}
+
+.dashboard-column #graf {
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* Estilos para los placeholders */
+.placeholder-column .kpi_item {
+     background: var(--gray-100);
+     box-shadow: none;
+     opacity: 0.7;
+}
+
+.placeholder-column .kpi_item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .dashboard-columns-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+     .dashboard-column .kapis_conteniner .kpi_item {
+         flex-basis: 100%;
+     }
 }

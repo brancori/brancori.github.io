@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#5eead4">
+<meta name="description" content="Sistema de Evaluación Ergonómica - Dashboard">
     <title>Sistema de Evaluación Ergonómica</title>
     <link rel="stylesheet" href="./componentes/globals.css">
     <link rel="stylesheet" href="index.css">
@@ -90,36 +92,85 @@
         </div>
         
         <!-- Dashboard KPIs Bar -->
-        <div class="kapis_conteniner">
-            <div class="card  kpi_item glassmorphism">
-                <h3>Áreas <br> Totales</h3>
-                <h2 id="kpi-areas-total">0</h2>
-            </div>
-            <div class="card  kpi_item glassmorphism">
-                <h3>Centros <br> Totales</h3>
-                <h2 id="kpi-centros-total">0</h2>
-            </div>
-            <div class="card  kpi_item glassmorphism">
-                <h3>Evaluaciones <br> Totales</h3>
-                <h2 id="kpi-evaluaciones-total">0</h2>
-            </div>
-            <div class="card  kpi_item glassmorphism">
-                <h3>Score <br> Global</h3>
-                <h2 id="kpi-score-global">0%</h2>
+<div class="dashboard-columns-container" style="max-width: 100%; margin: 0 auto;">
+
+    <div class="dashboard-column">
+        <h3 class="column-title">Evaluación Inicial</h3>
+        
+        <div class="kapis_main_conteiner">
+            <div class="kapis_conteniner">
+                                <div class="card  kpi_item glassmorphism">
+                    <h3>Score <br> Global</h3>
+                    <h2 id="kpi-score-global">0%</h2>
+                </div>
+                <div class="card  kpi_item glassmorphism">
+                    <h3>Áreas <br> Totales</h3>
+                    <h2 id="kpi-areas-total">0</h2>
+                </div>
+                <div class="card  kpi_item glassmorphism">
+                    <h3>Centros <br> Totales</h3>
+                    <h2 id="kpi-centros-total">0</h2>
+                </div>
+                <div class="card  kpi_item glassmorphism">
+                    <h3>Evaluaciones <br> Totales</h3>
+                    <h2 id="kpi-evaluaciones-total">0</h2>
+                </div>
+
             </div>
             <div class="card kpi_item glassmorphism" id="graf">
                 <h3>Riesgo <br>por grupo</h3>
                 <div class="kpi_item-graf" id="risk-chart">
-                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="nav_module">
-            <button type="button" class="btn" onclick="window.location.href='centros_concentrado.html'">Centros de trabajo</button>
-            <button type="button" class="btn" onclick="ERGODashboard.openMapFullscreen()">Mapas</button>
-            <button type="button" class="btn" onclick="ERGODashboard.navigateTo('riesgos')">Riesgos</button>
-            <button type="button" class="btn" onclick="ERGODashboard.navigateTo('ruido')">Ruido</button>
+    <div class="dashboard-column">
+        <h3 class="column-title">Evaluación Específica</h3>
+        
+        <div class="kapis_main_conteiner placeholder-column">
+            <div class="kapis_conteniner">
+                <div class="card kpi_item glassmorphism" style="opacity: 0.6;">
+                    <h3 style="font-size: 0.7rem;">Próximamente</h3>
+                    <h2 style="font-size: 1rem;">--</h2>
+                </div>
+                <div class="card kpi_item glassmorphism" style="opacity: 0.6;">
+                    <h3 style="font-size: 0.7rem;">Próximamente</h3>
+                    <h2 style="font-size: 1rem;">--</h2>
+                <div class="card kpi_item glassmorphism" style="opacity: 0.6;">
+                    <h3 style="font-size: 0.7rem;">Próximamente</h3>
+                    <h2 style="font-size: 1rem;">--</h2>
+                </div>
+                <div class="card kpi_item glassmorphism" style="opacity: 0.6;">
+                    <h3 style="font-size: 0.7rem;">Próximamente</h3>
+                    <h2 style="font-size: 1rem;">--</h2>
+                </div>
+            </div>
+            <div class="card kpi_item glassmorphism" id="graf-placeholder">
+                <h3>Gráfica Específica</h3>
+                <div class="kpi_item-graf">
+                   <p class="no-data-chart" style="font-size: 0.8rem; padding-top: 1rem;">Próximamente</p>
+                </div>
+            </div>
         </div>
+    </div>
+
+
+    </div>
+    <div id="due-dates-table-container" class="kpi-table-container panel glassmorphism">
+            <h3 class="table-title">Alertas de Vencimiento (CAPAs)</h3>
+            <div class="data-table">
+                <div class="table-header" id="due-dates-table-header">
+                    <div class="header-cell">Requerimiento</div>
+                    <div class="header-cell">Plan de Acción</div>
+                    <div class="header-cell">Vencimiento</div>
+                </div>
+                <div class="table-body" id="due-dates-table-body">
+                    <div class="table-row placeholder"><div class="cell" colspan="3">No hay vencimientos próximos.</div></div>
+                </div>
+            </div>
+        </div>
+</div>
 
         <!-- Main Content -->
         <div class="main-content ergonomic-pattern">
@@ -162,22 +213,10 @@
             </div>
             </div>
         </div>
-        <div id="due-dates-table-container" class="kpi-table-container panel glassmorphism">
-                        <h3 class="table-title">Alertas de Vencimiento (CAPAs)</h3>
-                        <div class="data-table">
-                            <div class="table-header" id="due-dates-table-header">
-                                <div class="header-cell">Requerimiento</div>
-                                <div class="header-cell">Plan de Acción</div>
-                                <div class="header-cell">Vencimiento</div>
-                            </div>
-                            <div class="table-body" id="due-dates-table-body">
-                                <div class="table-row placeholder"><div class="cell" colspan="3">No hay vencimientos próximos.</div></div>
-                            </div>
-                        </div>
-                    </div>
                 </div> </section>
     </div>
 </div>
+
 
             </section>
 

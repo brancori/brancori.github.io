@@ -118,7 +118,6 @@
 
             renderFotosGrid();
             renderNotas();
-            renderActividades();
             loadAndRenderAssignedPuestos(workCenterId);
 
         } catch (error) {

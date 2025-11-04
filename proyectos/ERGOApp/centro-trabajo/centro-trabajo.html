@@ -266,12 +266,19 @@
                             <input type="text" id="actividad-nombre" class="input-field" required>
                         </div>
                         <div class="form-group">
-                            <label for="puesto_involucrado">Puesto Involucrado</label>
-                            <input type="text" id="puesto_involucrado" class="input-field">
-                        </div>
-                        <div class="form-group">
                             <label for="grupo_riesgo">Grupo de Riesgo</label>
-                            <input type="text" id="grupo_riesgo" class="input-field">
+                            <select id="grupo_riesgo" class="input-field">
+                                <option value="">Selecciona un grupo...</option>
+                                <option value="R01 - Carga Manual">R01 - Carga Manual</option>
+                                <option value="R02 - Posturas Forzadas">R02 - Posturas Forzadas</option>
+                                <option value="R03 - Movimientos Repetitivos">R03 - Movimientos Repetitivos</option>
+                                <option value="R04 - Empuje o Tracción">R04 - Empuje o Tracción</option>
+                                <option value="R05 - Circulación y Rampas">R05 - Circulación y Rampas</option>
+                                <option value="R06 - Alcance y Herramientas">R06 - Alcance y Herramientas</option>
+                                <option value="R07 - Entorno Visual y Pantallas">R07 - Entorno Visual y Pantallas</option>
+                                <option value="R08 - Postura Estática">R08 - Postura Estática</option>
+                                <option value="N/A">N/A</option>
+                            </select>
                         </div>
                         <div class="form-group" style="width: 400px;">
                             <label for="actividad-metodo">Evaluación Específica</label>
@@ -287,40 +294,45 @@
                                 <button id="btn-evaluar-metodo" type="button" class="btn btn-secondary" disabled>Evaluar</button>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="tipo_control">Tipo de Control</label>
-                            <input type="text" id="tipo_control" class="input-field" placeholder="Ej. Ingeniería, Administrativo...">
-                        </div>
 
                         <div class="form-group">
-                            <label for="responsable">Responsable</label>
-                            <input type="text" id="responsable" class="input-field">
+                            <label for="tipo-control">Tipo de Control</label>
+                            <select id="tipo_control" class="input-field">
+                                <option value="">Selecciona un control...</option>
+                                <option value="Eliminación">Eliminación</option>
+                                <option value="Sustitución">Sustitución</option>
+                                <option value="Controles de Ingeniería">Controles de Ingeniería</option>
+                                <option value="Controles Administrativos">Controles Administrativos</option>
+                                <option value="EPP">EPP (Equipo de Protección Personal)</option>
+                            </select>
                         </div>
                     </div>
-<div>
-    <div class="form-group">
-        <label for="descripcion_riesgo">Descripción del Riesgo</label>
-        <textarea id="descripcion_riesgo" class="input-field" rows="3"></textarea>
-    </div>
 
-    <div class="form-group">
-        <label for="cumplimiento-wrapper">Cumplimiento (Normatividad)</label>
-        
-        <div id="cumplimiento-wrapper" class="compliance-wrapper">
-            <button type="button" id="cumplimiento-selected-display" class="compliance-selected-display">
-                <span id="cumplimiento-selected-text">Selecciona una normatividad...</span>
-                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                </svg>
-            </button>
-            <div id="cumplimiento-radio-list" class="compliance-radio-list">
-                </div>
-        </div>
-    </div>
-    
-    <div id="cumplimiento-details" class="compliance-details-box" style="display: none;">
-        </div>
-                                <div class="form-group" style="margin-top: 2rem;">
+                    <div>
+                        <div class="form-group">
+                            <label for="descripcion_riesgo">Descripción del Riesgo</label>
+                            <textarea id="descripcion_riesgo" class="input-field" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cumplimiento-wrapper">Cumplimiento (Normatividad)</label>
+
+                            <div id="cumplimiento-wrapper" class="compliance-wrapper">
+                                <button type="button" id="cumplimiento-selected-display" class="compliance-selected-display">
+                                    <span id="cumplimiento-selected-text">Selecciona una normatividad...</span>
+                                    <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                                <div id="cumplimiento-radio-list" class="compliance-radio-list">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="cumplimiento-details" class="compliance-details-box" style="display: none;">
+                        </div>
+
+                        <div class="form-group" style="margin-top: 2rem;">
                             <label id="tipo-analisis-label">Evaluación JNJ</label>
                             <div class="input-with-button">
                                 <div class="btn-group" id="tipo-analisis-group" role="group" aria-labelledby="tipo-analisis-label">
@@ -330,30 +342,24 @@
                                 <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
                             </div>
                         </div>
-                                                <div class="form-group">
-                            <label for="art">ART (Análisis de Riesgo)</label>
-                            <input type="text" id="art" class="input-field">
-                        </div>
-<div class="form-group">
-                            <label for="nivel_riesgo">Nivel de Riesgo Identificado</label>
-                            <input type="text" id="nivel_riesgo" class="input-field" placeholder="Este campo se llenará con la evaluación">
-                        </div>
+
                         <div class="form-group">
                             <label for="nuevo_nivel_riesgo">Nuevo Nivel de Riesgo (Esperado)</label>
                             <input type="text" id="nuevo_nivel_riesgo" class="input-field">
                         </div>
-</div>
-                        
-
-                        <div class="form-group">
-                            <label for="accion">Acción</label>
-                            <input type="text" id="accion" class="input-field">
-                        </div>
                     </div>
-                </div> <div class="form-group full-width">
+
+                    <div class="form-group">
+                        <label for="accion">Acción</label>
+                        <input type="text" id="accion" class="input-field">
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
                     <label for="descripcion_detallada">Descripción Detallada del Hallazgo</label>
                     <textarea id="descripcion_detallada" class="input-field" rows="3"></textarea>
                 </div>
+
                 <div id="seccion-fotos-actividad" class="form-group full-width" style="display: none;">
                     <label>Fotos de la Actividad</label>
                     <div class="fotos-grid" id="fotos-grid-actividad"></div>
@@ -361,16 +367,22 @@
                         + Cargar Fotos
                     </button>
                 </div>
+
                 <input type="file" id="foto-input-actividad" accept="image/*" style="display: none;" multiple>
+
                 <div class="form-group full-width">
                     <label for="actividad-comentarios">Comentarios</label>
                     <div id="actividad-comentarios" class="input-field" rows="4"></div>
                 </div>
+
                 <div class="form-group full-width">
                     <label for="actividad-recomendaciones">Medida de Control Propuesta</label>
                     <div id="actividad-recomendaciones" class="input-field" rows="4"></div>
                 </div>
-            </div> <div class="modal-footer">
+
+            </div>
+
+            <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="cerrarModalActividad()">Cancelar</button>
                 <button type="submit" id="modal-actividad-btn-guardar" class="btn btn-primary">Crear Hallazgo</button>
             </div>
@@ -379,7 +391,7 @@
     </div>
 </div>
 
-    <!-- Modal para vista completa de fotos -->
+<!-- Modal para vista completa de fotos -->
 <div id="foto-modal" class="foto-modal">
     <div class="foto-modal-content">
         <button class="foto-modal-close" onclick="closeFotoModal()">×</button>

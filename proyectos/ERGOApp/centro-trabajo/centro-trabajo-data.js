@@ -176,20 +176,12 @@ async function loadActividades() {
                 item.className = `actividad-item`;
                 item.setAttribute('data-id', actividad.id);
 
-                // Crear divs separados para el contenido HTML (evita problemas de escape)
-                const comentariosDiv = document.createElement('div');
-                comentariosDiv.className = 'content';
-                comentariosDiv.innerHTML = (typeof DOMPurify !== 'undefined')
-                    ? DOMPurify.sanitize(actividad.comentarios || '<i>Sin comentarios.</i>')
-                    : (actividad.comentarios || '<i>Sin comentarios.</i>');
-
-                const recomendacionesDiv = document.createElement('div');
-                recomendacionesDiv.className = 'content';
-                recomendacionesDiv.innerHTML = (typeof DOMPurify !== 'undefined')
-                    ? DOMPurify.sanitize(actividad.recomendaciones || '<i>Sin recomendaciones.</i>')
-                    : (actividad.recomendaciones || '<i>Sin recomendaciones.</i>');
+                // --- INICIO DE CORRECCIÓN ---
+                // NO creamos comentariosDiv ni recomendacionesDiv aquí.
+                // Esas se crean dinámicamente al hacer clic (en toggleActividadDetails).
 
                 // Generar el HTML de la tarjeta
+                // Añadimos el div .actividad-details vacío que espera la función de clic.
                 item.innerHTML = `
                     <div class="actividad-header" onclick="toggleActividadDetailsSimple(this)">
                         <div class="chevron">
@@ -199,39 +191,23 @@ async function loadActividades() {
                         </div>
                         <div class="actividad-info">
                             <div class="nombre">${actividad.nombre}</div>
-                            <div class="meta">Método: ${actividad.metodo || 'No definido'} • Creada: ${new Date(actividad.created_at).toLocaleDateString()}</div>
+                            <div class="meta">Método: ${actividad.metodo || 'No definido'} • Creada: ${new Date(actividad.created_at).toLocaleString()}</div>
                         </div>
-                        <div class="actividad-status">${actividad.score_final ? actividad.score_final.toFixed(1) : 'Pendiente'}</div>
-
-                        <button class="btn btn-secondary btn-sm"
-                                onclick="event.stopPropagation(); window.location.href='reporte-dictamen.html?workCenter=${workCenterId}&area=${areaId}&centerName=${encodeURIComponent(centerName || '')}&areaName=${encodeURIComponent(areaName || '')}&responsible=${encodeURIComponent(responsibleName || '')}&id=${actividad.id}'">
-                            Ver Reporte Det.
-                        </button>
 
                         <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); abrirModalActividad('${actividad.id}')">Editar</button>
+                        
+                        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); eliminarActividad('${actividad.id}')">Eliminar</button>
                     </div>
-                    <div class="actividad-details">
-                        <div class="details-section">
-                            <h4>Fotos</h4>
-                            <div class="fotos-info">No hay fotos para esta actividad.</div>
-                        </div>
-                        <div class="details-section">
-                            <h4>Comentarios</h4>
-                            <div id="comentarios-${actividad.id}"></div>
-                        </div>
-                        <div class="details-section">
-                            <h4>Recomendaciones</h4>
-                            <div id="recomendaciones-${actividad.id}"></div>
-                        </div>
-                    </div>
-                `;
+                    <div class="actividad-details"></div>
+                    `;
 
                 // Añadir la tarjeta al contenedor principal
                 evaluacionesContainer.appendChild(item);
 
-                // Insertar el contenido HTML (comentarios/recomendaciones) en los divs correspondientes
-                document.getElementById(`comentarios-${actividad.id}`).appendChild(comentariosDiv);
-                document.getElementById(`recomendaciones-${actividad.id}`).appendChild(recomendacionesDiv);
+                // ELIMINAMOS las líneas que causaban el error:
+                // document.getElementById(`comentarios-${actividad.id}`).appendChild(comentariosDiv);
+                // document.getElementById(`recomendaciones-${actividad.id}`).appendChild(recomendacionesDiv);
+                // --- FIN DE CORRECCIÓN ---
             });
 
         } else {
@@ -480,23 +456,16 @@ function renderActividades() {
         container.innerHTML = `<div class="empty-evaluations"><p>No hay actividades creadas.</p></div>`;
         return;
     }
-    // Construir el HTML para cada actividad. Cada ítem tiene un contenedor de detalles vacío que se llenará al expandir.
+    // Construir el HTML para cada actividad...
     container.innerHTML = evaluacionesEspecificas.map(actividad => {
         const fechaCreacion = ERGOUtils.timeAgo(actividad.created_at);
         return `
             <div class="actividad-item" id="actividad-${actividad.id}">
                 <div class="actividad-header" onclick="toggleActividadDetails(this.parentElement, '${actividad.id}')">
-                    <div class="chevron">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <div class="actividad-info">
-                        <div class="nombre">${actividad.nombre}</div>
-                        <div class="meta">Método: ${actividad.metodo || 'No definido'} • Creada: ${fechaCreacion}</div>
-                    </div>
+                    // ... (contenido)...
                     <div class="actividad-status">${actividad.score_final ? `${actividad.score_final} Pts` : 'Pendiente'}</div>
                     ${!isCenterClosed ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); abrirModalActividad('${actividad.id}')">Editar</button>` : ''}
                 </div>
-                <!-- Contenedor de detalles vacío; se llenará dinámicamente al expandir -->
                 <div class="actividad-details"></div>
             </div>
         `;

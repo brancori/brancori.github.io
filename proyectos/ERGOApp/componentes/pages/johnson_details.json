@@ -129,19 +129,1026 @@
         "title": "Tabla 1: Calificación por Conteo Total por Jornada",
         "headers": ["Severidad de Postura", "Conteo: 100-3000", "Conteo: 3001-5000", "Conteo: >5000"],
         "rows": [
-          {"label": ">65°", "values": ["Alto", "Alto", "Alto"]},
-          {"label": "30°-65°", "values": ["Bajo", "Mod", "Alto"]},
-          {"label": "15°-30°", "values": ["OK", "Bajo", "Mod"]}
+          {"label": ">70°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "45°-70°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15°-45°", "values": ["OK", "Bajo", "Mod"]}
         ]
       },
       "table2": {
         "title": "Tabla 2: Calificación por Duración de Postura Estática",
         "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
          "rows": [
-          {"label": ">65°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": ">70°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "45°-70°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15°-45°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 8,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Extensión de Muñeca",
+    "description": "Utilizando las tablas siguientes, determine si la flexión de muñeca es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare ambas calificaciones y tome la más alta.",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 100-3000", "Conteo: 3001-5000", "Conteo: >5000"],
+        "rows": [
+          {"label": ">65", "values": ["Alto", "Alto", "Alto"]},
           {"label": "30°-65°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15°-45°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": ">65", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30°-65°°", "values": ["Bajo", "Mod", "Alto"]},
           {"label": "15°-30°", "values": ["OK", "Bajo", "Mod"]}
         ]
+      }
+    }
+  },
+{
+  "id": 9,
+  "category": "Factores de Riesgo Ergonómico",
+  "title": "Desviación Radial de Muñeca",
+  "description": "Utilizando las tablas siguientes, determine si la desviación radial de muñeca es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare ambas calificaciones y tome la más alta.",
+  "content_type": "dual-table",
+  "content": {
+    "table1": {
+      "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+      "headers": ["Severidad de Postura", "Conteo: 100-3000", "Conteo: 3001-5000", "Conteo: >5000"],
+      "rows": [
+        {"label": "> 20°", "values": ["Alto", "Alto", "Alto"]},
+        {"label": "10° - 20°", "values": ["Bajo", "Mod", "Alto"]},
+        {"label": "5° - 10°", "values": ["OK", "Bajo", "Mod"]}
+      ]
+    },
+    "table2": {
+      "title": "Tabla 2: Calificación por Duración de Postura Estática",
+      "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+      "rows": [
+        {"label": "> 20°", "values": ["Alto", "Alto", "Alto"]},
+        {"label": "10° - 20°", "values": ["Bajo", "Mod", "Alto"]},
+        {"label": "5° - 10°", "values": ["OK", "Bajo", "Mod"]}
+      ]
+    }
+  }
+},
+{
+  "id": 10,
+  "category": "Factores de Riesgo Ergonómico",
+  "title": "Desviación Cubital de Muñeca",
+  "description": "Utilizando las tablas siguientes, determine si la desviación cubital de muñeca es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare ambas calificaciones y tome la más alta.",
+  "content_type": "dual-table",
+  "content": {
+    "table1": {
+      "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+      "headers": ["Severidad de Postura", "Conteo: 100-3000", "Conteo: 3001-5000", "Conteo: >5000"],
+      "rows": [
+        {"label": "> 30°", "values": ["Alto", "Alto", "Alto"]},
+        {"label": "20° - 30°", "values": ["Bajo", "Mod", "Alto"]},
+        {"label": "10° - 20°", "values": ["OK", "Bajo", "Mod"]}
+      ]
+    },
+    "table2": {
+      "title": "Tabla 2: Calificación por Duración de Postura Estática",
+      "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+      "rows": [
+        {"label": "> 30°", "values": ["Alto", "Alto", "Alto"]},
+        {"label": "20° - 30°", "values": ["Bajo", "Mod", "Alto"]},
+        {"label": "10° - 20°", "values": ["OK", "Bajo", "Mod"]}
+      ]
+    }
+  }
+},{
+  "id": 11,
+  "category": "Factores de Riesgo Ergonómico",
+  "title": "Repetición",
+  "description": "Utilizando la tabla siguiente, determine si la repetición es de riesgo alto, moderado o bajo. Se proporcionan rangos aceptables de repetición diaria para los dedos, mano/muñeca, antebrazo/codo, hombro, cuello y espalda. La repetición se define como una aplicación de fuerza (ej., fuerza de agarre) o una articulación que se mueve fuera de su postura neutral (ej., flexión de muñeca).",
+  "content_type": "table",
+  "content": {
+    "headers": ["Parte del Cuerpo", "Alto", "Mod", "Bajo"],
+    "rows": [
+      { "label": "Dedos", "values": [">20000", "16501 - 20000", "10000 - 16500"] },
+      { "label": "Mano / Muñeca", "values": [">6500", "5001 - 6500", "3000 - 5000"] },
+      { "label": "Antebrazo / Codo", "values": [">3750", "3001 - 3750", "2000 - 3000"] },
+      { "label": "Hombro", "values": [">900", "701 - 900", "400 - 700"] },
+      { "label": "Cuello", "values": [">6500", "5001 - 6500", "3000 - 5000"] },
+      { "label": "Espalda", "values": [">700", "501 - 700", "300 - 500"] }
+    ]
+  }
+},{
+    "id": 12,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Vibración",
+    "description": "Si los empleados operan una herramienta vibratoria o las manos contactan equipo vibratorio por 2 o más horas por día, use la información a continuación para determinar si el factor de riesgo de Vibración es alto, moderado o bajo.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "text": ">4 horas de exposición por día laboral"
+      },
+      "moderate": {
+        "title": "Moderado",
+        "text": "3-4 horas de exposición por día laboral"
+      },
+      "low": {
+        "title": "Bajo",
+        "text": "2-3 horas de exposición por día laboral"
+      }
+    }
+  },
+{
+    "id": 13,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Estrés Mecánico en la Mano",
+    "description": "Utilizando la tabla siguiente, determine si el estrés mecánico en la región sombreada de la mano (ver ilustración) es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Fuerza (Tabla 2). Compare las dos calificaciones y tome la más alta.\n\nDefiniciones de Calificación de Fuerza:\nAlto: Borde afilado (radio < 0.48 cm (original: 3/16\")) o borde alto (ej., golpear con fuerza un destornillador con la base de la mano).\nModerado: Borde moderadamente redondeado (radio de 0.48 cm (original: 3/16\") a 2.54 cm (original: 1\")) o fuerza moderada (ej., empujar la llave para aflojar un perno apretado).\nBajo: Borde redondeado (radio > 2.54 cm (original: 1\")) o fuerza baja (ej., empujar una palanca con mango tipo 'bola').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Calificación de Fuerza", "Conteo: < 50", "Conteo: 50 - 500", "Conteo: > 500"],
+        "rows": [
+          {"label": "Alto", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "Moderado", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "Bajo", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Fuerza",
+        "headers": ["Calificación de Fuerza", "< 15 min.", "15 min. - 2 hrs.", "> 2 hrs."],
+         "rows": [
+          {"label": "Alto", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "Moderado", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "Bajo", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+{
+    "id": 14,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Estrés Mecánico en el Brazo",
+    "description": "Utilizando la tabla siguiente, determine si el estrés mecánico en el brazo (ver ilustración) es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Fuerza (Tabla 2). Compare las dos calificaciones y tome la más alta.\n\nDefiniciones de Calificación de Fuerza:\nAlto: Borde afilado (radio < 0.48 cm (original: 3/16\")), y / o fuerza alta (ej., soportar el peso del cuerpo con el antebrazo).\nModerado: Borde moderadamente redondeado (radio de 0.48 cm (original: 3/16\") a 2.54 cm (original: 1\")), y / o fuerza moderada (ej., equilibrar el torso con el antebrazo mientras se inclina ligeramente hacia adelante).\nBajo: Borde redondeado (radio > 2.54 cm (original: 1\")), y / o fuerza baja (ej., brazo descansando sobre el borde de la mesa).",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Calificación de Fuerza", "Conteo: < 50", "Conteo: 50 - 500", "Conteo: > 500"],
+        "rows": [
+          {"label": "Alto", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "Moderado", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "Bajo", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Fuerza",
+        "headers": ["Calificación de Fuerza", "< 15 min.", "15 min. - 2 hrs.", "> 2 hrs."],
+         "rows": [
+          {"label": "Alto", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "Moderado", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "Bajo", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 15,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Palma de la Mano Hacia Arriba (Supinación de Antebrazo)",
+    "description": "Utilizando la tabla siguiente, determine si la supinación del antebrazo es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 15, Supinación de Antebrazo, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 50 - 2000", "Conteo: 2001 - 3000", "Conteo: > 3000"],
+        "rows": [
+          {"label": "> 80°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "60° - 80°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "45° - 60°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 80°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "60° - 80°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "45° - 60°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 16,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Palma de la Mano Hacia Abajo (Pronación de Antebrazo)",
+    "description": "Utilizando la tabla siguiente, determine si la pronación del antebrazo es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 16, Pronación de Antebrazo, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 50 - 2000", "Conteo: 2001 - 3000", "Conteo: > 3000"],
+        "rows": [
+          {"label": "> 100°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "80° - 100°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "60° - 80°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 100°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "80° - 100°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "60° - 80°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },{
+    "id": 17,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Tirar Hacia Abajo con Uno o Ambos Brazos",
+    "description": "Utilizando la tabla siguiente, determine si tirar hacia abajo con un brazo (tabla superior) o ambos brazos (tabla inferior) es de riesgo alto, moderado o bajo, basándose en la Fuerza (en kg) y el Conteo Total por Jornada. Primero localice el Conteo Total por Jornada en la tabla, luego determine la categoría de riesgo basada en la Fuerza.",
+    "content_type": "multi-table",
+    "content": [
+      {
+        "title": "Tirar Hacia Abajo con Un Brazo",
+        "table": {
+          "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo"],
+          "rows": [
+            { "label": "1 - 10", "values": [">32.7", "25.4 - 32.7", "17.7 - 25.4"] },
+            { "label": "11 - 100", "values": [">16.3", "12.7 - 16.3", "8.6 - 12.7"] },
+            { "label": "101 - 500", "values": [">10.0", "7.7 - 10.0", "5.0 - 7.7"] },
+            { "label": "501 - 2000", "values": [">6.4", "5.4 - 6.4", "3.6 - 5.4"] },
+            { "label": "2001 - 5000", "values": [">5.0", "4.1 - 5.0", "2.7 - 4.1"] }
+          ]
+        }
+      },
+      {
+        "title": "Tirar Hacia Abajo con Ambos Brazos",
+        "table": {
+          "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo"],
+          "rows": [
+            { "label": "1 - 10", "values": [">59.0", "45.8 - 59.0", "31.8 - 45.4"] },
+            { "label": "11 - 100", "values": [">29.5", "23.1 - 29.5", "15.9 - 22.7"] },
+            { "label": "101 - 500", "values": [">18.1", "14.1 - 18.1", "9.1 - 13.6"] },
+            { "label": "501 - 2000", "values": [">11.3", "9.5 - 11.3", "6.8 - 9.1"] },
+            { "label": "2001 - 5000", "values": [">9.1", "7.3 - 9.1", "4.5 - 6.8"] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Empuje o Tracción con Una Mano",
+    "description": "Utilizando la tabla siguiente, determine si la fuerza aplicada por un empuje o tracción con una mano es de riesgo alto, moderado o bajo, basándose en la Fuerza (en kg) y el Conteo Total por Jornada. Primero localice el Conteo Total por Jornada en la tabla, luego determine la categoría de riesgo basada en la fuerza.",
+    "content_type": "table",
+    "content": {
+      "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo"],
+      "rows": [
+        { "label": "1 - 10", "values": [">40.8", "29.9 - 40.8", "15.9 - 29.5"] },
+        { "label": "11 - 100", "values": [">20.4", "14.1 - 20.4", "6.8 - 13.6"] },
+        { "label": "101 - 500", "values": [">13.6", "9.5 - 13.6", "4.5 - 9.1"] },
+        { "label": "501 - 2000", "values": [">9.1", "5.9 - 9.1", "3.2 - 5.4"] },
+        { "label": "2001 - 5000", "values": [">6.8", "5.0 - 6.8", "2.3 - 4.5"] }
+      ]
+    }
+  },{
+    "id": 19,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Abducción o Flexión de Hombro",
+    "description": "Utilizando la tabla siguiente, determine si la abducción de hombro o la flexión de hombro es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 19, Abducción o Flexión de Hombro, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 50 - 450", "Conteo: 451 - 725", "Conteo: > 725"],
+        "rows": [
+          {"label": "> 90°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 90°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 90°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 90°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 20,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Alcance Cruzando el Cuerpo",
+    "description": "Utilizando la tabla siguiente, determine si el alcance cruzando el cuerpo es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 20, Alcance Cruzando el Cuerpo, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 50 - 400", "Conteo: 401 - 700", "Conteo: > 700"],
+        "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 21,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Alcance Detrás del Cuerpo",
+    "description": "Utilizando la tabla siguiente, determine si el alcance detrás del cuerpo es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 21, Alcance Detrás del Cuerpo, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 50 - 400", "Conteo: 401 - 700", "Conteo: > 700"],
+        "rows": [
+          {"label": "> 30°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "20° - 30°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "10° - 20°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 30°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "20° - 30°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "10° - 20°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },{
+    "id": 22,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Flexión de Cuello",
+    "description": "Utilizando la tabla siguiente, determine si la flexión de cuello es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 22, Flexión de Cuello, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 100 - 3000", "Conteo: 3001 - 5000", "Conteo: > 5000"],
+        "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 23,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Extensión de Cuello",
+    "description": "Utilizando la tabla siguiente, determine si la extensión de cuello es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 23, Extensión de Cuello, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 100 - 3000", "Conteo: 3001 - 5000", "Conteo: > 5000"],
+        "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "10° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "10° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 24,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Inclinación Lateral de Cuello",
+    "description": "Utilizando la tabla siguiente, determine si la inclinación lateral de cuello es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 24, Inclinación Lateral de Cuello, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 100 - 3000", "Conteo: 3001 - 5000", "Conteo: > 5000"],
+        "rows": [
+          {"label": "> 30°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "15° - 30°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "5° - 15°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 30°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "15° - 30°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "5° - 15°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 25,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Rotación de Cuello",
+    "description": "Utilizando la tabla siguiente, determine si la rotación de cuello es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 25, Rotación de Cuello, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 100 - 3000", "Conteo: 3001 - 5000", "Conteo: > 5000"],
+        "rows": [
+          {"label": "> 60°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "45° - 60°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 45°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 60°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "45° - 60°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 45°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },{
+    "id": 26,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Flexión Hacia Adelante",
+    "description": "Utilizando la tabla siguiente, determine si la flexión hacia adelante es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 26, Flexión Hacia Adelante, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 15 - 300", "Conteo: 301 - 600", "Conteo: > 600"],
+        "rows": [
+          {"label": "> 60°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "45° - 60°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "20° - 45°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 60°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "45° - 60°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "20° - 45°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 27,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Inclinación Lateral",
+    "description": "Utilizando la tabla siguiente, determine si la inclinación lateral es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 27, Inclinación Lateral, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 15 - 300", "Conteo: 301 - 600", "Conteo: > 600"],
+        "rows": [
+          {"label": "> 40°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 40°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "20° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 40°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 40°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "20° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 28,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Torsión",
+    "description": "Utilizando la tabla siguiente, determine si la torsión es de riesgo alto, moderado o bajo, basándose en la Calificación por Conteo Total por Jornada (Tabla 1) y la Calificación por Duración de Postura Estática (Tabla 2). Compare las dos calificaciones y tome la más alta. (Por ejemplo: si la Tabla 1 es 'Riesgo Bajo' y la Tabla 2 es 'Riesgo Alto', entonces el Ítem 28, Torsión, se califica como 'Riesgo Alto').",
+    "content_type": "dual-table",
+    "content": {
+      "table1": {
+        "title": "Tabla 1: Calificación por Conteo Total por Jornada",
+        "headers": ["Severidad de Postura", "Conteo: 15 - 300", "Conteo: 301 - 600", "Conteo: > 600"],
+        "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      },
+      "table2": {
+        "title": "Tabla 2: Calificación por Duración de Postura Estática",
+        "headers": ["Severidad de Postura", "NIVEL 1: <br> < 2h / < 5m c/15", "NIVEL 2: <br> 2-4h / 5-10m c/15", "NIVEL 3: <br> > 4h / > 10m c/15"],
+         "rows": [
+          {"label": "> 45°", "values": ["Alto", "Alto", "Alto"]},
+          {"label": "30° - 45°", "values": ["Bajo", "Mod", "Alto"]},
+          {"label": "15° - 30°", "values": ["OK", "Bajo", "Mod"]}
+        ]
+      }
+    }
+  },
+  {
+    "id": 29,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Estar de Pie en Superficie No Acolchada",
+    "description": "Determine si estar de pie en superficies no acolchadas es de riesgo moderado o bajo basándose en la información a continuación.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "text": "(No aplicable para Riesgo Alto)"
+      },
+      "moderate": {
+        "title": "Moderado",
+        "text": "8 o más horas por día. (Estar de pie sobre concreto u otra superficie de piso no acolchada por 8 o más horas en el transcurso de una jornada laboral)."
+      },
+      "low": {
+        "title": "Bajo",
+        "text": "Estar de pie más de 2 hrs. sin caminar 2 min. cada 15 min. (Estar de pie sobre concreto u otra superficie de piso no acolchada por más de 2 horas por jornada laboral sin caminar 2 min. cada 15 min.)"
+      }
+    }
+  },{
+    "id": 30,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Estrés por Impacto en Rodillas y Tobillos",
+    "description": "Determine si el estrés por impacto en rodillas y tobillos es de riesgo alto, moderado o bajo basándose en la información proporcionada a continuación.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "text": "Pisar o saltar hacia abajo más de 76.2 cm (original: 30 pulgadas) por encima del nivel del piso o suelo."
+      },
+      "moderate": {
+        "title": "Moderado",
+        "text": "Pisar o saltar hacia abajo más de 63.5 cm (original: 25 pulgadas) por encima del nivel del piso o suelo."
+      },
+      "low": {
+        "title": "Bajo",
+        "text": "Pisar o saltar hacia abajo más de 43.2 cm (original: 17 pulgadas) por encima del nivel del piso o suelo."
+      }
+    }
+  },
+  {
+    "id": 31,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Extensión de Tobillo",
+    "description": "Determine si la extensión del pie sobre un tobillo fijo para aplicar una fuerza es de riesgo bajo basándose en la información a continuación.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "text": "(No aplicable para Riesgo Alto)"
+      },
+      "moderate": {
+        "title": "Moderado",
+        "text": "(No aplicable para Riesgo Moderado)"
+      },
+      "low": {
+        "title": "Bajo",
+        "text": "Rotación del pie sobre un tobillo estacionario para aplicar una fuerza que excede 9.1 kg (original: 20 lbs)."
+      }
+    }
+  },
+  {
+    "id": 32,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Flexión Estática de Tobillo",
+    "description": "Determine si la flexión estática del pie (ej., mantener un pie levantado de un pedal) es de riesgo alto, moderado o bajo basándose en la información proporcionada a continuación.",
+    "content_type": "list",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "text": "Flexión estática de tobillo que excede 4 horas de exposición acumulada por jornada laboral; o exposición de la tarea que excede 10 minutos de cada 15 minutos."
+      },
+      "moderate": {
+        "title": "Moderado",
+        "text": "Flexión estática de tobillo de 2 - 4 horas de exposición acumulada por jornada laboral; o exposición de la tarea de 5 - 10 minutos de cada 15 minutos."
+      },
+      "low": {
+        "title": "Bajo",
+        "text": "Flexión estática de tobillo de 1 - 2 horas de exposición acumulada por jornada laboral, o exposición de la tarea de 2 - 5 minutos de cada 15 minutos."
+      }
+    }
+  },
+{
+    "id": 33,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Levantamiento",
+    "description": "Utilizando las tablas siguientes, determine si el levantamiento es de riesgo alto, moderado o bajo, basándose en la Zona de Levantamiento, el Peso Levantado (en kg) y el Conteo Total por Jornada.",
+    "content_type": "multi-table",
+    "content": [
+      {
+        "title": "Zona Primaria",
+        "table": {
+          "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo", "OK"],
+          "rows": [
+            { "label": "1 - 50", "values": [">23.1", "20.9 - 22.7", "16.3 - 20.4", "<16.3"] },
+            { "label": "51 - 250", "values": [">17.2", "14.5 - 17.2", "11.8 - 14.1", "<11.8"] },
+            { "label": "251 - 1000", "values": [">13.6", "11.8 - 13.6", "9.5 - 11.3", "<9.5"] },
+            { "label": "1001 - 3000", "values": [">8.2", "7.3 - 8.2", "5.9 - 6.8", "<5.9"] }
+          ]
+        }
+      },
+      {
+        "title": "Zona Primaria Modificada",
+        "table": {
+          "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo", "OK"],
+          "rows": [
+            { "label": "1 - 50", "values": [">13.6", "11.8 - 13.6", "9.5 - 11.3", "<9.5"] },
+            { "label": "51 - 250", "values": [">10.4", "9.1 - 10.4", "7.3 - 8.6", "<7.3"] },
+            { "label": "251 - 1000", "values": [">7.7", "6.8 - 7.7", "5.4 - 6.4", "<5.4"] },
+            { "label": "1001 - 3000", "values": [">5.4", "5.0 - 5.4", "4.1 - 4.5", "<4.1"] }
+          ]
+        }
+      },
+      {
+        "title": "Zona Secundaria Modificada",
+        "table": {
+          "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo", "OK"],
+          "rows": [
+            { "label": "1 - 50", "values": [">10.4", "9.1 - 10.4", "7.3 - 8.6", "<7.3"] },
+            { "label": "51 - 250", "values": [">7.7", "6.8 - 7.7", "5.4 - 6.4", "<5.4"] },
+            { "label": "251 - 1000", "values": [">5.4", "5.0 - 5.4", "4.1 - 4.5", "<4.1"] },
+            { "label": "1001 - 3000", "values": [">4.1", "3.6 - 4.1", "2.7 - 3.2", "<2.7"] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Transporte de Carga (en kg)",
+    "description": "Utilizando las tablas siguientes (valores en kg), determine si el transporte de carga es de riesgo alto, moderado o bajo. Las tablas se aplican tanto para transporte con una como con dos manos.",
+    "content_type": "multi-table",
+    "content": [
+      {
+        "title": "Distancia Corta (hasta 2.1m)",
+        "table": {
+          "headers": ["Nivel de Riesgo", "<5/min - Brazos Rectos", "<5/min - Brazos Doblados", "<1/5min - Brazos Rectos", "<1/5min - Brazos Doblados"],
+          "rows": [
+            { "label": "Alto", "values": [">22.7", ">18.6", ">30.4", ">25.4"] },
+            { "label": "Mod", "values": ["19.5 - 22.7", "15.4 - 18.6", "26.3 - 30.4", "21.3 - 25.4"] },
+            { "label": "Bajo", "values": ["14.1 - 19.1", "10.0 - 15.0", "20.0 - 25.9", "15.0 - 20.9"] },
+            { "label": "OK", "values": ["<14.1", "<10.0", "<20.0", "<15.0"] }
+          ]
+        }
+      },
+      {
+        "title": "Distancia Moderada (hasta 8.5m)",
+        "table": {
+          "headers": ["Nivel de Riesgo", "<5/min - Brazos Rectos", "<5/min - Brazos Doblados", "<1/5min - Brazos Rectos", "<1/5min - Brazos Doblados"],
+          "rows": [
+            { "label": "Alto", "values": [">20.0", ">17.2", ">27.7", ">22.7"] },
+            { "label": "Mod", "values": ["17.2 - 20.0", "14.5 - 17.2", "23.6 - 27.7", "19.5 - 22.7"] },
+            { "label": "Bajo", "values": ["13.2 - 16.8", "10.0 - 14.1", "17.2 - 23.1", "14.1 - 19.1"] },
+            { "label": "OK", "values": ["<13.2", "<10.0", "<17.2", "<14.1"] }
+          ]
+        }
+      }
+    ]
+  },{
+    "id": 35,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Empuje y Tracción (Fuerza Inicial)",
+    "description": "Utilizando la tabla siguiente, determine si la fuerza inicial de empuje / tracción es alta, moderada o baja, basándose en la Fuerza (en kg) y el Conteo Total por Jornada. Primero localice el Conteo Total por Jornada en la tabla, luego determine la categoría de riesgo basada en la Fuerza.",
+    "content_type": "table",
+    "content": {
+      "headers": ["Conteo Total por Jornada", "Alto", "Mod", "Bajo", "OK"],
+      "rows": [
+        { "label": "1 - 25", "values": [">29.5", "25.4 - 29.5", "20.9 - 24.9", "<20.9"] },
+        { "label": "26 - 250", "values": [">24.0", "20.9 - 24.0", "16.3 - 20.4", "<16.3"] },
+        { "label": "251 - 1000", "values": [">20.4", "17.7 - 20.4", "14.1 - 17.2", "<14.1"] },
+        { "label": "1001 - 2500", "values": [">17.2", "14.5 - 17.2", "11.8 - 14.1", "<11.8"] },
+        { "label": ">2500", "values": [">13.6", "11.8 - 13.6", "9.5 - 11.3", "<9.5"] }
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Ruido",
+    "description": "Basado en los criterios a continuación, determine si la exposición al ruido es de riesgo alto, moderado o bajo. Siempre tome la calificación más alta aplicable.",
+    "note": "Los riesgos de salud relacionados con el ruido están cubiertos en otras normas; este es un nivel de preocupación de rendimiento en lugar de una pérdida de audición por ruido. Para obtener más información sobre estos riesgos para la salud, comuníquese con su representante de seguridad.",
+    "content_type": "complex-rules",
+    "content": {
+      "high": {
+        "title": "Excede Requisitos Johnson & Johnson",
+        "description": "La siguiente tabla indica los límites máximos permitidos de exposición diaria al ruido. Si se exceden estas pautas, la Exposición al Ruido se califica como Riesgo Alto.",
+        "type": "table",
+        "table_data": {
+          "headers": ["Nivel de Sonido", "Descripción del Nivel de Sonido", "Duración"],
+          "rows": [
+            { "label": "82 dBA", "values": ["Comunicación difícil gritando desde 0.3-0.6 m (original: 1-2 pies)", "8 hrs."] },
+            { "label": "95 dBA", "values": ["Comunicación gritada posible solo a cortas distancias", "4 hrs."] },
+            { "label": "100 dBA", "values": ["Comunicación gritada limitada posible a distancias muy cortas", "2 hrs."] },
+            { "label": "107 dBA", "values": ["No hay comunicación directa posible", "45 min."] }
+          ]
+        },
+        "note": "Este gráfico simplificado solo se aplica a niveles continuos de exposición al ruido durante el turno de trabajo. Si los niveles de ruido fluctúan significativamente, sería apropiado realizar una encuesta formal de nivel de sonido del área de trabajo."
+      },
+      "moderate": {
+        "title": "Interfiere con la Comunicación",
+        "description": "Usando la información proporcionada, determine si los Niveles Aceptables de Interferencia del Habla son excedidos. Comience con el nivel de habla y la distancia del hablante al oyente, luego use el nivel de sonido (dBA) para determinar si se exceden las pautas de interferencia del habla. Si se exceden estas pautas, el trabajo se clasifica como 'Riesgo Moderado'.",
+        "type": "table-and-list",
+        "table_data": {
+          "title": "Niveles de Interferencia del Habla (en dBA)",
+          "headers": ["Nivel de Habla", "0.6 m (2 pies)", "2.4 m (8 pies)", "4.9 m (16 pies)"],
+          "rows": [
+            { "label": "Voz Normal", "values": ["63 dBA", "51 dBA", "45 dBA"] },
+            { "label": "Voz Fuerte", "values": ["74 dBA", "68 dBA", "63 dBA"] },
+            { "label": "Grito", "values": ["81 dBA", "68 dBA", "63 dBA"] },
+            { "label": "Nivel Máx. de Voz", "values": ["98 dBA", "85 dBA", "79 dBA"] }
+          ]
+        },
+        "list_data": {
+          "title": "La interferencia con la comunicación también se clasifica como 'Riesgo Moderado' si se cumple una o más de las siguientes condiciones:",
+          "items": [
+            "Comunicación telefónica con ruido de fondo que excede 66 dBA.",
+            "Alarmas que no exceden el ruido de fondo por lo menos en 10 dBA (la alarma puede no ser escuchada).",
+            "Alarmas que exceden el ruido de fondo por más de 20 dBA (la alarma puede sobresaltar al trabajador)."
+          ]
+        }
+      },
+      "low": {
+        "title": "Bajo Confort / Molestia",
+        "description": "Si los criterios de ruido relacionados con 'Alto' y 'Moderado' no se cumplen, la Exposición al Ruido se califica como 'Riesgo Bajo'.",
+        "type": "list",
+        "list_data": {
+          "title": "Un área de trabajo de 'Riesgo Bajo' tiene una o más de las siguientes características:",
+          "items": [
+            "Encuesta de empleados indica que más del 50% cree que los niveles de ruido interfieren con la comunicación, la toma de decisiones o la concentración.",
+            "Un alto nivel de ruido repetido",
+            "Variabilidad en el nivel o contenido",
+            "Ruido intermitente",
+            "El ruido es de alta frecuencia o 'estridente' (por encima de 2,000 Hz)"
+          ]
+        }
+      }
+    }
+  },{
+    "id": 37,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Estrés por Calor",
+    "description": "Basado en los siguientes factores de riesgo para la exposición al calor, determine si el Estrés por Calor es de riesgo alto, moderado o bajo. Reúna información entrevistando a la enfermera de la planta o proveedor de atención médica y a los empleados que realizan trabajos calientes. Algunas items requieren tomar una lectura con un medidor de Temperatura de Globo y Bulbo Húmedo (WBGT). Esta sección solo se aplica a empleados que realizan trabajos o tareas en ambientes calurosos. Siempre tome la calificación de riesgo más alta aplicable.",
+    "note": "Para más información sobre estos riesgos para la salud, contacte a su representante de seguridad.",
+    "content_type": "complex-rules",
+    "content": {
+      "high": {
+        "title": "Riesgo de Salud",
+        "description": "Basado en las lecturas de Carga de Trabajo y Temperatura de Globo y Bulbo Húmedo (WBGT), si se exceden las siguientes directrices de estrés por calor, el trabajo se considera de 'Riesgo Alto'.",
+        "type": "multi-table-and-list",
+        "tables_data": [
+          {
+            "title": "Límite de WBGT (°C)",
+            "headers": ["Carga de Trabajo", "Límite WBGT (°C)"],
+            "rows": [
+              { "label": "Trabajo Ligero", "values": ["30.6 (orig: 87°F)"] },
+              { "label": "Trabajo Moderado", "values": ["28.9 (orig: 84°F)"] },
+              { "label": "Trabajo Pesado", "values": ["26.1 (orig: 79°F)"] }
+            ]
+          },
+          {
+            "title": "Descripciones de Carga de Trabajo",
+            "headers": ["", "Trabajo Ligero (100-199 kcal/hr)", "Trabajo Moderado (200-299 kcal/hr)", "Trabajo Pesado (300-400 kcal/hr)"],
+            "rows": [
+              {
+                "label": "Ejemplos",
+                "values": [
+                  "<ul><li><b>Sentado:</b> Trabajo ligero de mano (teclado, escritura, etc.); mano y brazo (bancos de trabajo, inspección).</li><li><b>De pie:</b> Operar taladro, fresadora (piezas pequeñas); Mecanizado con herramientas ligeras; Caminata casual (hasta 3.2 km/h).</li><li><b>Levantamiento:</b> < 4.5 kg (menos de 8/min); < 11.3 kg (menos de 4/min); < 20.4 kg (menos de 2/min).</li></ul>",
+                  "<ul><li>Mano y brazo (clavar, limar, etc.).</li><li>Brazo y pierna (operar camión, equipo pesado).</li><li>Brazo y tronco (martillo neumático, manejo intermitente de materiales pesados).</li><li>Empujar o tirar de carros ligeros.</li><li>Caminando 3.2 - 4.8 km/h (ritmo moderado).</li><li><b>Levantamiento:</b> 4.5 kg (a 10/min); 11.3 kg (a 6/min); 20.4 kg (a 4/min).</li></ul>",
+                  "<ul><li>Trabajo pesado de brazo y tronco.</li><li>Transferencia de materiales pesados.</li><li>Trabajo con pala, mazo, excavación.</li><li>Empujar o tirar de carros cargados.</li><li>Caminando 6.4 km/h (ritmo rápido).</li><li><b>Levantamiento:</b> 4.5 kg (a 14/min); 11.3 kg (a 10/min); 20.4 kg (a 7/min).</li></ul>"
+                ]
+              }
+            ]
+          }
+        ],
+        "list_data": {
+          "title": "Adicionalmente, si existe una de las siguientes condiciones, este factor de riesgo se califica como 'Riesgo Alto':",
+          "items": [
+            "Una o más visitas de primeros auxilios o médicas relacionadas con el calor en los últimos dos años.",
+            "Empleados trabajan en áreas calientes por más de 1 hora sin oportunidad de buscar alivio voluntariamente.",
+            "No hay un período formal de aclimatación para nuevos empleados."
+          ]
+        }
+      },
+      "moderate": {
+        "title": "Problemas de Rendimiento",
+        "description": "Si se exceden las Pautas de Límite de Rendimiento de WBGT a continuación, el rendimiento mental (toma de decisiones, etc.) se verá afectado. Si se exceden estos límites, el trabajo se considera de 'Riesgo Moderado'.",
+        "type": "table",
+        "table_data": {
+          "title": "Límites de Rendimiento WBGT (°C)",
+          "headers": ["Exposición", "Rendimiento WBGT (°C)"],
+          "rows": [
+            { "label": "1 - 15 min", "values": ["43.3 (orig: 110°F)"] },
+            { "label": "16 - 30 min", "values": ["36.7 (orig: 98°F)"] },
+            { "label": "31 - 59 min", "values": ["34.4 (orig: 94°F)"] },
+            { "label": "1 - 2 horas", "values": ["32.2 (orig: 90°F)"] },
+            { "label": "2.1 - 3 horas", "values": ["31.1 (orig: 88°F)"] },
+            { "label": "3.1 - 4 horas", "values": ["30.0 (orig: 86°F)"] }
+          ]
+        }
+      },
+      "low": {
+        "title": "Problemas de Confort",
+        "description": "Si se cumple alguna de las siguientes condiciones, el trabajo se califica como 'Riesgo Bajo'.",
+        "type": "list",
+        "list_data": {
+          "title": "Condiciones de 'Riesgo Bajo':",
+          "items": [
+            "Transpiración excesiva durante la realización de trabajos calientes (ej., la ropa está 'empapada' de sudor).",
+            "Los empleados traen su propia agua/fluidos bebibles para trabajar con ellos.",
+            "Los empleados usan menos ropa en el trabajo de la que usan fuera del trabajo (ejemplo: empleado viene a trabajar con pantalones largos y se cambia a pantalones cortos en el vestuario antes de comenzar a trabajar, sin camisa, etc.)."
+          ]
+        }
+      }
+    }
+  },{
+    "id": 38,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Estrés por Frío",
+    "description": "Determine si el estrés por frío es de riesgo alto, moderado o bajo, basándose en los factores de riesgo descritos a continuación. Reúna la información necesaria entrevistando a la enfermera de la planta o proveedor de atención médica y a los empleados que realizan el trabajo en áreas frías. Esta sección solo se aplica a trabajos realizados en áreas frías (área fría definida como <18.3°C (original: <65°F)).",
+    "note": "Para más información sobre estos riesgos para la salud, contacte a su representante de seguridad.",
+    "content_type": "complex-rules",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "description": "El riesgo se considera 'Alto' si se cumple alguna de las siguientes condiciones:",
+        "type": "list",
+        "list_data": {
+          "items": [
+            "Una o más visitas de primeros auxilios o casos médicos de empleados relacionados con el frío en los últimos dos años.",
+            "Debido a la exposición al frío, los empleados pierden completamente la sensibilidad en los dedos de las manos y pies.",
+            "Los empleados trabajan más de 4 horas/jornada laboral con entumecimiento parcial en los dedos."
+          ]
+        }
+      },
+      "moderate": {
+        "title": "Moderado",
+        "description": "El riesgo se considera 'Moderado' si se cumple la siguiente condición:",
+        "type": "list",
+        "list_data": {
+          "items": [
+            "Debido a la exposición al frío, los empleados comienzan a perder sensibilidad en las yemas de los dedos al punto que es difícil realizar tareas de precisión con los dedos (ej., manejar o posicionar piezas pequeñas, enhebrar un perno a mano, etc.)."
+          ]
+        }
+      },
+      "low": {
+        "title": "Bajo",
+        "description": "El riesgo se considera 'Bajo' si se cumple alguna de las siguientes condiciones:",
+        "type": "list",
+        "list_data": {
+          "items": [
+            "Los empleados experimentan escalofríos involuntarios.",
+            "Los empleados usan ropa para clima frío (abrigo/chaqueta, orejeras, gorro de punto, guantes, bufanda, etc.) para combatir el frío durante la jornada laboral."
+          ]
+        }
+      }
+    }
+  },{
+    "id": 39,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Iluminación",
+    "description": "Basado en los criterios proporcionados a continuación, determine si la iluminación es de riesgo moderado o bajo. Siempre tome la calificación más alta aplicable.",
+    "note": "Para más información sobre estos riesgos para la salud, contacte a su representante de seguridad.",
+    "content_type": "complex-rules",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "description": "(No aplicable para Riesgo Alto)",
+        "type": "list"
+      },
+      "moderate": {
+        "title": "Moderado",
+        "description": "Determine si hay suficiente luz en el área de trabajo. La siguiente tabla de 'Pautas de Iluminación de Actividades' proporciona información sobre la cantidad de luz recomendada para diversas condiciones. Si los niveles de iluminación no cumplen con los niveles recomendados a continuación, el factor de riesgo de Iluminación es de 'Riesgo Moderado'.",
+        "type": "table",
+        "table_data": {
+          "title": "Pautas de Iluminación de Actividades",
+          "headers": ["Actividad", "Niveles (ft candles)", "Niveles (Lux)"],
+          "rows": [
+            {
+              "label": "Maniobrar en áreas públicas con alrededores oscuros <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>aceras niveladas</li><li>pasillos despejados</li></ul>",
+              "values": ["3", "35"]
+            },
+            {
+              "label": "Orientación básica en áreas visitadas solo ocasionalmente",
+              "values": ["7", "75"]
+            },
+            {
+              "label": "Tareas visuales simples realizadas ocasionalmente en el área",
+              "values": ["15", "150"]
+            },
+            {
+              "label": "Luz de alto contraste o tipo de letra grande <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>leer materiales impresos</li><li>trabajo de banco o máquina en bruto</li><li>inspección ordinaria</li><li>ensamblaje en bruto</li></ul>",
+              "values": ["35", "350"]
+            },
+            {
+              "label": "Luz de contraste medio o tamaño de letra pequeño <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>leer escritura a lápiz</li><li>trabajo de banco o máquina mediano</li><li>inspección difícil</li><li>ensamblaje mediano</li></ul>",
+              "values": ["75", "750"]
+            },
+            {
+              "label": "Luz de bajo contraste o tamaño de letra muy pequeño <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>leer materiales impresos mal reproducidos</li><li>inspección difícil</li></ul>",
+              "values": ["150", "1500"]
+            },
+            {
+              "label": "Luz de bajo contraste o tamaño de letra muy pequeño (períodos largos) <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>ensamblaje fino</li><li>inspección altamente difícil</li><li>trabajo de banco o máquina fino</li></ul>",
+              "values": ["350", "3500"]
+            },
+            {
+              "label": "Tareas visuales prolongadas o exigentes <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>la inspección más difícil</li><li>trabajo de banco y máquina extra-fino</li><li>ensamblaje extra-fino</li></ul>",
+              "values": ["750", "7500"]
+            },
+            {
+              "label": "Tareas altamente especializadas con contraste extremo bajo <ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 12px;'><li>algunos procedimientos quirúrgicos</li><li>ultra-bajo contraste</li><li>defectos muy diminutos</li></ul>",
+              "values": ["1500", "15000"]
+            }
+          ]
+        }
+      },
+      "low": {
+        "title": "Bajo",
+        "description": "Si se cumple alguna de las siguientes condiciones, la Iluminación se califica como 'Riesgo Bajo':",
+        "type": "list",
+        "list_data": {
+          "items": [
+            "Deslumbramiento (glare) del producto, equipo o monitor.",
+            "La luz del día entra por la ventana directamente a los ojos del trabajador.",
+            "La iluminación de la habitación o de la tarea incide en los ojos del trabajador.",
+            "Se proyectan sombras sobre el área de trabajo."
+          ]
+        }
+      }
+    }
+  },{
+    "id": 40,
+    "category": "Factores de Riesgo Ergonómico",
+    "title": "Error Humano",
+    "description": "Utilizando la información proporcionada a continuación, determine si los factores de error humano son de riesgo bajo. Hay tres áreas separadas de rendimiento humano donde pueden ocurrir errores, estas son errores en la percepción, errores en la decisión y errores en la acción.",
+    "content_type": "complex-rules",
+    "content": {
+      "high": {
+        "title": "Alto",
+        "description": "(No aplicable para Riesgo Alto)",
+        "type": "list"
+      },
+      "moderate": {
+        "title": "Moderado",
+        "description": "(No aplicable para Riesgo Moderado)",
+        "type": "list"
+      },
+      "low": {
+        "title": "Bajo",
+        "description": "El riesgo se considera 'Bajo' si se cumple alguna de las siguientes condiciones:",
+        "type": "list",
+        "list_data": {
+          "items": [
+            "<strong style='display:block; margin-bottom:4px;'>Errores en Percepción:</strong><ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 13px;'><li>Las señales auditivas no se pueden oír sobre el ruido de fondo.</li><li>Múltiples señales auditivas no se pueden distinguir fácilmente.</li><li>Las pantallas no están claramente etiquetadas con marcas de identificación.</li><li>Las pantallas inactivas no se retiran, cubren o marcan claramente como 'inactivas'.</li></ul>",
+            "<strong style='display:block; margin-bottom:4px; margin-top:8px;'>Errores en Decisión:</strong><ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 13px;'><li>Se requiere memorizar largas cadenas de dígitos sin interrupción (ej., >6 dígitos).</li><li>Interpretar información de múltiples fuentes simultáneamente.</li><li>Diferentes personas sacan conclusiones diferentes del mismo conjunto de funciones.</li><li>Tiempos muy variables para tomar una decisión correcta.</li></ul>",
+            "<strong style='display:block; margin-bottom:4px; margin-top:8px;'>Errores en Acción:</strong><ul style='margin: 4px 0 0 15px; padding-left: 10px; font-weight: normal; font-size: 13px;'><li>Controles (botones, interruptores, palancas, pedales, etc.) no están claramente etiquetados.</li><li>Pantallas no claramente etiquetadas con marcas de identificación.</li><li>Controles no etiquetados con marcas de escala y/o dirección.</li><li>Los controles de uso frecuente no se pueden alcanzar fácilmente.</li><li>Los controles de uso frecuente requieren altas fuerzas.</li></ul>"
+          ]
+        }
       }
     }
   }

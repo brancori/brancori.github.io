@@ -497,69 +497,7 @@ window.ERGONavigation = {
     }
 };
 
-window.ERGOData = {
-    async getWorkCenterScore(workCenterId) {
-        try {
-            const evaluaciones = await dataClient.getEvaluaciones(workCenterId);
-            if (evaluaciones && evaluaciones.length > 0) {
-                evaluaciones.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                const evalReciente = evaluaciones[0];
-                return {
-                    score_actual: evalReciente.score_final || 0,
-                    categoria_riesgo: evalReciente.categoria_riesgo || 'Sin datos',
-                    color_riesgo: evalReciente.color_riesgo || '#d1d5db',
-                    nivel_riesgo_ergonomico: evalReciente.nivel_riesgo_ergonomico || `${evalReciente.score_final || 0}%`
-                };
-            }
-            return { score_actual: 0, categoria_riesgo: 'Sin evaluación', color_riesgo: '#d1d5db', nivel_riesgo_ergonomico: '0%' };
-        } catch (error) {
-            console.error(`Error getting score for center ${workCenterId}:`, error);
-            return { score_actual: 0, categoria_riesgo: 'Error', color_riesgo: '#ef4444', nivel_riesgo_ergonomico: 'Error' };
-        }
-    },
 
-    async getWorkCenterDetails(workCenterId) {
-    try {
-        // Esta función asume que tienes un método en tu cliente de datos
-        // que consulta la tabla scores_resumen.
-        const summary = await dataClient.getScoreSummary(workCenterId);
-
-        if (summary) {
-            return {
-                score_actual: summary.score_final || 0,
-                categoria_riesgo: summary.categoria_riesgo || 'Sin Datos',
-                color_riesgo: summary.color_riesgo || '#d1d5db',
-                nivel_riesgo_ergonomico: summary.nivel_riesgo_ergonomico || '0%',
-                is_closed: summary.is_closed || false
-            };
-        }
-        
-        return { score_actual: 0, categoria_riesgo: 'Sin Evaluación', color_riesgo: '#d1d5db', nivel_riesgo_ergonomico: '0%', is_closed: false };
-
-    } catch (error) {
-        console.error(`Error getting details for center ${workCenterId}:`, error);
-        return { score_actual: 0, categoria_riesgo: 'Error', color_riesgo: '#ef4444', nivel_riesgo_ergonomico: 'Error', is_closed: false };
-    }
-},
-
-    async loadAreas() {
-        try {
-            return await dataClient.getAreas();
-        } catch (error) {
-            console.error('Error loading areas:', error);
-            return JSON.parse(localStorage.getItem('areas')) || [];
-        }
-    },
-    
-    async loadAllWorkCenters() {
-        try {
-            return await dataClient.getWorkCenters();
-        } catch (error) {
-            console.error('Error loading all work centers:', error);
-            return JSON.parse(localStorage.getItem('workCenters')) || [];
-        }
-    }
-};
 
 
 
@@ -684,66 +622,55 @@ window.ERGOValidation = {
 const ERGOData = {
     /**
      * Obtiene datos siguiendo la estrategia cache-first.
-     * @param {string} key - La clave única para la caché (ej. 'areas', 'resumen_riesgos').
-     * @param {Function} fetchFunction - La función asíncrona que obtiene los datos del servidor (ej. () => dataClient.getAreas()).
-     * @returns {Promise<any>} Los datos solicitados.
+     * (El resto de la función fetch... )
      */
     async fetch(key, fetchFunction) {
-        // 1. Intentar cargar desde la caché
         const cachedData = LocalStorageCache.loadCachedData(key);
         if (cachedData) {
             return cachedData;
         }
-
-        // 2. Si no hay caché, obtener del servidor
         console.log(`⏳ No hay caché para '${key}'. Obteniendo del servidor...`);
         const serverData = await fetchFunction();
-
-        // 3. Guardar en caché si los datos son válidos
         if (serverData) {
             LocalStorageCache.cacheData(key, serverData);
         }
-
         return serverData;
     },
 
     /**
-     * Inicia las suscripciones de Realtime para invalidar la caché automáticamente.
-     * Debe llamarse una sola vez cuando la aplicación se carga.
+     * Inicia las suscripciones de Realtime...
+     * (El resto de la función initRealtimeInvalidation... )
      */
     initRealtimeInvalidation() {
         console.log('🔄 Inicializando invalidación de caché por Realtime...');
-
         if (!window.realtimeClient) {
             console.warn("⚠️ realtimeClient no está inicializado");
             return;
         }
-
-        // Escucha cambios en la tabla 'areas'
+        // ... (el resto del código de esta función se mantiene) ...
         window.realtimeClient.subscribeAndCache(
             'realtime_areas',
             'areas',
             (payload) => {
                 console.log('Cambio detectado en "areas", invalidando caché.');
                 LocalStorageCache.invalidateCache('areas');
-                LocalStorageCache.invalidateCache('area_scores_summary'); // También invalida resúmenes dependientes
+                LocalStorageCache.invalidateCache('area_scores_summary'); 
             },
             'areas'
         );
+        window.realtimeClient.subscribeAndCache(
+            'realtime_actividades',
+            'actividades',
+            (payload) => {
+                console.log('Cambio detectado en "actividades", invalidando cachés relacionadas.');
+                LocalStorageCache.invalidateCache('areas');
+                LocalStorageCache.invalidateCache('area_scores_summary');
+            },
+            'actividades'
+        );
+    },
 
-    window.realtimeClient.subscribeAndCache(
-        'realtime_actividades',
-        'actividades',
-        (payload) => {
-            console.log('Cambio detectado en "actividades", invalidando cachés relacionadas.');
-            LocalStorageCache.invalidateCache('areas');
-            LocalStorageCache.invalidateCache('area_scores_summary');
-        },
-        'actividades'
-    );
-},
-
-    // --- Métodos específicos para obtener datos ---
+    // --- Métodos específicos para obtener datos (del segundo objeto) ---
 
     getAreas() {
         return this.fetch('areas', () => dataClient.getAreas());
@@ -751,13 +678,58 @@ const ERGOData = {
 
     getAreaScoresSummary() {
         return this.fetch('area_scores_summary', () => dataClient.getAreaScoresSummary());
-    }
+    },
 
-    // Añade aquí más funciones para otros tipos de datos que necesites...
-    // Ejemplo:
-    // getEvaluaciones() {
-    //     return this.fetch('evaluaciones', () => dataClient.getEvaluaciones());
-    // }
+    // --- FUNCIONES FUSIONADAS (del primer objeto) ---
+    
+    // Mantenemos el nombre original "loadAllWorkCenters" y le añadimos la caché
+    loadAllWorkCenters() { 
+        return this.fetch('work_centers_all', () => dataClient.getWorkCenters());
+    },
+    
+    // Mantenemos "loadAreas" y le añadimos la caché (es igual que getAreas, pero por si lo usas en otro lado)
+    loadAreas() {
+        return this.fetch('areas', () => dataClient.getAreas());
+    },
+
+    async getWorkCenterScore(workCenterId) {
+        try {
+            const evaluaciones = await dataClient.getEvaluaciones(workCenterId);
+            if (evaluaciones && evaluaciones.length > 0) {
+                evaluaciones.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                const evalReciente = evaluaciones[0];
+                return {
+                    score_actual: evalReciente.score_final || 0,
+                    categoria_riesgo: evalReciente.categoria_riesgo || 'Sin datos',
+                    color_riesgo: evalReciente.color_riesgo || '#d1d5db',
+                    nivel_riesgo_ergonomico: evalReciente.nivel_riesgo_ergonomico || `${evalReciente.score_final || 0}%`
+                };
+            }
+            return { score_actual: 0, categoria_riesgo: 'Sin evaluación', color_riesgo: '#d1d5db', nivel_riesgo_ergonomico: '0%' };
+        } catch (error) {
+            console.error(`Error getting score for center ${workCenterId}:`, error);
+            return { score_actual: 0, categoria_riesgo: 'Error', color_riesgo: '#ef4444', nivel_riesgo_ergonomico: 'Error' };
+        }
+    },
+
+    async getWorkCenterDetails(workCenterId) {
+        try {
+            const summary = await dataClient.getScoreSummary(workCenterId);
+            if (summary) {
+                return {
+                    score_actual: summary.score_final || 0,
+                    categoria_riesgo: summary.categoria_riesgo || 'Sin Datos',
+                    color_riesgo: summary.color_riesgo || '#d1d5db',
+                    nivel_riesgo_ergonomico: summary.nivel_riesgo_ergonomico || '0%',
+                    is_closed: summary.is_closed || false
+                };
+            }
+            return { score_actual: 0, categoria_riesgo: 'Sin Evaluación', color_riesgo: '#d1d5db', nivel_riesgo_ergonomico: '0%', is_closed: false };
+        } catch (error) {
+            console.error(`Error getting details for center ${workCenterId}:`, error);
+            return { score_actual: 0, categoria_riesgo: 'Error', color_riesgo: '#ef4444', nivel_riesgo_ergonomico: 'Error', is_closed: false };
+        }
+    }
 };
 
 // Exponer el gestor de datos globalmente

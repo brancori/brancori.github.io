@@ -194,6 +194,12 @@
             box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../localStorage-cache.js"></script>   
+        <script src="../globals.js"></script>
+
+    <script src="../supabase-config.js"></script>   
+    <script src="../realtime-client.js"></script>
 </head>
 
 <body>
@@ -405,7 +411,7 @@
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
             
             // --- DATOS INICIALES (MOCK) ---
             let nextId = 10; // Siguiente ID para nuevos registros
@@ -474,9 +480,13 @@
 
             // Listas para poblar filtros y datalists
             // Usamos Set para obtener valores únicos y luego convertimos a array
-            let centrosList = [...new Set(hallazgosData.map(h => h.centro))];
-            let areasTopLevelList = [...new Set(hallazgosData.map(h => h.areaTopLevel))];
+            const workCentersData = await window.ERGOData.loadAllWorkCenters();
+            let centrosList = workCentersData ? [...new Set(workCentersData.map(center => center.name))] : [];
+            const areasData = await window.ERGOData.getAreas();
+            let areasTopLevelList = areasData ? areasData.map(area => area.name) : [];
             let tareasList = [...new Set(hallazgosData.map(h => h.tarea))];
+
+            
 
             // --- REFERENCIAS AL DOM ---
             const hallazgosTableBody = document.getElementById('hallazgosTableBody');
@@ -730,6 +740,8 @@
             // Cerrar modal al hacer clic en el overlay
             addEntryModal.querySelector('.modal-overlay').addEventListener('click', closeModal);
         });
+
+        
     </script>
 </body>
 

@@ -772,4 +772,18 @@ async function guardarHallazgo() {
         console.error('Error al guardar el hallazgo:', error);
         ERGOUtils.showToast(`No se pudo guardar el hallazgo. ${error.message}`, 'error');
     }
+    async function eliminarActividad(actividadId) {
+            if (!ERGOAuth.checkPermissionAndShowError('delete')) return;
+            if (confirm('¿Estás seguro de eliminar esta actividad/hallazgo? Esta acción no se puede deshacer.')) {
+                try {
+                    ERGOUtils.showToast('Eliminando actividad...', 'info');
+                    await dataClient.deleteActividad(actividadId); 
+                    ERGOUtils.showToast('Actividad eliminada.', 'success');
+                    await loadActividades();
+                } catch (error) {
+                    console.error('Error al eliminar la actividad:', error);
+                    ERGOUtils.showToast('No se pudo eliminar la actividad.', 'error');
+                }
+            }
+        }
 }
