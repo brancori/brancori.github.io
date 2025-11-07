@@ -6,9 +6,11 @@
         <link rel="stylesheet" href="./reporte_dictamen.css">
 
     <title>Dictamen Ergonómico</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script> -->
-    <script src="../componentes/globals.js" defer></script> -->
-    <script src="../componentes/supabase-config.js" defer></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../componentes/globals.js" defer></script>
+    <script src="../componentes/supabase-config.js" defer></script>
+    
+
     
 </head>
 <body>
@@ -323,22 +325,20 @@ async function cargarDatosIniciales() {
                 tareasContainer.innerHTML = 'No se encontraron tareas observadas.';
             }
         }
-        renderizarHallazgos(actividades);
-        renderizarMatriz(actividades);
-        renderizarResumen(actividades);
-        
-    } catch (error) {
-        console.error('Error cargando datos:', error);
-        alert('Error al cargar los datos del centro de trabajo: ' + error.message);
-        
-        // Fallback a datos de prueba si falla la carga
-        const urlParams = new URLSearchParams(window.location.search);
-        const centerName = decodeURIComponent(urlParams.get('centerName') || 'Centro');
-        const areaName = decodeURIComponent(urlParams.get('areaName') || 'Área');
-        cargarDatosPrueba(centerName, areaName);
-    }
+      renderizarHallazgos(actividades);
+      renderizarMatriz(actividades);
+      renderizarResumen(actividades);
+   } catch (error) {
+      console.error('Error cargando datos:', error);
+      alert('Error al cargar los datos del centro de trabajo: ' + error.message);
+      const urlParams = new URLSearchParams(window.location.search);
+      const centerName = decodeURIComponent(urlParams.get('centerName') || 'Centro');
+      const areaName = decodeURIComponent(urlParams.get('areaName') || 'Área');
+      cargarDatosPrueba(centerName, areaName);
+   }
 
-    
+   // 👇 Esta línea debe ir AQUÍ, fuera del try
+   await cargarDictamenComplemento(workCenterId);
 }
 
 // ============================================
@@ -658,61 +658,53 @@ function toggleEditMode() {
 // ============================================
 
 async function guardarBorrador() {
+    if (!workCenterId) {
+        alert('⚠️ No se detectó el centro de trabajo.');
+        return;
+    }
+
+    const data = {
+        work_center_id: workCenterId,
+        fecha_realizacion: document.getElementById('fecha-realizacion')?.value || null,
+        tareas_observadas: document.getElementById('tareas-observadas')?.innerHTML || null,
+        resumen_ejecutivo: document.getElementById('resumen-ejecutivo')?.innerHTML || null,
+        introduccion: document.getElementById('introduccion')?.innerHTML || null,
+        conclusiones: document.getElementById('conclusiones')?.innerHTML || null,
+        plan_accion: document.getElementById('plan-accion')?.innerHTML || null,
+        updated_at: new Date().toISOString()
+    };
+
     try {
-        // Recopilar todos los datos editables
-        const datosFormulario = {
-            work_center_id: workCenterId,
-            area_id: areaId,
-            fecha_realizacion: document.getElementById('fecha-realizacion').value,
-            tareas_observadas: document.getElementById('tareas-observadas').textContent,
-            resumen_ejecutivo: document.getElementById('resumen-ejecutivo').innerHTML,
-            introduccion: document.getElementById('introduccion').innerHTML,
-            conclusiones: document.getElementById('conclusiones').innerHTML,
-            plan_accion: document.getElementById('plan-accion').innerHTML,
-        };
+        // Comprobamos si ya existe registro
+        const { data: existing, error: selectError } = await dataClient.supabase
+            .from('dictamen_complementos')
+            .select('id')
+            .eq('work_center_id', workCenterId)
+            .maybeSingle();
 
-        // Recopilar análisis de cada hallazgo
-        const analisisHallazgos = {};
-        const justificaciones = {};
-        const tareasEspecificas = {};
-        const evaluacionesEspecificas = {};
-        const resumenesImpacto = {};
+        if (selectError) throw selectError;
 
-        document.querySelectorAll('[data-hallazgo-id]').forEach(el => {
-            const hallazgoId = el.dataset.hallazgoId;
-            const field = el.dataset.field;
-            
-            if (field === 'analisis_riesgo') {
-                analisisHallazgos[hallazgoId] = el.innerHTML;
-            } else if (field === 'justificacion') {
-                justificaciones[hallazgoId] = el.textContent;
-            } else if (field === 'tarea_especifica') {
-                tareasEspecificas[hallazgoId] = el.textContent;
-            } else if (field === 'evaluacion_especifica') {
-                evaluacionesEspecificas[hallazgoId] = el.textContent;
-            } else if (field === 'resumen_impacto') {
-                resumenesImpacto[hallazgoId] = el.textContent;
-            }
-        });
+        if (existing) {
+            console.log('📝 Actualizando dictamen existente...');
+            await dataClient.supabase
+                .from('dictamen_complementos')
+                .update(data)
+                .eq('work_center_id', workCenterId);
+        } else {
+            console.log('🆕 Creando nuevo dictamen...');
+            await dataClient.supabase
+                .from('dictamen_complementos')
+                .insert(data);
+        }
 
-        console.log('Datos a guardar:', {
-            formulario: datosFormulario,
-            analisisHallazgos,
-            justificaciones,
-            tareasEspecificas,
-            evaluacionesEspecificas,
-            resumenesImpacto
-        });
-
-        /* TODO: Implementar guardado en Supabase cuando se cree la tabla dictamen_complementos */
-
-        alert('✅ Borrador guardado correctamente\n\n(Nota: Implementar guardado en Supabase según estructura comentada en el código)');
-        
+        alert('✅ Borrador guardado correctamente.');
     } catch (error) {
-        console.error('Error al guardar:', error);
-        alert('❌ Error al guardar el borrador: ' + error.message);
+        console.error('❌ Error al guardar el dictamen:', error);
+        alert('Error al guardar el borrador. Revisa la consola.');
     }
 }
+
+
 
 // ============================================
 // EXPORTAR PDF
@@ -765,6 +757,63 @@ document.addEventListener('keydown', (e) => {
         exportarPDF();
     }
 });
+
+
+async function cargarDictamenComplemento(workCenterId) {
+    try {
+        const { data, error } = await dataClient.supabase
+            .from('dictamen_complementos')
+            .select('*')
+            .eq('work_center_id', workCenterId)
+            .maybeSingle();
+
+        if (error) throw error;
+        if (!data) {
+            console.log('🆕 No hay dictamen complementario guardado aún.');
+            return;
+        }
+
+        console.log('📄 Dictamen complementario cargado:', data);
+
+        // Fecha de realización
+        if (data.fecha_realizacion && document.getElementById('fecha-realizacion'))
+            document.getElementById('fecha-realizacion').value = data.fecha_realizacion;
+
+        // Tareas observadas
+        if (data.tareas_observadas && document.getElementById('tareas-observadas'))
+            document.getElementById('tareas-observadas').innerHTML = data.tareas_observadas;
+
+        // Resumen Ejecutivo
+        if (data.resumen_ejecutivo && document.getElementById('resumen-ejecutivo'))
+            document.getElementById('resumen-ejecutivo').innerHTML = data.resumen_ejecutivo;
+
+        // Introducción y sus subpartes
+        if (data.introduccion && document.getElementById('introduccion'))
+            document.getElementById('introduccion').innerHTML = data.introduccion;
+        else {
+            const intro = document.getElementById('introduccion');
+            if (intro) {
+                if (data.contexto_analisis)
+                    intro.querySelector('p:nth-child(1)').innerText = `Contexto del Análisis: ${data.contexto_analisis}`;
+                if (data.objetivo_especifico)
+                    intro.querySelector('p:nth-child(2)').innerText = `Objetivo Específico: ${data.objetivo_especifico}`;
+                if (data.alcance_evaluacion)
+                    intro.querySelector('p:nth-child(3)').innerText = `Alcance de la Evaluación: ${data.alcance_evaluacion}`;
+            }
+        }
+
+        // Conclusiones
+        if (data.conclusiones && document.getElementById('conclusiones'))
+            document.getElementById('conclusiones').innerHTML = data.conclusiones;
+
+        // Plan de Acción
+        if (data.plan_accion && document.getElementById('plan-accion'))
+            document.getElementById('plan-accion').innerHTML = data.plan_accion;
+
+    } catch (err) {
+        console.error('Error cargando dictamen complementario:', err);
+    }
+}
 
 console.log('%c📋 Dictamen Ergonómico Cargado', 'color: #0066cc; font-size: 14px; font-weight: bold;');
 console.log('%cATAJOS DE TECLADO:', 'color: #666; font-weight: bold;');

@@ -5,21 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matriz de Hallazgos</title>
-    <!-- Ruta de CSS corregida para usar globals.css -->
     <link rel="stylesheet" href="../globals.css">
 
-    <!-- Estilos específicos para esta página -->
     <style>
         /* Estilos de la tabla usando variables de globals.css */
         .table-container {
             width: 100%;
             overflow-x: auto;
-            /* Sombra y borde de globals.css */
+            overflow-y: auto; /* Habilita el scroll vertical DENTRO del contenedor */
+            max-height: 70vh; /* Limita la altura al 70% de la pantalla */
             border: 1px solid var(--gray-200, #e2e8f0);
             border-radius: var(--border-radius-lg, 12px);
             box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.04));
             background-color: #ffffff;
-            /* Asegura que el contenedor no colapse */
             min-height: 200px;
         }
 
@@ -35,7 +33,10 @@
             padding: 0.75rem 1rem; /* Espaciado interno */
             border-bottom: 1px solid var(--gray-200, #e2e8f0);
             text-align: left;
-            white-space: nowrap; /* Evita que el texto se rompa */
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; /* Forzar nowrap por defecto */
         }
 
         /* Encabezados de la tabla */
@@ -48,9 +49,16 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            white-space: nowrap; /* Asegura que los headers no se rompan */
         }
 
         /* Celdas del cuerpo */
+        tbody tr {
+            /* --- AÑADIDO --- */
+            cursor: pointer; /* Indica que la fila es interactiva */
+            transition: background-color 0.2s ease;
+        }
+
         tbody tr:hover {
             background-color: var(--gray-100, #f1f5f9);
         }
@@ -59,10 +67,32 @@
             color: var(--gray-700, #334155);
         }
 
-        /* Estilos para descripciones (permitir que se rompan) */
+        /* Estilos para descripciones (se aplica max-width) */
         td.wrap-text {
-            white-space: normal; /* Permitir que este texto se ajuste */
-            min-width: 250px; /* Ancho mínimo para descripciones */
+            max-width: 300px; /* Un ancho máximo mayor para celdas de texto */
+            white-space: nowrap; /* Mantiene el nowrap por defecto */
+        }
+    thead th:nth-child(3),
+        tbody td:nth-child(3),
+        thead th:nth-child(4),
+        tbody td:nth-child(4) {
+            max-width: 160px; /* Ancho más pequeño para forzar el salto */
+            min-width: 160px;
+            white-space: normal; /* Permitir salto de línea */
+            vertical-align: middle;
+        }
+        /* --- AÑADIDO: Estilos para fila expandida --- */
+        tbody tr.is-expanded td {
+            white-space: normal; /* Permite que el texto se ajuste */
+            overflow: visible;
+            text-overflow: clip;
+            max-height: none; /* Sin límite de altura */
+            max-width: 400px; /* Ancho estándar al expandir */
+        }
+
+        /* Las celdas de texto largo pueden ser más anchas al expandirse */
+        tbody tr.is-expanded td.wrap-text {
+            max-width: 600px; 
         }
 
         /* Contenedor de filtros */
@@ -90,7 +120,11 @@
             display: flex;
             flex-direction: column;
         }
-
+        .puestos-asignados-list {
+            list-style-type: none; /* Quita el punto/viñeta */
+            margin: 0;
+            padding: 0;
+        }
         .filter-group label {
             margin-bottom: 0.5rem;
             font-size: var(--text-sm, 0.75rem);
@@ -203,37 +237,25 @@
 </head>
 
 <body>
-    <!-- Contenedor Principal -->
     <div class="main-content">
 
-        <!-- Encabezado de la Página -->
         <header class="page-header">
             <h1>Matriz de Hallazgos</h1>
-            <!-- Botón de globals.css -->
-            <button id="openModalBtn" type="button" class="btn btn-primary">
-                <!-- Icono SVG simple para 'agregar' -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Agregar Hallazgo
-            </button>
         </header>
 
-        <!-- Filtros -->
-        <div class="filter-container">
-            <div class="filter-group">
-                <label for="filterCentro">Centro de Trabajo</label>
-                <!-- Input de globals.css -->
-                <select id="filterCentro" class="input-field">
-                    <option value="">Todos los Centros</option>
-                </select>
-            </div>
+            <div class="filter-container">
             
             <div class="filter-group">
                 <label for="filterAreaTopLevel">Área</label>
                 <select id="filterAreaTopLevel" class="input-field">
                     <option value="">Todas las Áreas</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filterCentro">Centro de Trabajo</label>
+                <select id="filterCentro" class="input-field">
+                    <option value="">Todos los Centros</option>
                 </select>
             </div>
 
@@ -245,25 +267,22 @@
             </div>
 
             <div class="filter-group">
-                <label>&nbsp;</label> <!-- Espaciador para alinear botón -->
-                <!-- Botón de globals.css -->
-                <button id="clearFiltersBtn" type="button" class="btn btn-ghost">Limpiar Filtros</button>
+                <label>&nbsp;</label> <button id="clearFiltersBtn" type="button" class="btn btn-ghost">Limpiar Filtros</button>
             </div>
         </div>
 
-        <!-- Contenedor de la Tabla -->
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Área</th> <!-- Nueva Columna -->
+                        <th>Numero</th> <th>ID</th>
+                        <th>Área</th>
                         <th>Centro de Trabajo</th>
                         <th>Descripción Detallada del Hallazgo</th>
                         <th>Descripción del Riesgo</th>
                         <th>Grupo de Riesgo</th>
                         <th>Puesto Involucrado</th>
-                        <th>Tarea Específica</th> <!-- Columna Renombrada -->
+                        <th>Tarea Específica</th>
                         <th>Nivel de Riesgo Identificado</th>
                         <th>Evaluación Específica</th>
                         <th>Cumplimiento</th>
@@ -277,20 +296,16 @@
                     </tr>
                 </thead>
                 <tbody id="hallazgosTableBody">
-                    <!-- Filas se insertarán con JavaScript -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Modal para Agregar Hallazgo (usa clases de globals.css para 'modal' y 'modal-overlay') -->
     <div id="addEntryModal" class="modal">
         <div class="modal-overlay"></div>
         
-        <!-- Contenedor de contenido del modal con clase específica -->
         <div class="matriz-modal-content">
             
-            <!-- Encabezado del Modal (usa clases de globals.css) -->
             <div class="modal-header">
                 <h3>Agregar Nuevo Hallazgo</h3>
                 <button id="closeModalBtn" type="button" class="modal-close">
@@ -298,32 +313,27 @@
                 </button>
             </div>
 
-            <!-- Cuerpo del Modal -->
             <form id="addEntryForm" class="modal-body">
                 <div class="form-grid">
                     
-                    <!-- Columna 1 -->
                     <div class="form-group">
                         <label for="modalCentro">Centro de Trabajo</label>
                         <select id="modalCentro" required class="modal-form-input">
-                            <!-- Opciones se agregarán con JS -->
-                        </select>
+                            </select>
                     </div>
 
                     <div class="form-group">
                         <label for="modalAreaTopLevelInput">Área</label>
                         <input type="text" id="modalAreaTopLevelInput" list="areaTopLevelDatalist" class="modal-form-input" required placeholder="Seleccione o escriba un área...">
                         <datalist id="areaTopLevelDatalist">
-                            <!-- Opciones se agregarán con JS -->
-                        </datalist>
+                            </datalist>
                     </div>
 
                     <div class="form-group md-col-span-2">
-                        <label for="modalTareaInput">Tarea Específica</label>
+                        <label for="modalTareaInput">Tarea Específica (Hallazgo)</label>
                         <input type="text" id="modalTareaInput" list="tareaDatalist" class="modal-form-input" required placeholder="Seleccione o escriba una tarea...">
                         <datalist id="tareaDatalist">
-                            <!-- Opciones se agregarán con JS -->
-                        </datalist>
+                            </datalist>
                     </div>
                     
                     <div class="form-group md-col-span-2">
@@ -336,13 +346,11 @@
                         <textarea id="modalRiesgo" rows="3" class="modal-form-input"></textarea>
                     </div>
 
-                    <!-- Columna 1 -->
                     <div class="form-group">
                         <label for="modalGrupoRiesgo">Grupo de Riesgo</label>
                         <input type="text" id="modalGrupoRiesgo" class="modal-form-input">
                     </div>
 
-                    <!-- Columna 2 -->
                     <div class="form-group">
                         <label for="modalPuesto">Puesto Involucrado</label>
                         <input type="text" id="modalPuesto" class="modal-form-input">
@@ -354,7 +362,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="modalEvaluacion">Evaluación Específica</label>
+                        <label for="modalEvaluacion">Evaluación Específica (Método)</label>
                         <input type="text" id="modalEvaluacion" class="modal-form-input">
                     </div>
                     
@@ -401,7 +409,6 @@
                 </div>
             </form>
 
-            <!-- Footer del Modal (usa clases de globals.css) -->
             <div class="modal-footer">
                 <button id="cancelModalBtn" type="button" class="btn btn-ghost">Cancelar</button>
                 <button type="submit" form="addEntryForm" class="btn btn-primary">Guardar Hallazgo</button>
@@ -413,79 +420,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
             
-            // --- DATOS INICIALES (MOCK) ---
-            let nextId = 10; // Siguiente ID para nuevos registros
-            const hallazgosData = [
-                {
-                    id: 1,
-                    centro: "MIC",
-                    areaTopLevel: "INFRAESTRUCTURA",
-                    tarea: "Filtración de agua",
-                    descripcion: "Mobiliario de campana altura fija. Menor a 2 horas de...",
-                    riesgo: "Riesgo de posturas forzadas de Cuello, hombro y espalda",
-                    grupoRiesgo: "R02-Posturas Forzadas",
-                    puesto: "Analyst Quality Control",
-                    nivelRiesgo: "32.79%",
-                    evaluacion: "MODERADO",
-                    cumplimiento: "SEMVAS",
-                    medidaControl: "Colocación de un frame o marco ajustable manual",
-                    nuevoNivelRiesgo: "BAJO",
-                    tipoControl: "Ingeniería",
-                    comentarios: "Una vez implementado los cambios se debe generar un plan de capacitación...",
-                    art: "0280 Análisis de agua/no contiene nada",
-                    accion: "",
-                    responsable: ""
-                },
-                {
-                    id: 2,
-                    centro: "MIC",
-                    areaTopLevel: "OPERACIONES",
-                    tarea: "Horno de ultra congelador",
-                    descripcion: "Posturas estáticas prolongadas sin opción de alternancia",
-                    riesgo: "Riesgo de fatiga muscular.",
-                    grupoRiesgo: "R08-Postura Estática",
-                    puesto: "Analyst Quality Control",
-                    nivelRiesgo: "21.43%",
-                    evaluacion: "BAJO",
-                    cumplimiento: "NOM-021-STPS",
-                    medidaControl: "Colocación un tapete antifatiga",
-                    nuevoNivelRiesgo: "BAJO",
-                    tipoControl: "Ingeniería",
-                    comentarios: "Validar la compatibilidad por el particulado no viable",
-                    art: "0282 ART MANEJO DE MICROORGANISMOS",
-                    accion: "",
-                    responsable: ""
-                },
-                {
-                    id: 3,
-                    centro: "MIC",
-                    areaTopLevel: "OFICINA PRINCIPAL",
-                    tarea: "Trabajo de computadora",
-                    descripcion: "Mobiliario no ajustable",
-                    riesgo: "Riesgo alto de TME cuello, hombros y espalda",
-                    grupoRiesgo: "R02-Postura Forzada",
-                    puesto: "Analyst Quality Control",
-                    nivelRiesgo: "",
-                    evaluacion: "ALTO",
-                    cumplimiento: "SEMVAS",
-                    medidaControl: "Colocación de un frame o marco ajustable manual",
-                    nuevoNivelRiesgo: "BAJO",
-                    tipoControl: "Ingeniería",
-                    comentarios: "N/A",
-                    art: "",
-                    accion: "",
-                    responsable: ""
-                }
-            ];
+            // --- DATOS GLOBALES ---
+            let hallazgosData = []; // Almacenará los datos procesados de Supabase
+            let workCentersData = [];
+            let areasData = [];
+            
+            // Mapas para búsquedas rápidas
+            let workCenterMap = new Map();
+            let areaMap = new Map();
+            let workCenterNameMap = new Map();
+            let areaNameMap = new Map();
+            let areaInitialsMap = new Map(); // Para las iniciales del ID
 
-            // Listas para poblar filtros y datalists
-            // Usamos Set para obtener valores únicos y luego convertimos a array
-            const workCentersData = await window.ERGOData.loadAllWorkCenters();
-            let centrosList = workCentersData ? [...new Set(workCentersData.map(center => center.name))] : [];
-            const areasData = await window.ERGOData.getAreas();
-            let areasTopLevelList = areasData ? areasData.map(area => area.name) : [];
-            let tareasList = [...new Set(hallazgosData.map(h => h.tarea))];
-
+            // Listas para filtros (se llenarán después de cargar los datos)
+            let centrosList = [];
+            let areasTopLevelList = [];
+            let tareasList = [];
             
 
             // --- REFERENCIAS AL DOM ---
@@ -530,6 +480,244 @@
             // --- FUNCIONES ---
 
             /**
+             * Expande o contrae una fila de la tabla
+             * @param {HTMLElement} rowEl - El elemento <tr> clickeado
+             */
+            function toggleRowExpand(rowEl) {
+                rowEl.classList.toggle('is-expanded');
+            }
+            // Hacer la función accesible globalmente para el onclick
+            window.toggleRowExpand = toggleRowExpand;
+
+
+            /**
+             * Carga todos los datos necesarios de Supabase y los procesa.
+             */
+                async function loadAndProcessData() {
+                try {
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="19" style="text-align: center; color: var(--gray-500); padding: 2rem;">Cargando datos...</td></tr>`;
+
+                    // 1. Cargar datos base DIRECTAMENTE desde Supabase
+                    const { data: wcData, error: wcError } = await window.dataClient.supabase
+                        .from('work_centers')
+                        .select('id, name');
+                    
+                    const { data: aData, error: aError } = await window.dataClient.supabase
+                        .from('areas')
+                        .select('id, name');
+
+                    if (wcError) throw new Error(`Error cargando Centros: ${wcError.message}`);
+                    if (aError) throw new Error(`Error cargando Áreas: ${aError.message}`);
+
+                    workCentersData = wcData || [];
+                    areasData = aData || [];
+                    
+                    // Cargar datos de área desde localStorage (dashboardData) como fallback
+                    try {
+                        const localDashboardData = JSON.parse(localStorage.getItem('dashboardData'));
+                        if (Array.isArray(localDashboardData)) {
+                            const areaIdsFromSupabase = new Set(areasData.map(a => a.id));
+                            localDashboardData.forEach(area => {
+                                if (area.id && area.name && !areaIdsFromSupabase.has(area.id)) {
+                                    areasData.push({ id: area.id, name: area.name });
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.warn("No se pudo cargar 'dashboardData' desde localStorage", e);
+                    }
+
+                    // 2. Cargar todas las actividades (hallazgos)
+                    const { data: evData, error: evError } = await window.dataClient.supabase
+                        .from('evaluaciones')
+                        .select('work_center_id, score_final, color_riesgo, created_at');
+                    
+                    if (evError) throw new Error(`Error cargando Evaluaciones: ${evError.message}`);
+
+                    // 2.b. Procesar evaluaciones para encontrar la más reciente de cada centro
+                    const latestEvals = new Map();
+                    for (const ev of evData) {
+                        const existing = latestEvals.get(ev.work_center_id);
+                        if (!existing || new Date(ev.created_at) > new Date(existing.created_at)) {
+                            latestEvals.set(ev.work_center_id, ev);
+                        }
+                    }
+                    
+                    // 2.c. Crear el mapa de Scores
+                    const workCenterScoreMap = new Map();
+                    for (const [centerId, ev] of latestEvals.entries()) {
+                        workCenterScoreMap.set(centerId, {
+                            scoreValue: `${parseFloat(ev.score_final || 0).toFixed(2)}%`,
+                            scoreColor: ev.color_riesgo || '#6b7280' // default gray
+                        });
+                    }
+const { data: actividadesData, error: actError } = await window.dataClient.supabase
+                        .from('actividades')
+                        .select('*'); 
+                    
+                    if (actError) throw new Error(`Error cargando Actividades: ${actError.message}`);
+
+                    if (actError) throw new Error(`Error cargando Actividades: ${actError.message}`);
+
+                    // --- INICIO DE MODIFICACIÓN 1: Cargar Puestos Asignados ---
+                    const { data: puestosData, error: puestosError } = await window.dataClient.supabase
+                        .from('centro_puestos')
+                        .select('centro_id, puestos(nombre)'); // centro_id es la FK a work_centers
+                    
+                    if (puestosError) throw new Error(`Error cargando Puestos Asignados: ${puestosError.message}`);
+
+                    // Agrupar los puestos por centro_id
+                    const puestosAgrupados = new Map();
+                    if (puestosData) {
+                        for (const item of puestosData) {
+                            const centerId = item.centro_id;
+                            const puestoNombre = item.puestos?.nombre || 'Puesto Desconocido';
+                            
+                            if (!puestosAgrupados.has(centerId)) {
+                                puestosAgrupados.set(centerId, new Set()); // Usar Set para evitar duplicados
+                            }
+                            puestosAgrupados.get(centerId).add(puestoNombre);
+                        }
+                    }
+                    
+                    // Crear el mapa de Puestos (con el HTML que quieres)
+                    const workCenterPuestosMap = new Map();
+                    for (const [centerId, puestosSet] of puestosAgrupados.entries()) {
+                        const sortedPuestos = [...puestosSet].sort();
+                        let html = '<ul class="puestos-asignados-list">';
+                        sortedPuestos.forEach(puestoTexto => {
+                            html += `<li>${puestoTexto}</li>`;
+                        });
+                        html += '</ul>';
+                        workCenterPuestosMap.set(centerId, html);
+                    }
+
+                    // 3. Crear mapas para joins rápidos
+                    workCenterMap = new Map(workCentersData.map(c => [c.id, c.name]));
+                    areaMap = new Map(areasData.map(a => [a.id, a.name]));
+                    workCenterNameMap = new Map(workCentersData.map(c => [c.name, c.id]));
+                    areaNameMap = new Map(areasData.map(a => [a.name, a.id]));
+
+                    // 4. --- INICIO: Lógica para INICIALES de Área ---
+                    areaInitialsMap = new Map();
+                    const generatedInitials = new Set();
+
+                    // Ordenar áreas por nombre para asegurar un orden consistente
+                    areasData.sort((a, b) => a.name.localeCompare(b.name));
+
+                    areasData.forEach(area => {
+                        let idBase = '';
+                        const words = area.name.toUpperCase().split(' ').filter(w => w);
+                        
+                        if (words.length === 1) {
+                            idBase = words[0].substring(0, 2); // Dos iniciales si es una palabra
+                        } else if (words.length > 1) {
+                            idBase = words[0][0] + words[1][0]; // Inicial de las dos primeras palabras
+                        }
+
+                        let finalInitials = idBase;
+                        if (generatedInitials.has(finalInitials)) {
+                            if (words.length === 1) {
+                                idBase = words[0].substring(0, 3);
+                            } else if (words.length > 1) {
+                                idBase = words[0].substring(0, 2) + words[1][0];
+                            }
+                            finalInitials = idBase;
+                        }
+                        
+                        let counter = 2;
+                        let originalFinalInitials = finalInitials;
+                        while (generatedInitials.has(finalInitials)) {
+                            finalInitials = `${originalFinalInitials}${counter++}`;
+                        }
+
+                        generatedInitials.add(finalInitials);
+                        areaInitialsMap.set(area.name, finalInitials); // Mapea Nombre -> Iniciales
+                    });
+                    // --- FIN: Lógica para INICIALES de Área ---
+
+                    // 5. Procesar los datos de actividades (preliminar)
+                    let preliminaryData = actividadesData.map(act => {
+                        // Obtener el score del mapa que creamos
+                        const scoreData = workCenterScoreMap.get(act.work_center_id) || {};
+
+                        // Devolver el objeto
+                        return {
+                            // Nombres para mostrar y ordenar
+                            areaTopLevel: areaMap.get(act.area_id) || act.area_id,
+                            centro: workCenterMap.get(act.work_center_id) || act.work_center_id,
+                            descripcion: act.descripcion_detallada,
+                            riesgo: act.descripcion_riesgo,
+                            grupoRiesgo: act.grupo_riesgo,
+                            puesto: workCenterPuestosMap.get(act.work_center_id) || (act.puesto_involucrado || ''),
+                            tarea: act.nombre,
+                            nivelRiesgo: act.nivel_riesgo, // Se mantiene por si se usa en el modal
+                            evaluacion: act.metodo,
+                            cumplimiento: act.cumplimiento,
+                            medidaControl: act.recomendaciones, // Mapeo de recomendaciones
+                            nuevoNivelRiesgo: act.nuevo_nivel_riesgo,
+                            tipoControl: act.tipo_control,
+                            comentarios: act.comentarios,
+                            art: act.art,
+                            accion: act.accion,
+                            responsable: act.responsable,
+                            // --- DATOS DEL SCORE ---
+                            scoreValue: scoreData.scoreValue,
+                            scoreColor: scoreData.scoreColor
+                        };
+                    });
+
+                    // 6. Ordenar los datos según la lógica de negocio
+                    preliminaryData.sort((a, b) => {
+                        if (a.areaTopLevel < b.areaTopLevel) return -1;
+                        if (a.areaTopLevel > b.areaTopLevel) return 1;
+                        if (a.centro < b.centro) return -1;
+                        if (a.centro > b.centro) return 1;
+                        if (a.tarea < b.tarea) return -1;
+                        if (a.tarea > b.tarea) return 1;
+                        return 0;
+                    });
+
+                    // 7. Asignar ID final y almacenar en la variable global
+                    let areaCounter = 1;
+                    let currentAreaName = null;
+
+                    hallazgosData = preliminaryData.map((entry) => {
+                        // Comprobar si es una nueva área
+                        if (entry.areaTopLevel !== currentAreaName) {
+                            currentAreaName = entry.areaTopLevel; // Actualizar el área actual
+                            areaCounter = 1; // Reiniciar el contador
+                        }
+
+                        const numero = areaCounter; // Usar el contador específico del área
+                        const iniciales = areaInitialsMap.get(entry.areaTopLevel) || 'ERR';
+                        entry.id = `${numero}_${iniciales}`; // ID Personalizado (Ej: "1_MI")
+
+                        areaCounter++; // Incrementar para el siguiente item de ESTA área
+                        return entry;
+                    });
+
+
+                    // 8. Poblar listas de filtros (ahora que tenemos los datos)
+                    centrosList = [...new Set(workCentersData.map(center => center.name))];
+                    areasTopLevelList = [...new Set(areasData.map(area => area.name))];
+                    tareasList = [...new Set(hallazgosData.map(h => h.tarea))];
+
+                    // 9. Poblar los <select> de los filtros
+                    populateSelect(filterAreaTopLevel, areasTopLevelList, 'Todas las Áreas');
+                    populateSelect(filterCentro, centrosList, 'Todos los Centros');
+                    populateSelect(filterTarea, tareasList, 'Todas las Tareas');
+
+                    // 10. Renderizar la tabla
+                    applyFilters();
+
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="19" style="text-align: center; color: red; padding: 2rem;">Error al cargar los datos: ${error.message}</td></tr>`;
+                }
+            }
+
+            /**
              * Puebla un elemento <select> con opciones
              * @param {HTMLSelectElement} selectEl - El elemento select a poblar
              * @param {string[]} optionsList - El array de strings para las opciones
@@ -549,7 +737,7 @@
                 const uniqueOptions = [...new Set(optionsList)].sort();
                 uniqueOptions.forEach(optionText => {
                     const option = document.createElement('option');
-                    option.value = optionText;
+                    option.value = optionText; // El valor es el mismo texto (para filtros)
                     option.textContent = optionText;
                     selectEl.appendChild(option);
                 });
@@ -558,6 +746,68 @@
                 if (Array.from(selectEl.options).some(opt => opt.value === currentValue)) {
                     selectEl.value = currentValue;
                 }
+            }
+
+            function updateDependentFilters() {
+                const selectedArea = filterAreaTopLevel.value;
+                const selectedCentro = filterCentro.value;
+
+                // 1. Filtrar los Centros basado en el Área
+                let centrosFiltrados = [];
+                if (selectedArea) {
+                    // Obtener los IDs de centro que pertenecen al área seleccionada
+                    const centerIdsInArea = workCentersData
+                        .filter(c => areaMap.get(c.area_id) === selectedArea)
+                        .map(c => c.id);
+                    // Ahora filtrar los hallazgos que usan esos IDs
+                    centrosFiltrados = [...new Set(hallazgosData
+                        .filter(h => h.areaTopLevel === selectedArea)
+                        .map(h => h.centro))];
+                } else {
+                    // Si no hay área, mostrar todos los centros
+                    centrosFiltrados = [...new Set(hallazgosData.map(h => h.centro))];
+                }
+                populateSelect(filterCentro, centrosFiltrados, 'Todos los Centros');
+                filterCentro.value = selectedCentro; // Intentar restaurar la selección previa
+
+                // 2. Filtrar Tareas basado en Área y Centro
+                let tareasFiltradas = [];
+                if (selectedArea && selectedCentro) {
+                    // Ambas seleccionadas
+                    tareasFiltradas = [...new Set(hallazgosData
+                        .filter(h => h.areaTopLevel === selectedArea && h.centro === selectedCentro)
+                        .map(h => h.tarea))];
+                } else if (selectedArea) {
+                    // Solo Área seleccionada
+                    tareasFiltradas = [...new Set(hallazgosData
+                        .filter(h => h.areaTopLevel === selectedArea)
+                        .map(h => h.tarea))];
+                } else {
+                    // Ningún filtro o solo centro (que no depende de nada)
+                    tareasFiltradas = [...new Set(hallazgosData.map(h => h.tarea))];
+                }
+                populateSelect(filterTarea, tareasFiltradas, 'Todas las Tareas');
+            }
+
+            /**
+             * Puebla un elemento <select> con objetos {value, text}
+             * @param {HTMLSelectElement} selectEl - El elemento select a poblar
+             * @param {object[]} optionsList - Array de objetos {value, text}
+             * @param {string} defaultOptionText - Texto para la opción por defecto
+             */
+            function populateSelectWithObjects(selectEl, optionsList, defaultOptionText) {
+                selectEl.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = defaultOptionText;
+                selectEl.appendChild(defaultOption);
+
+                optionsList.forEach(option => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = option.value; // El valor es el ID
+                    optionEl.textContent = option.text; // El texto es el Nombre
+                    selectEl.appendChild(optionEl);
+                });
             }
             
             /**
@@ -575,7 +825,7 @@
                 });
             }
 
-            /**
+/**
              * Renderiza la tabla de hallazgos con los datos proporcionados
              * @param {object[]} data - Array de objetos de hallazgos
              */
@@ -583,22 +833,70 @@
                 hallazgosTableBody.innerHTML = ''; // Limpiar tabla
 
                 if (data.length === 0) {
-                    hallazgosTableBody.innerHTML = `<tr><td colspan="18" style="text-align: center; color: var(--gray-500); padding: 2rem;">No se encontraron hallazgos.</td></tr>`;
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="19" style="text-align: center; color: var(--gray-500); padding: 2rem;">No se encontraron hallazgos.</td></tr>`;
                     return;
                 }
 
-                data.forEach(entry => {
+                let lastCentroName = null;
+                // Usamos un loop 'for' clásico para controlar el índice 'i'
+                for (let i = 0; i < data.length; i++) {
+                    const entry = data[i];
                     const row = document.createElement('tr');
-                    row.innerHTML = `
+                    row.setAttribute('onclick', 'toggleRowExpand(this)');
+                    
+                    let rowHTML = '';
+
+                    // Construir la primera parte de la fila (antes de la celda fusionada)
+                    rowHTML += `
+                        <td>${i + 1}</td>
                         <td>${entry.id}</td>
-                        <td>${entry.areaTopLevel}</td>
+                        <td>${entry.areaTopLevel || ''}</td>
                         <td>${entry.centro || ''}</td>
                         <td class="wrap-text">${entry.descripcion || ''}</td>
                         <td class="wrap-text">${entry.riesgo || ''}</td>
                         <td>${entry.grupoRiesgo || ''}</td>
                         <td>${entry.puesto || ''}</td>
                         <td>${entry.tarea || ''}</td>
-                        <td>${entry.nivelRiesgo || ''}</td>
+                    `;
+
+                    // --- INICIO: Lógica de Rowspan ---
+                    // ¿Es este un centro de trabajo diferente al anterior?
+                    if (entry.centro !== lastCentroName) {
+                        // 1. Calcular el rowspan
+                        let rowspanCount = 1;
+                        // Mirar filas adelante
+                        for (let j = i + 1; j < data.length; j++) {
+                            if (data[j].centro === entry.centro) {
+                                rowspanCount++;
+                            } else {
+                                break; // Parar cuando el nombre del centro cambie
+                            }
+                        }
+
+                        // 2. Añadir la celda fusionada
+                            rowHTML += `
+                            <td rowspan="${rowspanCount}" style="
+                                background-color: ${entry.scoreColor || '#f1f5f9'}; 
+                                color: #ffffff; 
+                                vertical-align: middle; 
+                                text-align: center; 
+                                font-weight: bold; 
+                                white-space: normal;
+                                font-size: 2rem;
+                            ">
+                                ${entry.scoreValue || '--'}
+                            </td>
+                        `;
+                        
+                        // 3. Actualizar el último centro procesado
+                        lastCentroName = entry.centro;
+                    }
+                    // Si NO es un centro nuevo (else), simplemente no añadimos la celda
+                    // y HTML la omitirá correctamente gracias al rowspan de la fila anterior.
+                    // --- FIN: Lógica de Rowspan ---
+
+                    // Construir el resto de la fila (después de la celda fusionada)
+                    rowHTML += `
                         <td>${entry.evaluacion || ''}</td>
                         <td>${entry.cumplimiento || ''}</td>
                         <td class="wrap-text">${entry.medidaControl || ''}</td>
@@ -609,11 +907,16 @@
                         <td>${entry.accion || ''}</td>
                         <td>${entry.responsable || ''}</td>
                     `;
+
+                    row.innerHTML = rowHTML;
                     hallazgosTableBody.appendChild(row);
-                });
+                }
             }
 
             /**
+             * Aplica los filtros seleccionados a los datos y vuelve a renderizar la tabla
+             */
+/**
              * Aplica los filtros seleccionados a los datos y vuelve a renderizar la tabla
              */
             function applyFilters() {
@@ -621,7 +924,13 @@
                 const selectedAreaTopLevel = filterAreaTopLevel.value;
                 const selectedTarea = filterTarea.value;
 
+                // --- MODIFICADO ---
+                // Actualizar las opciones de los filtros dependientes ANTES de filtrar la tabla
+                updateDependentFilters();
+                // --- FIN MODIFICADO ---
+
                 const filteredData = hallazgosData.filter(entry => {
+                    // Filtra por los nombres, que es lo que está en los <select>
                     const matchCentro = !selectedCentro || entry.centro === selectedCentro;
                     const matchAreaTopLevel = !selectedAreaTopLevel || entry.areaTopLevel === selectedAreaTopLevel;
                     const matchTarea = !selectedTarea || entry.tarea === selectedTarea;
@@ -634,64 +943,75 @@
             /**
              * Maneja el envío del formulario del modal
              */
-            function handleFormSubmit(event) {
+            async function handleFormSubmit(event) {
                 event.preventDefault();
 
-                // Obtener valores (y normalizarlos con trim)
-                const centroValue = modalCentro.value;
-                const areaTopLevelValue = modalAreaTopLevelInput.value.trim();
-                const tareaValue = modalTareaInput.value.trim();
-                
-                // Agregar nueva Área si no existe
-                if (areaTopLevelValue && !areasTopLevelList.includes(areaTopLevelValue)) {
-                    areasTopLevelList.push(areaTopLevelValue);
-                    // Re-poblar el filtro y el datalist
-                    populateSelect(filterAreaTopLevel, areasTopLevelList, 'Todas las Áreas');
-                    populateDatalist(areaTopLevelDatalist, areasTopLevelList);
-                }
-                
-                // Agregar nueva Tarea si no existe
-                if (tareaValue && !tareasList.includes(tareaValue)) {
-                    tareasList.push(tareaValue);
-                    // Re-poblar el filtro y el datalist
-                    populateSelect(filterTarea, tareasList, 'Todas las Tareas');
-                    populateDatalist(tareaDatalist, tareasList);
+                // Buscar el ID del área a partir del nombre ingresado en el datalist
+                const areaName = modalAreaTopLevelInput.value.trim();
+                const area_id = areaNameMap.get(areaName);
+
+                if (!area_id) {
+                    alert('El Área seleccionada no es válida. Por favor, elija una de la lista.');
+                    return;
                 }
 
-                // Crear nuevo objeto de hallazgo
-                const newEntry = {
-                    id: nextId++,
-                    centro: centroValue,
-                    tarea: tareaValue,
-                    descripcion: modalDescripcion.value,
-                    riesgo: modalRiesgo.value,
-                    grupoRiesgo: modalGrupoRiesgo.value,
-                    puesto: modalPuesto.value,
-                    nivelRiesgo: modalNivelRiesgo.value,
-                    evaluacion: modalEvaluacion.value,
-                    cumplimiento: modalCumplimiento.value,
-                    medidaControl: modalMedidaControl.value,
-                    nuevoNivelRiesgo: modalNuevoNivelRiesgo.value,
-                    tipoControl: modalTipoControl.value,
-                    comentarios: modalComentarios.value,
-                    art: modalART.value,
-                    accion: modalAccion.value,
-                    responsable: modalResponsable.value
+                // 1. Mapear campos del modal al esquema de 'actividades'
+                const hallazgoData = {
+                    work_center_id: modalCentro.value, // El <select> ya tiene el ID como valor
+                    area_id: area_id, // ID encontrado del mapa
+                    nombre: modalTareaInput.value.trim(),
+                    descripcion_detallada: modalDescripcion.value.trim(),
+                    descripcion_riesgo: modalRiesgo.value.trim(),
+                    grupo_riesgo: modalGrupoRiesgo.value.trim(),
+                    puesto_involucrado: modalPuesto.value.trim(),
+                    nivel_riesgo: modalNivelRiesgo.value.trim(),
+                    metodo: modalEvaluacion.value.trim(),
+                    cumplimiento: modalCumplimiento.value.trim(),
+                    recomendaciones: modalMedidaControl.value.trim(), // Mapeo
+                    nuevo_nivel_riesgo: modalNuevoNivelRiesgo.value.trim(),
+                    tipo_control: modalTipoControl.value.trim(),
+                    comentarios: modalComentarios.value.trim(),
+                    art: modalART.value.trim(),
+                    accion: modalAccion.value.trim(),
+                    responsable: modalResponsable.value.trim(),
+                    user_id: window.ERGOAuth.getCurrentUser()?.id
                 };
 
-                // Agregar a los datos, aplicar filtros y cerrar modal
-                hallazgosData.push(newEntry);
-                applyFilters(); // Vuelve a renderizar la tabla con los filtros actuales
-                closeModal();
+                // 2. Validación
+                if (!hallazgoData.work_center_id || !hallazgoData.area_id || !hallazgoData.nombre) {
+                    alert('Centro de Trabajo, Área y Tarea Específica son campos obligatorios.');
+                    return;
+                }
+
+                // 3. Guardar en Supabase (usando el método de dataClient)
+                try {
+                    // Asumimos que dataClient.createActividad existe (basado en centro-trabajo.js)
+                    const nuevaActividadArray = await window.dataClient.createActividad(hallazgoData);
+                    
+                    if (!nuevaActividadArray || nuevaActividadArray.length === 0) {
+                        throw new Error("La creación no devolvió el nuevo registro.");
+                    }
+                    
+                    alert('Hallazgo guardado correctamente.');
+                    closeModal();
+                    await loadAndProcessData(); // Recargar todos los datos
+                    
+                } catch (error) {
+                    console.error('Error al guardar el hallazgo:', error);
+                    alert(`No se pudo guardar el hallazgo: ${error.message}`);
+                }
             }
             
-            /**
-             * Limpia todos los filtros y vuelve a renderizar
-             */
             function clearFilters() {
                 filterCentro.value = "";
                 filterAreaTopLevel.value = "";
                 filterTarea.value = "";
+                
+                // Repoblar los filtros con todas las opciones
+                populateSelect(filterAreaTopLevel, areasTopLevelList, 'Todas las Áreas');
+                populateSelect(filterCentro, centrosList, 'Todos los Centros');
+                populateSelect(filterTarea, tareasList, 'Todas las Tareas');
+
                 applyFilters();
             }
 
@@ -700,9 +1020,17 @@
              */
             function openModal() {
                 // Asegurarse de que las listas del modal estén actualizadas
-                populateSelect(modalCentro, centrosList, 'Seleccione un Centro');
+                
+                // 1. Poblar Centros (usar IDs como valor)
+                const centrosListForModal = workCentersData.map(c => ({ value: c.id, text: c.name }));
+                populateSelectWithObjects(modalCentro, centrosListForModal, 'Seleccione un Centro');
+                
+                // 2. Poblar Datalist de Áreas (usar nombres)
                 populateDatalist(areaTopLevelDatalist, areasTopLevelList);
+                
+                // 3. Poblar Datalist de Tareas (usar nombres)
                 populateDatalist(tareaDatalist, tareasList);
+                
                 addEntryModal.classList.add('show');
             }
 
@@ -716,24 +1044,23 @@
 
             // --- INICIALIZACIÓN Y EVENT LISTENERS ---
 
-            // Poblar filtros iniciales
-            populateSelect(filterCentro, centrosList, 'Todos los Centros');
-            populateSelect(filterAreaTopLevel, areasTopLevelList, 'Todas las Áreas');
-            populateSelect(filterTarea, tareasList, 'Todas las Tareas');
-            
-            // Renderizar tabla inicial
-            renderTable(hallazgosData);
+            // Cargar datos al iniciar
+            await loadAndProcessData();
 
             // Listeners para filtros
             filterCentro.addEventListener('change', applyFilters);
-            filterAreaTopLevel.addEventListener('change', applyFilters);
+            filterAreaTopLevel.addEventListener('change', () => {
+                // Si cambias el Área, resetea el Centro
+                filterCentro.value = "";
+                applyFilters();
+            });
+            filterCentro.addEventListener('change', applyFilters);
             filterTarea.addEventListener('change', applyFilters);
             clearFiltersBtn.addEventListener('click', clearFilters);
 
             // Listeners para modal
             openModalBtn.addEventListener('click', openModal);
             closeModalBtn.addEventListener('click', closeModal);
-            // CORRECCIÓN: Se eliminó el guion bajo (_) que causaba el error
             cancelModalBtn.addEventListener('click', closeModal);
             addEntryForm.addEventListener('submit', handleFormSubmit);
             
@@ -743,7 +1070,6 @@
 
         
     </script>
-</body>
+    </body>
 
 </html>
-

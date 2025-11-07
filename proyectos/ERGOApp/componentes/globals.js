@@ -498,9 +498,6 @@ window.ERGONavigation = {
 };
 
 
-
-
-
 // ===== MANEJO DE STORAGE =====
 window.ERGOStorage = {
     setItem(key, value) {
