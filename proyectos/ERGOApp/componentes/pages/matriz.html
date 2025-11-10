@@ -32,18 +32,17 @@
         td {
             padding: 0.75rem 1rem; /* Espaciado interno */
             border-bottom: 1px solid var(--gray-200, #e2e8f0);
-            text-align: left;
             max-width: 180px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap; /* Forzar nowrap por defecto */
+            text-align: center;
         }
 
         /* Encabezados de la tabla */
         thead th {
             background-color: var(--gray-50, #f8fafc);
             color: var(--gray-600, #475569);
-            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             position: sticky;
@@ -77,9 +76,9 @@
         thead th:nth-child(4),
         tbody td:nth-child(4) {
             max-width: 160px; /* Ancho más pequeño para forzar el salto */
-            min-width: 160px;
             white-space: normal; /* Permitir salto de línea */
             vertical-align: middle;
+            text-align: center;
         }
         /* --- AÑADIDO: Estilos para fila expandida --- */
         tbody tr.is-expanded td {
@@ -278,15 +277,16 @@
                         <th>Numero</th> <th>ID</th>
                         <th>Área</th>
                         <th>Centro de Trabajo</th>
-                        <th>Descripción Detallada del Hallazgo</th>
+                        <th>Descripción Detallada 
+                             <br>del Hallazgo</th>
                         <th>Descripción del Riesgo</th>
                         <th>Grupo de Riesgo</th>
                         <th>Puesto Involucrado</th>
                         <th>Tarea Específica</th>
-                        <th>Nivel de Riesgo Identificado</th>
-                        <th>Evaluación Específica</th>
+                        <th>Nivel de Riesgo <br> Identificado</th>
+                        <th>Evaluación <br> Específica</th>
                         <th>Cumplimiento</th>
-                        <th>Medida de Control Propuesta</th>
+                        <th>Medida de Control <br> Propuesta</th>
                         <th>Nuevo Nivel de Riesgo</th>
                         <th>Tipo de Control</th>
                         <th>Comentarios</th>
@@ -383,6 +383,10 @@
 
                     <div class="form-group">
                         <label for="modalTipoControl">Tipo de Control</label>
+                        <input type="text" id="modalTipoControl" class="modal-form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalTipoControl">Evaluaciónd de Cargas</label>
                         <input type="text" id="modalTipoControl" class="modal-form-input">
                     </div>
 
