@@ -263,7 +263,7 @@
                     <div>
                         <div class="form-group">
                             <label for="actividad-nombre">Tarea Específica (Hallazgo)</label>
-                            <input type="text" id="actividad-nombre" class="input-field" required>
+                            <input type="text" id="actividad-nombre" class="input-field" required spellcheck="true">
                         </div>
                         <div class="form-group">
                             <label for="grupo_riesgo">Grupo de Riesgo</label>
@@ -316,7 +316,7 @@
                                     <button type="button" class="btn-toggle" data-value="EJA">Levantanmiento y Transporte de Carga (A1)</button>
                                     <button type="button" class="btn-toggle" data-value="WS">empuje y Arrastre de carga (A2)</button>
                                 </div>
-                                <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
+                                <button id="btn-evaluar-tipo_Nom" type="button" class="btn btn-secondary">Evaluar</button>
                             </div>
                         </div>
                         
@@ -325,7 +325,7 @@
                     <div>
                         <div class="form-group">
                             <label for="descripcion_riesgo">Descripción del Riesgo</label>
-                            <textarea id="descripcion_riesgo" class="input-field" rows="3"></textarea>
+                            <textarea id="descripcion_riesgo" class="input-field" rows="3" spellcheck="true"></textarea>
                         </div>
 
                         <div class="form-group">
@@ -359,19 +359,19 @@
 
                         <div class="form-group">
                             <label for="nuevo_nivel_riesgo">Nuevo Nivel de Riesgo (Esperado)</label>
-                            <input type="text" id="nuevo_nivel_riesgo" class="input-field">
+                            <input type="text" id="nuevo_nivel_riesgo" class="input-field"  spellcheck="true">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="accion">Acción</label>
-                        <input type="text" id="accion" class="input-field">
+                        <input type="text" id="accion" class="input-field"  spellcheck="true">
                     </div>
                 </div>
 
                 <div class="form-group full-width">
                     <label for="descripcion_detallada">Descripción Detallada del Hallazgo</label>
-                    <textarea id="descripcion_detallada" class="input-field" rows="3"></textarea>
+                    <textarea id="descripcion_detallada" class="input-field" rows="3" spellcheck="true"></textarea>
                 </div>
 
                 <div id="seccion-fotos-actividad" class="form-group full-width" style="display: none;">
@@ -516,7 +516,7 @@
                 </div>
                  <div class="form-group">
                     <label for="condiciones-art-input">ART</label>
-                    <input type="text" id="condiciones-art-input" class="input-field">
+                    <input type="text" id="condiciones-art-input" class="input-field" spellcheck="true">
                 </div>    
             <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="cerrarModalCondiciones()">Cancelar</button>
