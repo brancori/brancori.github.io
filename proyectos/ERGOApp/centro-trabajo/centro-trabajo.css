@@ -29,7 +29,7 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
 
         .centro-title {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr;
             align-items: stretch; /* Clave: Estira los items para que tengan la misma altura */
             gap: 1.5rem;
         }
@@ -512,10 +512,12 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
     padding: 1rem 1.5rem;
     box-shadow: var(--shadow-md);
     min-width: 220px;
+    max-width: 350px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     border: 1px solid transparent;
     margin-right: 20px;
+
 }
 
 .environmental-card:hover {
@@ -1144,6 +1146,8 @@ textarea.is-readonly:focus {
     background-color: white;
     color: var(--gray-900);
     border: 1px solid var(--gray-200);
+    max-height: 400px;
+
 }
 
 /* Asegurarse que los elementos dentro de score-container sean del color correcto */
@@ -1202,6 +1206,7 @@ textarea.is-readonly:focus {
 .centro-header.status-open .breadcrumb span,
 .centro-header.status-closed .breadcrumb span {
     color: rgba(255, 255, 255, 0.9);
+
 }
 
 .centro-header.status-open .breadcrumb a:hover,

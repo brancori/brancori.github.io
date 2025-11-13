@@ -70,7 +70,7 @@ class HeaderComponent {
         .app-header-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: .5rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -84,7 +84,7 @@ class HeaderComponent {
             flex: 1;
         }
 
-        .breadcrumb-container {
+        .breadcrumb_-container {
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -125,14 +125,14 @@ class HeaderComponent {
             color: var(--gray-900);
         }
 
-        .breadcrumb {
+        .breadcrumb_ {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             font-size: 0.875rem;
         }
 
-        .breadcrumb-item {
+        .breadcrumb_-item {
             color: var(--gray-500);
             text-decoration: none;
             padding: 0.25rem 0.5rem;
@@ -142,18 +142,18 @@ class HeaderComponent {
             white-space: nowrap;
         }
 
-        .breadcrumb-item:hover:not(.active) {
+        .breadcrumb_-item:hover:not(.active) {
             color: var(--primary-600);
             background: var(--primary-50);
         }
 
-        .breadcrumb-item.active {
+        .breadcrumb_-item.active {
             color: var(--gray-900);
             font-weight: 600;
             background: var(--gray-100);
         }
 
-        .breadcrumb-separator {
+        .breadcrumb_-separator {
             color: var(--gray-300);
             margin: 0 0.25rem;
             font-size: 0.75rem;
@@ -165,7 +165,7 @@ class HeaderComponent {
         }
 
         .page-title {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--gray-900);
             margin: 0 0 0.25rem 0;
@@ -333,7 +333,7 @@ class HeaderComponent {
         }
 
         @media (max-width: 480px) {
-            .breadcrumb {
+            .breadcrumb_ {
                 display: none;
             }
             
@@ -356,15 +356,15 @@ class HeaderComponent {
         <div class="app-header">
             <div class="app-header-content">
                 <div class="header-nav">
-                    <div class="breadcrumb-container">
+                    <div class="breadcrumb_-container">
                         <button class="nav-btn back-btn" id="backBtn" title="Regresar" style="display: none;">
                             <span class="icon">←</span>
                         </button>
                         <button class="nav-btn home-btn" id="homeBtn" title="Ir al inicio">
                             <span class="icon">🏠</span>
                         </button>
-                        <nav class="breadcrumb" id="breadcrumb">
-                            <span class="breadcrumb-item active">Dashboard</span>
+                        <nav class="breadcrumb_" id="breadcrumb_">
+                            <span class="breadcrumb_-item active">Dashboard</span>
                         </nav>
                     </div>
                     
@@ -413,7 +413,7 @@ class HeaderComponent {
         // Insertar al inicio del body
         document.body.insertAdjacentHTML('afterbegin', this.getHTML());
         this.updateUserInterface();
-        this.updateBreadcrumb();
+        this.updatebreadcrumb_();
     }
 
     // Cargar datos del usuario
@@ -519,32 +519,32 @@ logout() {
     ERGOAuth.logout('Has cerrado la sesión.');
 }
 
-    // Actualizar breadcrumb
-    updateBreadcrumb() {
-        const breadcrumb = document.getElementById('breadcrumb');
+    // Actualizar breadcrumb_
+    updatebreadcrumb_() {
+        const breadcrumb_ = document.getElementById('breadcrumb_');
         const backBtn = document.getElementById('backBtn');
         
-        if (!breadcrumb) return;
+        if (!breadcrumb_) return;
 
-        let breadcrumbHTML = '';
+        let breadcrumb_HTML = '';
         
         this.navigationStack.forEach((item, index) => {
             const isLast = index === this.navigationStack.length - 1;
             const isClickable = index < this.navigationStack.length - 1;
             
             if (index > 0) {
-                breadcrumbHTML += '<span class="breadcrumb-separator">›</span>';
+                breadcrumb_HTML += '<span class="breadcrumb_-separator">›</span>';
             }
             
-            breadcrumbHTML += `
-                <span class="breadcrumb-item ${isLast ? 'active' : ''}" 
+            breadcrumb_HTML += `
+                <span class="breadcrumb_-item ${isLast ? 'active' : ''}" 
                       ${isClickable ? `onclick="headerComponent.navigateToLevel(${index})"` : ''}>
                     ${item}
                 </span>
             `;
         });
 
-        breadcrumb.innerHTML = breadcrumbHTML;
+        breadcrumb_.innerHTML = breadcrumb_HTML;
         
         // Mostrar/ocultar botón back
         if (backBtn) {
@@ -552,7 +552,7 @@ logout() {
         }
     }
 
-    // Navegar a un nivel específico del breadcrumb
+    // Navegar a un nivel específico del breadcrumb_
     navigateToLevel(level) {
         if (level < this.pageHistory.length - 1) {
             const targetPage = this.pageHistory[level];
@@ -561,18 +561,18 @@ logout() {
     }
 
     // Actualizar página actual
-    updatePage(title, subtitle = '', breadcrumbTitle = null) {
+    updatePage(title, subtitle = '', breadcrumb_Title = null) {
         const pageTitle = document.getElementById('pageTitle');
         const pageSubtitle = document.getElementById('pageSubtitle');
         
         if (pageTitle) pageTitle.textContent = title;
         if (pageSubtitle) pageSubtitle.textContent = subtitle;
 
-        // Actualizar navigation stack si se proporciona breadcrumbTitle
-        if (breadcrumbTitle) {
+        // Actualizar navigation stack si se proporciona breadcrumb_Title
+        if (breadcrumb_Title) {
             // Si es una nueva página, agregarla al stack
-            if (!this.navigationStack.includes(breadcrumbTitle)) {
-                this.navigationStack.push(breadcrumbTitle);
+            if (!this.navigationStack.includes(breadcrumb_Title)) {
+                this.navigationStack.push(breadcrumb_Title);
                 this.pageHistory.push({
                     title: title,
                     subtitle: subtitle,
@@ -581,7 +581,7 @@ logout() {
             }
         }
 
-        this.updateBreadcrumb();
+        this.updatebreadcrumb_();
     }
 
     // Método para usar desde otras páginas
@@ -592,7 +592,7 @@ logout() {
                 window.headerComponent.updatePage(
                     pageConfig.title,
                     pageConfig.subtitle || '',
-                    pageConfig.breadcrumb || pageConfig.title
+                    pageConfig.breadcrumb_ || pageConfig.title
                 );
             }
         } else {
@@ -605,7 +605,7 @@ logout() {
                     window.headerComponent.updatePage(
                         pageConfig.title,
                         pageConfig.subtitle || '',
-                        pageConfig.breadcrumb || pageConfig.title
+                        pageConfig.breadcrumb_ || pageConfig.title
                     );
                 }, 100);
             }

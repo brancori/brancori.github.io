@@ -274,7 +274,7 @@ function setupEventListeners() {
                 'componentes/pages/Johnson_Evaluation.html',
                 params
             );
-            window.location.href = url;
+            window.open(url, 'JohnsonEvaluation', 'width=1000,height=800,scrollbars=yes');
 
         } else {
             // Aquí podrías añadir la lógica para "WS" u otros tipos en el futuro

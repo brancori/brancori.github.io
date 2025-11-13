@@ -74,7 +74,7 @@
     font-size: 1.125rem;
     font-weight: 600;
     color: var(--gray-900);
-    margin-bottom: 1.5rem;
+    margin-top: 25px;
 }
 
 /* KPI Tables */
@@ -146,6 +146,7 @@
 }
 body {
     line-height: 1.4;
+    margin: 25px;
 }
 .table-row {
     display: flex;
@@ -324,8 +325,10 @@ body {
 /* Actions Grid */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    width: 92vw;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
+    justify-self: center;
 }
 
 .action-card {
@@ -337,13 +340,13 @@ body {
     transition: var(--transition);
     text-align: center;
     position: relative;
+    text-decoration: none;
 }
 
 .action-card:hover:not(.disabled) {
     border-color: var(--primary-300);
     box-shadow: var(--shadow-lg);
     transform: translateY(-3px);
-    background: radial-gradient(circle at top left, var(--primary-50), white 50%); /* Destello de color menta */
 }
 .action-card:hover:not(.disabled) .action-icon {
     transform: scale(1.15);
@@ -363,7 +366,6 @@ body {
 
 .action-card h3 {
     font-size: 1rem;
-    font-weight: 600;
     color: var(--gray-900);
     margin-bottom: 0.5rem;
 }
@@ -555,7 +557,6 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
-    align-items: start;
 }
 .modal-footer {
     display: flex;
@@ -822,13 +823,6 @@ body {
     width: 120%;
     height: 140%;
     z-index: -2;
-    background: 
-        /* Capa 1: Formas ergonómicas sutiles */
-        radial-gradient(ellipse 300px 150px at 20% 30%, var(--primary-50) 0%, transparent 50%),
-        radial-gradient(ellipse 200px 100px at 80% 20%, var(--primary-100) 0%, transparent 50%),
-        radial-gradient(ellipse 250px 125px at 60% 70%, var(--primary-50) 0%, transparent 50%),
-        radial-gradient(ellipse 180px 90px at 30% 80%, var(--primary-100) 0%, transparent 50%);
-    animation: parallaxMove 20s ease-in-out; /* <- ¡CAMBIADO! Ya no es infinito */
     opacity: 0.6;
 }
 
@@ -881,16 +875,6 @@ body {
     }
 }
 
-/* Efecto parallax sutil al hacer scroll (opcional) */
-@supports (transform: translate3d(0,0,0)) {
-    .main-content {
-        will-change: transform;
-    }
-    
-    .parallax-scroll {
-        transform: translateY(calc(var(--scroll-y) * 0.1px));
-    }
-}
 
 /* ===== VARIANTE ALTERNATIVA: PATRÓN ERGONÓMICO DISCRETO ===== */
 /* 

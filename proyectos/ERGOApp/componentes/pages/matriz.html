@@ -285,6 +285,8 @@
                         <th>Puesto Involucrado</th>
                         <th>Tarea Específica</th>
                         <th>Nivel de Riesgo <br> Identificado</th>
+                        <th>Evaluación JNJ</th>
+                        <th>Evaluación <br> Nom-036</th>
                         <th>Evaluación <br> Específica</th>
                         <th>Cumplimiento</th>
                         <th>Medida de Control <br> Propuesta</th>
@@ -500,7 +502,7 @@
              */
                 async function loadAndProcessData() {
                 try {
-                    hallazgosTableBody.innerHTML = `<tr><td colspan="19" style="text-align: center; color: var(--gray-500); padding: 2rem;">Cargando datos...</td></tr>`;
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="21" style="text-align: center; color: var(--gray-500); padding: 2rem;">Cargando datos...</td></tr>`;
 
                     // 1. Cargar datos base DIRECTAMENTE desde Supabase
                     const { data: wcData, error: wcError } = await window.dataClient.supabase
@@ -657,6 +659,8 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
                             puesto: workCenterPuestosMap.get(act.work_center_id) || (act.puesto_involucrado || ''),
                             tarea: act.nombre,
                             nivelRiesgo: act.nivel_riesgo, // Se mantiene por si se usa en el modal
+                            evaljnj: act.evaluacion_jnj,
+                            evalnom: act.evaluacion_nom,
                             evaluacion: act.metodo,
                             cumplimiento: act.cumplimiento,
                             medidaControl: act.recomendaciones, // Mapeo de recomendaciones
@@ -718,7 +722,7 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
 
                 } catch (error) {
                     console.error("Error al cargar datos:", error);
-                    hallazgosTableBody.innerHTML = `<tr><td colspan="19" style="text-align: center; color: red; padding: 2rem;">Error al cargar los datos: ${error.message}</td></tr>`;
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="21" style="text-align: center; color: red; padding: 2rem;">Error al cargar los datos: ${error.message}</td></tr>`;
                 }
             }
 
@@ -838,7 +842,7 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
                 hallazgosTableBody.innerHTML = ''; // Limpiar tabla
 
                 if (data.length === 0) {
-                    hallazgosTableBody.innerHTML = `<tr><td colspan="19" style="text-align: center; color: var(--gray-500); padding: 2rem;">No se encontraron hallazgos.</td></tr>`;
+                    hallazgosTableBody.innerHTML = `<tr><td colspan="21" style="text-align: center; color: var(--gray-500); padding: 2rem;">No se encontraron hallazgos.</td></tr>`;
                     return;
                 }
 
@@ -902,6 +906,8 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
 
                     // Construir el resto de la fila (después de la celda fusionada)
                     rowHTML += `
+                        <td>${entry.evaluacion_jnj || ''}</td>
+                        <td>${entry.evaluacion_nom || ''}</td>
                         <td>${entry.evaluacion || ''}</td>
                         <td>${entry.cumplimiento || ''}</td>
                         <td class="wrap-text">${entry.medidaControl || ''}</td>
@@ -1075,6 +1081,8 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
 
         
     </script>
+    <script src="../header-component.js"></script>
+
     </body>
 
 </html>

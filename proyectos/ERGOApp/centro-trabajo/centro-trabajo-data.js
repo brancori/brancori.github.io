@@ -157,6 +157,8 @@ async function loadActividades() {
     try {
         // Obtener los hallazgos/actividades del centro actual
         evaluacionesEspecificas = await dataClient.getActividades(workCenterId);
+        console.log('🔍 DEBUG: Actividades cargadas:', evaluacionesEspecificas);
+        console.log('🔍 DEBUG: Primera actividad completa:', evaluacionesEspecificas[0]);
 
         // Verificar si se encontraron hallazgos
         if (evaluacionesEspecificas && evaluacionesEspecificas.length > 0) {
@@ -171,7 +173,12 @@ async function loadActividades() {
             }
 
             // Iterar sobre cada hallazgo para crear su tarjeta
-            evaluacionesEspecificas.forEach(actividad => {
+                evaluacionesEspecificas.forEach(actividad => {
+                if (actividad.datos_analisis && typeof actividad.datos_analisis === 'object' && actividad.datos_analisis.score_jnj) {
+                 actividad.score_jnj = actividad.datos_analisis.score_jnj;
+                } else {
+                 actividad.score_jnj = null; // Asegurar que sea nulo si no existe
+                }   
                 const item = document.createElement('div');
                 item.className = `actividad-item`;
                 item.setAttribute('data-id', actividad.id);

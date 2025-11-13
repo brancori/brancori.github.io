@@ -26,11 +26,17 @@
         <!-- Header del centro -->
 <header class="centro-header">
     <nav class="breadcrumb">
-        <a href="../areas.html">Áreas</a>
-        <span class="separator">/</span>
-        <a href="areas.html#area-ZI90HE" id="breadcrumb-area">asd</a>
-        <span class="separator">/</span>
-        <span id="breadcrumb-centro">asd</span>
+        <div>
+            <a href="../areas.html">Áreas</a>
+            <span class="separator">/</span>
+            <a href="areas.html#area-ZI90HE" id="breadcrumb-area" >asd</a>
+            <span class="separator">/</span>
+            <span id="breadcrumb-centro">asd</span>
+        </div>
+        <div>
+            <span class="detail-label">Fecha</span>
+            <span id="eval-fecha" class="detail-value">Pendiente</span>
+        </div>
     </nav>
     
     <div class="centro-title">
@@ -40,19 +46,7 @@
                 <p id="centro-responsable" class="centro-responsable">Responsable: asda</p>
             </div>
 
-            <div id="evaluacion-inicial-info" class="details-grid">
-                <div class="detail-item">
-                    <span class="detail-label">Fecha</span>
-                    <span id="eval-fecha" class="detail-value">Pendiente</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Sugerencias</span>
-                    <span id="eval-sugeridas" class="detail-value">Realizar evaluación inicial</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="environmental-card" class="environmental-card info-card" onclick="abrirModalCondiciones()">
+                    <div id="environmental-card" class="environmental-card info-card" onclick="abrirModalCondiciones()">
             <div class="environmental-item" id="display-condicion-iluminacion">
                 <span class="label">Iluminación:</span>
                 <span class="value" id="condicion-iluminacion-valor">300</span>
@@ -82,6 +76,16 @@
                 <span class="value" id="condicion-puestos-valor">--</span>
             </div>
         </div>
+
+            <div id="evaluacion-inicial-info" class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Sugerencias</span>
+                    <span id="eval-sugeridas" class="detail-value">Realizar evaluación inicial</span>
+                </div>
+            </div>
+        </div>
+
+
             
 <div class="score-container info-card">
                 <div>
@@ -354,6 +358,10 @@
                                     <button type="button" class="btn-toggle" data-value="WS">Computer Work Station</button>
                                 </div>
                                 <button id="btn-evaluar-tipo" type="button" class="btn btn-secondary">Evaluar</button>
+                            </div>
+                            <div id="jnj-eval-result" class="form-group full-width" style="margin-top: 0.75rem; padding: 0.75rem; border: 1px solid var(--gray-300); border-radius: var(--border-radius-md); background-color: var(--gray-50); display: none;">
+                                <span style="font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Resultado JNJ:</span>
+                                <span id="jnj-eval-score" style="font-weight: 700; color: var(--primary-600);">--</span>
                             </div>
                         </div>
 

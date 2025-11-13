@@ -1,8 +1,10 @@
         // --- bootstrap de sesión para la página "centro-trabajo" ---
 
         let tipoEvaluacionACrear = null;
+        let actividadDatosAnalisis = null;
         let notaEnEdicion = null; 
          let isCenterClosed = false;
+         
         // Variables globales
         let currentCenterData = null;
         let fotosActuales = [];
@@ -175,12 +177,46 @@ function toggleActividadDetailsSimple(eOrEl) {
 let fotosActividadActual = [];
 
         // Listener para recibir actualizaciones de evaluaciones
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'evaluacionActualizada') {
-                // Recargar datos de evaluación
-                loadEvaluacionInicial();
-            }
+window.addEventListener('message', function(event) {
+    console.log('📨 Mensaje recibido:', event.data);
+    
+    if (event.data.type === 'evaluacionActualizada') {
+        loadEvaluacionInicial();
+    }
+    
+    // NUEVO: Escuchar resultados de JNJ
+if (event.data.type === 'jnjEvaluacionCompleta') {
+    console.log('✅ Datos JNJ recibidos:', event.data.datos);
+    
+    if (actividadEnEdicion && event.data.datos) {
+        const datosJNJ_Full = event.data.datos.fullEJA || {}; 
+        actividadDatosAnalisis = datosJNJ_Full; 
+
+        // Usar la clave 'summary' o el objeto completo para compatibilidad
+        const resumen = datosJNJ_Full.summary || event.data.datos; 
+        
+        // Guardar en la base de datos (con la estructura JSON completa)
+        dataClient.updateActividad(actividadEnEdicion.id, {
+            datos_analisis: datosJNJ_Full 
+        }).then(() => {
+            ERGOUtils.showToast('Evaluación JNJ guardada correctamente. Recargando...', 'success');
+            
+            // --- INICIO DE CAMBIO SOLICITADO ---
+            // Recargar la ventana completa para forzar la actualización de todas las listas y la actividad en edición.
+            window.location.reload(); 
+            // --- FIN DE CAMBIO SOLICITADO ---
+
+            // NOTA: El siguiente código (actualización de UI) ya no es estrictamente necesario 
+            // porque la página se recargará, pero lo dejamos por si la recarga falla.
+            const resultContainer = document.getElementById('jnj-eval-result');
+            const scoreDisplay = document.getElementById('jnj-eval-score');
+            
+            scoreDisplay.textContent = `${resumen.jobRiskScore} pts ${resumen.riskLevel}`;
+            resultContainer.style.display = 'block';
         });
+    }
+}
+});
         // Variables para el modal de fotos
 let currentFotoIndex = 0;
 let isZoomed = false;
@@ -272,11 +308,26 @@ let actividadEnEdicion = null;
  * Si se pasa una actividad, abre en modo "Edición".
  * @param {string|null} actividadId - El ID de la actividad a editar.
  */
+// En centro-trabajo.js
+
 function abrirModalActividad(actividadId = null) {
     const actividad = actividadId ? evaluacionesEspecificas.find(e => e.id === actividadId) : null;
     actividadEnEdicion = actividad;
 
     const esEdicion = actividad !== null;
+    const resultContainer = document.getElementById('jnj-eval-result');
+    const scoreDisplay = document.getElementById('jnj-eval-score');
+    const tipoGroup = document.getElementById('tipo-analisis-group');
+    const btnEvaluarMetodo = document.getElementById('btn-evaluar-metodo');
+    const selectedDisplayBtn = document.getElementById('cumplimiento-selected-display');
+    const selectedDisplayText = document.getElementById('cumplimiento-selected-text');
+    
+    // -------------------------------------------------------------
+    // LOG DE DEPURACIÓN CLAVE
+    console.log('--- INICIO DEBUG: abrirModalActividad ---');
+    console.log(`LOG: ID Actividad (Modo Edición): ${actividadId}`);
+    console.log('LOG: 📦 Actividad Completa (Datos Crudos):', actividad); 
+    // -------------------------------------------------------------
 
     // Renombrar el modal y el botón
     document.getElementById('modal-actividad-titulo').textContent = esEdicion ? 'Editar Hallazgo' : 'Nuevo Hallazgo';
@@ -285,71 +336,75 @@ function abrirModalActividad(actividadId = null) {
     document.getElementById('form-actividad').reset();
     document.getElementById('fotos-grid-actividad').innerHTML = '';
     
-    // Lógica para los botones EJA/WS
-    const tipoGroup = document.getElementById('tipo-analisis-group');
-    const btns = tipoGroup.querySelectorAll('.btn-toggle');
-    btns.forEach(btn => {
-        btn.classList.remove('active');
-        btn.onclick = () => {
-            btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        };
-    });
-    const btnEvaluarMetodo = document.getElementById('btn-evaluar-metodo');
+    // ... (Lógica de botones y cumplimiento) ...
 
-    // --- NUEVO: Resetear el wrapper de cumplimiento ---
-    const wrapper = document.getElementById('cumplimiento-wrapper');
-    const selectedDisplayBtn = document.getElementById('cumplimiento-selected-display');
-    const selectedDisplayText = document.getElementById('cumplimiento-selected-text');
+    // 🔴 Inicialización del score JNJ a "--" y oculto
+    resultContainer.style.display = 'none';
+    scoreDisplay.textContent = '--';
+
+if (esEdicion) {
+    // --- CAMPOS REUTILIZADOS ---
+    document.getElementById('actividad-id').value = actividad.id;
+    document.getElementById('actividad-nombre').value = actividad.nombre;
+    document.getElementById('actividad-metodo').value = actividad.metodo;
+    quillActividadComentarios.root.innerHTML = actividad.comentarios || '';
+    quillActividadRecomendaciones.root.innerHTML = actividad.recomendaciones || '';
     
-    wrapper.classList.remove('is-expanded');
-    selectedDisplayText.textContent = 'Selecciona una normatividad...';
-    selectedDisplayBtn.onmouseenter = null;
-    selectedDisplayBtn.onmouseleave = null;
-    // --- FIN NUEVO ---
-
-    if (esEdicion) {
-        // --- CAMPOS REUTILIZADOS ---
-document.getElementById('actividad-id').value = actividad.id;
-        document.getElementById('actividad-nombre').value = actividad.nombre; // Tarea Específica
-        document.getElementById('actividad-metodo').value = actividad.metodo; // Evaluación Específica
-        quillActividadComentarios.root.innerHTML = actividad.comentarios || ''; // Comentarios
-        quillActividadRecomendaciones.root.innerHTML = actividad.recomendaciones || ''; // Medida de Control
-        // document.getElementById('nivel_riesgo').value = actividad.nivel_riesgo || ''; // Nivel de Riesgo (Eliminado)
+    // 🟢 LÓGICA DE EXTRACCIÓN Y VISUALIZACIÓN DEL SCORE
+const datosAnalisis = actividad.datos_analisis;
+actividadDatosAnalisis = datosAnalisis; 
+    
+if (datosAnalisis && typeof datosAnalisis === 'object') {
+    // 1. Prioriza la lectura desde la clave 'summary' (Estructura de Johnson/EJA)
+    let puntaje = datosAnalisis.summary?.jobRiskScore; // <--- Clave correcta del JSON de Johnson
+    let nivel = datosAnalisis.summary?.riskLevel;      // <--- Clave correcta del JSON de Johnson
         
-        const tipoAnalisis = actividad.tipo_analisis || 'EJA';
-                const activeBtn = tipoGroup.querySelector(`[data-value="${tipoAnalisis}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-        // ... (código existente) ...
-        btnEvaluarMetodo.disabled = !actividad.metodo;
+    // 2. Si no la encuentra, busca en 'resumen' (Estructura antigua/simplificada)
+    if (!puntaje) {
+        puntaje = datosAnalisis.resumen?.puntajeRiesgo; 
+        nivel = datosAnalisis.resumen?.nivelRiesgo;
+    }
 
-        // --- NUEVOS CAMPOS ---
-        document.getElementById('descripcion_detallada').value = actividad.descripcion_detallada || '';
-        document.getElementById('descripcion_riesgo').value = actividad.descripcion_riesgo || '';
-        document.getElementById('grupo_riesgo').value = actividad.grupo_riesgo || '';
-        // document.getElementById('puesto_involucrado').value = actividad.puesto_involucrado || ''; // Eliminado
-        
-        document.getElementById('nuevo_nivel_riesgo').value = actividad.nuevo_nivel_riesgo || '';
-        document.getElementById('tipo_control').value = actividad.tipo_control || '';
-        // document.getElementById('art').value = actividad.art || ''; // Eliminado
-        document.getElementById('accion').value = actividad.accion || '';
+    console.log(`LOG: 🔑 Extracción: puntajeRiesgo=${puntaje}, nivelRiesgo=${nivel}`);
 
+    if (puntaje !== null && puntaje !== undefined && puntaje !== '0' && puntaje !== '') {
+        scoreDisplay.textContent = `${puntaje} pts ${nivel || ''}`;
+        resultContainer.style.display = 'block';
+        console.log(`LOG: ✅ RESULTADO MOSTRADO EN UI: ${scoreDisplay.textContent}`);
+    } else {
+        resultContainer.style.display = 'none';
+        console.log('LOG: ❌ Resultado oculto. Falla: puntaje es nulo/cero/vacío.');
+    }
+} else {
+        resultContainer.style.display = 'none';
+        console.log('LOG: ❌ datos_analisis es null o no es un objeto.');
+    }
+
+    const tipoAnalisis = actividad.tipo_analisis || 'EJA';
+    const activeBtn = tipoGroup.querySelector(`[data-value="${tipoAnalisis}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    btnEvaluarMetodo.disabled = !actividad.metodo;
+
+    // --- NUEVOS CAMPOS ---
+    document.getElementById('descripcion_detallada').value = actividad.descripcion_detallada || '';
+    document.getElementById('descripcion_riesgo').value = actividad.descripcion_riesgo || '';
+    document.getElementById('grupo_riesgo').value = actividad.grupo_riesgo || '';
+    
+    document.getElementById('nuevo_nivel_riesgo').value = actividad.nuevo_nivel_riesgo || '';
+    document.getElementById('tipo_control').value = actividad.tipo_control || '';
+    document.getElementById('accion').value = actividad.accion || '';
         // --- MANEJO DE CUMPLIMIENTO (MODIFICADO) ---
         const savedCompliance = actividad.cumplimiento || '';
         if (savedCompliance) {
             const radioToSelect = document.querySelector(`input[name="cumplimiento_radio"][value="${savedCompliance}"]`);
             if (radioToSelect) {
                 radioToSelect.checked = true;
-                // Actualizamos el texto del botón
                 const label = radioToSelect.closest('.compliance-radio-item').querySelector('label');
                 if(label) selectedDisplayText.textContent = label.textContent;
-                
-                // Actualizamos el hover del botón
                 selectedDisplayBtn.onmouseenter = () => showComplianceDetails(savedCompliance);
                 selectedDisplayBtn.onmouseleave = () => clearCompliancePreview();
             }
         }
-        // Mostramos el detalle de la norma ya guardada
         showComplianceDetails(savedCompliance); 
 
         // Cargar fotos
@@ -357,19 +412,19 @@ document.getElementById('actividad-id').value = actividad.id;
 
     } else {
         // Modo Creación
+        actividadDatosAnalisis = null;
         btnEvaluarMetodo.disabled = true;
         tipoGroup.querySelector('[data-value="EJA"]').classList.add('active');
         
-        // Limpiar campos
         quillActividadComentarios.root.innerHTML = '';
         quillActividadRecomendaciones.root.innerHTML = '';
         document.getElementById('actividad-id').value = '';
         
-        // Limpiar vista previa de cumplimiento
-        clearCompliancePreview(); 
+        clearCompliancePreview();   
     }
     
     ERGOModal.open('modal-actividad');
+    console.log('--- FIN DEBUG: abrirModalActividad ---');
 }
 
 /**
@@ -379,6 +434,10 @@ function cerrarModalActividad() {
     ERGOModal.close('modal-actividad');
     document.getElementById('form-actividad').reset();
     actividadEnEdicion = null;
+    actividadDatosAnalisis = null;
+
+    document.getElementById('jnj-eval-result').style.display = 'none';
+    document.getElementById('jnj-eval-score').textContent = '--';
 
     // --- LIMPIEZA DE CUMPLIMIENTO (MODIFICADO) ---
     const checkedRadio = document.querySelector('input[name="cumplimiento_radio"]:checked');
@@ -410,11 +469,13 @@ async function guardarActividad() {
     
     // --- OBTENER VALOR DE CUMPLIMIENTO (RADIO) ---
     const selectedCompliance = document.querySelector('input[name="cumplimiento_radio"]:checked');
-
+    const scoreJnjText = document.getElementById('jnj-eval-score')?.textContent;
+    const datosAnalisisAEnviar = actividadDatosAnalisis; 
     const data = {
         work_center_id: workCenterId,
         area_id: areaId,
         user_id: ERGOAuth.getCurrentUser()?.id,
+        datos_analisis: datosAnalisisAEnviar,
         
         // --- CAMPOS REUTILIZADOS ---
         nombre: document.getElementById('actividad-nombre').value.trim(), // Tarea Específica

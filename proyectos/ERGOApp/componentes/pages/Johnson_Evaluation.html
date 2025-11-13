@@ -705,8 +705,10 @@
     </div>
 
     <!-- BÚSQUEDA -->
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Buscar evaluación... (ej: Wrist, Lifting, Noise)">
+    <div class="search-container" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <input type="text" id="search-input" placeholder="Buscar evaluación... (ej: Wrist, Lifting, Noise)" style="flex-grow: 1;">
+        <input type="text" placeholder="JSON" style="width: 150px; border-radius: 25px; text-align: center; border: 1px solid var(--color-ok);" id="json-input">
+        <button id="btn-save-json" class="btn btn-primary" style="padding: 8px 12px; font-size: 12px; box-shadow: none;">Guardar JSON</button>
     </div>
 
     <!-- EVALUACIONES -->
@@ -784,861 +786,425 @@
     </div>
 </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            window.updateSummary = function() {
-                let totalScore = 0;
-                document.querySelectorAll('.selected-score').forEach(el => {
-                    const score = parseInt(el.textContent, 10);
-                    if (!isNaN(score)) totalScore += score;
-                });
+<script>
+/* ============================================================
+   🧩 BLOQUE PRINCIPAL - INICIALIZACIÓN Y GENERACIÓN DE CARDS
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🌐 Iniciando Evaluación Johnson');
 
-                const isHighRisk = document.querySelectorAll('input.rojo:checked').length > 0;
-                const riskLevelElement = document.getElementById('risk-level-text');
-                const compactRisk = document.getElementById('compact-risk');
-                
-                let riskText = '';
-                let riskClass = '';
-                
-                if (isHighRisk || totalScore >= 30) {
-                    riskText = '(Alto)';
-                    riskClass = 'high';
-                } else if (totalScore >= 20) {
-                    riskText = '(Moderado)';
-                    riskClass = 'moderate';
-                } else {
-                    riskText = '(Bajo)';
-                    riskClass = 'low';
-                }
+  // --- FUNCIÓN: Calcular y actualizar resumen general ---
+  window.updateSummary = function () {
+    let totalScore = 0;
+    document.querySelectorAll('.selected-score').forEach((el) => {
+      const score = parseInt(el.textContent, 10);
+      if (!isNaN(score)) totalScore += score;
+    });
 
-                riskLevelElement.textContent = riskText;
-                riskLevelElement.className = riskClass;
-                compactRisk.textContent = riskText;
-                compactRisk.className = riskClass;
+    const isHighRisk = document.querySelectorAll('input.rojo:checked').length > 0;
+    const riskLevelElement = document.getElementById('risk-level-text');
+    const compactRisk = document.getElementById('compact-risk');
 
-                const numEmployees = parseInt(document.getElementById('Employees').value, 10) || 0;
-                document.getElementById('job-risk-score').textContent = totalScore;
-                document.getElementById('compact-score').textContent = totalScore;
-                document.getElementById('num-employees-display').textContent = numEmployees;
-                document.getElementById('total-job-score').textContent = totalScore * numEmployees;
-            };
+    let riskText = '';
+    let riskClass = '';
 
-            const sectionsData = [
-                { number: 1, title: 'Loss Information', image: 'https://placehold.co/32', scores: [12, 8, 4, 0] },
-                { number: 2, title: 'Employee Response', image: 'https://placehold.co/32', scores: [8,4,2,0] },
-                { number: 3, title: 'Miscellaneous', image: 'https://placehold.co/32', scores: [8,4,2,0] },
-                { number: 4, title: 'Hand Grip Force / Power Grip', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 5, title: 'Pinch Grip Force', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 6, title: 'Finger or Thumb Press Force', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 7, title: 'Wrist Flexion', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 8, title: 'Wrist Extension', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 9, title: 'Wrist Radial Deviation', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 10, title: 'Wrist Ulnar Deviation', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 11, title: 'Repetition', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 12, title: 'Vibration', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 13, title: 'Mechanical Stress to Hand', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 14, title: 'Mechanical Stress to Arm', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 15, title: 'Hand Palm-Up (Forearm Supination)', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 16, title: 'Hand Palm-Down (Forearm Pronation)', image: 'https://placehold.co/32', scores: [3,3,1,0] },
-                { number: 17, title: 'Pull Down with One or Both Arms', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 18, title: 'One-handed Push or Pull', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 19, title: 'Shoulder Abduction or Flexion', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 20, title: 'Reach Across Body', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 21, title: 'Reach Behind Body', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 22, title: 'Neck Flexion', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 23, title: 'Neck Extension', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 24, title: 'Lateral Bending of Neck', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 25, title: 'Neck Rotation', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 26, title: 'Bending Forward', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 27, title: 'Bending to Side', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 28, title: 'Twisting', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 29, title: 'Stand on Unpadded Surface', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 30, title: 'Impact Stress to Knees and Ankles', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 31, title: 'Ankle Extension', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 32, title: 'Static Ankle Flexion', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 33, title: 'Lifting', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 34, title: 'Carrying', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 35, title: 'Pushing and Pulling (Initial Force)', image: 'https://placehold.co/32', scores: [6,4,2,0] },
-                { number: 36, title: 'Noise', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 37, title: 'Heat Stress', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 38, title: 'Cold Stress', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 39, title: 'Lighting', image: 'https://placehold.co/32', scores: [3,2,1,0] },
-                { number: 40, title: 'Human Error', image: 'https://placehold.co/32', scores: [3,2,1,0] }
-            ];
-
-            const container = document.getElementById('evaluations-container');
-            const template = document.getElementById('evaluation-template');
-            sectionsData.forEach((data, index) => {
-
-                const clone = document.importNode(template.content, true);
-                clone.querySelector('.evaluation-title').textContent = `${data.number}. ${data.title}`;
-                clone.querySelector('.evaluation-image').src = data.image;
-
-                const card = clone.querySelector('.container-evaluation');
-                card.dataset.searchText = data.title.toLowerCase();
-                card.addEventListener('click', () => openDetailsModal(data.number));
-
-                const scoreDivs = clone.querySelectorAll('.score-indicators > div:not(.score-display)');
-                const colorClasses = ['rojo', 'amarillo', 'azul', 'gris', 'verde'];
-
-                scoreDivs.forEach((div, j) => {
-                    const input = div.querySelector('input[type="checkbox"]');
-                    const label = div.querySelector('label');
-                    
-                    if (!input) return;
-
-                    input.name = `group-${index}`;
-                    input.classList.add(colorClasses[j]);
-
-                    if (j === 4) {
-                        input.setAttribute('data-score', '0');
-                        if(label) label.style.display = 'none';
-                    } else if (label && data.scores[j] !== undefined) {
-                        label.textContent = data.scores[j];
-                    }
-                });
-
-                const checkboxes = clone.querySelectorAll('.score-indicators input[type="checkbox"]');
-                checkboxes.forEach(chk => {
-                    chk.addEventListener('change', function() {
-                        if (this.checked) {
-                            checkboxes.forEach(other => { if (other !== this) other.checked = false; });
-                            const scoreEl = this.closest('.container-evaluation').querySelector('.selected-score');
-                            const scoreValue = this.classList.contains('verde') ? 
-                                this.getAttribute('data-score') : 
-                                this.parentElement.querySelector('label').textContent;
-                            scoreEl.textContent = scoreValue;
-                        } else {
-                            this.closest('.container-evaluation').querySelector('.selected-score').textContent = '-';
-                        }
-                        window.updateSummary();
-                        const saveBtn = document.getElementById('save-button');
-            if (saveBtn) {
-                console.log('Event listener agregado a #save-button');
-                saveBtn.addEventListener('click', saveJohnsonEvaluation);
-            } else {
-                console.error('No se encontró el botón con id "save-button"');
-            }
-                    });
-                });
-
-                clone.querySelectorAll('.custom-x').forEach(span => {
-                    span.addEventListener('click', function() {
-                        const input = this.previousElementSibling;
-                        if (input && !input.checked) {
-                            input.checked = true;
-                            input.dispatchEvent(new Event('change'));
-                        }
-                    });
-                });
-                
-                container.appendChild(clone);
-            });
-
-            // Búsqueda
-            const searchInput = document.getElementById('search-input');
-            searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                document.querySelectorAll('.container-evaluation').forEach(card => {
-                    const text = card.dataset.searchText;
-                    if (text.includes(searchTerm)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                });
-            });
-
-            // Header sticky con colapso
-            const header = document.getElementById('main-header-container');
-            const jobInput = document.getElementById('job');
-            const compactJob = document.getElementById('compact-job');
-
-            // --- INICIO DE MODIFICACIÓN ---
-            // Sobrescribir el valor de 'job' si viene de la URL
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const actividadNombre = urlParams.get('actividadNombre');
-
-                // Si 'actividadNombre' viene en la URL, sobrescribe el valor por defecto
-                if (actividadNombre) {
-                    const decodedName = decodeURIComponent(actividadNombre);
-                    jobInput.value = decodedName;
-                    compactJob.textContent = decodedName; // Actualizar header compacto
-                }
-                // Si no hay parámetro, los 'value' del HTML se usan por defecto
-            } catch (e) {
-                console.error("Error al poblar datos de URL:", e);
-            }
-            // --- FIN DE MODIFICACIÓN ---
-
-            jobInput.addEventListener('input', () => {
-                compactJob.textContent = jobInput.value || '-';
-            });
-
-            // Lógica de colapso con "Dead Zone" para evitar el loop
-            let isHeaderCompact = false;
-            const shrinkThreshold = 250; // Umbral para encoger
-            const expandThreshold = 80;  // Umbral para expandir
-
-            window.addEventListener('scroll', () => {
-              const scrollY = window.scrollY;
-
-              // Encoger: Si bajamos más de 150 Y AÚN NO está compacto
-              if (scrollY > shrinkThreshold && !isHeaderCompact) {
-                header.classList.remove('expanded');
-                header.classList.add('collapsed');
-                isHeaderCompact = true;
-              
-              // Expandir: Si subimos a menos de 50 Y SÍ está compacto
-              } else if (scrollY < expandThreshold && isHeaderCompact) {
-                header.classList.remove('collapsed');
-                header.classList.add('expanded');
-                isHeaderCompact = false;
-              }
-              // Si scrollY está entre 50 y 150, no se hace nada, rompiendo el loop.
-            });
-
-            // Listener para empleados
-            document.getElementById('Employees').addEventListener('input', window.updateSummary);
-            document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-        document.getElementById('details-modal-overlay').addEventListener('click', (e) => {
-            if (e.target.id === 'details-modal-overlay') {
-                closeModal();
-            }
-        });
-
-        // Cargar los datos del JSON al iniciar
-        loadModalData();
-            const saveBtn = document.getElementById('save-button');
-    if (saveBtn) {
-        console.log('Event listener agregado a #save-button');
-        saveBtn.addEventListener('click', saveJohnsonEvaluation);
+    if (isHighRisk || totalScore >= 30) {
+      riskText = '(Alto)';
+      riskClass = 'high';
+    } else if (totalScore >= 20) {
+      riskText = '(Moderado)';
+      riskClass = 'moderate';
     } else {
-        console.error('No se encontró el botón con id "save-button"');
+      riskText = '(Bajo)';
+      riskClass = 'low';
     }
 
-    // Conectar el botón de editar
-    const editBtn = document.getElementById('edit-button');
-    if (editBtn) {
-        console.log('Event listener agregado a #edit-button');
-        editBtn.addEventListener('click', () => {
-            // Al hacer clic en Editar, ocultamos "Editar" y mostramos "Guardar"
-            editBtn.style.display = 'none';
-            saveBtn.style.display = 'block';
-            setFormEnabled(true);
-            // Opcional: notificar al usuario
-            const toast = window.ERGOUtils?.showToast;
-            if(toast) toast('Modo de edición activado.', 'info');
-            else console.log('Modo de edición activado.');
-        });
-    }
+    riskLevelElement.textContent = riskText;
+    riskLevelElement.className = riskClass;
+    compactRisk.textContent = riskText;
+    compactRisk.className = riskClass;
 
-    // LLAMAR A LA FUNCIÓN DE CARGA
-    // Esto rellenará el formulario y actualizará el resumen si hay datos
-    loadJohnsonEvaluation();
-            // Actualizar resumen inicial
-        });
+    const numEmployees = parseInt(document.getElementById('Employees').value, 10) || 0;
+    document.getElementById('job-risk-score').textContent = totalScore;
+    document.getElementById('compact-score').textContent = totalScore;
+    document.getElementById('num-employees-display').textContent = numEmployees;
+    document.getElementById('total-job-score').textContent = totalScore * numEmployees;
+  };
 
-        /**
- * @file johnson-saver.js
- * Contiene la lógica para recopilar y guardar los datos de
- * Johnson_Evaluation.html en la base de datos Supabase.
- */
+  // --- DATOS BASE: FACTORES ERGONÓMICOS ---
+  const sectionsData = [
+    { number: 1, title: 'Loss Information', scores: [12, 8, 4, 0] },
+    { number: 2, title: 'Employee Response', scores: [8, 4, 2, 0] },
+    { number: 3, title: 'Miscellaneous', scores: [8, 4, 2, 0] },
+    { number: 4, title: 'Hand Grip Force / Power Grip', scores: [6, 4, 2, 0] },
+    { number: 5, title: 'Pinch Grip Force', scores: [6, 4, 2, 0] },
+    { number: 6, title: 'Finger or Thumb Press Force', scores: [6, 4, 2, 0] },
+    { number: 7, title: 'Wrist Flexion', scores: [3, 3, 1, 0] },
+    { number: 8, title: 'Wrist Extension', scores: [3, 3, 1, 0] },
+    { number: 9, title: 'Wrist Radial Deviation', scores: [3, 3, 1, 0] },
+    { number: 10, title: 'Wrist Ulnar Deviation', scores: [3, 3, 1, 0] },
+    { number: 11, title: 'Repetition', scores: [6, 4, 2, 0] },
+    { number: 12, title: 'Vibration', scores: [6, 4, 2, 0] },
+    { number: 13, title: 'Mechanical Stress to Hand', scores: [6, 4, 2, 0] },
+    { number: 14, title: 'Mechanical Stress to Arm', scores: [3, 3, 1, 0] },
+    { number: 15, title: 'Hand Palm-Up (Forearm Supination)', scores: [3, 3, 1, 0] },
+    { number: 16, title: 'Hand Palm-Down (Forearm Pronation)', scores: [3, 3, 1, 0] },
+    { number: 17, title: 'Pull Down with One or Both Arms', scores: [6, 4, 2, 0] },
+    { number: 18, title: 'One-handed Push or Pull', scores: [6, 4, 2, 0] },
+    { number: 19, title: 'Shoulder Abduction or Flexion', scores: [6, 4, 2, 0] },
+    { number: 20, title: 'Reach Across Body', scores: [3, 2, 1, 0] },
+    { number: 21, title: 'Reach Behind Body', scores: [3, 2, 1, 0] },
+    { number: 22, title: 'Neck Flexion', scores: [3, 2, 1, 0] },
+    { number: 23, title: 'Neck Extension', scores: [3, 2, 1, 0] },
+    { number: 24, title: 'Lateral Bending of Neck', scores: [3, 2, 1, 0] },
+    { number: 25, title: 'Neck Rotation', scores: [3, 2, 1, 0] },
+    { number: 26, title: 'Bending Forward', scores: [6, 4, 2, 0] },
+    { number: 27, title: 'Bending to Side', scores: [3, 2, 1, 0] },
+    { number: 28, title: 'Twisting', scores: [3, 2, 1, 0] },
+    { number: 29, title: 'Stand on Unpadded Surface', scores: [3, 2, 1, 0] },
+    { number: 30, title: 'Impact Stress to Knees and Ankles', scores: [3, 2, 1, 0] },
+    { number: 31, title: 'Ankle Extension', scores: [3, 2, 1, 0] },
+    { number: 32, title: 'Static Ankle Flexion', scores: [3, 2, 1, 0] },
+    { number: 33, title: 'Lifting', scores: [6, 4, 2, 0] },
+    { number: 34, title: 'Carrying', scores: [6, 4, 2, 0] },
+    { number: 35, title: 'Pushing and Pulling (Initial Force)', scores: [6, 4, 2, 0] },
+    { number: 36, title: 'Noise', scores: [3, 2, 1, 0] },
+    { number: 37, title: 'Heat Stress', scores: [3, 2, 1, 0] },
+    { number: 38, title: 'Cold Stress', scores: [3, 2, 1, 0] },
+    { number: 39, title: 'Lighting', scores: [3, 2, 1, 0] },
+    { number: 40, title: 'Human Error', scores: [3, 2, 1, 0] }
+  ];
 
-/**
- * Obtiene la selección de riesgo de un contenedor de evaluación.
- * @param {HTMLElement} container - El elemento .container-evaluation
- * @returns {string} - 'high', 'mod', 'low', 'ok', 'na', o 'none'
- */
-function _getJohnsonSelection(container) {
-  const checkedBox = container.querySelector(
-    '.score-indicators input[type="checkbox"]:checked'
-  );
-  if (!checkedBox) return 'none';
+  const container = document.getElementById('evaluations-container');
+  const template = document.getElementById('evaluation-template');
 
-  if (checkedBox.classList.contains('rojo')) return 'high';
-  if (checkedBox.classList.contains('amarillo')) return 'mod';
-  if (checkedBox.classList.contains('azul')) return 'low';
-  if (checkedBox.classList.contains('gris')) return 'ok';
-  if (checkedBox.classList.contains('verde')) return 'na';
+  sectionsData.forEach((data, index) => {
+    const clone = document.importNode(template.content, true);
+    clone.querySelector('.evaluation-title').textContent = `${data.number}. ${data.title}`;
+    const card = clone.querySelector('.container-evaluation');
+    card.dataset.searchText = data.title.toLowerCase();
 
-  return 'none';
-}
+    const scoreDivs = clone.querySelectorAll('.score-indicators > div:not(.score-display)');
+    const colorClasses = ['rojo', 'amarillo', 'azul', 'gris', 'verde'];
+    scoreDivs.forEach((div, j) => {
+      const input = div.querySelector('input[type="checkbox"]');
+      const label = div.querySelector('label');
+      if (!input) return;
+      input.name = `group-${index}`;
+      input.classList.add(colorClasses[j]);
+      if (label && data.scores[j] !== undefined) label.textContent = data.scores[j];
+    });
 
-/**
- * Recopila todos los datos del formulario de Evaluación Johnson en un objeto JSON.
- * @returns {object} - El objeto JSON con todos los datos de la evaluación.
- */
+    const checkboxes = clone.querySelectorAll('.score-indicators input[type="checkbox"]');
+    checkboxes.forEach((chk) => {
+      chk.addEventListener('change', function () {
+        if (this.checked) {
+          checkboxes.forEach((other) => { if (other !== this) other.checked = false; });
+          const scoreEl = this.closest('.container-evaluation').querySelector('.selected-score');
+          const scoreValue = this.parentElement.querySelector('label')?.textContent || '0';
+          scoreEl.textContent = scoreValue;
+        } else {
+          this.closest('.container-evaluation').querySelector('.selected-score').textContent = '-';
+        }
+        window.updateSummary();
+      });
+    });
+
+    container.appendChild(clone);
+  });
+
+  // --- CONECTAR BOTONES ---
+  const saveBtn = document.getElementById('save-button');
+  if (saveBtn) {
+    console.log('🟢 Listener activo: Guardar evaluación manual');
+    saveBtn.addEventListener('click', saveJohnsonEvaluation);
+  }
+
+  const editBtn = document.getElementById('edit-button');
+  if (editBtn) {
+    console.log('🟢 Listener activo: Modo edición');
+    editBtn.addEventListener('click', () => {
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'block';
+      setFormEnabled(true);
+      console.log('✏️ Modo edición activado');
+    });
+  }
+
+  const saveJsonBtn = document.getElementById('btn-save-json');
+  if (saveJsonBtn) {
+    console.log('🟢 Listener activo: Guardar desde JSON Input');
+    saveJsonBtn.addEventListener('click', guardarJsonDirecto);
+  }
+
+  // --- CARGAR DESDE SUPABASE AL INICIAR ---
+  loadJohnsonEvaluation();
+});
+
+/* ============================================================
+   🧠 FUNCIÓN CENTRAL: RECOLECTAR DATOS DEL FORMULARIO
+   ============================================================ */
 function getJohnsonEvaluationData() {
   const header = {
     job: document.getElementById('job')?.value || '',
+    analyst: document.getElementById('nAnalyst')?.value || 'Ergo Job Analyzer',
     company: document.getElementById('company')?.value || '',
     location: document.getElementById('location')?.value || '',
-    employees: parseInt(document.getElementById('Employees')?.value, 10) || 0,
-    analyst: document.getElementById('nAnalyst')?.value || '',
+    employees: parseInt(document.getElementById('Employees')?.value || '0', 10),
   };
 
   const summary = {
-    jobRiskScore:
-      parseInt(document.getElementById('job-risk-score')?.textContent, 10) || 0,
+    jobRiskScore: parseInt(document.getElementById('job-risk-score')?.textContent, 10) || 0,
     riskLevel: document.getElementById('risk-level-text')?.textContent || '',
-    totalJobScore:
-      parseInt(document.getElementById('total-job-score')?.textContent, 10) || 0,
+    totalJobScore: parseInt(document.getElementById('total-job-score')?.textContent, 10) || 0,
   };
 
   const details = [];
-  const containers = document.querySelectorAll('.container-evaluation');
-
-  containers.forEach((container) => {
-    const fullTitle =
-      container.querySelector('.evaluation-title')?.textContent || '';
-    const scoreText =
-      container.querySelector('.selected-score')?.textContent || '-';
-
+  document.querySelectorAll('.container-evaluation').forEach((container) => {
+    const fullTitle = container.querySelector('.evaluation-title')?.textContent || '';
+    const scoreText = container.querySelector('.selected-score')?.textContent || '-';
     details.push({
-      id: parseInt(fullTitle.split('.')[0], 10) || 0,
-      title: fullTitle.split('.')[1]?.trim() || '',
-      cases: container.querySelector('.cases-input')?.value || '',
-      incidents: container.querySelector('.incident-input')?.value || '',
-      score: scoreText === '-' ? 0 : parseInt(scoreText, 10),
-      selection: _getJohnsonSelection(container),
+      factor: fullTitle,
+      puntaje: scoreText === '-' ? '-' : scoreText,
     });
   });
 
   return {
-    header,
-    summary,
-    details,
+    resumen: {
+      nivelRiesgo: summary.riskLevel,
+      puntajeTotal: summary.totalJobScore,
+      puntajeRiesgo: summary.jobRiskScore,
+    },
+    detalles: details,
+    infoGeneral: header,
   };
 }
 
-/**
- * Rellena el formulario de Johnson con datos existentes.
- * @param {object} ejaData - El objeto 'eja' guardado en Supabase.
- */
-function populateJohnsonForm(ejaData) {
-  console.log('Rellenando formulario con EJA existente...', ejaData);
+/* ============================================================
+   💾 GUARDADO MANUAL EN SUPABASE
+   ============================================================ */
+async function saveJohnsonEvaluation() {
+  console.log('💾 [GUARDADO] Iniciando guardado manual...');
+  const dbClient = window.dataClient?.supabase;
+  const urlParams = new URLSearchParams(window.location.search);
+  const actividad_id = urlParams.get('actividadId');
+  const area_id = urlParams.get('area');
+  const work_center_id = urlParams.get('workCenter');
 
-  // 1. Rellenar el Encabezado (Header)
+  if (!dbClient) return console.error('❌ Supabase no inicializado.');
+  if (!actividad_id) return console.error('❌ Falta actividadId.');
+
+  const ejaData = getJohnsonEvaluationData();
+  const cleanData = cleanJson(ejaData);
+  const scoreFinal = parseFloat(ejaData.resumen?.puntajeRiesgo) || null;
+
   try {
-    document.getElementById('job').value = ejaData.header.job || '';
-    document.getElementById('company').value = ejaData.header.company || '';
-    document.getElementById('location').value = ejaData.header.location || '';
-    document.getElementById('Employees').value = ejaData.header.employees || 0;
-    document.getElementById('nAnalyst').value = ejaData.header.analyst || '';
-    console.log('Encabezado rellenado.');
-  } catch (error) {
-    console.error('Error al rellenar el encabezado:', error);
+    const { error } = await dbClient
+      .from('actividades')
+      .update({
+        datos_analisis: cleanData,
+        score_final: scoreFinal,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', actividad_id);
+    if (error) throw error;
+    console.log('✅ [GUARDADO] Evaluación almacenada correctamente.');
+  } catch (err) {
+    console.error('❌ Error al guardar en Supabase:', err);
+  }
+}
+
+/* ============================================================
+   📥 CARGAR DATOS DESDE SUPABASE
+   ============================================================ */
+async function loadJohnsonEvaluation() {
+  console.log('📥 [CARGA] Intentando obtener datos_analisis...');
+  const dbClient = window.dataClient?.supabase;
+  const urlParams = new URLSearchParams(window.location.search);
+  const actividad_id = urlParams.get('actividadId');
+  if (!dbClient || !actividad_id) return;
+
+  try {
+    const { data, error } = await dbClient
+      .from('actividades')
+      .select('datos_analisis')
+      .eq('id', actividad_id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data?.datos_analisis) {
+      console.warn('⚠️ [CARGA] No hay datos previos guardados.');
+      return;
+    }
+
+    const datosAnalisis =
+      typeof data.datos_analisis === 'string'
+        ? JSON.parse(data.datos_analisis)
+        : data.datos_analisis;
+
+    console.log('✅ [CARGA] Datos analizados obtenidos:', datosAnalisis);
+    populateJohnsonForm(datosAnalisis);
+  } catch (err) {
+    console.error('❌ [CARGA] Error al obtener datos_analisis:', err);
+  }
+}
+
+/* ============================================================
+   🧱 RELLENAR FORMULARIO CON DATOS EXISTENTES
+   ============================================================ */
+function populateJohnsonForm(ejaData) {
+  console.log('🧩 Rellenando formulario con datos de evaluación existentes...', ejaData);
+
+  // --- 1️⃣ Normalización de claves ---
+  const resumen = ejaData.resumen || ejaData.summary || {};
+  const detalles = ejaData.detalles || ejaData.details || [];
+  const infoGeneral = ejaData.infoGeneral || ejaData.header || {};
+
+  // --- 2️⃣ Poblar encabezado (solo si los elementos existen) ---
+  try {
+    if (document.getElementById('job'))
+      document.getElementById('job').value = infoGeneral.job || '';
+    if (document.getElementById('Employees'))
+      document.getElementById('Employees').value = infoGeneral.employees || '';
+  } catch (err) {
+    console.warn('⚠️ No se pudieron poblar campos de encabezado:', err);
   }
 
-  // Mapa para convertir la selección guardada al selector de clase del checkbox
-  const selectionToClass = {
-    high: '.rojo',
-    mod: '.amarillo',
-    low: '.azul',
-    ok: '.gris',
-    na: '.verde',
-  };
+  // --- 3️⃣ Poblar las 40 tarjetas ---
+  try {
+    const containers = document.querySelectorAll('.container-evaluation');
+    if (!containers.length) {
+      console.error('❌ No se encontraron elementos .container-evaluation en el DOM.');
+      return;
+    }
 
-  // 2. Rellenar los Detalles de Evaluación
-  const containers = document.querySelectorAll('.container-evaluation');
-  
-  if (ejaData.details && Array.isArray(ejaData.details)) {
-    ejaData.details.forEach((detail) => {
-      // Encontrar el contenedor correcto usando el ID (ej: 1, 2, 3...)
-      const card = Array.from(containers).find((c) => {
-        const title = c.querySelector('.evaluation-title')?.textContent || '';
-        return title.startsWith(detail.id + '.');
+    detalles.forEach((detalle, index) => {
+      const puntaje = detalle.puntaje;
+      const factorTexto = detalle.factor || '';
+      const numero = factorTexto.match(/^(\d+)/)?.[1] || index + 1;
+
+      // Buscar la card correspondiente
+      const card = Array.from(containers).find(c =>
+        c.querySelector('.evaluation-title')?.textContent.trim().startsWith(numero + '.')
+      );
+
+      if (!card) {
+        console.warn(`⚠️ No se encontró card para el factor ${factorTexto}`);
+        return;
+      }
+
+      const checkboxes = card.querySelectorAll('.score-indicators input[type="checkbox"]');
+      let marcado = false;
+
+      // Buscar el checkbox correcto según el puntaje
+      checkboxes.forEach(chk => {
+        const label = chk.parentElement.querySelector('label');
+        const labelValor = label ? label.textContent.trim() : '';
+        if (puntaje === labelValor) {
+          chk.checked = true;
+          chk.dispatchEvent(new Event('change'));
+          marcado = true;
+        }
       });
 
-      if (card) {
-        card.querySelector('.cases-input').value = detail.cases || '';
-        card.querySelector('.incident-input').value = detail.incidents || '';
-
-        // Encontrar el checkbox correcto basado en la selección guardada
-        const selector = selectionToClass[detail.selection];
-        if (selector) {
-          const checkbox = card.querySelector(selector);
-          if (checkbox) {
-            checkbox.checked = true;
-            // IMPORTANTE: Disparar el evento 'change' para actualizar el score visual
-            checkbox.dispatchEvent(new Event('change'));
-          }
+      // Si el puntaje es "-" o no se encontró match, marcar "OK" (gris)
+      if (!marcado && puntaje === '-') {
+        const okCheckbox = card.querySelector('.score-indicators input.gris');
+        if (okCheckbox) {
+          okCheckbox.checked = true;
+          okCheckbox.dispatchEvent(new Event('change'));
         }
-      } else {
-        console.warn(`No se encontró la tarjeta para el ID: ${detail.id}`);
       }
     });
-    console.log('Detalles de evaluaciones rellenados.');
+
+    console.log(`✅ Se poblaron ${detalles.length} tarjetas desde Supabase.`);
+  } catch (err) {
+    console.error('❌ Error al poblar tarjetas:', err);
   }
 
-  // 3. Actualizar los totales
-  window.updateSummary();
-  console.log('Resumen actualizado.');
+  // --- 4️⃣ Actualizar resumen ---
+  try {
+    document.getElementById('job-risk-score').textContent =
+      resumen.puntajeRiesgo || resumen.jobRiskScore || '0';
+    document.getElementById('risk-level-text').textContent =
+      resumen.nivelRiesgo || resumen.riskLevel || '(Bajo)';
 
-  // 4. Cambiar botones: Ocultar Guardar, Mostrar Editar
-  // Asumimos que si cargó datos, no queremos guardar inmediatamente
-  document.getElementById('save-button').style.display = 'none';
-  document.getElementById('edit-button').style.display = 'block';
+    window.updateSummary();
+    console.log('📊 Resumen general actualizado correctamente.');
+  } catch (err) {
+    console.error('❌ Error al actualizar resumen:', err);
+  }
+
+  // --- 5️⃣ Alternar botones ---
+  const saveBtn = document.getElementById('save-button');
+  const editBtn = document.getElementById('edit-button');
+  if (saveBtn && editBtn) {
+    saveBtn.style.display = 'none';
+    editBtn.style.display = 'block';
+  }
+
+  console.log('🎯 Formulario poblado completamente con datos previos.');
 }
 
-/**
- * Carga una Evaluación Johnson existente desde Supabase al iniciar la página.
- */
-async function loadJohnsonEvaluation() {
-  console.log('Intentando cargar evaluación existente...');
+
+/* ============================================================
+   🧩 GUARDAR JSON DIRECTAMENTE DESDE INPUT
+   ============================================================ */
+async function guardarJsonDirecto() {
+  console.log('📦 [INPUT JSON] Guardado directo iniciado...');
+  const jsonInput = document.getElementById('json-input');
+  if (!jsonInput?.value) return alert('Campo JSON vacío.');
 
   const dbClient = window.dataClient?.supabase;
-  if (!dbClient) {
-    console.error('loadJohnsonEvaluation: dbClient no encontrado.');
-    return;
-  }
-
   const urlParams = new URLSearchParams(window.location.search);
-  const actividad_id = urlParams.get('actividadId') || urlParams.get('actividad_id');
-
-  if (!actividad_id) {
-    console.log('No hay actividad_id en la URL. Se asume nueva evaluación.');
-    setFormEnabled(true);
-    return;
-  }
-
-  console.log(`Buscando EJA para actividad_id: ${actividad_id}`);
+  const actividad_id = urlParams.get('actividadId');
+  if (!dbClient || !actividad_id) return;
 
   try {
-    const { data, error: fetchError } = await dbClient
-      .from('evaluaciones_completas')
-      .select('eja') // Solo traemos la columna EJA
-      .eq('actividad_id', actividad_id)
-      .maybeSingle();
+    const dataToSave = JSON.parse(jsonInput.value);
+    const score =
+      dataToSave.resumen?.puntajeRiesgo || dataToSave.resumen?.jobRiskScore || 0;
 
-    if (fetchError) throw fetchError;
+    await dbClient.from('actividades').update({
+      datos_analisis: dataToSave,
+      score_final: parseFloat(score),
+      updated_at: new Date().toISOString(),
+    })
+      .eq('id', actividad_id);
 
-    if (data && data.eja) {
-      console.log('Datos EJA encontrados. Rellenando formulario...');
-      populateJohnsonForm(data.eja);
-      setFormEnabled(false);
-    } else {
-      console.log('No se encontraron datos EJA para esta actividad. Es una nueva evaluación.');
-      // Si no hay datos, nos aseguramos que el botón de Guardar esté visible
-      document.getElementById('save-button').style.display = 'block';
-      document.getElementById('edit-button').style.display = 'none';
-      setFormEnabled(true);
-    }
-  } catch (error) {
-    console.error('Error al cargar la Evaluación Johnson:', error);
-    alert(`Error cargando datos: ${error.message}`);
+    console.log('✅ [INPUT JSON] Guardado exitoso.');
+    jsonInput.value = '';
+  } catch (err) {
+    console.error('❌ [INPUT JSON] Error al guardar:', err);
   }
 }
 
-/**
- * Guarda los datos de la Evaluación Johnson en la tabla 'evaluaciones_completas'.
- * Verifica si existe un registro para la actividad_id; si existe, actualiza 'eja',
- * si no, crea un nuevo registro.
- */
-async function saveJohnsonEvaluation() {
-  console.log('Iniciando saveJohnsonEvaluation...');
-  autoFillEmptyAsOk();
-
-  const saveButton = document.getElementById('save-button'); // ID CORREGIDO
-  if (saveButton) saveButton.disabled = true;
-
-  const toast = window.ERGOUtils?.showToast;
-  if (!toast) {
-    console.error('ERGOUtils.showToast no está disponible.');
-    alert('Error: Utilidades no cargadas.');
-    if (saveButton) saveButton.disabled = false;
-    return;
-  }
-  
-
-  const dbClient = window.dataClient?.supabase;
-  if (!dbClient) {
-    console.error('dbClient (window.dataClient.supabase) no encontrado.');
-    toast('Error: No se pudo conectar a la base de datos.', 'error');
-    if (saveButton) saveButton.disabled = false;
-    return;
-  }
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const actividad_id = urlParams.get('actividadId') || urlParams.get('actividad_id');
-  const work_center_id = urlParams.get('workCenter') || urlParams.get('work_center_id');
-  const area_id = urlParams.get('area') || urlParams.get('area_id');
-
-  if (!actividad_id || !work_center_id || !area_id) {
-    console.error('Error: Faltan IDs en la URL.', { actividad_id, work_center_id, area_id });
-    toast('Error: Faltan IDs (actividad, centro, área) en la URL.', 'error');
-    if (saveButton) saveButton.disabled = false;
-    return;
-  }
-  
-  console.log('IDs de URL obtenidos:', { actividad_id, work_center_id, area_id });
-
-  const user = window.ERGOAuth?.getCurrentUser();
-  const user_id = user?.id || null;
-  autoFillEmptyAsOk();
-  const ejaData = getJohnsonEvaluationData();
-  const evaluador = ejaData.header.analyst || user?.nombre || 'No especificado';
-
-  console.log('Datos de EJA recopilados:', ejaData);
-  console.log('Datos para Supabase:', { user_id, evaluador });
-
+/* ============================================================
+   🧼 LIMPIADOR JSON
+   ============================================================ */
+function cleanJson(obj) {
   try {
-    toast('Guardando...', 'info');
-    console.log('Buscando registro existente para actividad_id:', actividad_id);
-
-    const { data: existing, error: fetchError } = await dbClient
-      .from('evaluaciones_completas')
-      .select('id')
-      .eq('actividad_id', actividad_id)
-      .maybeSingle();
-
-    if (fetchError) throw fetchError;
-
-    if (existing) {
-      console.log('Registro existente encontrado (ID:', existing.id, '). Actualizando...');
-      // --- ACTUALIZAR REGISTRO EXISTENTE ---
-      const { error: updateError } = await dbClient
-        .from('evaluaciones_completas')
-        .update({
-          eja: ejaData,
-          evaluador: evaluador,
-          trabajadores: ejaData.header.employees,
-          titulo: ejaData.header.job,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', existing.id);
-
-      if (updateError) throw updateError;
-      console.log('Actualización exitosa.');
-      toast('Evaluación actualizada correctamente.', 'success');
-    } else {
-      console.log('No se encontró registro. Creando uno nuevo...');
-      // --- CREAR NUEVO REGISTRO ---
-      const { error: insertError } = await dbClient
-        .from('evaluaciones_completas')
-        .insert({
-          actividad_id: actividad_id,
-          work_center_id: work_center_id,
-          area_id: area_id,
-          user_id: user_id,
-          evaluador: evaluador,
-          trabajadores: ejaData.header.employees,
-          titulo: ejaData.header.job,
-          eja: ejaData,
-        });
-
-      if (insertError) throw insertError;
-      console.log('Inserción exitosa.');
-      toast('Evaluación guardada correctamente.', 'success');
-    }
-  } catch (error) {
-    console.error('Error al guardar la Evaluación Johnson:', error);
-    toast(`Error: ${error.message}`, 'error');
-  } finally {
-    if (saveButton) saveButton.disabled = false;
-    console.log('Proceso saveJohnsonEvaluation finalizado.');
+    return JSON.parse(
+      JSON.stringify(obj, (k, v) => (v === undefined || typeof v === 'function' ? null : v))
+    );
+  } catch {
+    return obj;
   }
 }
 
-/**
- * Habilita o deshabilita visualmente la edición del formulario.
- * @param {boolean} enabled - true para habilitar, false para deshabilitar (modo lectura).
- */
+/* ============================================================
+   🧰 BLOQUE UTILITARIO
+   ============================================================ */
 function setFormEnabled(enabled) {
-  // Obtenemos los 3 contenedores principales
   const header = document.getElementById('main-header-container');
   const search = document.querySelector('.search-container');
   const evals = document.getElementById('evaluations-container');
-
-  const elements = [header, search, evals];
-
-  if (enabled) {
-    console.log('Formulario HABILITADO para edición.');
-    // Quitamos la clase 'form-disabled' para activar todo
-    elements.forEach(el => el?.classList.remove('form-disabled'));
-  } else {
-    console.log('Formulario DESHABILITADO (modo lectura).');
-    // Añadimos la clase 'form-disabled' para apagar todo
-    elements.forEach(el => el?.classList.add('form-disabled'));
-  }
+  [header, search, evals].forEach((el) =>
+    enabled ? el.classList.remove('form-disabled') : el.classList.add('form-disabled')
+  );
 }
-/**
- * @fileoverview
- * Revisa todas las tarjetas de evaluación antes de guardar.
- * Si una tarjeta no tiene ninguna selección, la marca
- * automáticamente como 'OK' (score 0).
- */
-function autoFillEmptyAsOk() {
-  console.log('Verificando tarjetas vacías...');
-  let filledCount = 0;
-  const containers = document.querySelectorAll('.container-evaluation');
+</script>
 
-  containers.forEach((container, index) => {
-    // 1. Verificar si alguna casilla ya está marcada
-    const anyChecked = container.querySelector(
-      '.score-indicators input[type="checkbox"]:checked'
-    );
-
-    // 2. Si ninguna está marcada...
-    if (!anyChecked) {
-      // 3. Encontrar la casilla 'OK' (que usa la clase 'gris')
-      const okCheckbox = container.querySelector('.score-indicators input.gris');
-
-      if (okCheckbox) {
-        // 4. Marcarla y (MUY IMPORTANTE) disparar el evento 'change'
-        // para que se actualice el score visualmente.
-        okCheckbox.checked = true;
-        okCheckbox.dispatchEvent(new Event('change'));
-        filledCount++;
-      }
-    }
-  });
-
-  if (filledCount > 0) {
-    console.log(`Se autocompletaron ${filledCount} tarjetas vacías como 'OK'.`);
-    // Actualizamos el resumen final una vez más por si acaso
-    window.updateSummary();
-  } else {
-    console.log('Todas las tarjetas tenían un valor. No se autocompletó nada.');
-  }
-}
-let johnsonDetailsData = []; // Para almacenar los datos del JSON
-
-/**
- * Carga los datos del JSON al iniciar
- */
-async function loadModalData() {
-    try {
-        const response = await fetch('johnson_details.json'); // Asegúrate que la ruta sea correcta
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        johnsonDetailsData = await response.json();
-        console.log('Datos de detalles (JSON) cargados.', johnsonDetailsData);
-    } catch (error) {
-        console.error('Error al cargar johnson_details.json:', error);
-    }
-}
-
-/**
- * Abre el modal y lo rellena con la información del ID
- * @param {number} id - El ID de la evaluación (1-40)
- */
-function openDetailsModal(id) {
-    const data = johnsonDetailsData.find(item => item.id === id);
-    if (!data) {
-        console.warn(`No se encontraron datos para el modal con ID: ${id}`);
-        return;
-    }
-
-    // Rellenar cabecera
-    document.getElementById('modal-category').textContent = data.category || 'Ergonomic Factor';
-    document.getElementById('modal-title').textContent = `${data.id}. ${data.title}`;
-    
-    // Construir cuerpo
-    const body = document.getElementById('modal-body-content');
-    body.innerHTML = ''; // Limpiar contenido anterior
-    
-    // 1. Descripción
-    const descriptionEl = document.createElement('p');
-    descriptionEl.className = 'modal-description';
-    descriptionEl.textContent = data.description;
-    body.appendChild(descriptionEl);
-    
-    // 2. Contenido (lista o tabla)
-    const contentHtml = buildModalContent(data);
-    body.insertAdjacentHTML('beforeend', contentHtml);
-
-    // Mostrar modal
-    document.getElementById('details-modal-overlay').style.display = 'flex';
-}
-
-/**
- * Genera el HTML para el cuerpo del modal basado en el content_type
- * @param {object} data - El objeto de datos para un item
- * @returns {string} - El string HTML para el contenido
- */
-function buildModalContent(data) {
-    // TIPO: LISTA (ej. 1, 2, 3)
-    if (data.content_type === 'list') {
-        const c = data.content;
-        return `
-            <div class="modal-list">
-                <div class="modal-list-item high">
-                    <strong>${c.high.title}</strong>
-                    <p>${c.high.text}</p>
-                </div>
-                <div class="modal-list-item moderate">
-                    <strong>${c.moderate.title}</strong>
-                    <p>${c.moderate.text}</p>
-                </div>
-                <div class="modal-list-item low">
-                    <strong>${c.low.title}</strong>
-                    <p>${c.low.text}</p>
-                </div>
-            </div>
-        `;
-    }
-    
-    // TIPO: TABLA SIMPLE (ej. 4, 5)
-    if (data.content_type === 'table') {
-        const c = data.content;
-        let headers = c.headers.map(h => `<th>${h}</th>`).join('');
-        let rows = c.rows.map(row => {
-            let values = row.values.map(val => `<td>${val}</td>`).join('');
-            return `<tr><td>${row.label}</td>${values}</tr>`;
-        }).join('');
-        
-        return `<table class="modal-table">
-                    <thead><tr>${headers}</tr></thead>
-                    <tbody>${rows}</tbody>
-                </table>`;
-    }
-
-    // TIPO: MÚLTIPLES TABLAS (ej. 6)
-    if (data.content_type === 'multi-table') {
-        return data.content.map(tableSet => {
-            const c = tableSet.table;
-            let headers = c.headers.map(h => `<th>${h}</th>`).join('');
-            let rows = c.rows.map(row => {
-                let values = row.values.map(val => `<td>${val}</td>`).join('');
-                return `<tr><td>${row.label}</td>${values}</tr>`;
-            }).join('');
-            
-            return `<div class="modal-multi-table">
-                        <h4>${tableSet.title}</h4>
-                        <table class="modal-table">
-                            <thead><tr>${headers}</tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>`;
-        }).join('');
-    }
-
-    // --- NUEVO CÓDIGO AÑADIDO ---
-    // TIPO: TABLA DOBLE (ej. 7-10, posturas)
-    if (data.content_type === 'dual-table') {
-        const c = data.content;
-        
-        // Función auxiliar para crear una tabla
-        const createTable = (tableData) => {
-            let headers = tableData.headers.map(h => `<th>${h}</th>`).join('');
-            let rows = tableData.rows.map(row => {
-                let values = row.values.map(val => `<td>${val}</td>`).join('');
-                return `<tr><td>${row.label}</td>${values}</tr>`;
-            }).join('');
-            return `<div class="modal-multi-table">
-                        <h4>${tableData.title}</h4>
-                        <table class="modal-table">
-                            <thead><tr>${headers}</tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>`;
-        };
-
-        // Crear ambas tablas
-        let table1Html = createTable(c.table1);
-        let table2Html = createTable(c.table2);
-        
-        return table1Html + table2Html;
-    }
-    // --- FIN DEL CÓDIGO AÑADIDO ---
-else if (data.content_type === 'complex-rules') {
-        const c = data.content;
-
-        // --- Funciones Auxiliares (puedes reutilizarlas si ya existen) ---
-        const createTable = (tableData) => {
-            if (!tableData) return '';
-            let headers = tableData.headers.map(h => `<th>${h}</th>`).join('');
-            let rows = tableData.rows.map(row => {
-                // Modificación para manejar celdas con HTML (como <ul>)
-                let labelCell = `<td>${row.label}</td>`;
-                let values = row.values.map(val => `<td>${val}</td>`).join('');
-                return `<tr>${labelCell}${values}</tr>`;
-            }).join('');
-            
-            return `<div class="modal-multi-table">
-                        ${tableData.title ? `<h4>${tableData.title}</h4>` : ''}
-                        <table class="modal-table">
-                            <thead><tr>${headers}</tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>`;
-        };
-        
-        const createList = (listData) => {
-            if (!listData) return '';
-            let items = listData.items.map(item => `<li>${item}</li>`).join('');
-            return `<div style="padding: 8px 0;">
-                        ${listData.title ? `<p style="font-weight:600; margin-bottom: 8px;">${listData.title}</p>` : ''}
-                        <ul style="margin-left: 20px; margin-bottom: 16px; font-size: 13px; line-height: 1.5;">${items}</ul>
-                    </div>`;
-        };
-        // --- Fin Funciones Auxiliares ---
-
-        let html = '';
-
-        // Función genérica para renderizar una sección (high, mod, low)
-        const renderSection = (sectionData, riskClass) => {
-            if (!sectionData) return '';
-
-            let sectionHtml = `<div class="modal-list-item ${riskClass}">
-                                <strong>${sectionData.title}</strong>
-                                <p>${sectionData.description}</p>`;
-            
-            // Lógica para renderizar contenido basado en 'type'
-            switch (sectionData.type) {
-                case 'table':
-                    sectionHtml += createTable(sectionData.table_data);
-                    break;
-                case 'list':
-                    sectionHtml += createList(sectionData.list_data);
-                    break;
-                case 'table-and-list':
-                    sectionHtml += createTable(sectionData.table_data);
-                    sectionHtml += createList(sectionData.list_data);
-                    break;
-                case 'multi-table':
-                    sectionData.content.forEach(tableSet => {
-                         sectionHtml += createTable(tableSet.table);
-                    });
-                    break;
-                // --- NUEVA LÓGICA ---
-                case 'multi-table-and-list':
-                    if (sectionData.tables_data && Array.isArray(sectionData.tables_data)) {
-                        sectionData.tables_data.forEach(table => {
-                            sectionHtml += createTable(table);
-                        });
-                    }
-                    sectionHtml += createList(sectionData.list_data);
-                    break;
-                // --- FIN NUEVA LÓGICA ---
-            }
-
-            if (sectionData.note) {
-                sectionHtml += `<p style="font-size: 11px; color: #555; margin-top: 8px;"><em>Nota: ${sectionData.note}</em></p>`;
-            }
-            sectionHtml += `</div>`;
-            return sectionHtml;
-        };
-
-        // Renderizar cada sección
-        html += renderSection(c.high, 'high');
-        html += renderSection(c.moderate, 'moderate');
-        html += renderSection(c.low, 'low');
-        
-        return html;
-    }
-    // Mensaje de error si ningún 'if' coincide
-    return '<p>No se encontró un tipo de contenido válido.</p>';
-}
-
-/**
- * Cierra el modal
- */
-function closeModal() {
-    document.getElementById('details-modal-overlay').style.display = 'none';
-}
-    </script>
+    <script src="../header-component.js"></script>
 </body>
 </html>
