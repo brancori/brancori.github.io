@@ -156,77 +156,7 @@
             }
         }
 
-        /* --- Estilos del Modal Específico --- */
-
-        /* Clase renombrada para evitar conflictos con globals.css */
-        .matriz-modal-content {
-            position: relative;
-            background: white;
-            border-radius: var(--border-radius-lg, 12px);
-            box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.05));
-            width: 90%;
-            max-height: 90vh;
-            overflow: hidden; /* Oculta el overflow principal */
-            display: flex; /* Para layout de header/body/footer */
-            flex-direction: column;
-            animation: modalSlideIn 0.3s ease-out;
-        }
-
-        /* Animación copiada de globals.css */
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* Permitir scroll solo en el body del modal */
-        .matriz-modal-content .modal-body {
-             overflow-y: auto;
-             padding: 2rem;
-        }
-        
-        /* Ocultar scrollbar */
-        .matriz-modal-content .modal-body::-webkit-scrollbar { display: none; }
-        .matriz-modal-content .modal-body { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Grid para el formulario del modal */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .md-col-span-2 {
-                grid-column: span 2 / span 2;
-            }
-        }
-
-        /* Inputs específicos para este modal */
-        .modal-form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-300, #cbd5e1);
-            border-radius: var(--border-radius-md, 8px);
-            font-size: var(--text-base, 0.875rem);
-            transition: all 0.3s ease;
-            background: white;
-            font-family: inherit;
-        }
-
-        .modal-form-input:focus {
-            outline: none;
-            border-color: var(--primary-500, #14b8a6);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
-        }
+        /* --- Estilos del Modal Específico --- */ 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../localStorage-cache.js"></script>   
@@ -304,126 +234,6 @@
         </div>
     </div>
 
-    <div id="addEntryModal" class="modal">
-        <div class="modal-overlay"></div>
-        
-        <div class="matriz-modal-content">
-            
-            <div class="modal-header">
-                <h3>Agregar Nuevo Hallazgo</h3>
-                <button id="closeModalBtn" type="button" class="modal-close">
-                    <span>&times;</span>
-                </button>
-            </div>
-
-            <form id="addEntryForm" class="modal-body">
-                <div class="form-grid">
-                    
-                    <div class="form-group">
-                        <label for="modalCentro">Centro de Trabajo</label>
-                        <select id="modalCentro" required class="modal-form-input">
-                            </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalAreaTopLevelInput">Área</label>
-                        <input type="text" id="modalAreaTopLevelInput" list="areaTopLevelDatalist" class="modal-form-input" required placeholder="Seleccione o escriba un área...">
-                        <datalist id="areaTopLevelDatalist">
-                            </datalist>
-                    </div>
-
-                    <div class="form-group md-col-span-2">
-                        <label for="modalTareaInput">Tarea Específica (Hallazgo)</label>
-                        <input type="text" id="modalTareaInput" list="tareaDatalist" class="modal-form-input" required placeholder="Seleccione o escriba una tarea...">
-                        <datalist id="tareaDatalist">
-                            </datalist>
-                    </div>
-                    
-                    <div class="form-group md-col-span-2">
-                        <label for="modalDescripcion">Descripción Detallada del Hallazgo</label>
-                        <textarea id="modalDescripcion" rows="3" class="modal-form-input"></textarea>
-                    </div>
-                    
-                    <div class="form-group md-col-span-2">
-                        <label for="modalRiesgo">Descripción del Riesgo</label>
-                        <textarea id="modalRiesgo" rows="3" class="modal-form-input"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalGrupoRiesgo">Grupo de Riesgo</label>
-                        <input type="text" id="modalGrupoRiesgo" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalPuesto">Puesto Involucrado</label>
-                        <input type="text" id="modalPuesto" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalNivelRiesgo">Nivel de Riesgo Identificado</label>
-                        <input type="text" id="modalNivelRiesgo" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalEvaluacion">Evaluación Específica (Método)</label>
-                        <input type="text" id="modalEvaluacion" class="modal-form-input">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="modalCumplimiento">Cumplimiento</label>
-                        <input type="text" id="modalCumplimiento" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalNuevoNivelRiesgo">Nuevo Nivel de Riesgo</label>
-                        <input type="text" id="modalNuevoNivelRiesgo" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group md-col-span-2">
-                        <label for="modalMedidaControl">Medida de Control Propuesta</label>
-                        <textarea id="modalMedidaControl" rows="3" class="modal-form-input"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalTipoControl">Tipo de Control</label>
-                        <input type="text" id="modalTipoControl" class="modal-form-input">
-                    </div>
-                    <div class="form-group">
-                        <label for="modalTipoControl">Evaluaciónd de Cargas</label>
-                        <input type="text" id="modalTipoControl" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalResponsable">Responsable</label>
-                        <input type="text" id="modalResponsable" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group md-col-span-2">
-                        <label for="modalComentarios">Comentarios</label>
-                        <textarea id="modalComentarios" rows="3" class="modal-form-input"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalART">ART</label>
-                        <input type="text" id="modalART" class="modal-form-input">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modalAccion">Acción</label>
-                        <input type="text" id="modalAccion" class="modal-form-input">
-                    </div>
-
-                </div>
-            </form>
-
-            <div class="modal-footer">
-                <button id="cancelModalBtn" type="button" class="btn btn-ghost">Cancelar</button>
-                <button type="submit" form="addEntryForm" class="btn btn-primary">Guardar Hallazgo</button>
-            </div>
-        </div>
-    </div>
-
-
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
             
@@ -453,36 +263,6 @@
             const filterAreaTopLevel = document.getElementById('filterAreaTopLevel');
             const filterTarea = document.getElementById('filterTarea');
             const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
-            // Modal
-            const addEntryModal = document.getElementById('addEntryModal');
-            const openModalBtn = document.getElementById('openModalBtn');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const cancelModalBtn = document.getElementById('cancelModalBtn');
-            const addEntryForm = document.getElementById('addEntryForm');
-
-            // Campos del Modal
-            const modalCentro = document.getElementById('modalCentro');
-            const modalAreaTopLevelInput = document.getElementById('modalAreaTopLevelInput');
-            const areaTopLevelDatalist = document.getElementById('areaTopLevelDatalist');
-            const modalTareaInput = document.getElementById('modalTareaInput');
-            const tareaDatalist = document.getElementById('tareaDatalist');
-            
-            const modalDescripcion = document.getElementById('modalDescripcion');
-            const modalRiesgo = document.getElementById('modalRiesgo');
-            const modalGrupoRiesgo = document.getElementById('modalGrupoRiesgo');
-            const modalPuesto = document.getElementById('modalPuesto');
-            const modalNivelRiesgo = document.getElementById('modalNivelRiesgo');
-            const modalEvaluacion = document.getElementById('modalEvaluacion');
-            const modalCumplimiento = document.getElementById('modalCumplimiento');
-            const modalMedidaControl = document.getElementById('modalMedidaControl');
-            const modalNuevoNivelRiesgo = document.getElementById('modalNuevoNivelRiesgo');
-            const modalTipoControl = document.getElementById('modalTipoControl');
-            const modalComentarios = document.getElementById('modalComentarios');
-            const modalART = document.getElementById('modalART');
-            const modalAccion = document.getElementById('modalAccion');
-            const modalResponsable = document.getElementById('modalResponsable');
-
 
             // --- FUNCIONES ---
 
@@ -559,7 +339,7 @@
                         });
                     }
 const { data: actividadesData, error: actError } = await window.dataClient.supabase
-                        .from('actividades')
+                        .from('vista_hallazgos_cerrados')
                         .select('*'); 
                     
                     if (actError) throw new Error(`Error cargando Actividades: ${actError.message}`);
@@ -726,12 +506,6 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
                 }
             }
 
-            /**
-             * Puebla un elemento <select> con opciones
-             * @param {HTMLSelectElement} selectEl - El elemento select a poblar
-             * @param {string[]} optionsList - El array de strings para las opciones
-             * @param {string} defaultOptionText - Texto para la opción por defecto (ej. "Todos")
-             */
             function populateSelect(selectEl, optionsList, defaultOptionText) {
                 const currentValue = selectEl.value;
                 selectEl.innerHTML = ''; // Limpiar opciones existentes
@@ -796,42 +570,6 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
                     tareasFiltradas = [...new Set(hallazgosData.map(h => h.tarea))];
                 }
                 populateSelect(filterTarea, tareasFiltradas, 'Todas las Tareas');
-            }
-
-            /**
-             * Puebla un elemento <select> con objetos {value, text}
-             * @param {HTMLSelectElement} selectEl - El elemento select a poblar
-             * @param {object[]} optionsList - Array de objetos {value, text}
-             * @param {string} defaultOptionText - Texto para la opción por defecto
-             */
-            function populateSelectWithObjects(selectEl, optionsList, defaultOptionText) {
-                selectEl.innerHTML = '';
-                const defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.textContent = defaultOptionText;
-                selectEl.appendChild(defaultOption);
-
-                optionsList.forEach(option => {
-                    const optionEl = document.createElement('option');
-                    optionEl.value = option.value; // El valor es el ID
-                    optionEl.textContent = option.text; // El texto es el Nombre
-                    selectEl.appendChild(optionEl);
-                });
-            }
-            
-            /**
-             * Puebla un elemento <datalist> con opciones
-             * @param {HTMLDataListElement} datalistEl - El elemento datalist a poblar
-             * @param {string[]} optionsList - El array de strings para las opciones
-             */
-            function populateDatalist(datalistEl, optionsList) {
-                datalistEl.innerHTML = '';
-                const uniqueOptions = [...new Set(optionsList)].sort();
-                uniqueOptions.forEach(optionText => {
-                    const option = document.createElement('option');
-                    option.value = optionText;
-                    datalistEl.appendChild(option);
-                });
             }
 
 /**
@@ -951,68 +689,6 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
                 renderTable(filteredData);
             }
 
-            /**
-             * Maneja el envío del formulario del modal
-             */
-            async function handleFormSubmit(event) {
-                event.preventDefault();
-
-                // Buscar el ID del área a partir del nombre ingresado en el datalist
-                const areaName = modalAreaTopLevelInput.value.trim();
-                const area_id = areaNameMap.get(areaName);
-
-                if (!area_id) {
-                    alert('El Área seleccionada no es válida. Por favor, elija una de la lista.');
-                    return;
-                }
-
-                // 1. Mapear campos del modal al esquema de 'actividades'
-                const hallazgoData = {
-                    work_center_id: modalCentro.value, // El <select> ya tiene el ID como valor
-                    area_id: area_id, // ID encontrado del mapa
-                    nombre: modalTareaInput.value.trim(),
-                    descripcion_detallada: modalDescripcion.value.trim(),
-                    descripcion_riesgo: modalRiesgo.value.trim(),
-                    grupo_riesgo: modalGrupoRiesgo.value.trim(),
-                    puesto_involucrado: modalPuesto.value.trim(),
-                    nivel_riesgo: modalNivelRiesgo.value.trim(),
-                    metodo: modalEvaluacion.value.trim(),
-                    cumplimiento: modalCumplimiento.value.trim(),
-                    recomendaciones: modalMedidaControl.value.trim(), // Mapeo
-                    nuevo_nivel_riesgo: modalNuevoNivelRiesgo.value.trim(),
-                    tipo_control: modalTipoControl.value.trim(),
-                    comentarios: modalComentarios.value.trim(),
-                    art: modalART.value.trim(),
-                    accion: modalAccion.value.trim(),
-                    responsable: modalResponsable.value.trim(),
-                    user_id: window.ERGOAuth.getCurrentUser()?.id
-                };
-
-                // 2. Validación
-                if (!hallazgoData.work_center_id || !hallazgoData.area_id || !hallazgoData.nombre) {
-                    alert('Centro de Trabajo, Área y Tarea Específica son campos obligatorios.');
-                    return;
-                }
-
-                // 3. Guardar en Supabase (usando el método de dataClient)
-                try {
-                    // Asumimos que dataClient.createActividad existe (basado en centro-trabajo.js)
-                    const nuevaActividadArray = await window.dataClient.createActividad(hallazgoData);
-                    
-                    if (!nuevaActividadArray || nuevaActividadArray.length === 0) {
-                        throw new Error("La creación no devolvió el nuevo registro.");
-                    }
-                    
-                    alert('Hallazgo guardado correctamente.');
-                    closeModal();
-                    await loadAndProcessData(); // Recargar todos los datos
-                    
-                } catch (error) {
-                    console.error('Error al guardar el hallazgo:', error);
-                    alert(`No se pudo guardar el hallazgo: ${error.message}`);
-                }
-            }
-            
             function clearFilters() {
                 filterCentro.value = "";
                 filterAreaTopLevel.value = "";
@@ -1024,33 +700,6 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
                 populateSelect(filterTarea, tareasList, 'Todas las Tareas');
 
                 applyFilters();
-            }
-
-            /**
-             * Abre el modal
-             */
-            function openModal() {
-                // Asegurarse de que las listas del modal estén actualizadas
-                
-                // 1. Poblar Centros (usar IDs como valor)
-                const centrosListForModal = workCentersData.map(c => ({ value: c.id, text: c.name }));
-                populateSelectWithObjects(modalCentro, centrosListForModal, 'Seleccione un Centro');
-                
-                // 2. Poblar Datalist de Áreas (usar nombres)
-                populateDatalist(areaTopLevelDatalist, areasTopLevelList);
-                
-                // 3. Poblar Datalist de Tareas (usar nombres)
-                populateDatalist(tareaDatalist, tareasList);
-                
-                addEntryModal.classList.add('show');
-            }
-
-            /**
-             * Cierra el modal y resetea el formulario
-             */
-            function closeModal() {
-                addEntryModal.classList.remove('show');
-                addEntryForm.reset();
             }
 
             // --- INICIALIZACIÓN Y EVENT LISTENERS ---
@@ -1069,20 +718,10 @@ const { data: actividadesData, error: actError } = await window.dataClient.supab
             filterTarea.addEventListener('change', applyFilters);
             clearFiltersBtn.addEventListener('click', clearFilters);
 
-            // Listeners para modal
-            openModalBtn.addEventListener('click', openModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            cancelModalBtn.addEventListener('click', closeModal);
-            addEntryForm.addEventListener('submit', handleFormSubmit);
-            
-            // Cerrar modal al hacer clic en el overlay
-            addEntryModal.querySelector('.modal-overlay').addEventListener('click', closeModal);
-        });
-
+        });8
         
     </script>
     <script src="../header-component.js"></script>
-
     </body>
 
 </html>

@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johnson Evaluation</title>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../globals.js"></script>
+    <script src="../localStorage-cache.js"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="../auth-client.js"></script>
+    <script src="../realtime-client.js"></script>
+    <style>
+        :root {
+            --color-high: #e53935;
+            --color-mod: #fbc02d;
+            --color-low: #1e40af;
+            --color-ok: #757575;
+            --color-na: #03ba00;
+            --color-risk-high: #c62828;
+            --color-risk-moderate: #ff8f00;
+            --color-risk-low: #2e7d32;
+            --border: #ddd;
+            --bg: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* ===== HEADER STICKY ===== */
+        #main-header-container {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 2px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Header expandido (scroll top) */
+        #main-header-container.expanded {
+            padding: 16px 20px;
+        }
+
+        #main-header-container.expanded .header-full {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        #main-header-container.expanded .header-compact {
+            display: none;
+        }
+
+        /* Header compacto (scroll down) */
+        #main-header-container.collapsed {
+            padding: 8px 20px;
+        }
+
+        #main-header-container.collapsed .header-full {
+            display: none;
+        }
+
+        #main-header-container.collapsed .header-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-compact {
+            display: none;
+        }
+
+        .header-compact-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-compact-left strong {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .header-compact-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* ===== ESTILOS DEL MODAL ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    display: none; /* Oculto por defecto */
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: #fafafa;
+}
+
+.modal-header h2 {
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+}
+
+.modal-header span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #667eea;
+    text-transform: uppercase;
+}
+
+.modal-close {
+    font-size: 28px;
+    font-weight: 300;
+    color: #888;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.modal-body p {
+    margin-bottom: 16px;
+}
+
+/* Estilos para el contenido 'list' */
+.modal-list-item {
+    margin-bottom: 16px;
+    border-left: 3px solid;
+    padding-left: 12px;
+}
+.modal-list-item strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+.modal-list-item p {
+    font-size: 13px;
+    margin: 0;
+    color: #555;
+}
+.modal-list-item.high { border-color: var(--color-high); }
+.modal-list-item.high strong { color: var(--color-high); }
+.modal-list-item.moderate { border-color: var(--color-mod); }
+.modal-list-item.moderate strong { color: var(--color-mod); }
+.modal-list-item.low { border-color: var(--color-low); }
+.modal-list-item.low strong { color: var(--color-low); }
+
+/* Estilos para el contenido 'table' */
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.modal-table th, .modal-table td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+}
+.modal-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+.modal-table td:first-child {
+    font-weight: 600;
+    background: #fafafa;
+}
+.modal-table td:not(:first-child) {
+    text-align: center;
+}
+
+/* Estilos para 'multi-table' */
+.modal-multi-table {
+    margin-bottom: 20px;
+}
+.modal-multi-table h4 {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+        /* Info general */
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-content {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .info-content label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-content input {
+            padding: 6px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .info-content input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        /* Resumen */
+        .summary-container h2 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .summary-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .summary-table td:first-child {
+            background: #fafafa;
+            width: 65%;
+        }
+
+        .summary-table td:last-child {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .summary-table strong {
+            display: block;
+            color: #333;
+        }
+
+        .summary-table span:not(#risk-level-text) {
+            font-size: 11px;
+            color: #777;
+            font-weight: normal;
+        }
+
+        #risk-level-text {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .low { color: var(--color-risk-low); }
+        .moderate { color: var(--color-risk-moderate); }
+        .high { color: var(--color-risk-high); }
+
+        /* ===== BÚSQUEDA ===== */
+        .search-container {
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        #search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23666" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 12px center;
+            background-size: 16px;
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        /* ===== EVALUACIONES ===== */
+        #evaluations-container {
+            padding: 12px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 12px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .evaluation-column {
+            display: contents;
+        }
+
+        .container-evaluation {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .container-evaluation:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .container-evaluation.hidden {
+            display: none;
+        }
+
+        /* Lado izquierdo */
+        .indicators {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .evaluation-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .evaluation-image {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            opacity: 0.6;
+        }
+
+        .aditional-info {
+            display: grid;
+            grid-template-columns: auto 50px;
+            gap: 6px;
+            align-items: center;
+            font-size: 11px;
+            margin-top: auto;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .aditional-info label {
+            color: #666;
+        }
+
+        .aditional-info input {
+            padding: 4px 6px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* Lado derecho - SCORES HORIZONTALES */
+        .score-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 140px;
+        }
+
+        .score-indicators > div:not(.score-display) {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-indicators p {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            min-width: 32px;
+        }
+
+        .score-indicators input[type="checkbox"] {
+            display: none;
+        }
+
+        .score-indicators .custom-x {
+            width: 28px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: bold;
+            font-size: 14px;
+            color: transparent;
+            flex-shrink: 0;
+        }
+
+        .custom-x:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .score-indicators input.rojo + .custom-x { background-color: var(--color-high); }
+        .score-indicators input.amarillo + .custom-x { background-color: var(--color-mod); }
+        .score-indicators input.azul + .custom-x { background-color: var(--color-low); }
+        .score-indicators input.gris + .custom-x { background-color: var(--color-ok); }
+        .score-indicators input.verde + .custom-x { background-color: var(--color-na); }
+
+        .score-indicators input[type="checkbox"]:checked + .custom-x {
+            color: white;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .score-indicators input[type="checkbox"]:checked + .custom-x::after {
+            content: "✓";
+        }
+
+        .score-indicators label {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: left;
+            color: #333;
+        }
+
+        .na-label {
+            display: none !important;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .score-display p:first-child {
+            font-size: 10px;
+            color: #999;
+            font-weight: 600;
+        }
+
+        .selected-score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            min-width: 24px;
+        }
+
+        /* ===== BOTONES ===== */
+        #action-buttons-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f5576c;
+            color: white;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            #evaluations-container {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            #main-header-container.expanded .header-full {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            #evaluations-container {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+
+            .container-evaluation {
+                flex-direction: column;
+            }
+
+            .score-indicators {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .aditional-info {
+                grid-template-columns: 1fr;
+            }
+
+            #action-buttons-container {
+                bottom: 12px;
+                right: 12px;
+                left: 12px;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            #search-input {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .info-content {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-table td {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .summary-table td:last-child {
+                font-size: 16px;
+            }
+        }
+        .form-disabled {
+            pointer-events: none; /* Bloquea todos los clics */
+            opacity: 0.7;       /* Le da un aspecto "apagado" */
+            user-select: none;  /* Evita que se pueda seleccionar texto */
+            transition: opacity 0.3s ease;
+        }
+        #evaluations-container {
+    transition: margin-top 0.3s ease;
+}
+
+/* Regla principal: Cuando el header está colapsado... */
+#main-header-container.collapsed ~ #evaluations-container {
+    margin-top: 150px;
+}
+
+/* (Opcional) Resetea el margen cuando el header está expandido */
+#main-header-container.expanded ~ #evaluations-container {
+    margin-top: 12px; /* O el valor original que tenías en el padding (12px) */
+}
+    </style>
+</head>
+<body>
+    <!-- HEADER STICKY -->
+    <div id="main-header-container" class="expanded">
+        <!-- Vista completa -->
+        <div class="header-full">
+            <section class="container">
+                <div class="info-content">
+                    <label>Job/Task</label>
+                    <input type="text" id="job" placeholder="Almacén">
+                </div>
+                <div class="info-content">
+                    <label>Company</label>
+                    <input type="text" id="company" placeholder="J&J">
+                </div>
+                <div class="info-content">
+                    <label>Location</label>
+                    <input type="text" id="location" placeholder="Puebla">
+                </div>
+                <div class="info-content">
+                    <label># of Employees</label>
+                    <input type="text" id="Employees" placeholder="44">
+                </div>
+                <div class="info-content">
+                    <label>Name of Analyst</label>
+                    <input type="text" id="nAnalyst" placeholder="Brandon Cortes" value="Brandon Cortes">
+                </div>
+            </section>
+
+            <section class="summary-container">
+                <h2>Resumen de Puntuación</h2>
+                <table class="summary-table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Puntaje de Riesgo del Puesto</strong>
+                                <span>(Suma de puntajes 1-40)</span>
+                            </td>
+                            <td>
+                                <span id="job-risk-score">0</span>
+                                <span id="risk-level-text"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Número de Empleados</strong></td>
+                            <td id="num-employees-display">0</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Puntaje Total del Puesto</strong>
+                                <span>(Riesgo × Empleados)</span>
+                            </td>
+                            <td id="total-job-score">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- Vista compacta -->
+        <div class="header-compact">
+            <div class="header-compact-left">
+                <strong id="compact-job">-</strong>
+            </div>
+            <div class="header-compact-right">
+                <span>Score: <span id="compact-score">0</span></span>
+                <span id="compact-risk"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- BÚSQUEDA -->
+    <div class="search-container" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <input type="text" id="search-input" placeholder="Buscar evaluación... (ej: Wrist, Lifting, Noise)" style="flex-grow: 1;">
+        <input type="text" placeholder="Pegar JSON aquí..." style="width: 150px; border-radius: 25px; text-align: center; border: 1px solid var(--color-ok);" id="json-input">
+        <button id="btn-save-json" class="btn btn-primary" style="padding: 8px 12px; font-size: 12px; box-shadow: none;">Guardar JSON</button>
+        <!-- BOTÓN AÑADIDO -->
+        <button id="btn-generate-pdf" class="btn btn-warning" style="padding: 8px 12px; font-size: 12px; box-shadow: none;">Generar PDF</button>
+    </div>
+
+    <!-- EVALUACIONES -->
+    <div id="evaluations-container"></div>
+
+    <!-- BOTONES -->
+    <div id="action-buttons-container">
+        <button id="edit-button" class="btn btn-warning" style="display: none;">Editar</button>
+        <button id="save-button" class="btn btn-primary">Guardar</button>
+    </div>
+
+    <!-- TEMPLATE -->
+    <template id="evaluation-template">
+        <section class="container-evaluation">
+            <div class="indicators">
+                <h3 class="evaluation-title"></h3>
+                <img src="" alt="Icon" class="evaluation-image">
+                <div class="aditional-info">
+                    <label>Cases</label>
+                    <input type="text" class="cases-input" placeholder="0">
+                    <label>Incidents</label>
+                    <input type="text" class="incident-input" placeholder="0">
+                </div>
+            </div>
+            <div class="score-indicators">
+                <div>
+                    <p>High</p>
+                    <input type="checkbox" class="rojo">
+                    <span class="custom-x"></span>
+                    <label></label>
+                </div>
+                <div>
+                    <p>Mod</p>
+                    <input type="checkbox" class="amarillo">
+                    <span class="custom-x"></span>
+                    <label></label>
+                </div>
+                <div>
+                    <p>Low</p>
+                    <input type="checkbox" class="azul">
+                    <span class="custom-x"></span>
+                    <label></label>
+                </div>
+                <div>
+                    <p>Ok</p>
+                    <input type="checkbox" class="gris">
+                    <span class="custom-x"></span>
+                    <label></label>
+                </div>
+                <div>
+                    <p>N/A</p>
+                    <input type="checkbox" class="verde">
+                    <span class="custom-x"></span>
+                    <label class="na-label"></label>
+                </div>
+                <div class="score-display">
+                    <p>SCORE</p>
+                    <p class="selected-score">-</p>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <div id="details-modal-overlay" class="modal-overlay">
+    <div id="details-modal-content" class="modal-content">
+        <header class="modal-header">
+            <div>
+                <span id="modal-category"></span>
+                <h2 id="modal-title"></h2>
+            </div>
+            <button id="modal-close-btn" class="modal-close">×</button>
+        </header>
+        <div id="modal-body-content" class="modal-body">
+            </div>
+    </div>
+</div>
+
+<script>
+/* ============================================================
+   🧩 BLOQUE PRINCIPAL - INICIALIZACIÓN Y GENERACIÓN DE CARDS
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🌐 Iniciando Evaluación Johnson');
+
+  // --- FUNCIÓN: Calcular y actualizar resumen general ---
+  window.updateSummary = function () {
+    let totalScore = 0;
+    document.querySelectorAll('.selected-score').forEach((el) => {
+      const score = parseInt(el.textContent, 10);
+      if (!isNaN(score)) totalScore += score;
+    });
+
+    const isHighRisk = document.querySelectorAll('input.rojo:checked').length > 0;
+    const riskLevelElement = document.getElementById('risk-level-text');
+    const compactRisk = document.getElementById('compact-risk');
+
+    let riskText = '';
+    let riskClass = '';
+
+    if (isHighRisk || totalScore >= 30) {
+      riskText = '(Alto)';
+      riskClass = 'high';
+    } else if (totalScore >= 20) {
+      riskText = '(Moderado)';
+      riskClass = 'moderate';
+    } else {
+      riskText = '(Bajo)';
+      riskClass = 'low';
+    }
+
+    riskLevelElement.textContent = riskText;
+    riskLevelElement.className = riskClass;
+    compactRisk.textContent = riskText;
+    compactRisk.className = riskClass;
+
+    const numEmployees = parseInt(document.getElementById('Employees').value, 10) || 0;
+    document.getElementById('job-risk-score').textContent = totalScore;
+    document.getElementById('compact-score').textContent = totalScore;
+    document.getElementById('num-employees-display').textContent = numEmployees;
+    document.getElementById('total-job-score').textContent = totalScore * numEmployees;
+  };
+
+  // --- DATOS BASE: FACTORES ERGONÓMICOS ---
+  const sectionsData = [
+    { number: 1, title: 'Loss Information', scores: [12, 8, 4, 0] },
+    { number: 2, title: 'Employee Response', scores: [8, 4, 2, 0] },
+    { number: 3, title: 'Miscellaneous', scores: [8, 4, 2, 0] },
+    { number: 4, title: 'Hand Grip Force / Power Grip', scores: [6, 4, 2, 0] },
+    { number: 5, title: 'Pinch Grip Force', scores: [6, 4, 2, 0] },
+    { number: 6, title: 'Finger or Thumb Press Force', scores: [6, 4, 2, 0] },
+    { number: 7, title: 'Wrist Flexion', scores: [3, 3, 1, 0] },
+    { number: 8, title: 'Wrist Extension', scores: [3, 3, 1, 0] },
+    { number: 9, title: 'Wrist Radial Deviation', scores: [3, 3, 1, 0] },
+    { number: 10, title: 'Wrist Ulnar Deviation', scores: [3, 3, 1, 0] },
+    { number: 11, title: 'Repetition', scores: [6, 4, 2, 0] },
+    { number: 12, title: 'Vibration', scores: [6, 4, 2, 0] },
+    { number: 13, title: 'Mechanical Stress to Hand', scores: [6, 4, 2, 0] },
+    { number: 14, title: 'Mechanical Stress to Arm', scores: [3, 3, 1, 0] },
+    { number: 15, title: 'Hand Palm-Up (Forearm Supination)', scores: [3, 3, 1, 0] },
+    { number: 16, title: 'Hand Palm-Down (Forearm Pronation)', scores: [3, 3, 1, 0] },
+    { number: 17, title: 'Pull Down with One or Both Arms', scores: [6, 4, 2, 0] },
+    { number: 18, title: 'One-handed Push or Pull', scores: [6, 4, 2, 0] },
+    { number: 19, title: 'Shoulder Abduction or Flexion', scores: [6, 4, 2, 0] },
+    { number: 20, title: 'Reach Across Body', scores: [3, 2, 1, 0] },
+    { number: 21, title: 'Reach Behind Body', scores: [3, 2, 1, 0] },
+    { number: 22, title: 'Neck Flexion', scores: [3, 2, 1, 0] },
+    { number: 23, title: 'Neck Extension', scores: [3, 2, 1, 0] },
+    { number: 24, title: 'Lateral Bending of Neck', scores: [3, 2, 1, 0] },
+    { number: 25, title: 'Neck Rotation', scores: [3, 2, 1, 0] },
+    { number: 26, title: 'Bending Forward', scores: [6, 4, 2, 0] },
+    { number: 27, title: 'Bending to Side', scores: [3, 2, 1, 0] },
+    { number: 28, title: 'Twisting', scores: [3, 2, 1, 0] },
+    { number: 29, title: 'Stand on Unpadded Surface', scores: [3, 2, 1, 0] },
+    { number: 30, title: 'Impact Stress to Knees and Ankles', scores: [3, 2, 1, 0] },
+    { number: 31, title: 'Ankle Extension', scores: [3, 2, 1, 0] },
+    { number: 32, title: 'Static Ankle Flexion', scores: [3, 2, 1, 0] },
+    { number: 33, title: 'Lifting', scores: [6, 4, 2, 0] },
+    { number: 34, title: 'Carrying', scores: [6, 4, 2, 0] },
+    { number: 35, title: 'Pushing and Pulling (Initial Force)', scores: [6, 4, 2, 0] },
+    { number: 36, title: 'Noise', scores: [3, 2, 1, 0] },
+    { number: 37, title: 'Heat Stress', scores: [3, 2, 1, 0] },
+    { number: 38, title: 'Cold Stress', scores: [3, 2, 1, 0] },
+    { number: 39, title: 'Lighting', scores: [3, 2, 1, 0] },
+    { number: 40, title: 'Human Error', scores: [3, 2, 1, 0] }
+  ];
+
+  const container = document.getElementById('evaluations-container');
+  const template = document.getElementById('evaluation-template');
+
+  sectionsData.forEach((data, index) => {
+    const clone = document.importNode(template.content, true);
+    clone.querySelector('.evaluation-title').textContent = `${data.number}. ${data.title}`;
+    const card = clone.querySelector('.container-evaluation');
+    card.dataset.searchText = data.title.toLowerCase();
+
+    const scoreDivs = clone.querySelectorAll('.score-indicators > div:not(.score-display)');
+    const colorClasses = ['rojo', 'amarillo', 'azul', 'gris', 'verde'];
+    scoreDivs.forEach((div, j) => {
+      const input = div.querySelector('input[type="checkbox"]');
+      const label = div.querySelector('label');
+      if (!input) return;
+      input.name = `group-${index}`;
+      input.classList.add(colorClasses[j]);
+      if (label && data.scores[j] !== undefined) label.textContent = data.scores[j];
+    });
+
+    const checkboxes = clone.querySelectorAll('.score-indicators input[type="checkbox"]');
+    checkboxes.forEach((chk) => {
+      chk.addEventListener('change', function () {
+        if (this.checked) {
+          checkboxes.forEach((other) => { if (other !== this) other.checked = false; });
+          const scoreEl = this.closest('.container-evaluation').querySelector('.selected-score');
+          const scoreValue = this.parentElement.querySelector('label')?.textContent || '0';
+          scoreEl.textContent = scoreValue;
+        } else {
+          this.closest('.container-evaluation').querySelector('.selected-score').textContent = '-';
+        }
+        window.updateSummary();
+      });
+    });
+
+    container.appendChild(clone);
+  });
+
+  // --- CONECTAR BOTONES ---
+  const saveBtn = document.getElementById('save-button');
+  if (saveBtn) {
+    console.log('🟢 Listener activo: Guardar evaluación manual');
+    saveBtn.addEventListener('click', saveJohnsonEvaluation);
+  }
+
+  const editBtn = document.getElementById('edit-button');
+  if (editBtn) {
+    console.log('🟢 Listener activo: Modo edición');
+    editBtn.addEventListener('click', () => {
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'block';
+      setFormEnabled(true);
+      console.log('✏️ Modo edición activado');
+    });
+  }
+
+  const saveJsonBtn = document.getElementById('btn-save-json');
+  if (saveJsonBtn) {
+    console.log('🟢 Listener activo: Guardar desde JSON Input');
+    saveJsonBtn.addEventListener('click', guardarJsonDirecto);
+  }
+
+  // --- BOTÓN AÑADIDO ---
+  const pdfBtn = document.getElementById('btn-generate-pdf');
+  if (pdfBtn) {
+    console.log('🟢 Listener activo: Generar PDF');
+    pdfBtn.addEventListener('click', generarReporteDesdeJSON);
+  }
+  
+  // --- CARGAR DESDE SUPABASE AL INICIAR ---
+  loadJohnsonEvaluation();
+});
+
+/* ============================================================
+   🧠 FUNCIÓN CENTRAL: RECOLECTAR DATOS DEL FORMULARIO
+   ============================================================ */
+function getJohnsonEvaluationData() {
+  const header = {
+    job: document.getElementById('job')?.value || '',
+    analyst: document.getElementById('nAnalyst')?.value || 'Ergo Job Analyzer',
+    company: document.getElementById('company')?.value || '',
+    location: document.getElementById('location')?.value || '',
+    employees: parseInt(document.getElementById('Employees')?.value || '0', 10),
+  };
+
+  const summary = {
+    jobRiskScore: parseInt(document.getElementById('job-risk-score')?.textContent, 10) || 0,
+    riskLevel: document.getElementById('risk-level-text')?.textContent || '',
+    totalJobScore: parseInt(document.getElementById('total-job-score')?.textContent, 10) || 0,
+  };
+
+  const details = [];
+  document.querySelectorAll('.container-evaluation').forEach((container) => {
+    const fullTitle = container.querySelector('.evaluation-title')?.textContent || '';
+    const scoreText = container.querySelector('.selected-score')?.textContent || '-';
+    details.push({
+      factor: fullTitle,
+      puntaje: scoreText === '-' ? '-' : scoreText,
+    });
+  });
+
+  return {
+    resumen: {
+      nivelRiesgo: summary.riskLevel,
+      puntajeTotal: summary.totalJobScore,
+      puntajeRiesgo: summary.jobRiskScore,
+    },
+    detalles: details,
+    infoGeneral: header,
+  };
+}
+
+/* ============================================================
+   💾 GUARDADO MANUAL EN SUPABASE
+   ============================================================ */
+async function saveJohnsonEvaluation() {
+  console.log('💾 [GUARDADO] Iniciando guardado manual...');
+  const dbClient = window.dataClient?.supabase;
+  const urlParams = new URLSearchParams(window.location.search);
+  const actividad_id = urlParams.get('actividadId');
+  const area_id = urlParams.get('area');
+  const work_center_id = urlParams.get('workCenter');
+
+  if (!dbClient) return console.error('❌ Supabase no inicializado.');
+  if (!actividad_id) return console.error('❌ Falta actividadId.');
+
+  const ejaData = getJohnsonEvaluationData();
+  const cleanData = cleanJson(ejaData);
+  const scoreFinal = parseFloat(ejaData.resumen?.puntajeRiesgo) || null;
+
+  try {
+    const { error } = await dbClient
+      .from('actividades')
+      .update({
+        datos_analisis: cleanData,
+        score_final: scoreFinal,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', actividad_id);
+    if (error) throw error;
+    console.log('✅ [GUARDADO] Evaluación almacenada correctamente.');
+  } catch (err) {
+    console.error('❌ Error al guardar en Supabase:', err);
+  }
+}
+
+/* ============================================================
+   📥 CARGAR DATOS DESDE SUPABASE
+   ============================================================ */
+async function loadJohnsonEvaluation() {
+  console.log('📥 [CARGA] Intentando obtener datos_analisis...');
+  const dbClient = window.dataClient?.supabase;
+  const urlParams = new URLSearchParams(window.location.search);
+  const actividad_id = urlParams.get('actividadId');
+  if (!dbClient || !actividad_id) return;
+
+  try {
+    const { data, error } = await dbClient
+      .from('actividades')
+      .select('datos_analisis')
+      .eq('id', actividad_id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data?.datos_analisis) {
+      console.warn('⚠️ [CARGA] No hay datos previos guardados.');
+      return;
+    }
+
+    const datosAnalisis =
+      typeof data.datos_analisis === 'string'
+        ? JSON.parse(data.datos_analisis)
+        : data.datos_analisis;
+
+    console.log('✅ [CARGA] Datos analizados obtenidos:', datosAnalisis);
+    populateJohnsonForm(datosAnalisis);
+  } catch (err)
+ {
+    console.error('❌ [CARGA] Error al obtener datos_analisis:', err);
+  }
+}
+
+/* ============================================================
+   🧱 RELLENAR FORMULARIO CON DATOS EXISTENTES
+   ============================================================ */
+function populateJohnsonForm(ejaData) {
+  console.log('🧩 Rellenando formulario con datos de evaluación existentes...', ejaData);
+
+  // --- 1️⃣ Normalización de claves ---
+  const resumen = ejaData.resumen || ejaData.summary || {};
+  const detalles = ejaData.detalles || ejaData.details || [];
+  const infoGeneral = ejaData.infoGeneral || ejaData.header || {};
+
+  // --- 2️⃣ Poblar encabezado (solo si los elementos existen) ---
+  try {
+    if (document.getElementById('job'))
+      document.getElementById('job').value = infoGeneral.job || '';
+    if (document.getElementById('company'))
+      document.getElementById('company').value = infoGeneral.company || '';
+    if (document.getElementById('location'))
+      document.getElementById('location').value = infoGeneral.location || '';
+    if (document.getElementById('Employees'))
+      document.getElementById('Employees').value = infoGeneral.employees || '';
+     if (document.getElementById('nAnalyst'))
+      document.getElementById('nAnalyst').value = infoGeneral.analyst || '';
+  } catch (err) {
+    console.warn('⚠️ No se pudieron poblar campos de encabezado:', err);
+  }
+
+  // --- 3️⃣ Poblar las 40 tarjetas ---
+  try {
+    const containers = document.querySelectorAll('.container-evaluation');
+    if (!containers.length) {
+      console.error('❌ No se encontraron elementos .container-evaluation en el DOM.');
+      return;
+    }
+
+    detalles.forEach((detalle, index) => {
+      const puntaje = String(detalle.puntaje).trim(); // Asegurarse que sea string
+      const factorTexto = detalle.factor || '';
+      const numero = factorTexto.match(/^(\d+)/)?.[1] || index + 1;
+
+      // Buscar la card correspondiente
+      const card = Array.from(containers).find(c =>
+        c.querySelector('.evaluation-title')?.textContent.trim().startsWith(numero + '.')
+      );
+
+      if (!card) {
+        console.warn(`⚠️ No se encontró card para el factor ${factorTexto}`);
+        return;
+      }
+
+      const checkboxes = card.querySelectorAll('.score-indicators input[type="checkbox"]');
+      let marcado = false;
+
+      // Buscar el checkbox correcto según el puntaje
+      checkboxes.forEach(chk => {
+        const label = chk.parentElement.querySelector('label');
+        const labelValor = label ? label.textContent.trim() : '';
+        if (puntaje === labelValor) {
+          chk.checked = true;
+          // Disparar el evento change manualmente para actualizar el score visual y el resumen
+          chk.dispatchEvent(new Event('change', { bubbles: true })); 
+          marcado = true;
+        }
+      });
+
+      // Si el puntaje es "-" o no se encontró match, marcar "OK" (gris)
+      if (!marcado && (puntaje === '-' || puntaje === 'ok')) {
+          let targetCheckbox;
+          if(puntaje === 'ok'){
+             // Si es 'ok', busca el gris (que tiene score 0)
+             targetCheckbox = Array.from(checkboxes).find(chk => {
+                 const label = chk.parentElement.querySelector('label');
+                 return label && label.textContent.trim() === '0';
+             });
+          }
+          
+          // Si no se encontró '0' o si el puntaje es '-', busca 'N/A' (verde)
+          if(!targetCheckbox){
+              targetCheckbox = card.querySelector('.score-indicators input.verde'); // N/A
+          }
+
+          if (targetCheckbox) {
+            targetCheckbox.checked = true;
+            targetCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+      }
+    });
+
+    console.log(`✅ Se poblaron ${detalles.length} tarjetas desde Supabase.`);
+  } catch (err) {
+    console.error('❌ Error al poblar tarjetas:', err);
+  }
+
+  // --- 4️⃣ Actualizar resumen ---
+  // El disparo de eventos 'change' debería haber llamado a window.updateSummary()
+  // Pero lo llamamos una vez más al final para asegurar
+  try {
+    window.updateSummary();
+    console.log('📊 Resumen general actualizado correctamente.');
+  } catch (err) {
+    console.error('❌ Error al actualizar resumen:', err);
+  }
+
+  // --- 5️⃣ Alternar botones ---
+  const saveBtn = document.getElementById('save-button');
+  const editBtn = document.getElementById('edit-button');
+  if (saveBtn && editBtn) {
+    saveBtn.style.display = 'none';
+    editBtn.style.display = 'block';
+  }
+   
+  // --- 6️⃣ Deshabilitar formulario ---
+  setFormEnabled(false); // Deshabilitar al cargar
+  console.log('🔒 Formulario deshabilitado (modo lectura).');
+}
+
+
+/* ============================================================
+   🧩 GUARDAR JSON DIRECTAMENTE DESDE INPUT
+   ============================================================ */
+async function guardarJsonDirecto() {
+  console.log('📦 [INPUT JSON] Guardado directo iniciado...');
+  const jsonInput = document.getElementById('json-input');
+  if (!jsonInput?.value) {
+      console.warn('Campo JSON vacío.');
+      return; // Evitar alert
+  }
+
+  const dbClient = window.dataClient?.supabase;
+  const urlParams = new URLSearchParams(window.location.search);
+  const actividad_id = urlParams.get('actividadId');
+  if (!dbClient || !actividad_id) return;
+
+  try {
+    const dataToSave = JSON.parse(jsonInput.value);
+    
+    // Poblar el formulario con este JSON
+    populateJohnsonForm(dataToSave);
+    
+    // Limpiar el JSON que se va a guardar
+    const cleanData = cleanJson(dataToSave);
+    const score =
+      cleanData.resumen?.puntajeRiesgo || cleanData.resumen?.jobRiskScore || 0;
+
+    await dbClient.from('actividades').update({
+      datos_analisis: cleanData,
+      score_final: parseFloat(score),
+      updated_at: new Date().toISOString(),
+    })
+      .eq('id', actividad_id);
+
+    console.log('✅ [INPUT JSON] Guardado y formulario poblado exitosamente.');
+    jsonInput.value = '';
+  } catch (err) {
+    console.error('❌ [INPUT JSON] Error al guardar:', err);
+    // alert('Error al guardar el JSON: ' + err.message); // Evitar alert
+  }
+}
+
+/* ============================================================
+   🧼 LIMPIADOR JSON
+   ============================================================ */
+function cleanJson(obj) {
+  try {
+    return JSON.parse(
+      JSON.stringify(obj, (k, v) => (v === undefined || typeof v === 'function' ? null : v))
+    );
+  } catch {
+    return obj;
+  }
+}
+
+/* ============================================================
+   🧰 BLOQUE UTILITARIO
+   ============================================================ */
+function setFormEnabled(enabled) {
+  const header = document.getElementById('main-header-container');
+  const search = document.querySelector('.search-container');
+  const evals = document.getElementById('evaluations-container');
+  
+  // No deshabilitar el header ni la búsqueda, solo las evaluaciones
+  if (evals) {
+      enabled ? evals.classList.remove('form-disabled') : evals.classList.add('form-disabled');
+  }
+  
+  // Habilitar/deshabilitar inputs de info general
+  const infoInputs = document.querySelectorAll('#main-header-container input');
+  infoInputs.forEach(input => input.disabled = !enabled);
+}
+
+/* ============================================================
+   📄 GENERADOR DE REPORTE PDF (abre nueva plantilla)
+   ============================================================ */
+function generarReporteDesdeJSON() {
+    console.log('📄 Generando reporte...');
+    const jsonInput = document.getElementById('json-input');
+    let data;
+
+    if (jsonInput.value) {
+        try {
+            data = JSON.parse(jsonInput.value);
+            console.log('📄 Usando datos del input JSON.');
+        } catch (err) {
+            console.error('JSON inválido en el input.', err);
+            // alert('El JSON en el campo de entrada no es válido.'); // Evitar alert
+            return;
+        }
+    } else {
+        console.log('📄 Usando datos del formulario actual.');
+        data = getJohnsonEvaluationData();
+    }
+
+    if (!data) {
+        console.error('No hay datos para generar el reporte.');
+        // alert('No hay datos para generar el reporte.'); // Evitar alert
+        return;
+    }
+
+    // Guardar los datos en localStorage para que la otra pestaña los lea
+    try {
+        localStorage.setItem('reporteData', JSON.stringify(data));
+    } catch (e) {
+        console.error("Error al guardar en localStorage", e);
+        // alert("No se pudo guardar la información para el reporte. Es posible que el almacenamiento esté lleno.");
+        return;
+    }
+
+    // Abrir la plantilla del reporte en una nueva pestaña
+    const reportWindow = window.open('reporte.html', '_blank');
+    if (!reportWindow) {
+         console.error("No se pudo abrir la pestaña del reporte. Revisa los bloqueadores de pop-ups.");
+         // alert("No se pudo abrir la pestaña del reporte. Revisa los bloqueadores de pop-ups.");
+    }
+}
+
+</script>
+
+    <script src="../header-component.js"></script>
+</body>
+</html>

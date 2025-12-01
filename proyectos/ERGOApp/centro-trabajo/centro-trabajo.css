@@ -158,7 +158,7 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
         }
 
         .fotos-info {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: var(--gray-500);
             text-align: center;
         }
@@ -1099,7 +1099,6 @@ Esta hoja de estilos sigue la metodología BEM para asegurar que el código sea 
 }
 /* Estilo para la etiqueta (ej. "Fecha", "Score") */
 .detail-label {
-    font-size: 0.8rem;
     font-weight: 600;
     color: var(--primary-700);
     margin-bottom: 0.35rem;
@@ -1146,8 +1145,6 @@ textarea.is-readonly:focus {
     background-color: white;
     color: var(--gray-900);
     border: 1px solid var(--gray-200);
-    max-height: 400px;
-
 }
 
 /* Asegurarse que los elementos dentro de score-container sean del color correcto */
@@ -1209,6 +1206,21 @@ textarea.is-readonly:focus {
 
 }
 
+
+.breadcrumb{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+.breadcrumb div{
+    display: inline-flex;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+}
+.breadcrumb div:nth-child(2){
+    gap: .5rem;
+}
 .centro-header.status-open .breadcrumb a:hover,
 .centro-header.status-closed .breadcrumb a:hover {
     color: white;

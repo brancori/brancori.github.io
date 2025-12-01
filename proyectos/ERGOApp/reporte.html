@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Evaluación Ergonómica</title>
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #000;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10px auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        /* --- CONTROLES (NO IMPRIMIR) --- */
+        .no-print {
+            padding: 15px 20mm;
+            background: #333;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+        .no-print button {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            background: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .no-print button:hover {
+            background: #eee;
+        }
+
+        /* --- CABECERA DE PÁGINA --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .header .page-number {
+            font-size: 12px;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        /* --- INFO GENERAL (GRID) --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 20px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .info-item {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            padding: 3px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-item label {
+            font-weight: bold;
+        }
+
+        /* --- COLUMNAS DE FACTORES --- */
+        .main-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        /* --- CAJA DE FACTOR INDIVIDUAL --- */
+        .factor-box {
+            border: 1px solid #000;
+            margin-bottom: 8px;
+            font-size: 10px;
+        }
+        .factor-box .title {
+            font-weight: bold;
+            padding: 4px 6px;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #000;
+        }
+        /* Contenido del factor (solo score) */
+        .factor-box .content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 6px;
+            height: 30px; /* Altura fija para alinear */
+        }
+        .factor-box .content .label {
+            font-size: 9px;
+            color: #555;
+            font-weight: bold;
+        }
+        .factor-box .content .score {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border: 1px solid #000;
+            min-width: 20px;
+            text-align: center;
+            background: #f0f0f0;
+        }
+
+        /* --- RESUMEN (PÁGINA 2) --- */
+        .summary-box {
+            border: 2px solid #000;
+            margin-top: 15px;
+            background: #f0f0f0;
+        }
+        .summary-item {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            align-items: center;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid #ccc;
+        }
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        .summary-item strong {
+            font-size: 14px;
+        }
+        .summary-item span {
+            font-size: 11px;
+            color: #333;
+        }
+        .summary-item .value {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .summary-item .risk-level {
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* --- ESTILOS DE IMPRESIÓN --- */
+        @media print {
+            body {
+                background: none;
+            }
+            .no-print {
+                display: none;
+            }
+            .page {
+                width: 100%;
+                min-height: auto;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                padding: 0; /* Ajustar márgenes desde la config. de impresión */
+                page-break-after: always;
+            }
+            /* Evitar que las cajas de factor se corten entre páginas */
+            .factor-box {
+                page-break-inside: avoid;
+            }
+            .summary-box {
+                 page-break-inside: avoid;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="no-print">
+        <p>Reporte generado. Si el diálogo de impresión no aparece, haz clic aquí.</p>
+        <button onclick="window.print()">Imprimir Reporte</button>
+    </div>
+
+    <!-- PÁGINA 1 -->
+    <div class="page" id="page1">
+        <header class="header">
+            <h1>ERGO Job Analyzer Score Sheet</h1>
+            <div class="page-number">Page 1 of 2 Pages</div>
+        </header>
+
+        <section class="info-grid" id="info-grid-p1">
+            <!-- Relleno con JS -->
+        </section>
+
+        <section class="main-columns" id="main-columns-p1">
+            <div class="column" id="col-1-1">
+                <!-- Factores 1-10 -->
+            </div>
+            <div class="column" id="col-1-2">
+                <!-- Factores 11-20 -->
+            </div>
+        </section>
+    </div>
+
+    <!-- PÁGINA 2 -->
+    <div class="page" id="page2">
+        <header class="header">
+            <h1>ERGO Job Analyzer Score Sheet</h1>
+            <div class="page-number">Page 2 of 2 Pages</div>
+        </header>
+
+        <section class="info-grid" id="info-grid-p2">
+             <!-- Relleno con JS -->
+        </section>
+
+        <section class="summary-box" id="summary-box-p2">
+            <!-- Relleno con JS -->
+        </section>
+
+        <section class="main-columns" id="main-columns-p2">
+            <div class="column" id="col-2-1">
+                <!-- Factores 21-30 -->
+            </div>
+            <div class="column" id="col-2-2">
+                <!-- Factores 31-40 -->
+            </div>
+        </section>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dataString = localStorage.getItem('reporteData');
+            if (!dataString) {
+                document.body.innerHTML = '<h1 style="text-align: center; font-family: Arial;">Error: No se encontraron datos para el reporte.</h1>';
+                return;
+            }
+
+            try {
+                const data = JSON.parse(dataString);
+                console.log("Datos cargados para reporte:", data);
+
+                // --- PLANTILLAS HTML ---
+
+                const createInfoGridHtml = (info) => `
+                    <div class="info-item">
+                        <label>Job/Task:</label> 
+                        <span id="job-task">${info.job || ''}</span>
+                    </div>
+                    <div class="info-item">
+                        <label># of Employees:</label> 
+                        <span id="num-employees">${info.employees || ''}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Company:</label> 
+                        <span id="company">${info.company || ''}</span>
+                    </div>
+                     <div class="info-item">
+                        <label>Name of Analyst:</label> 
+                        <span id="analyst">${info.analyst || ''}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Location:</label> 
+                        <span id="location">${info.location || ''}</span>
+                    </div>
+                     <div class="info-item">
+                        <label>Date of Analysis:</label> 
+                        <span>${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    </div>
+                `;
+
+                const createSummaryHtml = (resumen) => `
+                    <div class="summary-item">
+                        <div>
+                            <strong>Job Risk Score</strong>
+                            <span>(Total of Categories 1-40 scores)</span>
+                        </div>
+                        <div class="value">
+                            ${resumen.puntajeRiesgo || 0}
+                            <div class="risk-level">${resumen.nivelRiesgo || ''}</div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Number of Employees</strong>
+                        <div class="value" id="summary-num-employees">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div>
+                            <strong>Total Job Score</strong>
+                            <span>(Job Risk Score x No. of Employees)</span>
+                        </div>
+                        <div class="value">${resumen.puntajeTotal || 0}</div>
+                    </div>
+                `;
+
+                const formatScore = (score) => {
+                    if (score === 'ok') return '0';
+                    if (score === '-') return 'N/A';
+                    return score || '0';
+                };
+
+                const createFactorHtml = (factor) => `
+                    <div class="factor-box">
+                        <div class="title">${factor.factor || 'Factor desconocido'}</div>
+                        <div class="content">
+                            <span class="label">SCORE</span>
+                            <span class="score">${formatScore(factor.puntaje)}</span>
+                        </div>
+                    </div>
+                `;
+
+                // --- RELLENAR DATOS ---
+                
+                const info = data.infoGeneral || {};
+                const resumen = data.resumen || {};
+                const detalles = data.detalles || [];
+
+                // 1. Rellenar Info (Ambas páginas)
+                const infoHtml = createInfoGridHtml(info);
+                document.getElementById('info-grid-p1').innerHTML = infoHtml;
+                document.getElementById('info-grid-p2').innerHTML = infoHtml;
+
+                // 2. Rellenar Resumen (Página 2)
+                document.getElementById('summary-box-p2').innerHTML = createSummaryHtml(resumen);
+                document.getElementById('summary-num-employees').textContent = info.employees || 0;
+
+                // 3. Rellenar Factores (Columnas)
+                const col1_1 = document.getElementById('col-1-1');
+                const col1_2 = document.getElementById('col-1-2');
+                const col2_1 = document.getElementById('col-2-1');
+                const col2_2 = document.getElementById('col-2-2');
+
+                detalles.forEach((factor, index) => {
+                    const factorHtml = createFactorHtml(factor);
+                    if (index < 10) { // Factores 1-10
+                        col1_1.innerHTML += factorHtml;
+                    } else if (index < 20) { // Factores 11-20
+                        col1_2.innerHTML += factorHtml;
+                    } else if (index < 30) { // Factores 21-30
+                        col2_1.innerHTML += factorHtml;
+                    } else { // Factores 31-40
+                        col2_2.innerHTML += factorHtml;
+                    }
+                });
+
+                // --- 4. AUTO-IMPRIMIR ---
+                setTimeout(() => {
+                    window.print();
+                }, 500); // 500ms de retraso para asegurar renderizado
+
+            } catch (e) {
+                console.error("Error al parsear o renderizar los datos:", e);
+                document.body.innerHTML = `<h1 style="text-align: center; font-family: Arial;">Error: Los datos del reporte están corruptos.</h1><pre>${dataString}</pre>`;
+            }
+        });
+    </script>
+</body>
+</html>
